@@ -445,7 +445,7 @@ Please provide detailed insights including budget allocation, platform strategie
 }`;
 
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o",
+          model: "gpt-4o-mini",
           messages: [{ role: "user", content: prompt }],
           response_format: { type: "json_object" }
         });
@@ -541,7 +541,7 @@ Please provide detailed insights including budget allocation, platform strategie
         Return the response as JSON with structured data.`;
         
         const completion = await openai.chat.completions.create({
-          model: "gpt-4o",
+          model: "gpt-4o-mini",
           messages: [
             {
               role: "system",
