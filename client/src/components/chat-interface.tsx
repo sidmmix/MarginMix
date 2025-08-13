@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -53,16 +53,17 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
     scrollToBottom();
   }, [messages]);
 
-  // Initialize and reconstruct conversation messages
-  useEffect(() => {
-    if (questions.length === 0) return;
+  // Memoize messages to prevent infinite loops
+  const reconstructedMessages = useMemo(() => {
+    if (questions.length === 0) return [];
 
-    const reconstructedMessages: ChatMessage[] = [
+    const baseTimestamp = new Date('2024-01-01'); // Use fixed timestamp to prevent re-renders
+    const messages: ChatMessage[] = [
       {
         id: "greeting",
         type: "ai",
         content: `${greeting} 👋 I'm here to help you create a comprehensive media plan brief. This will take about 5 minutes and I'll ask you 8 key questions to understand your campaign needs.`,
-        timestamp: new Date(),
+        timestamp: baseTimestamp,
       }
     ];
 
@@ -74,45 +75,54 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
         const answer = conversationData[question.id as keyof ConversationData];
         
         if (question && answer) {
-          reconstructedMessages.push(
+          messages.push(
             {
               id: `question-${question.id}-${i}`,
               type: "ai",
               content: question.question,
-              timestamp: new Date(),
+              timestamp: new Date(baseTimestamp.getTime() + i * 1000),
             },
             {
               id: `answer-${question.id}-${i}`,
               type: "user",
               content: answer,
-              timestamp: new Date(),
+              timestamp: new Date(baseTimestamp.getTime() + i * 1000 + 500),
             }
           );
         }
       }
-
-      // Check completion status
-      if (session.isCompleted === "true") {
-        setIsComplete(true);
-        onComplete();
-        setMessages(reconstructedMessages);
-        return;
-      }
     }
 
-    // Add current question if not complete
-    if (currentQuestion && !isComplete) {
-      reconstructedMessages.push({
+    // Add current question if not complete and session is not completed
+    if (currentQuestion && session?.isCompleted !== "true") {
+      messages.push({
         id: `question-${currentQuestion.id}-current`,
         type: "ai",
         content: currentQuestion.question,
-        timestamp: new Date(),
+        timestamp: new Date(baseTimestamp.getTime() + (session?.currentStep || 0) * 1000),
       });
-      setShowPlatforms(currentQuestion.type === 'platform');
     }
 
+    return messages;
+  }, [questions, session, conversationData, currentQuestion, greeting]);
+
+  // Set messages and handle completion
+  useEffect(() => {
     setMessages(reconstructedMessages);
-  }, [session, conversationData, questions, currentQuestion, greeting, onComplete, isComplete]);
+    
+    // Handle platform selection
+    if (currentQuestion?.type === 'platform') {
+      setShowPlatforms(true);
+    } else {
+      setShowPlatforms(false);
+    }
+
+    // Handle completion
+    if (session?.isCompleted === "true" && !isComplete) {
+      setIsComplete(true);
+      onComplete();
+    }
+  }, [reconstructedMessages, currentQuestion, session, isComplete, onComplete]);
 
   // Submit response mutation
   const submitResponseMutation = useMutation({
