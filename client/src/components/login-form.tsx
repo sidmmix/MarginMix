@@ -9,7 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { FaGoogle, FaFacebook } from "react-icons/fa";
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -113,6 +115,36 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
             Sign In
           </Button>
         </form>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <Separator className="w-full" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <Button
+            variant="outline"
+            onClick={() => window.location.href = "/api/auth/google"}
+            disabled={isLoggingIn}
+            className="w-full"
+          >
+            <FaGoogle className="mr-2 h-4 w-4" />
+            Google
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => window.location.href = "/api/auth/facebook"}
+            disabled={isLoggingIn}
+            className="w-full"
+          >
+            <FaFacebook className="mr-2 h-4 w-4" />
+            Meta
+          </Button>
+        </div>
 
         <div className="text-center text-sm">
           Don't have an account?{" "}

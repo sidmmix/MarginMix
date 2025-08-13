@@ -17,10 +17,15 @@ export const sessions = pgTable(
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: varchar("email", { length: 255 }).unique().notNull(),
-  passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+  passwordHash: varchar("password_hash", { length: 255 }),
   firstName: varchar("first_name", { length: 100 }),
   lastName: varchar("last_name", { length: 100 }),
   company: varchar("company", { length: 255 }),
+  profileImageUrl: varchar("profile_image_url", { length: 500 }),
+  // OAuth provider information
+  googleId: varchar("google_id", { length: 100 }).unique(),
+  facebookId: varchar("facebook_id", { length: 100 }).unique(),
+  authProvider: varchar("auth_provider", { length: 50 }).notNull().default("email"), // 'email', 'google', 'facebook'
   isEmailVerified: boolean("is_email_verified").default(false),
   emailVerificationToken: varchar("email_verification_token", { length: 255 }),
   resetPasswordToken: varchar("reset_password_token", { length: 255 }),
@@ -91,6 +96,9 @@ export const insertUserSchema = createInsertSchema(users).omit({
   resetPasswordToken: true,
   resetPasswordExpires: true,
   consentDate: true,
+  googleId: true,
+  facebookId: true,
+  profileImageUrl: true,
 });
 
 export const insertConversationSessionSchema = createInsertSchema(conversationSessions).pick({

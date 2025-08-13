@@ -4,6 +4,7 @@ import { z } from "zod";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
+import { setupOAuth } from "./oauth";
 import OpenAI from "openai";
 import { 
   insertConversationSessionSchema, 
@@ -108,6 +109,9 @@ export function registerRoutes(app: Express): Server {
       maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
     },
   }));
+
+  // Setup OAuth authentication
+  setupOAuth(app);
 
   // Authentication routes
   app.post("/api/auth/register", async (req, res) => {
