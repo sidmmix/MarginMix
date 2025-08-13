@@ -198,14 +198,14 @@ Timeline: ${campaignBrief.timeline}
 Key Messages: ${campaignBrief.keyMessages}
 
 AI Insights:
-Budget Allocation: ${JSON.stringify(campaignBrief.aiInsights.budgetAllocation, null, 2)}
-Platform Strategies: ${JSON.stringify(campaignBrief.aiInsights.platformStrategies, null, 2)}
-KPIs: ${campaignBrief.aiInsights.kpis.join(", ")}
+Budget Allocation: ${JSON.stringify((campaignBrief.aiInsights as any)?.budgetAllocation || {}, null, 2)}
+Platform Strategies: ${JSON.stringify((campaignBrief.aiInsights as any)?.platformStrategies || {}, null, 2)}
+KPIs: ${((campaignBrief.aiInsights as any)?.kpis || []).join(", ")}
 Recommendations: 
-${campaignBrief.aiInsights.recommendations.map((rec: string, i: number) => `${i + 1}. ${rec}`).join('\n')}
+${((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i: number) => `${i + 1}. ${rec}`).join('\n')}
 
-Estimated Reach: ${campaignBrief.aiInsights.estimatedReach}
-Estimated CPM: ${campaignBrief.aiInsights.estimatedCPM}
+Estimated Reach: ${(campaignBrief.aiInsights as any)?.estimatedReach || 'Not available'}
+Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not available'}
 `;
 
     const blob = new Blob([content], { type: 'text/plain' });
@@ -272,15 +272,15 @@ Estimated CPM: ${campaignBrief.aiInsights.estimatedCPM}
               <h3 className="font-semibold text-lg mb-2">AI-Powered Insights</h3>
               <div className="space-y-3 text-sm">
                 <div>
-                  <strong>Estimated Reach:</strong> {campaignBrief.aiInsights.estimatedReach}
+                  <strong>Estimated Reach:</strong> {(campaignBrief.aiInsights as any)?.estimatedReach || 'Not available'}
                 </div>
                 <div>
-                  <strong>Estimated CPM:</strong> {campaignBrief.aiInsights.estimatedCPM}
+                  <strong>Estimated CPM:</strong> {(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not available'}
                 </div>
                 <div>
                   <strong>Key Recommendations:</strong>
                   <ul className="list-disc list-inside mt-1 space-y-1">
-                    {campaignBrief.aiInsights.recommendations.map((rec: string, i: number) => (
+                    {((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i: number) => (
                       <li key={i}>{rec}</li>
                     ))}
                   </ul>

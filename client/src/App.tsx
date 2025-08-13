@@ -10,27 +10,13 @@ import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  // Temporarily disable auth checking to fix infinite loop
+  // const { isAuthenticated, isLoading } = useAuth();
 
   return (
     <Switch>
-      <Route path="/auth">
-        {isAuthenticated ? <Home /> : <AuthPage />}
-      </Route>
-      <Route path="/">
-        {isAuthenticated ? <Home /> : <Home />}
-      </Route>
+      <Route path="/auth" component={AuthPage} />
+      <Route path="/" component={Home} />
       <Route component={NotFound} />
     </Switch>
   );
