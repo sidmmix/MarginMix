@@ -2,7 +2,13 @@
 
 ## Overview
 
-This is a full-stack web application that helps users create comprehensive digital media campaign plans through an AI-powered conversational interface. The application guides users through a structured questionnaire to gather campaign requirements and generates intelligent insights and recommendations using OpenAI's GPT models. Built with React, Express, and PostgreSQL, it features a modern UI with shadcn/ui components and integrates with multiple advertising platforms including Google Ads, DV360/YouTube, and Meta Marketing APIs.
+This is a full-stack web application that helps users create comprehensive digital media campaign plans through an AI-powered conversational interface. The application features a professional landing page that introduces the platform, then guides users through a structured questionnaire to gather campaign requirements and generates intelligent insights and recommendations using OpenAI's GPT models. Built with React, Express, and PostgreSQL, it features a modern UI with shadcn/ui components and integrates with multiple advertising platforms including Google Ads, DV360/YouTube, and Meta Marketing APIs.
+
+## Recent Changes
+
+- **Landing Page Implementation (August 13, 2025)**: Created a professional dedicated landing page for yourbrief.co featuring hero section, features overview, how-it-works steps, benefits, and clear call-to-action buttons leading to the campaign planner
+- **Improved User Journey**: Updated routing to show landing page at root (/) with campaign planner accessible at /campaign-planner route
+- **API Route Fixes**: Resolved missing /api/conversation/start endpoint and fixed conversation flow routing
 
 ## User Preferences
 

@@ -4,19 +4,36 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
+import Landing from "@/pages/landing";
+import CampaignPlanner from "@/pages/campaign-planner";
 import Home from "@/pages/home";
 import { AuthPage } from "@/pages/auth";
 import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
 
 function Router() {
-  // Temporarily disable auth checking to fix infinite loop
-  // const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <Switch>
+      {/* Public routes */}
+      <Route path="/" component={Landing} />
+      <Route path="/campaign-planner" component={CampaignPlanner} />
       <Route path="/auth" component={AuthPage} />
-      <Route path="/" component={Home} />
+      
+      {/* Protected routes */}
+      {isAuthenticated && (
+        <Route path="/dashboard" component={Home} />
+      )}
+      
       <Route component={NotFound} />
     </Switch>
   );
