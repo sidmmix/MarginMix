@@ -6,7 +6,7 @@ This is a full-stack web application that helps users create comprehensive digit
 
 ## Recent Changes
 
-- **Google OAuth Integration Complete (August 13, 2025)**: Successfully configured Google OAuth with live credentials, users can now sign in with Google accounts alongside email/password authentication
+- **OAuth-Only Authentication (August 13, 2025)**: Removed email/password authentication, now using only Google and Meta OAuth for streamlined social sign-in experience
 - **AI Features Cost-Optimized (August 13, 2025)**: Migrated all OpenAI API calls from GPT-4o to GPT-4o mini for better cost efficiency while maintaining intelligent conversation quality
 - **Landing Page Brand Enhancement (August 13, 2025)**: Added prominent brand highlight statement emphasizing YourBrief's AI media strategist positioning and live data capabilities
 - **Intelligent Conversation System (August 13, 2025)**: Enhanced campaign planner with AI-powered predictive responses, contextual insights, dynamic question adaptation, and intelligent input suggestions using OpenAI GPT-4o mini

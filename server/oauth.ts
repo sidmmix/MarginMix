@@ -154,4 +154,19 @@ export function setupOAuth(app: Express) {
       res.redirect("/auth?error=facebook_not_configured");
     }
   });
+
+  // Logout route
+  app.post("/api/auth/logout", (req, res) => {
+    req.logout((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Error logging out" });
+      }
+      req.session?.destroy((err) => {
+        if (err) {
+          return res.status(500).json({ message: "Error destroying session" });
+        }
+        res.json({ message: "Logged out successfully" });
+      });
+    });
+  });
 }

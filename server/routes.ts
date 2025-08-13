@@ -10,8 +10,6 @@ import {
   insertConversationSessionSchema, 
   updateConversationSessionSchema,
   insertCampaignBriefSchema,
-  registerSchema,
-  loginSchema,
   type ConversationData,
   type Question
 } from "@shared/schema";
@@ -120,91 +118,9 @@ export function registerRoutes(app: Express): Server {
   // Setup OAuth authentication
   setupOAuth(app);
 
-  // Authentication routes
-  app.post("/api/auth/register", async (req, res) => {
-    try {
-      const userData = registerSchema.parse(req.body);
-      
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(userData.email);
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists with this email" });
-      }
+  // OAuth-only authentication - no email/password routes
 
-      // Hash password and create user
-      const hashedPassword = await storage.hashPassword(userData.password);
-      const user = await storage.createUser({
-        email: userData.email,
-        passwordHash: hashedPassword,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        company: userData.company,
-        consentGiven: userData.consentGiven,
-        marketingConsent: userData.marketingConsent || false,
-        dataRetentionConsent: true,
-      });
 
-      // Set session
-      (req.session as any).userId = user.id;
-      
-      res.json({ 
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        company: user.company,
-      });
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
-      }
-      console.error("Error registering user:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  app.post("/api/auth/login", async (req, res) => {
-    try {
-      const loginData = loginSchema.parse(req.body);
-      
-      const user = await storage.getUserByEmail(loginData.email);
-      if (!user) {
-        return res.status(401).json({ message: "Invalid email or password" });
-      }
-
-      const isValidPassword = await storage.comparePassword(loginData.password, user.passwordHash || "");
-      if (!isValidPassword) {
-        return res.status(401).json({ message: "Invalid email or password" });
-      }
-
-      // Set session
-      (req.session as any).userId = user.id;
-      
-      res.json({ 
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        company: user.company,
-      });
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
-      }
-      console.error("Error logging in user:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
-  app.post("/api/auth/logout", (req, res) => {
-    req.session?.destroy((err) => {
-      if (err) {
-        console.error("Error destroying session:", err);
-        return res.status(500).json({ message: "Could not log out" });
-      }
-      res.json({ message: "Logged out successfully" });
-    });
-  });
 
   app.get("/api/auth/me", requireAuth, async (req, res) => {
     try {
