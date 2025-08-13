@@ -154,9 +154,8 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
   });
 
   // Platform selection handler
-  const handlePlatformSelection = (platforms: string[]) => {
-    const platformString = platforms.join(", ");
-    submitResponseMutation.mutate(platformString);
+  const handlePlatformSelection = (platform: string) => {
+    submitResponseMutation.mutate(platform);
     setShowPlatforms(false);
   };
 
