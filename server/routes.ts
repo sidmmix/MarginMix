@@ -228,6 +228,137 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Conversation routes
+  app.post("/api/conversation/start", async (req, res) => {
+    try {
+      const sessionData = {
+        sessionData: {},
+        currentStep: 0,
+        isCompleted: "false"
+      };
+      const session = await storage.createConversationSession(sessionData);
+      res.json(session);
+    } catch (error) {
+      console.error("Error starting conversation session:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/conversation/:id/respond", async (req, res) => {
+    try {
+      const { questionId, answer } = req.body;
+      const session = await storage.getConversationSession(req.params.id);
+      
+      if (!session) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      // Update session data with the new answer
+      const currentData = session.sessionData || {};
+      const updatedSessionData = {
+        ...currentData,
+        [questionId]: answer
+      };
+
+      const updatedSession = await storage.updateConversationSession(req.params.id, {
+        sessionData: updatedSessionData,
+        currentStep: session.currentStep + 1,
+        isCompleted: session.currentStep + 1 >= questions.length ? "true" : "false"
+      });
+
+      res.json(updatedSession);
+    } catch (error) {
+      console.error("Error updating conversation session:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/conversation/:id/brief", async (req, res) => {
+    try {
+      const session = await storage.getConversationSession(req.params.id);
+      if (!session) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      const data = session.sessionData as ConversationData;
+
+      // Generate AI insights
+      try {
+        const prompt = `Create a comprehensive media planning strategy for this campaign:
+
+Campaign Details:
+- Client: ${data.name}
+- Company: ${data.company}
+- Product/Service: ${data.product}
+- Target Audience: ${data.audience}
+- Budget: ${data.budget}
+- Duration: ${data.duration}
+- Platforms: ${data.platforms}
+- Objectives: ${data.objective}
+
+Please provide detailed insights including budget allocation, platform strategies, estimated reach, CPM estimates, and specific recommendations. Return as valid JSON with this structure:
+{
+  "estimatedReach": "X million users",
+  "estimatedCPM": "$X.XX",
+  "recommendations": ["recommendation1", "recommendation2", "recommendation3"],
+  "budgetAllocation": {"platform1": "percentage", "platform2": "percentage"},
+  "platformStrategies": {"platform1": "strategy", "platform2": "strategy"},
+  "kpis": ["kpi1", "kpi2", "kpi3"]
+}`;
+
+        const completion = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [{ role: "user", content: prompt }],
+          response_format: { type: "json_object" }
+        });
+
+        const aiInsights = JSON.parse(completion.choices[0].message.content || "{}");
+
+        const brief = {
+          sessionId: req.params.id,
+          clientName: data.name || "Unknown Client",
+          campaignName: `${data.company} - ${data.product}`,
+          targetAudience: data.audience || "Not specified",
+          budget: data.budget || "Not specified",
+          platforms: data.platforms || "Not specified",
+          objectives: data.objective || "Not specified",
+          timeline: data.duration || "Not specified",
+          keyMessages: `Campaign promoting ${data.product} targeting ${data.audience}`,
+          aiInsights
+        };
+
+        res.json(brief);
+      } catch (aiError) {
+        console.error("AI generation error:", aiError);
+        
+        // Fallback brief without AI insights
+        const brief = {
+          sessionId: req.params.id,
+          clientName: data.name || "Unknown Client",
+          campaignName: `${data.company} - ${data.product}`,
+          targetAudience: data.audience || "Not specified",
+          budget: data.budget || "Not specified",
+          platforms: data.platforms || "Not specified",
+          objectives: data.objective || "Not specified",
+          timeline: data.duration || "Not specified",
+          keyMessages: `Campaign promoting ${data.product} targeting ${data.audience}`,
+          aiInsights: {
+            estimatedReach: "Analysis pending",
+            estimatedCPM: "Analysis pending",
+            recommendations: ["Complete campaign setup", "Review targeting parameters", "Set performance benchmarks"],
+            budgetAllocation: {},
+            platformStrategies: {},
+            kpis: ["Reach", "Engagement", "Conversions"]
+          }
+        };
+        
+        res.json(brief);
+      }
+    } catch (error) {
+      console.error("Error generating campaign brief:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.get("/api/conversation/:id", async (req, res) => {
     try {
       const session = await storage.getConversationSession(req.params.id);
@@ -241,38 +372,7 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-  app.post("/api/conversation", async (req, res) => {
-    try {
-      const sessionData = insertConversationSessionSchema.parse(req.body);
-      const session = await storage.createConversationSession(sessionData);
-      res.json(session);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
-      }
-      console.error("Error creating conversation session:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
 
-  app.put("/api/conversation/:id", async (req, res) => {
-    try {
-      const sessionData = updateConversationSessionSchema.parse(req.body);
-      const updatedSession = await storage.updateConversationSession(req.params.id, sessionData);
-      
-      if (!updatedSession) {
-        return res.status(404).json({ message: "Session not found" });
-      }
-      
-      res.json(updatedSession);
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
-      }
-      console.error("Error updating conversation session:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
 
   // Campaign brief routes (require authentication for creation)
   app.post("/api/campaign-brief", requireAuth, async (req, res) => {
