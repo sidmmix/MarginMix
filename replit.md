@@ -6,7 +6,10 @@ This is a full-stack web application that helps users create comprehensive digit
 
 ## Recent Changes
 
-- **Intelligent Conversation System (August 13, 2025)**: Enhanced campaign planner with AI-powered predictive responses, contextual insights, dynamic question adaptation, and intelligent input suggestions using OpenAI GPT-4o
+- **Google OAuth Integration Complete (August 13, 2025)**: Successfully configured Google OAuth with live credentials, users can now sign in with Google accounts alongside email/password authentication
+- **AI Features Cost-Optimized (August 13, 2025)**: Migrated all OpenAI API calls from GPT-4o to GPT-4o mini for better cost efficiency while maintaining intelligent conversation quality
+- **Landing Page Brand Enhancement (August 13, 2025)**: Added prominent brand highlight statement emphasizing YourBrief's AI media strategist positioning and live data capabilities
+- **Intelligent Conversation System (August 13, 2025)**: Enhanced campaign planner with AI-powered predictive responses, contextual insights, dynamic question adaptation, and intelligent input suggestions using OpenAI GPT-4o mini
 - **Smart Input Components**: Implemented IntelligentInput component with real-time suggestions, contextual hints, validation feedback, and next question previews
 - **Real-time AI Analysis**: Added ConversationInsights panel with live strategy insights, recommendations, and potential challenge identification
 - **Enhanced Chat Experience**: Upgraded chat interface with intelligent features including answer enhancement, quality scoring, and contextual conversation flow
