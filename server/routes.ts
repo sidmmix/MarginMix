@@ -1,11 +1,16 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { z } from "zod";
+import session from "express-session";
+import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 import OpenAI from "openai";
 import { 
   insertConversationSessionSchema, 
   updateConversationSessionSchema,
   insertCampaignBriefSchema,
+  registerSchema,
+  loginSchema,
   type ConversationData,
   type Question
 } from "@shared/schema";
@@ -73,215 +78,292 @@ const questions: Question[] = [
   }
 ];
 
-export async function registerRoutes(app: Express): Promise<Server> {
-  
-  // Get conversation questions
-  app.get("/api/questions", (_req, res) => {
+// Session configuration
+const pgStore = connectPg(session);
+const sessionStore = new pgStore({
+  conString: process.env.DATABASE_URL,
+  createTableIfMissing: false,
+  ttl: 7 * 24 * 60 * 60, // 1 week
+  tableName: "sessions",
+});
+
+// Authentication middleware
+const requireAuth = (req: any, res: any, next: any) => {
+  if (req.session?.userId) {
+    return next();
+  }
+  return res.status(401).json({ message: "Authentication required" });
+};
+
+export function registerRoutes(app: Express): Server {
+  // Session middleware
+  app.use(session({
+    store: sessionStore,
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+    },
+  }));
+
+  // Authentication routes
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const userData = registerSchema.parse(req.body);
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(userData.email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists with this email" });
+      }
+
+      // Hash password and create user
+      const hashedPassword = await storage.hashPassword(userData.password);
+      const user = await storage.createUser({
+        email: userData.email,
+        passwordHash: hashedPassword,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        company: userData.company,
+        consentGiven: userData.consentGiven,
+        marketingConsent: userData.marketingConsent || false,
+        dataRetentionConsent: true,
+      });
+
+      // Set session
+      (req.session as any).userId = user.id;
+      
+      res.json({ 
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        company: user.company,
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error registering user:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const loginData = loginSchema.parse(req.body);
+      
+      const user = await storage.getUserByEmail(loginData.email);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      const isValidPassword = await storage.comparePassword(loginData.password, user.passwordHash);
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      // Set session
+      (req.session as any).userId = user.id;
+      
+      res.json({ 
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        company: user.company,
+      });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error logging in user:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/auth/logout", (req, res) => {
+    req.session?.destroy((err) => {
+      if (err) {
+        console.error("Error destroying session:", err);
+        return res.status(500).json({ message: "Could not log out" });
+      }
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
+  app.get("/api/auth/me", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser((req.session as any).userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ 
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        company: user.company,
+        isEmailVerified: user.isEmailVerified,
+        consentGiven: user.consentGiven,
+        marketingConsent: user.marketingConsent,
+      });
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Questions endpoint for the chat interface
+  app.get("/api/questions", (req, res) => {
     res.json(questions);
   });
 
-  // Create new conversation session
-  app.post("/api/conversation/start", async (req, res) => {
+  // Conversation routes
+  app.get("/api/conversation/:id", async (req, res) => {
     try {
-      const session = await storage.createConversationSession({
-        sessionData: {},
-        currentStep: 0,
-        isCompleted: "false"
-      });
-      res.json(session);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  // Get conversation session
-  app.get("/api/conversation/:sessionId", async (req, res) => {
-    try {
-      const session = await storage.getConversationSession(req.params.sessionId);
+      const session = await storage.getConversationSession(req.params.id);
       if (!session) {
         return res.status(404).json({ message: "Session not found" });
       }
       res.json(session);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error) {
+      console.error("Error fetching conversation session:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 
-  // Process user response with AI
-  app.post("/api/conversation/:sessionId/respond", async (req, res) => {
+  app.post("/api/conversation", async (req, res) => {
     try {
-      const { sessionId } = req.params;
-      const { answer, questionId } = req.body;
-
-      if (!answer || !questionId) {
-        return res.status(400).json({ message: "Answer and questionId are required" });
+      const sessionData = insertConversationSessionSchema.parse(req.body);
+      const session = await storage.createConversationSession(sessionData);
+      res.json(session);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
       }
+      console.error("Error creating conversation session:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
-      const session = await storage.getConversationSession(sessionId);
-      if (!session) {
+  app.put("/api/conversation/:id", async (req, res) => {
+    try {
+      const sessionData = updateConversationSessionSchema.parse(req.body);
+      const updatedSession = await storage.updateConversationSession(req.params.id, sessionData);
+      
+      if (!updatedSession) {
         return res.status(404).json({ message: "Session not found" });
       }
+      
+      res.json(updatedSession);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error updating conversation session:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
-      // Validate and process answer with AI
-      let aiResult = { isValid: true, insights: "Great answer! Moving to the next question.", suggestions: [] };
+  // Campaign brief routes (require authentication for creation)
+  app.post("/api/campaign-brief", requireAuth, async (req, res) => {
+    try {
+      const briefData = insertCampaignBriefSchema.parse(req.body);
+      
+      // Generate AI insights
+      console.log("Generating AI insights for campaign brief...");
       
       try {
-        // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        const aiResponse = await openai.chat.completions.create({
+        const prompt = `Create a comprehensive media planning strategy for this campaign:
+        Client: ${briefData.clientName}
+        Product/Service: ${briefData.product}
+        Target Audience: ${briefData.targetAudience}
+        Budget: ${briefData.budget}
+        Duration: ${briefData.timeline}
+        Platforms: ${briefData.platforms}
+        Objectives: ${briefData.objectives}
+        
+        Please provide detailed insights including:
+        1. Platform-specific strategies
+        2. Budget allocation recommendations
+        3. Target audience insights
+        4. Content recommendations
+        5. Performance forecasts
+        
+        Return the response as JSON with structured data.`;
+        
+        const completion = await openai.chat.completions.create({
           model: "gpt-4o",
           messages: [
             {
               role: "system",
-              content: `You are an expert media planning assistant. Your job is to validate and provide insights on user responses for campaign brief creation. For the question about "${questionId}", analyze the user's answer and provide validation feedback and insights. Respond with JSON in this format: { "isValid": true, "insights": "Brief insight about the answer", "suggestions": [] }`
+              content: "You are an expert media planner. Provide comprehensive, actionable insights for digital media campaigns."
             },
             {
               role: "user",
-              content: `Question: ${questions.find(q => q.id === questionId)?.question}\nUser Answer: ${answer}`
+              content: prompt
             }
           ],
-          response_format: { type: "json_object" }
+          response_format: { type: "json_object" },
         });
 
-        const content = aiResponse.choices[0].message.content;
-        if (content) {
-          aiResult = JSON.parse(content);
-        }
-      } catch (error: any) {
-        console.error("OpenAI API error:", error?.message || error);
-        // Continue with default validation if OpenAI fails
-      }
+        const aiInsights = JSON.parse(completion.choices[0].message.content || "{}");
+        console.log("AI insights generated successfully");
 
-      // Update session data
-      const currentData = session.sessionData as ConversationData;
-      const updatedData = { ...currentData, [questionId]: answer };
-      const nextStep = session.currentStep + 1;
-
-      const updatedSession = await storage.updateConversationSession(sessionId, {
-        sessionData: updatedData,
-        currentStep: nextStep,
-        isCompleted: nextStep >= questions.length ? "true" : "false"
-      });
-
-      res.json({
-        session: updatedSession,
-        aiResponse: aiResult,
-        nextQuestion: nextStep < questions.length ? questions[nextStep] : null,
-        isComplete: nextStep >= questions.length
-      });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  // Go back to previous step
-  app.post("/api/conversation/:sessionId/back", async (req, res) => {
-    try {
-      const { sessionId } = req.params;
-      
-      const session = await storage.getConversationSession(sessionId);
-      if (!session) {
-        return res.status(404).json({ message: "Session not found" });
-      }
-
-      if (session.currentStep <= 0) {
-        return res.status(400).json({ message: "Already at the first step" });
-      }
-
-      const previousStep = Math.max(0, session.currentStep - 1);
-      
-      const updatedSession = await storage.updateConversationSession(sessionId, {
-        sessionData: session.sessionData,
-        currentStep: previousStep,
-        isCompleted: "false"
-      });
-
-      res.json({
-        session: updatedSession,
-        currentQuestion: questions[previousStep]
-      });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-
-  // Generate final campaign brief
-  app.post("/api/conversation/:sessionId/generate-brief", async (req, res) => {
-    try {
-      const { sessionId } = req.params;
-      
-      const session = await storage.getConversationSession(sessionId);
-      if (!session || session.isCompleted !== "true") {
-        return res.status(400).json({ message: "Session not found or not completed" });
-      }
-
-      const data = session.sessionData as ConversationData;
-
-      // Generate AI insights for the campaign
-      let aiInsights = {
-        budgetAllocation: { [data.platforms || "Digital Platforms"]: "100%" },
-        platformStrategies: { [data.platforms || "Selected Platforms"]: "Targeted campaign strategy" },
-        kpis: ["Reach", "Impressions", "Click-through Rate", "Conversions"],
-        recommendations: ["Optimize targeting", "Test creative variations", "Monitor performance"],
-        estimatedReach: "50K-100K users",
-        estimatedCPM: "$5-12"
-      };
-
-      try {
-        // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-        const insightsResponse = await openai.chat.completions.create({
-          model: "gpt-4o",
-          messages: [
-            {
-              role: "system",
-              content: "You are a senior media planning strategist. Generate comprehensive insights and recommendations for a digital media campaign based on the provided brief data. Include budget allocation suggestions, platform-specific strategies, and key performance indicators. Respond with JSON in this format: { 'budgetAllocation': object, 'platformStrategies': object, 'kpis': string[], 'recommendations': string[], 'estimatedReach': string, 'estimatedCPM': string }"
-            },
-            {
-              role: "user",
-              content: `Campaign Brief Data: ${JSON.stringify(data)}`
-            }
-          ],
-          response_format: { type: "json_object" }
+        // Save the brief with AI insights
+        const brief = await storage.createCampaignBrief({
+          ...briefData,
+          userId: (req.session as any).userId,
+          aiInsights
         });
-
-        const content = insightsResponse.choices[0].message.content;
-        if (content) {
-          aiInsights = JSON.parse(content);
-        }
-      } catch (error: any) {
-        console.error("OpenAI API error for insights:", error?.message || error);
-        // Continue with default insights if OpenAI fails
+        
+        res.json(brief);
+      } catch (aiError) {
+        console.error("AI generation error:", aiError);
+        
+        // Fallback: Save without AI insights
+        const brief = await storage.createCampaignBrief({
+          ...briefData,
+          userId: (req.session as any).userId,
+          aiInsights: { error: "AI insights temporarily unavailable" }
+        });
+        
+        res.json(brief);
       }
-
-      // Create campaign brief
-      const brief = await storage.createCampaignBrief({
-        sessionId,
-        name: data.name || "",
-        company: data.company || "",
-        product: data.product || "",
-        platforms: data.platforms || "",
-        objective: data.objective || "",
-        audience: data.audience || "",
-        budget: data.budget || "",
-        duration: data.duration || "",
-        aiInsights
-      });
-
-      res.json({ brief, insights: aiInsights });
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error creating campaign brief:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 
-  // Get campaign brief by session
-  app.get("/api/campaign-brief/:sessionId", async (req, res) => {
+  app.get("/api/campaign-brief/session/:sessionId", async (req, res) => {
     try {
       const brief = await storage.getCampaignBriefBySessionId(req.params.sessionId);
       if (!brief) {
         return res.status(404).json({ message: "Campaign brief not found" });
       }
       res.json(brief);
-    } catch (error: any) {
-      res.status(500).json({ message: error.message });
+    } catch (error) {
+      console.error("Error fetching campaign brief:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/api/campaign-briefs", requireAuth, async (req, res) => {
+    try {
+      const briefs = await storage.getUserCampaignBriefs((req.session as any).userId);
+      res.json(briefs);
+    } catch (error) {
+      console.error("Error fetching user campaign briefs:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
   });
 

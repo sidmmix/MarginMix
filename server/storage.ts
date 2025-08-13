@@ -1,106 +1,125 @@
-import { 
-  type User, 
-  type InsertUser, 
-  type ConversationSession, 
-  type InsertConversationSession,
-  type UpdateConversationSession,
-  type CampaignBrief,
-  type InsertCampaignBrief
+import { eq } from "drizzle-orm";
+import { db } from "./db";
+import { users, conversationSessions, campaignBriefs } from "@shared/schema";
+import type { 
+  User, 
+  InsertUser, 
+  ConversationSession, 
+  InsertConversationSession, 
+  UpdateConversationSession,
+  CampaignBrief,
+  InsertCampaignBrief 
 } from "@shared/schema";
-import { randomUUID } from "crypto";
+import bcrypt from "bcryptjs";
 
 export interface IStorage {
+  // User operations
   getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
-  getConversationSession(id: string): Promise<ConversationSession | undefined>;
+  updateUser(id: string, updates: Partial<InsertUser>): Promise<User>;
+
+  // Conversation session operations
   createConversationSession(session: InsertConversationSession): Promise<ConversationSession>;
-  updateConversationSession(id: string, session: UpdateConversationSession): Promise<ConversationSession | undefined>;
-  
+  getConversationSession(id: string): Promise<ConversationSession | undefined>;
+  updateConversationSession(id: string, updates: UpdateConversationSession): Promise<ConversationSession>;
+
+  // Campaign brief operations
   createCampaignBrief(brief: InsertCampaignBrief): Promise<CampaignBrief>;
+  getUserCampaignBriefs(userId: string): Promise<CampaignBrief[]>;
   getCampaignBriefBySessionId(sessionId: string): Promise<CampaignBrief | undefined>;
+  
+  // Authentication helpers
+  hashPassword(password: string): Promise<string>;
+  comparePassword(password: string, hashedPassword: string): Promise<boolean>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private conversationSessions: Map<string, ConversationSession>;
-  private campaignBriefs: Map<string, CampaignBrief>;
-
-  constructor() {
-    this.users = new Map();
-    this.conversationSessions = new Map();
-    this.campaignBriefs = new Map();
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values({
+        ...insertUser,
+        consentDate: insertUser.consentGiven ? new Date() : null,
+      })
+      .returning();
     return user;
   }
 
-  async getConversationSession(id: string): Promise<ConversationSession | undefined> {
-    return this.conversationSessions.get(id);
+  async updateUser(id: string, updates: Partial<InsertUser>): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(users.id, id))
+      .returning();
+    return user;
   }
 
   async createConversationSession(insertSession: InsertConversationSession): Promise<ConversationSession> {
-    const id = randomUUID();
-    const now = new Date();
-    const session: ConversationSession = { 
-      id,
-      sessionData: insertSession.sessionData,
-      currentStep: insertSession.currentStep,
-      isCompleted: insertSession.isCompleted,
-      createdAt: now,
-      updatedAt: now
-    };
-    this.conversationSessions.set(id, session);
+    const [session] = await db
+      .insert(conversationSessions)
+      .values(insertSession)
+      .returning();
     return session;
   }
 
-  async updateConversationSession(id: string, updateSession: UpdateConversationSession): Promise<ConversationSession | undefined> {
-    const existingSession = this.conversationSessions.get(id);
-    if (!existingSession) return undefined;
+  async getConversationSession(id: string): Promise<ConversationSession | undefined> {
+    const [session] = await db
+      .select()
+      .from(conversationSessions)
+      .where(eq(conversationSessions.id, id));
+    return session || undefined;
+  }
 
-    const updatedSession: ConversationSession = {
-      ...existingSession,
-      sessionData: updateSession.sessionData,
-      currentStep: updateSession.currentStep ?? existingSession.currentStep,
-      isCompleted: updateSession.isCompleted ?? existingSession.isCompleted,
-      updatedAt: new Date()
-    };
-    this.conversationSessions.set(id, updatedSession);
-    return updatedSession;
+  async updateConversationSession(id: string, updates: UpdateConversationSession): Promise<ConversationSession> {
+    const [session] = await db
+      .update(conversationSessions)
+      .set({ ...updates, updatedAt: new Date() })
+      .where(eq(conversationSessions.id, id))
+      .returning();
+    return session;
   }
 
   async createCampaignBrief(insertBrief: InsertCampaignBrief): Promise<CampaignBrief> {
-    const id = randomUUID();
-    const brief: CampaignBrief = { 
-      ...insertBrief, 
-      id,
-      aiInsights: insertBrief.aiInsights || null,
-      createdAt: new Date()
-    };
-    this.campaignBriefs.set(id, brief);
+    const [brief] = await db
+      .insert(campaignBriefs)
+      .values(insertBrief)
+      .returning();
     return brief;
   }
 
+  async getUserCampaignBriefs(userId: string): Promise<CampaignBrief[]> {
+    return await db
+      .select()
+      .from(campaignBriefs)
+      .where(eq(campaignBriefs.userId, userId));
+  }
+
   async getCampaignBriefBySessionId(sessionId: string): Promise<CampaignBrief | undefined> {
-    return Array.from(this.campaignBriefs.values()).find(
-      (brief) => brief.sessionId === sessionId
-    );
+    const [brief] = await db
+      .select()
+      .from(campaignBriefs)
+      .where(eq(campaignBriefs.sessionId, sessionId));
+    return brief || undefined;
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, 12);
+  }
+
+  async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
+    return await bcrypt.compare(password, hashedPassword);
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

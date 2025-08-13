@@ -1,12 +1,36 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, jsonb, timestamp, integer } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, jsonb, timestamp, integer, boolean, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Session storage table for authentication
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
+  email: varchar("email", { length: 255 }).unique().notNull(),
+  passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+  firstName: varchar("first_name", { length: 100 }),
+  lastName: varchar("last_name", { length: 100 }),
+  company: varchar("company", { length: 255 }),
+  isEmailVerified: boolean("is_email_verified").default(false),
+  emailVerificationToken: varchar("email_verification_token", { length: 255 }),
+  resetPasswordToken: varchar("reset_password_token", { length: 255 }),
+  resetPasswordExpires: timestamp("reset_password_expires"),
+  consentGiven: boolean("consent_given").default(false).notNull(),
+  consentDate: timestamp("consent_date"),
+  marketingConsent: boolean("marketing_consent").default(false),
+  dataRetentionConsent: boolean("data_retention_consent").default(true).notNull(),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  updatedAt: timestamp("updated_at").notNull().default(sql`now()`),
 });
 
 export const conversationSessions = pgTable("conversation_sessions", {
@@ -20,22 +44,53 @@ export const conversationSessions = pgTable("conversation_sessions", {
 
 export const campaignBriefs = pgTable("campaign_briefs", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  sessionId: varchar("session_id").notNull().references(() => conversationSessions.id),
-  name: text("name").notNull(),
-  company: text("company").notNull(),
-  product: text("product").notNull(),
-  platforms: text("platforms").notNull(),
-  objective: text("objective").notNull(),
-  audience: text("audience").notNull(),
-  budget: text("budget").notNull(),
-  duration: text("duration").notNull(),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
+  sessionId: varchar("session_id").references(() => conversationSessions.id),
+  clientName: varchar("client_name", { length: 255 }),
+  campaignName: varchar("campaign_name", { length: 255 }),
+  product: text("product"),
+  targetAudience: text("target_audience"),
+  budget: varchar("budget", { length: 100 }),
+  platforms: varchar("platforms", { length: 500 }),
+  objectives: text("objectives"),
+  timeline: varchar("timeline", { length: 255 }),
+  keyMessages: text("key_messages"),
   aiInsights: jsonb("ai_insights"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  updatedAt: timestamp("updated_at").notNull().default(sql`now()`),
 });
 
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
+// Authentication schemas
+export const registerSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string(),
+  firstName: z.string().min(2, "First name must be at least 2 characters").optional(),
+  lastName: z.string().min(2, "Last name must be at least 2 characters").optional(),
+  company: z.string().optional(),
+  agreeToTerms: z.boolean().refine(val => val === true, "You must agree to terms and conditions"),
+  agreeToPrivacy: z.boolean().refine(val => val === true, "You must agree to privacy policy"),
+  consentGiven: z.boolean().refine(val => val === true, "Consent is required"),
+  marketingConsent: z.boolean().default(false),
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
+
+export const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+});
+
+export const insertUserSchema = createInsertSchema(users).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+  isEmailVerified: true,
+  emailVerificationToken: true,
+  resetPasswordToken: true,
+  resetPasswordExpires: true,
+  consentDate: true,
 });
 
 export const insertConversationSessionSchema = createInsertSchema(conversationSessions).pick({
@@ -47,6 +102,7 @@ export const insertConversationSessionSchema = createInsertSchema(conversationSe
 export const insertCampaignBriefSchema = createInsertSchema(campaignBriefs).omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
 });
 
 export const updateConversationSessionSchema = createInsertSchema(conversationSessions).pick({
@@ -55,6 +111,8 @@ export const updateConversationSessionSchema = createInsertSchema(conversationSe
   isCompleted: true,
 });
 
+export type RegisterInput = z.infer<typeof registerSchema>;
+export type LoginInput = z.infer<typeof loginSchema>;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type ConversationSession = typeof conversationSessions.$inferSelect;

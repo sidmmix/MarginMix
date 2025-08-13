@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ChatInterface } from "@/components/chat-interface";
 import { ProgressBar } from "@/components/progress-bar";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   ChartLine, 
   Brain, 
@@ -13,7 +14,9 @@ import {
   Shield, 
   Clock,
   CheckCircle,
-  BarChart3
+  BarChart3,
+  LogOut,
+  User
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { ConversationSession, Question, CampaignBrief } from "@shared/schema";
@@ -21,7 +24,24 @@ import type { ConversationSession, Question, CampaignBrief } from "@shared/schem
 export default function Home() {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
+  const { user, logout, isLoggingOut } = useAuth();
   const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast({
+        title: "Logged out successfully",
+        description: "See you next time!",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Logout failed",
+        description: error.message || "An error occurred",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Get current time for greeting
   const getGreeting = () => {
