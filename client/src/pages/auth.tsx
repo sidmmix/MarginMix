@@ -17,7 +17,7 @@ export function AuthPage() {
           <div className="mb-4">
             <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">YourBrief</h1>
           </div>
-          <CardTitle className="text-2xl">Welcome Back</CardTitle>
+          <CardTitle className="text-2xl">Welcome </CardTitle>
           <CardDescription>
             Sign in to your account to start creating campaign briefs
           </CardDescription>
