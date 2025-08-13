@@ -24,7 +24,6 @@ export default function Landing() {
           </div>
         </div>
       </nav>
-
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-16 pb-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,7 +52,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       {/* Features Section */}
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -118,7 +116,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       {/* How It Works */}
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -170,7 +167,6 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       {/* Benefits */}
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -229,15 +225,12 @@ export default function Landing() {
           </div>
         </div>
       </section>
-
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h3 className="text-2xl font-bold text-blue-400 mb-4">YourBrief</h3>
-            <p className="text-gray-400 mb-4">
-              AI-powered media planning for the modern marketer
-            </p>
+            <p className="text-gray-400 mb-4">AI-powered Digital media planning for the modern marketer</p>
             <p className="text-gray-500 text-sm">
               © 2025 YourBrief. All rights reserved.
             </p>
