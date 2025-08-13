@@ -111,7 +111,10 @@ export default function Home() {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-slate-600 hidden sm:block">AI-Powered Media Planning</span>
-              <Button className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+              <Button 
+                onClick={() => window.location.href = '/auth'}
+                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              >
                 Sign In
               </Button>
             </div>

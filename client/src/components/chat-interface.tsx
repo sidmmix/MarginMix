@@ -295,7 +295,7 @@ Estimated CPM: ${campaignBrief.aiInsights.estimatedCPM}
             <Download className="mr-2 h-4 w-4" />
             Download Brief
           </Button>
-          <Button variant="outline" onClick={() => window.location.href = '/register'} className="flex-1">
+          <Button variant="outline" onClick={() => window.location.href = '/auth'} className="flex-1">
             Get Full Media Planning Platform
           </Button>
         </div>
