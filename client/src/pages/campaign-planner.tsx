@@ -10,7 +10,7 @@ export default function CampaignPlanner() {
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   // Fetch questions for the chat interface
-  const { data: questions = [], isLoading: questionsLoading } = useQuery({
+  const { data: questions = [], isLoading: questionsLoading } = useQuery<any[]>({
     queryKey: ["/api/questions"],
   });
 
@@ -24,7 +24,7 @@ export default function CampaignPlanner() {
   });
 
   // Fetch session data when sessionId is available
-  const { data: session, isLoading: sessionLoading } = useQuery({
+  const { data: session, isLoading: sessionLoading } = useQuery<any>({
     queryKey: ["/api/conversation", sessionId],
     enabled: !!sessionId,
   });
@@ -90,10 +90,10 @@ export default function CampaignPlanner() {
           </p>
         </div>
 
-        {session && (
+        {session && sessionId && questions.length > 0 && (
           <ChatInterface
             session={session}
-            sessionId={sessionId!}
+            sessionId={sessionId}
             questions={questions}
             greeting="Hi! I'm your AI campaign planning assistant. I'll ask you 8 strategic questions to create a comprehensive media plan for your campaign. Let's start!"
             onComplete={handleComplete}
