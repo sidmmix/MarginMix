@@ -45,11 +45,12 @@ export function IntelligentInput({
       }
 
       try {
-        const response = await apiRequest(`/api/conversation/${sessionId}/predict`, "POST", { 
+        const response = await apiRequest("POST", `/api/conversation/${sessionId}/predict`, { 
           currentInput: input, 
           questionId 
         });
-        setPredictions(response);
+        const data = await response.json();
+        setPredictions(data);
         setShowSuggestions(true);
       } catch (error) {
         console.error("Error fetching predictions:", error);
