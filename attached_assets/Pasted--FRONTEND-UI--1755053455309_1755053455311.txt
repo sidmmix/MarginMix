@@ -1,0 +1,54 @@
+                ┌──────────────────────────────────┐
+                │          FRONTEND (UI)           │
+                │ React + Tailwind (Vercel/Cloud)  │
+                │ - Input: Budget, Audience, Goals │
+                │ - Output: Plan table, charts     │
+                └──────────────────────────────────┘
+                              │
+                              ▼
+                ┌──────────────────────────────────┐
+                │    BACKEND API ROUTER (GCP)      │
+                │ Node.js / Python on Cloud Run    │
+                │ - Auth handling (OAuth 2.0)      │
+                │ - API calls to ad platforms      │
+                └──────────────────────────────────┘
+                              │
+   ┌──────────────────────────┼─────────────────────────────┐
+   │                          │                             │
+   ▼                          ▼                             ▼
+┌───────────────┐     ┌─────────────────┐           ┌──────────────────┐
+│ GOOGLE ADS API│     │ DV360 API +     │           │ META MARKETING    │
+│ (Search/Dspl) │     │ YouTube Reach   │           │ API (Reach & Freq)│
+│ + Forecasting │     │ Planner API     │           │                   │
+└───────────────┘     └─────────────────┘           └──────────────────┘
+       │                     │                             │
+       ▼                     ▼                             ▼
+- Historical spend     - Forecast Reach/Imp.         - Forecast Reach/Imp.
+- Audience size est.   - Frequency curves            - Frequency curves
+- Forecast clicks/conv
+- CPC/CPA projections
+       │                     │                             │
+       └───────────┬─────────┴──────────┬──────────────────┘
+                   ▼                    ▼
+          ┌──────────────────────────────────┐
+          │   BACKEND DATA AGGREGATION       │
+          │ - Merge forecasts & history      │
+          │ - Normalize metrics               │
+          │ - Build unified media plan        │
+          └──────────────────────────────────┘
+                              │
+                              ▼
+          ┌──────────────────────────────────┐
+          │        OPENAI LAYER               │
+          │ GPT-4.1 / GPT-4o                  │
+          │ - Q&A for campaign setup          │
+          │ - Generates activation guide (RAG)│
+          │ - Suggests optimization           │
+          └──────────────────────────────────┘
+                              │
+                              ▼
+          ┌──────────────────────────────────┐
+          │         FRONTEND DISPLAY          │
+          │ - Media plan table & graphs       │
+          │ - Downloadable PDF/CSV guide      │
+          └──────────────────────────────────┘
