@@ -296,7 +296,13 @@ export function registerRoutes(app: Express): Server {
       res.json(predictions);
     } catch (error) {
       console.error("Error generating predictions:", error);
-      res.status(500).json({ message: "Internal server error" });
+      // Return empty predictions when API fails instead of error
+      res.json({
+        suggestions: [],
+        contextualHints: [],
+        validationFeedback: null,
+        nextQuestionPreview: null
+      });
     }
   });
 
@@ -319,7 +325,12 @@ export function registerRoutes(app: Express): Server {
       res.json(insights);
     } catch (error) {
       console.error("Error generating insights:", error);
-      res.status(500).json({ message: "Internal server error" });
+      // Return empty insights when API fails instead of error
+      res.json({
+        strategicInsights: [],
+        recommendations: [],
+        potentialChallenges: []
+      });
     }
   });
 
