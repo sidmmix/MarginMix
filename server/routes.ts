@@ -125,10 +125,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate and process answer with AI
       let aiResult = { isValid: true, insights: "Great answer! Moving to the next question.", suggestions: [] };
       
-      // For now, we'll use simple validation while OpenAI quota is resolved
-      // You can uncomment the OpenAI integration below once you add credits to your account
-      
-      /* 
       try {
         // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
         const aiResponse = await openai.chat.completions.create({
@@ -150,11 +146,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (content) {
           aiResult = JSON.parse(content);
         }
-      } catch (error) {
-        console.error("OpenAI API error:", error);
+      } catch (error: any) {
+        console.error("OpenAI API error:", error?.message || error);
         // Continue with default validation if OpenAI fails
       }
-      */
 
       // Update session data
       const currentData = session.sessionData as ConversationData;
@@ -221,23 +216,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const data = session.sessionData as ConversationData;
 
-      // Generate AI insights for the campaign (temporarily using mock data due to OpenAI quota)
-      const aiInsights = {
-        budgetAllocation: {
-          [data.platforms || "Digital Platforms"]: "100%"
-        },
-        platformStrategies: {
-          [data.platforms || "Selected Platforms"]: "Targeted campaign strategy optimized for your audience and objectives"
-        },
+      // Generate AI insights for the campaign
+      let aiInsights = {
+        budgetAllocation: { [data.platforms || "Digital Platforms"]: "100%" },
+        platformStrategies: { [data.platforms || "Selected Platforms"]: "Targeted campaign strategy" },
         kpis: ["Reach", "Impressions", "Click-through Rate", "Conversions"],
-        recommendations: [
-          "Focus on high-intent audiences during peak engagement hours",
-          "A/B test creative messaging to optimize performance",
-          "Monitor performance daily and adjust bidding strategies"
-        ],
+        recommendations: ["Optimize targeting", "Test creative variations", "Monitor performance"],
         estimatedReach: "50K-100K users",
         estimatedCPM: "$5-12"
       };
+
+      try {
+        // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        const insightsResponse = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: "You are a senior media planning strategist. Generate comprehensive insights and recommendations for a digital media campaign based on the provided brief data. Include budget allocation suggestions, platform-specific strategies, and key performance indicators. Respond with JSON in this format: { 'budgetAllocation': object, 'platformStrategies': object, 'kpis': string[], 'recommendations': string[], 'estimatedReach': string, 'estimatedCPM': string }"
+            },
+            {
+              role: "user",
+              content: `Campaign Brief Data: ${JSON.stringify(data)}`
+            }
+          ],
+          response_format: { type: "json_object" }
+        });
+
+        const content = insightsResponse.choices[0].message.content;
+        if (content) {
+          aiInsights = JSON.parse(content);
+        }
+      } catch (error: any) {
+        console.error("OpenAI API error for insights:", error?.message || error);
+        // Continue with default insights if OpenAI fails
+      }
 
       // Create campaign brief
       const brief = await storage.createCampaignBrief({
