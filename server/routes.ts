@@ -123,23 +123,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Validate and process answer with AI
-      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      const aiResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: `You are an expert media planning assistant. Your job is to validate and provide insights on user responses for campaign brief creation. For the question about "${questionId}", analyze the user's answer and provide validation feedback and insights. Respond with JSON in this format: { "isValid": boolean, "insights": string, "suggestions": string[] }`
-          },
-          {
-            role: "user",
-            content: `Question: ${questions.find(q => q.id === questionId)?.question}\nUser Answer: ${answer}`
-          }
-        ],
-        response_format: { type: "json_object" }
-      });
+      let aiResult = { isValid: true, insights: "Great answer! Moving to the next question.", suggestions: [] };
+      
+      // For now, we'll use simple validation while OpenAI quota is resolved
+      // You can uncomment the OpenAI integration below once you add credits to your account
+      
+      /* 
+      try {
+        // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
+        const aiResponse = await openai.chat.completions.create({
+          model: "gpt-4o",
+          messages: [
+            {
+              role: "system",
+              content: `You are an expert media planning assistant. Your job is to validate and provide insights on user responses for campaign brief creation. For the question about "${questionId}", analyze the user's answer and provide validation feedback and insights. Respond with JSON in this format: { "isValid": true, "insights": "Brief insight about the answer", "suggestions": [] }`
+            },
+            {
+              role: "user",
+              content: `Question: ${questions.find(q => q.id === questionId)?.question}\nUser Answer: ${answer}`
+            }
+          ],
+          response_format: { type: "json_object" }
+        });
 
-      const aiResult = JSON.parse(aiResponse.choices[0].message.content || "{}");
+        const content = aiResponse.choices[0].message.content;
+        if (content) {
+          aiResult = JSON.parse(content);
+        }
+      } catch (error) {
+        console.error("OpenAI API error:", error);
+        // Continue with default validation if OpenAI fails
+      }
+      */
 
       // Update session data
       const currentData = session.sessionData as ConversationData;
@@ -147,7 +162,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const nextStep = session.currentStep + 1;
 
       const updatedSession = await storage.updateConversationSession(sessionId, {
-        sessionData: updatedData as any,
+        sessionData: updatedData,
         currentStep: nextStep,
         isCompleted: nextStep >= questions.length ? "true" : "false"
       });
@@ -206,24 +221,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const data = session.sessionData as ConversationData;
 
-      // Generate AI insights for the campaign
-      // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-      const insightsResponse = await openai.chat.completions.create({
-        model: "gpt-4o",
-        messages: [
-          {
-            role: "system",
-            content: "You are a senior media planning strategist. Generate comprehensive insights and recommendations for a digital media campaign based on the provided brief data. Include budget allocation suggestions, platform-specific strategies, and key performance indicators. Respond with JSON in this format: { 'budgetAllocation': object, 'platformStrategies': object, 'kpis': string[], 'recommendations': string[], 'estimatedReach': string, 'estimatedCPM': string }"
-          },
-          {
-            role: "user",
-            content: `Campaign Brief Data: ${JSON.stringify(data)}`
-          }
+      // Generate AI insights for the campaign (temporarily using mock data due to OpenAI quota)
+      const aiInsights = {
+        budgetAllocation: {
+          [data.platforms || "Digital Platforms"]: "100%"
+        },
+        platformStrategies: {
+          [data.platforms || "Selected Platforms"]: "Targeted campaign strategy optimized for your audience and objectives"
+        },
+        kpis: ["Reach", "Impressions", "Click-through Rate", "Conversions"],
+        recommendations: [
+          "Focus on high-intent audiences during peak engagement hours",
+          "A/B test creative messaging to optimize performance",
+          "Monitor performance daily and adjust bidding strategies"
         ],
-        response_format: { type: "json_object" }
-      });
-
-      const aiInsights = JSON.parse(insightsResponse.choices[0].message.content || "{}");
+        estimatedReach: "50K-100K users",
+        estimatedCPM: "$5-12"
+      };
 
       // Create campaign brief
       const brief = await storage.createCampaignBrief({
