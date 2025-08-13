@@ -112,15 +112,42 @@ passport.deserializeUser(async (id: string, done) => {
 });
 
 export function setupOAuth(app: Express) {
-  // Temporarily disable OAuth to prevent strategy errors during testing
-  console.log("OAuth disabled for testing");
-  
-  // Simple placeholder routes
-  app.get("/api/auth/google", (req, res) => {
-    res.status(501).json({ message: "Google OAuth not configured" });
-  });
-  
-  app.get("/api/auth/facebook", (req, res) => {
-    res.status(501).json({ message: "Facebook OAuth not configured" });
-  });
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  // Google OAuth routes (only if strategy is configured)
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    app.get("/api/auth/google", 
+      passport.authenticate("google", { scope: ["profile", "email"] })
+    );
+
+    app.get("/api/auth/google/callback",
+      passport.authenticate("google", { failureRedirect: "/auth?error=google_auth_failed" }),
+      (req, res) => {
+        res.redirect("/dashboard");
+      }
+    );
+  } else {
+    app.get("/api/auth/google", (req, res) => {
+      res.status(501).json({ message: "Google OAuth not configured - missing environment variables" });
+    });
+  }
+
+  // Facebook OAuth routes (only if strategy is configured)
+  if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
+    app.get("/api/auth/facebook",
+      passport.authenticate("facebook", { scope: ["email"] })
+    );
+
+    app.get("/api/auth/facebook/callback",
+      passport.authenticate("facebook", { failureRedirect: "/auth?error=facebook_auth_failed" }),
+      (req, res) => {
+        res.redirect("/dashboard");
+      }
+    );
+  } else {
+    app.get("/api/auth/facebook", (req, res) => {
+      res.status(501).json({ message: "Facebook OAuth not configured - missing environment variables" });
+    });
+  }
 }

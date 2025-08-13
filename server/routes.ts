@@ -110,8 +110,8 @@ export function registerRoutes(app: Express): Server {
     },
   }));
 
-  // Temporarily disable OAuth setup to prevent strategy errors
-  // setupOAuth(app);
+  // Setup OAuth authentication
+  setupOAuth(app);
 
   // Authentication routes
   app.post("/api/auth/register", async (req, res) => {
