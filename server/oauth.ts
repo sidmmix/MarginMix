@@ -17,7 +17,7 @@ export function initializeOAuthStrategies() {
       try {
         const email = profile.emails?.[0]?.value;
         if (!email) {
-          return done(new Error("No email found in Google profile"), null);
+          return done(new Error("No email found in Google profile"), false);
         }
 
         let user = await storage.getUserByEmail(email);
@@ -42,7 +42,7 @@ export function initializeOAuthStrategies() {
 
         return done(null, user);
       } catch (error) {
-        return done(error, null);
+        return done(error, false);
       }
     }));
   } else {
@@ -61,7 +61,7 @@ export function initializeOAuthStrategies() {
       try {
         const email = profile.emails?.[0]?.value;
         if (!email) {
-          return done(new Error("No email found in Facebook profile"), null);
+          return done(new Error("No email found in Facebook profile"), false);
         }
 
         let user = await storage.getUserByEmail(email);
@@ -86,7 +86,7 @@ export function initializeOAuthStrategies() {
 
         return done(null, user);
       } catch (error) {
-        return done(error, null);
+        return done(error, false);
       }
     }));
   } else {
