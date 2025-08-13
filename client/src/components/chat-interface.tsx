@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,6 @@ import {
   Brain, 
   User, 
   Send, 
-  ArrowLeft, 
   CheckCircle,
   BarChart3,
   Download
@@ -45,84 +44,70 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
   const conversationData = session?.sessionData as ConversationData || {};
 
   // Scroll to bottom of messages
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Memoize messages to prevent infinite loops
-  const reconstructedMessages = useMemo(() => {
-    if (questions.length === 0) return [];
+  // Initialize messages when session and questions are available
+  useEffect(() => {
+    if (questions.length === 0 || !sessionId) return;
 
-    const baseTimestamp = new Date('2024-01-01'); // Use fixed timestamp to prevent re-renders
-    const messages: ChatMessage[] = [
+    const newMessages: ChatMessage[] = [
       {
         id: "greeting",
         type: "ai",
         content: `${greeting} 👋 I'm here to help you create a comprehensive media plan brief. This will take about 5 minutes and I'll ask you 8 key questions to understand your campaign needs.`,
-        timestamp: baseTimestamp,
+        timestamp: new Date(),
       }
     ];
 
-    // If we have a session with previous steps, reconstruct the conversation
+    // Reconstruct conversation from session data
     if (session && session.currentStep > 0) {
-      // Add previous Q&A pairs
       for (let i = 0; i < session.currentStep; i++) {
         const question = questions[i];
         const answer = conversationData[question.id as keyof ConversationData];
         
         if (question && answer) {
-          messages.push(
+          newMessages.push(
             {
-              id: `question-${question.id}-${i}`,
+              id: `q-${i}`,
               type: "ai",
               content: question.question,
-              timestamp: new Date(baseTimestamp.getTime() + i * 1000),
+              timestamp: new Date(),
             },
             {
-              id: `answer-${question.id}-${i}`,
+              id: `a-${i}`,
               type: "user",
               content: answer,
-              timestamp: new Date(baseTimestamp.getTime() + i * 1000 + 500),
+              timestamp: new Date(),
             }
           );
         }
       }
     }
 
-    // Add current question if not complete and session is not completed
-    if (currentQuestion && session?.isCompleted !== "true") {
-      messages.push({
-        id: `question-${currentQuestion.id}-current`,
+    // Handle completion or add current question
+    if (session?.isCompleted === "true") {
+      setIsComplete(true);
+    } else if (currentQuestion) {
+      newMessages.push({
+        id: `current-q`,
         type: "ai",
         content: currentQuestion.question,
-        timestamp: new Date(baseTimestamp.getTime() + (session?.currentStep || 0) * 1000),
+        timestamp: new Date(),
       });
+      setShowPlatforms(currentQuestion.type === 'platform');
     }
 
-    return messages;
-  }, [questions, session, conversationData, currentQuestion, greeting]);
+    setMessages(newMessages);
+  }, [sessionId, session?.currentStep, session?.isCompleted, questions.length]);
 
-  // Set messages and handle completion
+  // Handle completion callback
   useEffect(() => {
-    setMessages(reconstructedMessages);
-    
-    // Handle platform selection
-    if (currentQuestion?.type === 'platform') {
-      setShowPlatforms(true);
-    } else {
-      setShowPlatforms(false);
-    }
-
-    // Handle completion
-    if (session?.isCompleted === "true" && !isComplete) {
-      setIsComplete(true);
+    if (isComplete) {
       onComplete();
     }
-  }, [reconstructedMessages, currentQuestion, session, isComplete, onComplete]);
+  }, [isComplete]);
 
   // Submit response mutation
   const submitResponseMutation = useMutation({
@@ -136,36 +121,30 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
       
       // Add user message
       setMessages(prev => [...prev, {
-        id: `answer-${currentQuestion?.id}`,
+        id: `user-${Date.now()}`,
         type: "user",
         content: inputValue,
         timestamp: new Date(),
       }]);
 
-      setInputValue("");
-      setShowPlatforms(false);
-
-      // Check if complete
+      // Handle completion or next question
       if (result.isComplete) {
         setIsComplete(true);
-        onComplete();
-        generateBriefMutation.mutate();
       } else if (result.nextQuestion) {
-        // Add next question
-        setTimeout(() => {
-          setMessages(prev => [...prev, {
-            id: `question-${result.nextQuestion.id}`,
-            type: "ai",
-            content: result.nextQuestion.question,
-            timestamp: new Date(),
-          }]);
-          setShowPlatforms(result.nextQuestion.type === 'platform');
-        }, 1000);
+        setMessages(prev => [...prev, {
+          id: `ai-${Date.now()}`,
+          type: "ai",
+          content: result.nextQuestion.question,
+          timestamp: new Date(),
+        }]);
+        setShowPlatforms(result.nextQuestion.type === 'platform');
       }
 
-      queryClient.invalidateQueries({ queryKey: ["/api/conversation", sessionId] });
+      setInputValue("");
+      queryClient.invalidateQueries({ queryKey: ['/api/conversation', sessionId] });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Error submitting response:", error);
       toast({
         title: "Error",
         description: "Failed to submit response. Please try again.",
@@ -174,236 +153,219 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
     },
   });
 
-  // Go back mutation
-  const goBackMutation = useMutation({
-    mutationFn: () => apiRequest("POST", `/api/conversation/${sessionId}/back`),
-    onSuccess: async (response) => {
-      const result = await response.json();
-      
-      // Rebuild messages up to current step
-      const newMessages: ChatMessage[] = [
-        {
-          id: "greeting",
-          type: "ai",
-          content: `${greeting} 👋 I'm here to help you create a comprehensive media plan brief. This will take about 5 minutes and I'll ask you 8 key questions to understand your campaign needs.`,
-          timestamp: new Date(),
-        }
-      ];
+  // Platform selection handler
+  const handlePlatformSelection = (platforms: string[]) => {
+    const platformString = platforms.join(", ");
+    submitResponseMutation.mutate(platformString);
+    setShowPlatforms(false);
+  };
 
-      // Add previous Q&A pairs
-      for (let i = 0; i < result.session.currentStep; i++) {
-        const question = questions[i];
-        const answer = conversationData[question.id as keyof ConversationData];
-        
-        if (question && answer) {
-          newMessages.push(
-            {
-              id: `question-${question.id}`,
-              type: "ai",
-              content: question.question,
-              timestamp: new Date(),
-            },
-            {
-              id: `answer-${question.id}`,
-              type: "user",
-              content: answer,
-              timestamp: new Date(),
-            }
-          );
-        }
-      }
+  // Regular input submission
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputValue.trim() || submitResponseMutation.isPending) return;
+    submitResponseMutation.mutate(inputValue.trim());
+  };
 
-      // Add current question
-      if (result.currentQuestion) {
-        newMessages.push({
-          id: `question-${result.currentQuestion.id}`,
-          type: "ai",
-          content: result.currentQuestion.question,
-          timestamp: new Date(),
-        });
-        setShowPlatforms(result.currentQuestion.type === 'platform');
-      }
-
-      setMessages(newMessages);
-      setIsComplete(false);
-      queryClient.invalidateQueries({ queryKey: ["/api/conversation", sessionId] });
-    },
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to go back. Please try again.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  // Generate campaign brief mutation
+  // Generate campaign brief
   const generateBriefMutation = useMutation({
-    mutationFn: () => apiRequest("POST", `/api/conversation/${sessionId}/generate-brief`),
+    mutationFn: () => apiRequest("POST", `/api/conversation/${sessionId}/brief`),
     onSuccess: async (response) => {
-      const result = await response.json();
-      setCampaignBrief(result.brief);
+      const brief = await response.json();
+      setCampaignBrief(brief);
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Error generating brief:", error);
       toast({
         title: "Error",
-        description: "Failed to generate campaign brief.",
+        description: "Failed to generate campaign brief. Please try again.",
         variant: "destructive",
       });
     },
   });
 
-  const handleSubmit = (answer: string) => {
-    if (!answer.trim() || !sessionId) return;
-    submitResponseMutation.mutate(answer);
+  const downloadBrief = () => {
+    if (!campaignBrief) return;
+    
+    const content = `Campaign Brief
+
+Client: ${campaignBrief.clientName}
+Campaign: ${campaignBrief.campaignName}
+Target Audience: ${campaignBrief.targetAudience}
+Budget: ${campaignBrief.budget}
+Platforms: ${campaignBrief.platforms}
+Objectives: ${campaignBrief.objectives}
+Timeline: ${campaignBrief.timeline}
+Key Messages: ${campaignBrief.keyMessages}
+
+AI Insights:
+Budget Allocation: ${JSON.stringify(campaignBrief.aiInsights.budgetAllocation, null, 2)}
+Platform Strategies: ${JSON.stringify(campaignBrief.aiInsights.platformStrategies, null, 2)}
+KPIs: ${campaignBrief.aiInsights.kpis.join(", ")}
+Recommendations: 
+${campaignBrief.aiInsights.recommendations.map((rec: string, i: number) => `${i + 1}. ${rec}`).join('\n')}
+
+Estimated Reach: ${campaignBrief.aiInsights.estimatedReach}
+Estimated CPM: ${campaignBrief.aiInsights.estimatedCPM}
+`;
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${campaignBrief.campaignName}-brief.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
-  const handleInputSubmit = () => {
-    handleSubmit(inputValue);
-  };
+  // Completion screen
+  if (isComplete && !campaignBrief) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] p-8">
+        <CheckCircle className="h-16 w-16 text-green-500 mb-4" />
+        <h2 className="text-2xl font-bold mb-4">Campaign Brief Complete!</h2>
+        <p className="text-muted-foreground mb-6 text-center max-w-md">
+          Great! I've gathered all the information needed for your media campaign. 
+          Let me generate your comprehensive campaign brief with AI-powered insights.
+        </p>
+        <Button 
+          onClick={() => generateBriefMutation.mutate()}
+          disabled={generateBriefMutation.isPending}
+          size="lg"
+        >
+          <BarChart3 className="mr-2 h-4 w-4" />
+          {generateBriefMutation.isPending ? "Generating..." : "Generate Campaign Brief"}
+        </Button>
+      </div>
+    );
+  }
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleInputSubmit();
-    }
-  };
+  // Brief results screen
+  if (campaignBrief) {
+    return (
+      <div className="space-y-6 p-6">
+        <div className="text-center">
+          <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold mb-2">Your Campaign Brief is Ready!</h2>
+          <p className="text-muted-foreground">
+            Here's your comprehensive media planning brief with AI-powered insights
+          </p>
+        </div>
 
-  const handleGoBack = () => {
-    if (!sessionId) return;
-    goBackMutation.mutate();
-  };
-
-  return (
-    <div className="flex-1 flex flex-col">
-      {/* Messages */}
-      <div className="flex-1 p-6 space-y-6 overflow-y-auto max-h-[500px]">
-        {messages.map((message) => (
-          <div key={message.id} className={`flex space-x-3 ${message.type === 'user' ? 'justify-end' : ''}`}>
-            {message.type === 'ai' && (
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
-                <Brain className="text-white text-xs" />
+        <Card>
+          <CardContent className="p-6 space-y-4">
+            <div>
+              <h3 className="font-semibold text-lg mb-2">Campaign Overview</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div><strong>Client:</strong> {campaignBrief.clientName}</div>
+                <div><strong>Campaign:</strong> {campaignBrief.campaignName}</div>
+                <div><strong>Budget:</strong> {campaignBrief.budget}</div>
+                <div><strong>Timeline:</strong> {campaignBrief.timeline}</div>
+                <div className="md:col-span-2"><strong>Target Audience:</strong> {campaignBrief.targetAudience}</div>
+                <div className="md:col-span-2"><strong>Platforms:</strong> {campaignBrief.platforms}</div>
+                <div className="md:col-span-2"><strong>Objectives:</strong> {campaignBrief.objectives}</div>
               </div>
-            )}
-            
-            <div className="flex-1 max-w-md">
-              <div className={`rounded-xl p-4 ${
-                message.type === 'ai' 
-                  ? 'bg-slate-100' 
-                  : 'bg-primary text-white ml-auto'
-              }`}>
-                <p className={message.type === 'ai' ? 'text-secondary' : 'text-white'}>
-                  {message.content}
-                </p>
-              </div>
-              <p className="text-xs text-slate-500 mt-1 text-right">Just now</p>
             </div>
 
-            {message.type === 'user' && (
-              <div className="w-8 h-8 bg-slate-300 rounded-full flex items-center justify-center flex-shrink-0">
-                <User className="text-slate-600 text-xs" />
+            <div>
+              <h3 className="font-semibold text-lg mb-2">AI-Powered Insights</h3>
+              <div className="space-y-3 text-sm">
+                <div>
+                  <strong>Estimated Reach:</strong> {campaignBrief.aiInsights.estimatedReach}
+                </div>
+                <div>
+                  <strong>Estimated CPM:</strong> {campaignBrief.aiInsights.estimatedCPM}
+                </div>
+                <div>
+                  <strong>Key Recommendations:</strong>
+                  <ul className="list-disc list-inside mt-1 space-y-1">
+                    {campaignBrief.aiInsights.recommendations.map((rec: string, i: number) => (
+                      <li key={i}>{rec}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-            )}
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Button onClick={downloadBrief} className="flex-1">
+            <Download className="mr-2 h-4 w-4" />
+            Download Brief
+          </Button>
+          <Button variant="outline" onClick={() => window.location.href = '/register'} className="flex-1">
+            Get Full Media Planning Platform
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Main chat interface
+  return (
+    <div className="flex flex-col h-full p-6">
+      {/* Progress indicator */}
+      <div className="mb-4">
+        <div className="flex justify-between text-sm text-muted-foreground mb-2">
+          <span>Question {(session?.currentStep || 0) + 1} of {questions.length}</span>
+          <span>{Math.round(((session?.currentStep || 0) + 1) / questions.length * 100)}% complete</span>
+        </div>
+        <div className="w-full bg-muted rounded-full h-2">
+          <div 
+            className="bg-primary h-2 rounded-full transition-all duration-300" 
+            style={{ width: `${((session?.currentStep || 0) + 1) / questions.length * 100}%` }}
+          />
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 space-y-4 mb-4 overflow-y-auto max-h-[400px]">
+        {messages.map((message) => (
+          <div key={message.id} className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`flex gap-3 max-w-[80%] ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+              <div className="flex-shrink-0">
+                {message.type === 'ai' ? (
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Brain className="h-4 w-4 text-primary" />
+                  </div>
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                    <User className="h-4 w-4" />
+                  </div>
+                )}
+              </div>
+              <div className={`rounded-lg p-3 ${
+                message.type === 'user' 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-muted'
+              }`}>
+                <p className="text-sm">{message.content}</p>
+              </div>
+            </div>
           </div>
         ))}
-
-        {/* Campaign Summary */}
-        {isComplete && campaignBrief && (
-          <div className="space-y-6">
-            <Card className="bg-gradient-to-br from-primary/5 to-blue-50 border-primary/20">
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-secondary mb-4 flex items-center">
-                  <CheckCircle className="text-accent mr-2" />
-                  Brief Summary
-                </h3>
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <p className="font-medium text-slate-700">Campaign Details:</p>
-                    <p className="text-slate-600">{campaignBrief.company} - {campaignBrief.product}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-700">Platforms:</p>
-                    <p className="text-slate-600">{campaignBrief.platforms}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-700">Budget:</p>
-                    <p className="text-slate-600">{campaignBrief.budget}</p>
-                  </div>
-                  <div>
-                    <p className="font-medium text-slate-700">Duration:</p>
-                    <p className="text-slate-600">{campaignBrief.duration}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Registration CTA */}
-            <Card className="border-2 border-primary">
-              <CardContent className="p-6 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <BarChart3 className="text-white text-xl" />
-                </div>
-                <h3 className="text-xl font-bold text-secondary mb-2">Your Brief is Ready!</h3>
-                <p className="text-slate-600 mb-6">Get your complete AI-generated media plan with detailed forecasts, budget allocation, and activation guide.</p>
-                <div className="space-y-3">
-                  <Button className="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-semibold">
-                    Create Free Account & Get Full Plan
-                  </Button>
-                  <p className="text-xs text-slate-500">No credit card required • Full access • Download PDF guide</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
-      {!isComplete && (
-        <div className="p-6 border-t border-slate-200">
-          {showPlatforms ? (
-            <PlatformSelection onSelect={handleSubmit} />
-          ) : (
-            <div className="flex space-x-3">
-              <Input
-                type="text"
-                placeholder={currentQuestion?.placeholder || "Type your answer here..."}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={handleKeyPress}
-                className="flex-1"
-                disabled={submitResponseMutation.isPending}
-              />
-              <Button
-                onClick={handleInputSubmit}
-                disabled={!inputValue.trim() || submitResponseMutation.isPending}
-                className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                {submitResponseMutation.isPending ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                ) : (
-                  <Send className="w-4 h-4" />
-                )}
-              </Button>
-            </div>
-          )}
-
-          {/* Back Button */}
-          <div className="flex justify-between items-center mt-4 pt-4 border-t border-slate-100">
-            {session && session.currentStep > 0 && (
-              <Button
-                variant="ghost"
-                onClick={handleGoBack}
-                disabled={goBackMutation.isPending}
-                className="text-slate-500 hover:text-secondary transition-colors text-sm font-medium"
-              >
-                <ArrowLeft className="w-4 h-4 mr-1" />
-                Back to Previous
-              </Button>
-            )}
-          </div>
-        </div>
+      {/* Input area */}
+      {showPlatforms ? (
+        <PlatformSelection onSelect={handlePlatformSelection} />
+      ) : (
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <Input
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder={currentQuestion?.placeholder || "Type your answer..."}
+            disabled={submitResponseMutation.isPending}
+            className="flex-1"
+          />
+          <Button type="submit" disabled={!inputValue.trim() || submitResponseMutation.isPending}>
+            <Send className="h-4 w-4" />
+          </Button>
+        </form>
       )}
     </div>
   );
