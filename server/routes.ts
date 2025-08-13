@@ -165,7 +165,7 @@ export function registerRoutes(app: Express): Server {
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
-      const isValidPassword = await storage.comparePassword(loginData.password, user.passwordHash);
+      const isValidPassword = await storage.comparePassword(loginData.password, user.passwordHash || "");
       if (!isValidPassword) {
         return res.status(401).json({ message: "Invalid email or password" });
       }
