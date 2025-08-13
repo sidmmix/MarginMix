@@ -53,47 +53,21 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
     scrollToBottom();
   }, [messages]);
 
-  // Initialize messages
+  // Initialize and reconstruct conversation messages
   useEffect(() => {
-    if (questions.length > 0) {
-      const initialMessages: ChatMessage[] = [
-        {
-          id: "greeting",
-          type: "ai",
-          content: `${greeting} 👋 I'm here to help you create a comprehensive media plan brief. This will take about 5 minutes and I'll ask you 8 key questions to understand your campaign needs.`,
-          timestamp: new Date(),
-        }
-      ];
+    if (questions.length === 0) return;
 
-      // Add current question
-      if (currentQuestion && !isComplete) {
-        initialMessages.push({
-          id: `question-${currentQuestion.id}`,
-          type: "ai",
-          content: currentQuestion.question,
-          timestamp: new Date(),
-        });
-
-        // Show platform selection if needed
-        setShowPlatforms(currentQuestion.type === 'platform');
+    const reconstructedMessages: ChatMessage[] = [
+      {
+        id: "greeting",
+        type: "ai",
+        content: `${greeting} 👋 I'm here to help you create a comprehensive media plan brief. This will take about 5 minutes and I'll ask you 8 key questions to understand your campaign needs.`,
+        timestamp: new Date(),
       }
+    ];
 
-      setMessages(initialMessages);
-    }
-  }, [greeting, currentQuestion, questions, isComplete]);
-
-  // Reconstruct conversation from session data
-  useEffect(() => {
+    // If we have a session with previous steps, reconstruct the conversation
     if (session && session.currentStep > 0) {
-      const reconstructedMessages: ChatMessage[] = [
-        {
-          id: "greeting",
-          type: "ai",
-          content: `${greeting} 👋 I'm here to help you create a comprehensive media plan brief. This will take about 5 minutes and I'll ask you 8 key questions to understand your campaign needs.`,
-          timestamp: new Date(),
-        }
-      ];
-
       // Add previous Q&A pairs
       for (let i = 0; i < session.currentStep; i++) {
         const question = questions[i];
@@ -102,13 +76,13 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
         if (question && answer) {
           reconstructedMessages.push(
             {
-              id: `question-${question.id}`,
+              id: `question-${question.id}-${i}`,
               type: "ai",
               content: question.question,
               timestamp: new Date(),
             },
             {
-              id: `answer-${question.id}`,
+              id: `answer-${question.id}-${i}`,
               type: "user",
               content: answer,
               timestamp: new Date(),
@@ -117,23 +91,28 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
         }
       }
 
-      // Add current question if not complete
-      if (session.isCompleted === "false" && currentQuestion) {
-        reconstructedMessages.push({
-          id: `question-${currentQuestion.id}`,
-          type: "ai",
-          content: currentQuestion.question,
-          timestamp: new Date(),
-        });
-        setShowPlatforms(currentQuestion.type === 'platform');
-      } else if (session.isCompleted === "true") {
+      // Check completion status
+      if (session.isCompleted === "true") {
         setIsComplete(true);
         onComplete();
+        setMessages(reconstructedMessages);
+        return;
       }
-
-      setMessages(reconstructedMessages);
     }
-  }, [session, conversationData, questions, currentQuestion, greeting, onComplete]);
+
+    // Add current question if not complete
+    if (currentQuestion && !isComplete) {
+      reconstructedMessages.push({
+        id: `question-${currentQuestion.id}-current`,
+        type: "ai",
+        content: currentQuestion.question,
+        timestamp: new Date(),
+      });
+      setShowPlatforms(currentQuestion.type === 'platform');
+    }
+
+    setMessages(reconstructedMessages);
+  }, [session, conversationData, questions, currentQuestion, greeting, onComplete, isComplete]);
 
   // Submit response mutation
   const submitResponseMutation = useMutation({
