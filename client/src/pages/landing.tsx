@@ -29,6 +29,13 @@ export default function Landing() {
       <section className="relative overflow-hidden pt-16 pb-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
+            {/* Brand Highlight Statement */}
+            <div className="mb-8 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 max-w-4xl mx-auto">
+              <p className="text-lg md:text-xl font-medium text-blue-900 dark:text-blue-100 leading-relaxed">
+                YourBrief is the AI media strategist that builds campaign-ready media plans in minutes — powered by live data from Google Ads, DV360 & Meta. Just answer a few smart questions, and YourBrief forecasts reach, allocates budgets, and delivers an activation-ready plan with platform-specific setup guides. <span className="font-semibold">Faster planning. Smarter decisions. Happier clients.</span>
+              </p>
+            </div>
+            
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
               Create Winning
               <span className="text-blue-600 dark:text-blue-400"> Media Plans</span>
