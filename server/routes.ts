@@ -15,6 +15,13 @@ import {
   type ConversationData,
   type Question
 } from "@shared/schema";
+import { 
+  generatePredictiveResponse, 
+  generateDynamicQuestion, 
+  validateAndEnhanceAnswer,
+  generateContextualInsights,
+  type ConversationContext 
+} from "./ai-conversation";
 
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key"
@@ -222,9 +229,98 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-  // Questions endpoint for the chat interface
+  // Enhanced questions endpoint for the chat interface
   app.get("/api/questions", (req, res) => {
     res.json(questions);
+  });
+
+  // Get dynamic question based on conversation context
+  app.get("/api/questions/:step", async (req, res) => {
+    try {
+      const step = parseInt(req.params.step);
+      const sessionId = req.query.sessionId as string;
+
+      if (step >= questions.length) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+
+      let context: ConversationContext = {
+        userResponses: {},
+        currentStep: step,
+        sessionData: {}
+      };
+
+      // Get conversation context if sessionId provided
+      if (sessionId) {
+        const session = await storage.getConversationSession(sessionId);
+        if (session) {
+          context = {
+            userResponses: session.sessionData || {},
+            currentStep: step,
+            sessionData: session.sessionData || {}
+          };
+        }
+      }
+
+      // Generate dynamic question based on context
+      const dynamicQuestion = await generateDynamicQuestion(context, questions);
+      res.json(dynamicQuestion);
+    } catch (error) {
+      console.error("Error generating dynamic question:", error);
+      res.json(questions[parseInt(req.params.step)] || questions[0]);
+    }
+  });
+
+  // Get predictive suggestions for current input
+  app.post("/api/conversation/:id/predict", async (req, res) => {
+    try {
+      const { currentInput, questionId } = req.body;
+      const session = await storage.getConversationSession(req.params.id);
+      
+      if (!session) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      const question = questions.find(q => q.id === questionId);
+      if (!question) {
+        return res.status(404).json({ message: "Question not found" });
+      }
+
+      const context: ConversationContext = {
+        userResponses: session.sessionData || {},
+        currentStep: session.currentStep,
+        sessionData: session.sessionData || {}
+      };
+
+      const predictions = await generatePredictiveResponse(question, currentInput, context);
+      res.json(predictions);
+    } catch (error) {
+      console.error("Error generating predictions:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Get contextual insights for current conversation
+  app.get("/api/conversation/:id/insights", async (req, res) => {
+    try {
+      const session = await storage.getConversationSession(req.params.id);
+      
+      if (!session) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      const context: ConversationContext = {
+        userResponses: session.sessionData || {},
+        currentStep: session.currentStep,
+        sessionData: session.sessionData || {}
+      };
+
+      const insights = await generateContextualInsights(context);
+      res.json(insights);
+    } catch (error) {
+      console.error("Error generating insights:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   });
 
   // Conversation routes
@@ -252,20 +348,63 @@ export function registerRoutes(app: Express): Server {
         return res.status(404).json({ message: "Session not found" });
       }
 
-      // Update session data with the new answer
-      const currentData = session.sessionData || {};
-      const updatedSessionData = {
-        ...currentData,
-        [questionId]: answer
-      };
+      // Find the current question for validation
+      const question = questions.find(q => q.id === questionId);
+      if (question) {
+        // Validate and enhance the answer using AI
+        const context: ConversationContext = {
+          userResponses: session.sessionData || {},
+          currentStep: session.currentStep,
+          sessionData: session.sessionData || {}
+        };
 
-      const updatedSession = await storage.updateConversationSession(req.params.id, {
-        sessionData: updatedSessionData,
-        currentStep: session.currentStep + 1,
-        isCompleted: session.currentStep + 1 >= questions.length ? "true" : "false"
-      });
+        const validation = await validateAndEnhanceAnswer(question, answer, context);
+        
+        // Use enhanced answer if available and quality score is high
+        const finalAnswer = validation.enhancedAnswer && validation.qualityScore >= 7 
+          ? validation.enhancedAnswer 
+          : answer;
 
-      res.json(updatedSession);
+        // Update session data with the processed answer
+        const currentData = session.sessionData || {};
+        const updatedSessionData = {
+          ...currentData,
+          [questionId]: finalAnswer,
+          [`${questionId}_original`]: answer !== finalAnswer ? answer : undefined,
+          [`${questionId}_qualityScore`]: validation.qualityScore
+        };
+
+        const updatedSession = await storage.updateConversationSession(req.params.id, {
+          sessionData: updatedSessionData,
+          currentStep: session.currentStep + 1,
+          isCompleted: session.currentStep + 1 >= questions.length ? "true" : "false"
+        });
+
+        res.json({
+          ...updatedSession,
+          aiValidation: {
+            isValid: validation.isValid,
+            suggestions: validation.suggestions,
+            qualityScore: validation.qualityScore,
+            wasEnhanced: validation.enhancedAnswer && validation.qualityScore >= 7
+          }
+        });
+      } else {
+        // Fallback to original behavior if question not found
+        const currentData = session.sessionData || {};
+        const updatedSessionData = {
+          ...currentData,
+          [questionId]: answer
+        };
+
+        const updatedSession = await storage.updateConversationSession(req.params.id, {
+          sessionData: updatedSessionData,
+          currentStep: session.currentStep + 1,
+          isCompleted: session.currentStep + 1 >= questions.length ? "true" : "false"
+        });
+
+        res.json(updatedSession);
+      }
     } catch (error) {
       console.error("Error updating conversation session:", error);
       res.status(500).json({ message: "Internal server error" });

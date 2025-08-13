@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { PlatformSelection } from "@/components/platform-selection";
+import { IntelligentInput } from "@/components/intelligent-input";
 import { 
   Brain, 
   User, 
   Send, 
   CheckCircle,
   BarChart3,
-  Download
+  Download,
+  Sparkles
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { ConversationSession, Question, ConversationData, CampaignBrief } from "@shared/schema";
@@ -160,8 +162,8 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
   };
 
   // Regular input submission
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
     if (!inputValue.trim() || submitResponseMutation.isPending) return;
     submitResponseMutation.mutate(inputValue.trim());
   };
@@ -353,18 +355,38 @@ Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not availab
       {showPlatforms ? (
         <PlatformSelection onSelect={handlePlatformSelection} />
       ) : (
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <Input
+        <div className="space-y-3">
+          {/* Enhanced AI Input */}
+          <IntelligentInput
+            sessionId={sessionId || ""}
+            questionId={currentQuestion?.id || ""}
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={setInputValue}
             placeholder={currentQuestion?.placeholder || "Type your answer..."}
-            disabled={submitResponseMutation.isPending}
-            className="flex-1"
+            className={submitResponseMutation.isPending ? "opacity-50" : ""}
           />
-          <Button type="submit" disabled={!inputValue.trim() || submitResponseMutation.isPending}>
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
+          
+          {/* Submit Button */}
+          <div className="flex justify-end">
+            <Button 
+              onClick={handleSubmit}
+              disabled={!inputValue.trim() || submitResponseMutation.isPending}
+              className="min-w-[120px]"
+            >
+              {submitResponseMutation.isPending ? (
+                <>
+                  <Sparkles className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <Send className="mr-2 h-4 w-4" />
+                  Continue
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );

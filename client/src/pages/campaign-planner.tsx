@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { ChatInterface } from "@/components/chat-interface";
+import { ConversationInsights } from "@/components/conversation-insights";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -91,13 +92,20 @@ export default function CampaignPlanner() {
         </div>
 
         {session && sessionId && questions.length > 0 && (
-          <ChatInterface
-            session={session}
-            sessionId={sessionId}
-            questions={questions}
-            greeting="Hi! I'm your AI campaign planning assistant. I'll ask you 8 strategic questions to create a comprehensive media plan for your campaign. Let's start!"
-            onComplete={handleComplete}
-          />
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <div className="lg:col-span-3">
+              <ChatInterface
+                session={session}
+                sessionId={sessionId}
+                questions={questions}
+                greeting="Hi! I'm your AI campaign planning assistant. I'll ask you 8 strategic questions to create a comprehensive media plan for your campaign. Let's start!"
+                onComplete={handleComplete}
+              />
+            </div>
+            <div className="lg:col-span-1">
+              <ConversationInsights sessionId={sessionId} className="sticky top-6" />
+            </div>
+          </div>
         )}
       </div>
     </div>
