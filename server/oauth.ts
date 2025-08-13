@@ -4,6 +4,96 @@ import { Strategy as FacebookStrategy } from "passport-facebook";
 import type { Express } from "express";
 import { storage } from "./storage";
 
+// Initialize OAuth strategies
+export function initializeOAuthStrategies() {
+  // Configure Google OAuth Strategy
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    console.log("Configuring Google OAuth strategy");
+    passport.use(new GoogleStrategy({
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: "/api/auth/google/callback"
+    }, async (accessToken, refreshToken, profile, done) => {
+      try {
+        const email = profile.emails?.[0]?.value;
+        if (!email) {
+          return done(new Error("No email found in Google profile"), null);
+        }
+
+        let user = await storage.getUserByEmail(email);
+        
+        if (user) {
+          // Link Google account to existing user
+          user = await storage.updateUser(user.id, {
+            profileImageUrl: profile.photos?.[0]?.value,
+            authProvider: "google",
+          });
+        } else {
+          // Create new user
+          user = await storage.createUser({
+            email,
+            firstName: profile.name?.givenName,
+            lastName: profile.name?.familyName,
+            profileImageUrl: profile.photos?.[0]?.value,
+            authProvider: "google",
+            consentGiven: true,
+          });
+        }
+
+        return done(null, user);
+      } catch (error) {
+        return done(error, null);
+      }
+    }));
+  } else {
+    console.log("Google OAuth not configured - missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET");
+  }
+
+  // Configure Facebook OAuth Strategy  
+  if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
+    console.log("Configuring Facebook OAuth strategy");
+    passport.use(new FacebookStrategy({
+      clientID: process.env.FACEBOOK_APP_ID,
+      clientSecret: process.env.FACEBOOK_APP_SECRET,
+      callbackURL: "/api/auth/facebook/callback",
+      profileFields: ['id', 'emails', 'name', 'picture.type(large)']
+    }, async (accessToken, refreshToken, profile, done) => {
+      try {
+        const email = profile.emails?.[0]?.value;
+        if (!email) {
+          return done(new Error("No email found in Facebook profile"), null);
+        }
+
+        let user = await storage.getUserByEmail(email);
+        
+        if (user) {
+          // Link Facebook account to existing user
+          user = await storage.updateUser(user.id, {
+            profileImageUrl: profile.photos?.[0]?.value,
+            authProvider: "facebook",
+          });
+        } else {
+          // Create new user
+          user = await storage.createUser({
+            email,
+            firstName: profile.name?.givenName,
+            lastName: profile.name?.familyName,
+            profileImageUrl: profile.photos?.[0]?.value,
+            authProvider: "facebook",
+            consentGiven: true,
+          });
+        }
+
+        return done(null, user);
+      } catch (error) {
+        return done(error, null);
+      }
+    }));
+  } else {
+    console.log("Facebook OAuth not configured - missing FACEBOOK_APP_ID or FACEBOOK_APP_SECRET");
+  }
+}
+
 // Configure Google OAuth
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(new GoogleStrategy({
@@ -112,42 +202,49 @@ passport.deserializeUser(async (id: string, done) => {
 });
 
 export function setupOAuth(app: Express) {
+  // Initialize OAuth strategies
+  initializeOAuthStrategies();
+  
   app.use(passport.initialize());
   app.use(passport.session());
 
-  // Google OAuth routes (only if strategy is configured)
-  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-    app.get("/api/auth/google", 
-      passport.authenticate("google", { scope: ["profile", "email"] })
-    );
-
-    app.get("/api/auth/google/callback",
-      passport.authenticate("google", { failureRedirect: "/auth?error=google_auth_failed" }),
-      (req, res) => {
-        res.redirect("/dashboard");
-      }
-    );
-  } else {
-    app.get("/api/auth/google", (req, res) => {
+  // Google OAuth routes
+  app.get("/api/auth/google", (req, res, next) => {
+    if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+      passport.authenticate("google", { scope: ["profile", "email"] })(req, res, next);
+    } else {
       res.status(501).json({ message: "Google OAuth not configured - missing environment variables" });
-    });
-  }
+    }
+  });
 
-  // Facebook OAuth routes (only if strategy is configured)
-  if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
-    app.get("/api/auth/facebook",
-      passport.authenticate("facebook", { scope: ["email"] })
-    );
+  app.get("/api/auth/google/callback", (req, res, next) => {
+    if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+      passport.authenticate("google", { 
+        failureRedirect: "/auth?error=google_auth_failed",
+        successRedirect: "/"
+      })(req, res, next);
+    } else {
+      res.redirect("/auth?error=google_not_configured");
+    }
+  });
 
-    app.get("/api/auth/facebook/callback",
-      passport.authenticate("facebook", { failureRedirect: "/auth?error=facebook_auth_failed" }),
-      (req, res) => {
-        res.redirect("/dashboard");
-      }
-    );
-  } else {
-    app.get("/api/auth/facebook", (req, res) => {
+  // Facebook OAuth routes
+  app.get("/api/auth/facebook", (req, res, next) => {
+    if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
+      passport.authenticate("facebook", { scope: ["email"] })(req, res, next);
+    } else {
       res.status(501).json({ message: "Facebook OAuth not configured - missing environment variables" });
-    });
-  }
+    }
+  });
+
+  app.get("/api/auth/facebook/callback", (req, res, next) => {
+    if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
+      passport.authenticate("facebook", { 
+        failureRedirect: "/auth?error=facebook_auth_failed",
+        successRedirect: "/"
+      })(req, res, next);
+    } else {
+      res.redirect("/auth?error=facebook_not_configured");
+    }
+  });
 }
