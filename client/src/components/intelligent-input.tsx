@@ -45,9 +45,9 @@ export function IntelligentInput({
       }
 
       try {
-        const response = await apiRequest(`/api/conversation/${sessionId}/predict`, {
-          method: "POST",
-          body: { currentInput: input, questionId }
+        const response = await apiRequest(`/api/conversation/${sessionId}/predict`, "POST", { 
+          currentInput: input, 
+          questionId 
         });
         setPredictions(response);
         setShowSuggestions(true);
