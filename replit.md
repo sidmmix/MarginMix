@@ -6,13 +6,16 @@ This is a full-stack web application that helps users create comprehensive digit
 
 ## Recent Changes
 
-- **Landing Page Implementation (August 13, 2025)**: Created a professional dedicated landing page for yourbrief.co featuring hero section, features overview, how-it-works steps, benefits, and clear call-to-action buttons leading to the campaign planner
-- **Improved User Journey**: Updated routing to show landing page at root (/) with campaign planner accessible at /campaign-planner route. The conversational chat interface is now the second part of the user journey after the landing page introduction
-- **API Route Fixes**: Resolved missing /api/conversation/start endpoint and fixed conversation flow routing
+- **OAuth Authentication Framework (August 13, 2025)**: Implemented complete OAuth system for Google and Meta authentication with proper strategy configuration, credential validation, and comprehensive setup guide
+- **Authentication Flow Stabilization**: Fixed infinite loops and strategy errors, established stable email/password authentication as primary method with OAuth as optional enhancement
+- **Landing Page Implementation (August 13, 2025)**: Created professional dedicated landing page for yourbrief.co featuring hero section, features overview, how-it-works steps, benefits, and clear call-to-action buttons leading to the campaign planner
+- **Campaign Planner Completion**: Full 8-step questionnaire with AI brief generation working end-to-end
+- **User Journey Optimization**: Landing page → Campaign planner → Authentication → Dashboard flow established and tested
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+OAuth setup priority: Deferred for later refinement, focus on core functionality first.
 
 ## System Architecture
 
