@@ -37,8 +37,8 @@ export default function Landing() {
             </div>
             
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Create Winning
-              <span className="text-blue-600 dark:text-blue-400"> Media Plans</span>
+              Create Activation Ready
+              <span className="text-blue-600 dark:text-blue-400"> Digital Media Plans</span>
               <br />
               in Minutes
             </h1>
