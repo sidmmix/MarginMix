@@ -7,7 +7,7 @@ This is a full-stack web application that helps users create comprehensive digit
 ## Recent Changes
 
 - **Landing Page Implementation (August 13, 2025)**: Created a professional dedicated landing page for yourbrief.co featuring hero section, features overview, how-it-works steps, benefits, and clear call-to-action buttons leading to the campaign planner
-- **Improved User Journey**: Updated routing to show landing page at root (/) with campaign planner accessible at /campaign-planner route
+- **Improved User Journey**: Updated routing to show landing page at root (/) with campaign planner accessible at /campaign-planner route. The conversational chat interface is now the second part of the user journey after the landing page introduction
 - **API Route Fixes**: Resolved missing /api/conversation/start endpoint and fixed conversation flow routing
 
 ## User Preferences
