@@ -15,6 +15,7 @@ interface IntelligentInputProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  disabled?: boolean;
 }
 
 interface PredictiveResponse {
@@ -30,7 +31,8 @@ export function IntelligentInput({
   value,
   onChange,
   placeholder,
-  className
+  className,
+  disabled = false
 }: IntelligentInputProps) {
   const [predictions, setPredictions] = useState<PredictiveResponse | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -61,6 +63,12 @@ export function IntelligentInput({
 
   // Debounce effect
   useEffect(() => {
+    if (disabled) {
+      setPredictions(null);
+      setShowSuggestions(false);
+      return;
+    }
+
     const timer = setTimeout(() => {
       if (value && !isTyping) {
         fetchPredictions(value);
@@ -68,7 +76,7 @@ export function IntelligentInput({
     }, 800);
 
     return () => clearTimeout(timer);
-  }, [value, isTyping, fetchPredictions]);
+  }, [value, isTyping, fetchPredictions, disabled]);
 
   const handleInputChange = (newValue: string) => {
     setIsTyping(true);
