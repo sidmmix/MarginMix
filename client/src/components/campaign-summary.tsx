@@ -267,7 +267,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
           className="flex items-center gap-2"
         >
           <Download className="h-5 w-5" />
-          {isGeneratingPDF ? "Generating PDF..." : "Download PDF Summary"}
+          {isGeneratingPDF ? "Generating Brief..." : "Download Brief"}
         </Button>
         
         <Button 
