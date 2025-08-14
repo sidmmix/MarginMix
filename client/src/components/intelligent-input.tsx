@@ -16,6 +16,7 @@ interface IntelligentInputProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  onSubmit?: () => void;
 }
 
 interface PredictiveResponse {
@@ -32,7 +33,8 @@ export function IntelligentInput({
   onChange,
   placeholder,
   className,
-  disabled = false
+  disabled = false,
+  onSubmit
 }: IntelligentInputProps) {
   const [predictions, setPredictions] = useState<PredictiveResponse | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -86,6 +88,13 @@ export function IntelligentInput({
     setTimeout(() => setIsTyping(false), 500);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey && onSubmit && value.trim()) {
+      e.preventDefault();
+      onSubmit();
+    }
+  };
+
   const applySuggestion = (suggestion: string) => {
     onChange(suggestion);
     setShowSuggestions(false);
@@ -103,10 +112,12 @@ export function IntelligentInput({
         <Textarea
           value={value}
           onChange={(e) => handleInputChange(e.target.value)}
+          onKeyDown={handleKeyDown}
           placeholder={placeholder}
           className={cn("min-h-[100px] resize-none", className)}
           onFocus={() => setShowSuggestions(!!predictions)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          disabled={disabled}
         />
         
         {isTyping && (

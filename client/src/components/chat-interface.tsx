@@ -361,6 +361,7 @@ Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not availab
             placeholder={currentQuestion?.placeholder || "Type your answer..."}
             className={submitResponseMutation.isPending ? "opacity-50" : ""}
             disabled={submitResponseMutation.isPending}
+            onSubmit={handleSubmit}
           />
           
           {/* Submit Button */}
