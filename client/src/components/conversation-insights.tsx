@@ -24,7 +24,8 @@ export function ConversationInsights({ sessionId, className }: ConversationInsig
   const { data: insights, isLoading } = useQuery<Insights>({
     queryKey: [`/api/conversation/${sessionId}/insights`],
     enabled: !!sessionId,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    refetchInterval: false, // Only refresh manually when needed
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
   });
 
   if (isLoading || !insights) {

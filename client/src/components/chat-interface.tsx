@@ -140,6 +140,11 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
 
       setInputValue("");
       queryClient.invalidateQueries({ queryKey: ['/api/conversation', sessionId] });
+      
+      // Refresh insights only after every few questions for better flow
+      if ((session?.currentStep || 0) % 2 === 0) {
+        queryClient.invalidateQueries({ queryKey: [`/api/conversation/${sessionId}/insights`] });
+      }
     },
     onError: (error) => {
       console.error("Error submitting response:", error);

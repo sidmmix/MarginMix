@@ -40,10 +40,11 @@ export function IntelligentInput({
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  // Debounced prediction fetching
+  // Debounced prediction fetching - only for longer responses
   const fetchPredictions = useCallback(
     async (input: string) => {
-      if (input.length < 3) {
+      // Only suggest for longer responses (10+ characters) to avoid interference
+      if (input.length < 10 || disabled) {
         setPredictions(null);
         return;
       }
@@ -60,7 +61,7 @@ export function IntelligentInput({
         console.error("Error fetching predictions:", error);
       }
     },
-    [sessionId, questionId]
+    [sessionId, questionId, disabled]
   );
 
   // Debounce effect
@@ -72,10 +73,10 @@ export function IntelligentInput({
     }
 
     const timer = setTimeout(() => {
-      if (value && !isTyping) {
+      if (value && !isTyping && !disabled) {
         fetchPredictions(value);
       }
-    }, 800);
+    }, 1200); // Increased delay to 1.2 seconds for less interruption
 
     return () => clearTimeout(timer);
   }, [value, isTyping, fetchPredictions, disabled]);
