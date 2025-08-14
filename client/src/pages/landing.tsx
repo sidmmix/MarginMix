@@ -36,7 +36,7 @@ export default function Landing() {
               in Minutes
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-              YourBrief is the AI Media Strategist that builds campaign-ready media plans in minutes — powered by live data from Google Ads, DV360 & Meta. Just answer a few smart questions, and YourBrief forecasts reach, allocates budgets, and delivers an activation-ready plan with platform-specific setup guides. <span className="font-semibold">Faster planning. Smarter decisions. Happier clients.</span>
+              YourBrief is the AI Media Strategist that builds campaign-ready media plans in minutes — powered by live data from Google Ads & Meta. Just answer a few smart questions, and YourBrief forecasts reach, allocates budgets, and delivers an activation-ready plan with platform-specific setup guides. <span className="font-semibold">Faster planning. Smarter decisions. Happier clients.</span>
             </p>
             <div className="flex justify-center">
               <Link href="/campaign-planner">
