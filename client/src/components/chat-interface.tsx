@@ -88,10 +88,8 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
       }
     }
 
-    // Handle completion or add current question
-    if (session?.isCompleted === "true") {
-      setIsComplete(true);
-    } else if (currentQuestion) {
+    // Add current question if not completed
+    if (session?.isCompleted !== "true" && currentQuestion) {
       newMessages.push({
         id: `current-q`,
         type: "ai",
@@ -104,12 +102,12 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
     setMessages(newMessages);
   }, [sessionId, session?.currentStep, session?.isCompleted, questions.length]);
 
-  // Handle completion callback
+  // Handle completion callback - trigger summary directly when conversation is complete
   useEffect(() => {
-    if (isComplete) {
+    if (session?.isCompleted === "true" && session?.sessionData) {
       onComplete();
     }
-  }, [isComplete]);
+  }, [session?.isCompleted, session?.sessionData]);
 
   // Submit response mutation
   const submitResponseMutation = useMutation({
@@ -129,10 +127,8 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
         timestamp: new Date(),
       }]);
 
-      // Handle completion or next question
-      if (result.isComplete) {
-        setIsComplete(true);
-      } else if (result.nextQuestion) {
+      // Handle next question (completion is handled by useEffect)
+      if (result.nextQuestion && !result.isComplete) {
         setMessages(prev => [...prev, {
           id: `ai-${Date.now()}`,
           type: "ai",
@@ -293,12 +289,12 @@ Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not availab
         </Card>
 
         <div className="flex flex-col sm:flex-row gap-4">
-          <Button onClick={downloadBrief} className="flex-1">
+          <Button onClick={downloadBrief} variant="outline" className="flex-1">
             <Download className="mr-2 h-4 w-4" />
             Download Brief
           </Button>
-          <Button variant="outline" onClick={() => window.location.href = '/auth'} className="flex-1">
-            Get Full Media Planning Platform
+          <Button onClick={onComplete} className="flex-1">
+            View Campaign Summary
           </Button>
         </div>
       </div>
