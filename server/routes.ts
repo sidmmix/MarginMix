@@ -21,8 +21,13 @@ import {
   type ConversationContext 
 } from "./ai-conversation";
 
+// Security: Fail fast if OpenAI API key is missing
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error("OPENAI_API_KEY environment variable is required");
+}
+
 const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key"
+  apiKey: process.env.OPENAI_API_KEY
 });
 
 const questions: Question[] = [
@@ -93,25 +98,53 @@ const sessionStore = new pgStore({
   tableName: "sessions",
 });
 
-// Authentication middleware
+// Security: Enhanced authentication middleware with rate limiting
+const authAttempts = new Map<string, { count: number; lastAttempt: number }>();
+
 const requireAuth = (req: any, res: any, next: any) => {
+  const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
+  const now = Date.now();
+  
+  // Security: Rate limiting for authentication attempts
+  const attempts = authAttempts.get(clientIP);
+  if (attempts && attempts.count >= 10 && now - attempts.lastAttempt < 15 * 60 * 1000) {
+    return res.status(429).json({ message: "Too many authentication attempts. Try again later." });
+  }
+
   if (req.session?.userId) {
+    // Clear failed attempts on successful auth
+    authAttempts.delete(clientIP);
     return next();
   }
+  
+  // Track failed authentication attempts
+  if (attempts) {
+    attempts.count++;
+    attempts.lastAttempt = now;
+  } else {
+    authAttempts.set(clientIP, { count: 1, lastAttempt: now });
+  }
+  
   return res.status(401).json({ message: "Authentication required" });
 };
 
 export function registerRoutes(app: Express): Server {
   // Session middleware
+  // Security: Fail fast if session secret is missing
+  if (!process.env.SESSION_SECRET) {
+    throw new Error("SESSION_SECRET environment variable is required");
+  }
+
   app.use(session({
     store: sessionStore,
-    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+      sameSite: 'strict' // CSRF protection
     },
   }));
 
@@ -153,8 +186,16 @@ export function registerRoutes(app: Express): Server {
   // Get dynamic question based on conversation context
   app.get("/api/questions/:step", async (req, res) => {
     try {
+      // Security: Validate step parameter
       const step = parseInt(req.params.step);
+      if (isNaN(step) || step < 0 || step > 20) {
+        return res.status(400).json({ message: "Invalid step parameter" });
+      }
+      
       const sessionId = req.query.sessionId as string;
+      if (sessionId && (typeof sessionId !== 'string' || sessionId.length > 100)) {
+        return res.status(400).json({ message: "Invalid session ID" });
+      }
 
       if (step >= questions.length) {
         return res.status(404).json({ message: "Question not found" });
@@ -190,7 +231,17 @@ export function registerRoutes(app: Express): Server {
   // Get predictive suggestions for current input
   app.post("/api/conversation/:id/predict", async (req, res) => {
     try {
+      // Security: Validate and sanitize inputs
       const { currentInput, questionId } = req.body;
+      
+      if (!currentInput || typeof currentInput !== 'string' || currentInput.length > 1000) {
+        return res.status(400).json({ message: "Invalid input" });
+      }
+      
+      if (!questionId || typeof questionId !== 'string') {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+
       const session = await storage.getConversationSession(req.params.id);
       
       if (!session) {
@@ -268,7 +319,17 @@ export function registerRoutes(app: Express): Server {
 
   app.post("/api/conversation/:id/respond", async (req, res) => {
     try {
+      // Security: Validate and sanitize inputs
       const { questionId, answer } = req.body;
+      
+      if (!answer || typeof answer !== 'string' || answer.length > 5000) {
+        return res.status(400).json({ message: "Invalid answer" });
+      }
+      
+      if (!questionId || typeof questionId !== 'string') {
+        return res.status(400).json({ message: "Invalid question ID" });
+      }
+
       const session = await storage.getConversationSession(req.params.id);
       
       if (!session) {
@@ -340,7 +401,13 @@ export function registerRoutes(app: Express): Server {
 
   app.post("/api/conversation/:id/brief", async (req, res) => {
     try {
-      const session = await storage.getConversationSession(req.params.id);
+      // Security: Validate session ID format
+      const sessionId = req.params.id;
+      if (!sessionId || typeof sessionId !== 'string' || sessionId.length > 100) {
+        return res.status(400).json({ message: "Invalid session ID" });
+      }
+
+      const session = await storage.getConversationSession(sessionId);
       if (!session) {
         return res.status(404).json({ message: "Session not found" });
       }
@@ -380,7 +447,7 @@ Please provide detailed insights including budget allocation, platform strategie
         const aiInsights = JSON.parse(completion.choices[0].message.content || "{}");
 
         const brief = {
-          sessionId: req.params.id,
+          sessionId: sessionId,
           clientName: data.name || "Unknown Client",
           campaignName: `${data.company} - ${data.product}`,
           targetAudience: data.audience || "Not specified",
@@ -398,7 +465,7 @@ Please provide detailed insights including budget allocation, platform strategie
         
         // Fallback brief without AI insights
         const brief = {
-          sessionId: req.params.id,
+          sessionId: sessionId,
           clientName: data.name || "Unknown Client",
           campaignName: `${data.company} - ${data.product}`,
           targetAudience: data.audience || "Not specified",
@@ -427,7 +494,13 @@ Please provide detailed insights including budget allocation, platform strategie
 
   app.get("/api/conversation/:id", async (req, res) => {
     try {
-      const session = await storage.getConversationSession(req.params.id);
+      // Security: Validate session ID format
+      const sessionId = req.params.id;
+      if (!sessionId || typeof sessionId !== 'string' || sessionId.length > 100) {
+        return res.status(400).json({ message: "Invalid session ID" });
+      }
+
+      const session = await storage.getConversationSession(sessionId);
       if (!session) {
         return res.status(404).json({ message: "Session not found" });
       }

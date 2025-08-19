@@ -1,5 +1,10 @@
 import OpenAI from "openai";
 
+// Security: Validate OpenAI API key exists
+if (!process.env.OPENAI_API_KEY) {
+  throw new Error("OPENAI_API_KEY environment variable is required");
+}
+
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY 
 });
@@ -120,7 +125,7 @@ Respond in JSON format:
     };
   } catch (error) {
     console.error("Error generating dynamic question:", error);
-    return baseQuestion;
+    return baseQuestions[context.currentStep];
   }
 }
 

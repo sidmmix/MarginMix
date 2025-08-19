@@ -25,7 +25,6 @@ export function initializeOAuthStrategies() {
         if (user) {
           // Link Google account to existing user
           user = await storage.updateUser(user.id, {
-            profileImageUrl: profile.photos?.[0]?.value,
             authProvider: "google",
           });
         } else {
@@ -34,7 +33,6 @@ export function initializeOAuthStrategies() {
             email,
             firstName: profile.name?.givenName,
             lastName: profile.name?.familyName,
-            profileImageUrl: profile.photos?.[0]?.value,
             authProvider: "google",
             consentGiven: true,
           });
@@ -69,7 +67,6 @@ export function initializeOAuthStrategies() {
         if (user) {
           // Link Facebook account to existing user
           user = await storage.updateUser(user.id, {
-            profileImageUrl: profile.photos?.[0]?.value,
             authProvider: "facebook",
           });
         } else {
@@ -78,7 +75,6 @@ export function initializeOAuthStrategies() {
             email,
             firstName: profile.name?.givenName,
             lastName: profile.name?.familyName,
-            profileImageUrl: profile.photos?.[0]?.value,
             authProvider: "facebook",
             consentGiven: true,
           });
