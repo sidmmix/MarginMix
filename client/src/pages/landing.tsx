@@ -1,8 +1,28 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, BarChart3, Users, Zap, CheckCircle } from "lucide-react";
+import { ArrowRight, Target, BarChart3, Users, Zap, CheckCircle, User, LogOut } from "lucide-react";
 import { Link } from "wouter";
+import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Landing() {
+  const { user, isAuthenticated, logout, isLoggingOut } = useAuth();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Navigation */}
@@ -15,11 +35,37 @@ export default function Landing() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Link href="/auth">
-                <Button variant="outline" size="sm">
-                  Sign In
-                </Button>
-              </Link>
+              {isAuthenticated && user ? (
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 rounded-full">
+                    <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-900 dark:text-white" data-testid="text-username">
+                        {(user as any).firstName} {(user as any).lastName}
+                      </span>
+                      <span className="text-xs text-gray-600 dark:text-gray-400" data-testid="text-email">
+                        {(user as any).email}
+                      </span>
+                    </div>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={handleLogout}
+                    disabled={isLoggingOut}
+                    data-testid="button-logout"
+                  >
+                    <LogOut className="h-4 w-4 mr-1" />
+                    {isLoggingOut ? "Logging out..." : "Logout"}
+                  </Button>
+                </div>
+              ) : (
+                <Link href="/auth">
+                  <Button variant="outline" size="sm" data-testid="button-signin">
+                    Sign In
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         </div>

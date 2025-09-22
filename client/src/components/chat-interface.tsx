@@ -199,6 +199,41 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
     onSuccess: async (response) => {
       const brief = await response.json();
       setCampaignBrief(brief);
+      
+      // Auto-download the brief
+      setTimeout(() => {
+        const content = `Campaign Brief
+
+Client: ${brief.clientName}
+Campaign: ${brief.campaignName}
+Target Audience: ${brief.targetAudience}
+Budget: ${brief.budget}
+Platforms: ${brief.platforms}
+Objectives: ${brief.objectives}
+Timeline: ${brief.timeline}
+Key Messages: ${brief.keyMessages}
+
+AI Insights:
+Budget Allocation: ${JSON.stringify((brief.aiInsights as any)?.budgetAllocation || {}, null, 2)}
+Platform Strategies: ${JSON.stringify((brief.aiInsights as any)?.platformStrategies || {}, null, 2)}
+KPIs: ${((brief.aiInsights as any)?.kpis || []).join(", ")}
+Recommendations: 
+${((brief.aiInsights as any)?.recommendations || []).map((rec: string, i: number) => `${i + 1}. ${rec}`).join('\n')}
+
+Estimated Reach: ${(brief.aiInsights as any)?.estimatedReach || 'Not available'}
+Estimated CPM: ${(brief.aiInsights as any)?.estimatedCPM || 'Not available'}
+`;
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${brief.campaignName}-brief.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 1000); // 1 second delay to let the UI update
     },
     onError: (error) => {
       console.error("Error generating brief:", error);
