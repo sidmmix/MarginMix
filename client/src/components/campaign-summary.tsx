@@ -15,7 +15,8 @@ import {
   TrendingUp,
   CheckCircle,
   BarChart3,
-  PieChart
+  PieChart,
+  PlayCircle
 } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -39,6 +40,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [isGeneratingBenchmarks, setIsGeneratingBenchmarks] = useState(false);
   const [isGeneratingMediaMix, setIsGeneratingMediaMix] = useState(false);
+  const [isGeneratingPlaybook, setIsGeneratingPlaybook] = useState(false);
 
 
   const generatePDF = async () => {
@@ -110,6 +112,20 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
     } catch (error) {
       console.error('Error generating media mix:', error);
       setIsGeneratingMediaMix(false);
+    }
+  };
+
+  const generatePlaybook = async () => {
+    setIsGeneratingPlaybook(true);
+    try {
+      // Placeholder functionality - implement actual activation playbook generation
+      setTimeout(() => {
+        alert("Generate Activation Playbook feature coming soon!");
+        setIsGeneratingPlaybook(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Error generating playbook:', error);
+      setIsGeneratingPlaybook(false);
     }
   };
 
@@ -361,6 +377,17 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
         >
           <PieChart className="h-5 w-5" />
           {isGeneratingMediaMix ? "Generating..." : "Suggestive Inventory Level Media Mix"}
+        </Button>
+        
+        <Button 
+          onClick={generatePlaybook}
+          disabled={isGeneratingPlaybook}
+          variant="outline"
+          size="lg"
+          className="flex items-center gap-2"
+        >
+          <PlayCircle className="h-5 w-5" />
+          {isGeneratingPlaybook ? "Generating..." : "Generate Activation Playbook"}
         </Button>
       </div>
     </div>
