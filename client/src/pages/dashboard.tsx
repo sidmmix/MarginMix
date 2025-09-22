@@ -300,7 +300,7 @@ export default function Dashboard() {
               className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
               data-testid="button-thank-you-close"
             >
-              Continue to Login
+              Continue to Homepage
             </Button>
           </div>
         </DialogContent>
