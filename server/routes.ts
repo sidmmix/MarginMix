@@ -12,9 +12,6 @@ import {
   type ConversationData,
   type Question
 } from "@shared/schema";
-import { 
-  type ConversationContext 
-} from "./ai-conversation";
 
 
 // Updated questions to match new schema
@@ -228,24 +225,6 @@ export function registerRoutes(app: Express): Server {
         return res.status(404).json({ message: "Question not found" });
       }
 
-      let context: ConversationContext = {
-        userResponses: {},
-        currentStep: step,
-        sessionData: {}
-      };
-
-      // Get conversation context if sessionId provided
-      if (sessionId) {
-        const session = await storage.getConversationSession(sessionId);
-        if (session) {
-          context = {
-            userResponses: session.sessionData || {},
-            currentStep: step,
-            sessionData: session.sessionData || {}
-          };
-        }
-      }
-
       // Return static question (AI enhancement disabled)
       res.json(questions[step] || questions[0]);
     } catch (error) {
@@ -279,12 +258,6 @@ export function registerRoutes(app: Express): Server {
         return res.status(404).json({ message: "Question not found" });
       }
 
-      const context: ConversationContext = {
-        userResponses: session.sessionData || {},
-        currentStep: session.currentStep,
-        sessionData: session.sessionData || {}
-      };
-
       // AI suggestions disabled - return empty response
       res.json({
         suggestions: [],
@@ -312,12 +285,6 @@ export function registerRoutes(app: Express): Server {
       if (!session) {
         return res.status(404).json({ message: "Session not found" });
       }
-
-      const context: ConversationContext = {
-        userResponses: session.sessionData || {},
-        currentStep: session.currentStep,
-        sessionData: session.sessionData || {}
-      };
 
       // AI insights disabled - return empty response
       res.json({
@@ -374,13 +341,6 @@ export function registerRoutes(app: Express): Server {
       // Find the current question for validation
       const question = questions.find(q => q.id === questionId);
       if (question) {
-        // Validate and enhance the answer using AI
-        const context: ConversationContext = {
-          userResponses: session.sessionData || {},
-          currentStep: session.currentStep,
-          sessionData: session.sessionData || {}
-        };
-
         // AI validation disabled - basic validation only
         const validation = { 
           isValid: true, 
