@@ -140,25 +140,15 @@ export async function validateAndEnhanceAnswer(
   qualityScore: number;
 }> {
   try {
-    console.log(`[DEBUG] Validating answer for question type: ${question.type}, ID: ${question.id}`);
-    console.log(`[DEBUG] Answer received: "${answer}"`);
-    console.log(`[DEBUG] Has options:`, !!question.options);
-    
     // Skip AI processing for predefined option selections
     if (question.options && (question.type === 'single_choice' || question.type === 'multiple_choice')) {
       const validOptionValues = question.options.map((opt: any) => opt.value);
       const answerValues = answer.split(', ').map(v => v.trim());
       
-      console.log(`[DEBUG] Valid option values:`, validOptionValues);
-      console.log(`[DEBUG] Answer values:`, answerValues);
-      
       // Check if all answer values are valid predefined options
       const allValidOptions = answerValues.every(value => validOptionValues.includes(value));
       
-      console.log(`[DEBUG] All values are valid options:`, allValidOptions);
-      
       if (allValidOptions) {
-        console.log(`[DEBUG] Skipping AI processing for predefined option selection`);
         // Return the original answer without AI processing for predefined selections
         return {
           isValid: true,
@@ -168,8 +158,6 @@ export async function validateAndEnhanceAnswer(
         };
       }
     }
-
-    console.log(`[DEBUG] Proceeding with AI validation for free-form answer`);
 
     // Only process free-form text answers through AI
     const prompt = `You are validating and enhancing a user's answer to a campaign planning question.
