@@ -344,9 +344,8 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
         <Button 
           onClick={generatePDF}
           disabled={isGeneratingPDF}
-          variant="outline"
           size="lg"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
         >
           <Download className="h-5 w-5" />
           {isGeneratingPDF ? "Generating Brief..." : "Download Brief"}
@@ -355,9 +354,8 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
         <Button 
           onClick={generateBenchmarks}
           disabled={isGeneratingBenchmarks}
-          variant="outline"
           size="lg"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
         >
           <div className="flex items-center gap-1">
             <DollarSign className="h-4 w-4" />
@@ -369,9 +367,8 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
         <Button 
           onClick={generateMediaMix}
           disabled={isGeneratingMediaMix}
-          variant="outline"
           size="lg"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
         >
           <Percent className="h-5 w-5" />
           {isGeneratingMediaMix ? "Generating..." : "Suggestive Inventory Level Media Mix"}
@@ -380,9 +377,8 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
         <Button 
           onClick={generatePlaybook}
           disabled={isGeneratingPlaybook}
-          variant="outline"
           size="lg"
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
         >
           <Book className="h-5 w-5" />
           {isGeneratingPlaybook ? "Generating..." : "Generate Activation Playbook"}
