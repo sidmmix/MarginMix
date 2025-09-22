@@ -248,59 +248,123 @@ Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not availab
   // Brief results screen
   if (campaignBrief) {
     return (
-      <div className="space-y-6 p-6">
+      <div className="space-y-8 p-6">
+        {/* Hero Section */}
         <div className="text-center">
-          <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Your Campaign Brief is Ready!</h2>
-          <p className="text-muted-foreground">
-            Here's your comprehensive media planning brief with AI-powered insights
+          <div className="relative mb-6">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-24 h-24 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-full blur-2xl"></div>
+            </div>
+            <div className="relative">
+              <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+            </div>
+          </div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-3">
+            Your Campaign Brief is Ready!
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Your comprehensive media planning brief with AI-powered insights and strategic recommendations
           </p>
         </div>
 
-        <Card>
-          <CardContent className="p-6 space-y-4">
-            <div>
-              <h3 className="font-semibold text-lg mb-2">Campaign Overview</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div><strong>Client:</strong> {campaignBrief.clientName}</div>
-                <div><strong>Campaign:</strong> {campaignBrief.campaignName}</div>
-                <div><strong>Budget:</strong> {campaignBrief.budget}</div>
-                <div><strong>Timeline:</strong> {campaignBrief.timeline}</div>
-                <div className="md:col-span-2"><strong>Target Audience:</strong> {campaignBrief.targetAudience}</div>
-                <div className="md:col-span-2"><strong>Platforms:</strong> {campaignBrief.platforms}</div>
-                <div className="md:col-span-2"><strong>Objectives:</strong> {campaignBrief.objectives}</div>
+        {/* Enhanced Brief Card */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white p-6 text-center">
+            <h3 className="text-2xl font-bold mb-2">Campaign Brief Preview</h3>
+            <p className="text-blue-100">AI-Enhanced Strategy & Insights</p>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
+            <div className="space-y-6">
+              {/* Campaign Overview */}
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+                <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                  <Target className="h-5 w-5" />
+                  Campaign Overview
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Client</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{campaignBrief.clientName}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Campaign</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{campaignBrief.campaignName}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Budget</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{campaignBrief.budget}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Timeline</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{campaignBrief.timeline}</span>
+                  </div>
+                  <div className="flex flex-col md:col-span-2">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Target Audience</span>
+                    <span className="text-gray-900 dark:text-white">{campaignBrief.targetAudience}</span>
+                  </div>
+                  <div className="flex flex-col md:col-span-2">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Platforms</span>
+                    <span className="text-gray-900 dark:text-white">{campaignBrief.platforms}</span>
+                  </div>
+                  <div className="flex flex-col md:col-span-2">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Objectives</span>
+                    <span className="text-gray-900 dark:text-white">{campaignBrief.objectives}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* AI-Powered Insights */}
+              <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-5 border border-purple-200 dark:border-purple-700">
+                <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                  <Brain className="h-5 w-5" />
+                  AI-Powered Insights
+                </h4>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white/60 dark:bg-gray-800/60 rounded-lg p-4">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 block mb-1">Estimated Reach</span>
+                      <span className="text-lg font-bold text-gray-900 dark:text-white">
+                        {(campaignBrief.aiInsights as any)?.estimatedReach || 'Calculating...'}
+                      </span>
+                    </div>
+                    <div className="bg-white/60 dark:bg-gray-800/60 rounded-lg p-4">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 block mb-1">Estimated CPM</span>
+                      <span className="text-lg font-bold text-gray-900 dark:text-white">
+                        {(campaignBrief.aiInsights as any)?.estimatedCPM || 'Calculating...'}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {((campaignBrief.aiInsights as any)?.recommendations || []).length > 0 && (
+                    <div className="bg-white/60 dark:bg-gray-800/60 rounded-lg p-4">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 block mb-3">Key Recommendations</span>
+                      <ul className="space-y-2">
+                        {((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i: number) => (
+                          <li key={i} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
+                            <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-sm">{rec}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
+          </div>
+        </div>
 
-            <div>
-              <h3 className="font-semibold text-lg mb-2">AI-Powered Insights</h3>
-              <div className="space-y-3 text-sm">
-                <div>
-                  <strong>Estimated Reach:</strong> {(campaignBrief.aiInsights as any)?.estimatedReach || 'Not available'}
-                </div>
-                <div>
-                  <strong>Estimated CPM:</strong> {(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not available'}
-                </div>
-                <div>
-                  <strong>Key Recommendations:</strong>
-                  <ul className="list-disc list-inside mt-1 space-y-1">
-                    {((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i: number) => (
-                      <li key={i}>{rec}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
+        {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4">
-          <Button onClick={downloadBrief} variant="outline" className="flex-1">
-            <Download className="mr-2 h-4 w-4" />
+          <Button onClick={downloadBrief} variant="outline" size="lg" className="flex-1 h-12">
+            <Download className="mr-2 h-5 w-5" />
             Download Brief
           </Button>
-          <Button onClick={onComplete} className="flex-1">
-            View Campaign Summary
+          <Button onClick={onComplete} size="lg" className="flex-1 h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
+            View Full Campaign Summary
           </Button>
         </div>
       </div>
