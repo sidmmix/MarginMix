@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
+import { useActivityTracker } from "@/hooks/useActivityTracker";
 import { Download, User, LogOut, FileText, Heart, CheckCircle } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -11,10 +12,20 @@ import type { User as UserType } from "@shared/schema";
 export default function Dashboard() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [showThankYouModal, setShowThankYouModal] = useState(false);
-  const { user, logout, isLoggingOut } = useAuth();
+  const { user, logout, isLoggingOut, isAuthenticated } = useAuth();
   
   // Type guard for user
   const typedUser = user as UserType | undefined;
+
+  // Auto-logout after 5 minutes of inactivity
+  useActivityTracker({
+    onInactivityTimeout: () => {
+      console.log('User inactive for 5 minutes - auto logout');
+      handleLogout();
+    },
+    timeoutMinutes: 5,
+    isActive: isAuthenticated
+  });
 
   const handleLogout = async () => {
     try {
