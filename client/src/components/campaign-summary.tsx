@@ -359,7 +359,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
             🔒 Content Preview Ended
           </p>
           <p className="text-gray-600 dark:text-gray-400">
-            Sign in with Google or Meta to access your full campaign brief and premium features
+            Sign in with Google to access your full campaign brief and premium features
           </p>
         </div>
       )}

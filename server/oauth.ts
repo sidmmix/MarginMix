@@ -1,6 +1,5 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import { Strategy as FacebookStrategy } from "passport-facebook";
 import type { Express } from "express";
 import { storage } from "./storage";
 
@@ -47,47 +46,6 @@ export function initializeOAuthStrategies() {
     console.log("Google OAuth not configured - missing GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET");
   }
 
-  // Configure Facebook OAuth Strategy  
-  if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
-    console.log("Configuring Facebook OAuth strategy");
-    passport.use(new FacebookStrategy({
-      clientID: process.env.FACEBOOK_APP_ID,
-      clientSecret: process.env.FACEBOOK_APP_SECRET,
-      callbackURL: "/api/auth/facebook/callback",
-      profileFields: ['id', 'emails', 'name', 'picture.type(large)']
-    }, async (accessToken, refreshToken, profile, done) => {
-      try {
-        const email = profile.emails?.[0]?.value;
-        if (!email) {
-          return done(new Error("No email found in Facebook profile"), false);
-        }
-
-        let user = await storage.getUserByEmail(email);
-        
-        if (user) {
-          // Link Facebook account to existing user
-          user = await storage.updateUser(user.id, {
-            authProvider: "facebook",
-          });
-        } else {
-          // Create new user
-          user = await storage.createUser({
-            email,
-            firstName: profile.name?.givenName,
-            lastName: profile.name?.familyName,
-            authProvider: "facebook",
-            consentGiven: true,
-          });
-        }
-
-        return done(null, user);
-      } catch (error) {
-        return done(error, false);
-      }
-    }));
-  } else {
-    console.log("Facebook OAuth not configured - missing FACEBOOK_APP_ID or FACEBOOK_APP_SECRET");
-  }
 }
 
 // Passport serialization
@@ -131,25 +89,6 @@ export function setupOAuth(app: Express) {
     }
   });
 
-  // Facebook OAuth routes
-  app.get("/api/auth/facebook", (req, res, next) => {
-    if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
-      passport.authenticate("facebook", { scope: ["email"] })(req, res, next);
-    } else {
-      res.status(501).json({ message: "Facebook OAuth not configured - missing environment variables" });
-    }
-  });
-
-  app.get("/api/auth/facebook/callback", (req, res, next) => {
-    if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
-      passport.authenticate("facebook", { 
-        failureRedirect: "/auth?error=facebook_auth_failed",
-        successRedirect: "/"
-      })(req, res, next);
-    } else {
-      res.redirect("/auth?error=facebook_not_configured");
-    }
-  });
 
   // Logout route
   app.post("/api/auth/logout", (req, res) => {
