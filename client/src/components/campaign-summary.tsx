@@ -13,7 +13,9 @@ import {
   Briefcase,
   User,
   TrendingUp,
-  CheckCircle
+  CheckCircle,
+  BarChart3,
+  PieChart
 } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -35,6 +37,8 @@ interface CampaignSummaryProps {
 
 export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProps) {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [isGeneratingBenchmarks, setIsGeneratingBenchmarks] = useState(false);
+  const [isGeneratingMediaMix, setIsGeneratingMediaMix] = useState(false);
 
 
   const generatePDF = async () => {
@@ -78,6 +82,34 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
       console.error('Error generating PDF:', error);
     } finally {
       setIsGeneratingPDF(false);
+    }
+  };
+
+  const generateBenchmarks = async () => {
+    setIsGeneratingBenchmarks(true);
+    try {
+      // Placeholder functionality - implement actual benchmarks generation
+      setTimeout(() => {
+        alert("Cost Efficiency Benchmarks feature coming soon!");
+        setIsGeneratingBenchmarks(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Error generating benchmarks:', error);
+      setIsGeneratingBenchmarks(false);
+    }
+  };
+
+  const generateMediaMix = async () => {
+    setIsGeneratingMediaMix(true);
+    try {
+      // Placeholder functionality - implement actual media mix generation
+      setTimeout(() => {
+        alert("Suggestive Inventory Level Media Mix feature coming soon!");
+        setIsGeneratingMediaMix(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Error generating media mix:', error);
+      setIsGeneratingMediaMix(false);
     }
   };
 
@@ -297,7 +329,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-center">
+      <div className="flex flex-col lg:flex-row gap-4 justify-center items-center">
         <Button 
           onClick={generatePDF}
           disabled={isGeneratingPDF}
@@ -307,6 +339,28 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
         >
           <Download className="h-5 w-5" />
           {isGeneratingPDF ? "Generating Brief..." : "Download Brief"}
+        </Button>
+        
+        <Button 
+          onClick={generateBenchmarks}
+          disabled={isGeneratingBenchmarks}
+          variant="outline"
+          size="lg"
+          className="flex items-center gap-2"
+        >
+          <BarChart3 className="h-5 w-5" />
+          {isGeneratingBenchmarks ? "Generating..." : "Generate Cost Efficiency Benchmarks"}
+        </Button>
+        
+        <Button 
+          onClick={generateMediaMix}
+          disabled={isGeneratingMediaMix}
+          variant="outline"
+          size="lg"
+          className="flex items-center gap-2"
+        >
+          <PieChart className="h-5 w-5" />
+          {isGeneratingMediaMix ? "Generating..." : "Suggestive Inventory Level Media Mix"}
         </Button>
       </div>
     </div>
