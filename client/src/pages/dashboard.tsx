@@ -27,8 +27,8 @@ export default function Dashboard() {
 
   const handleThankYouClose = () => {
     setShowThankYouModal(false);
-    // Redirect to auth page after modal closes
-    window.location.href = '/auth';
+    // Redirect to homepage after modal closes
+    window.location.href = '/';
   };
 
   const generateSampleBrief = async () => {
