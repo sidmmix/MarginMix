@@ -130,15 +130,39 @@ export default function CampaignPlanner() {
       </nav>
 
       {/* Campaign Planner Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Campaign Planning Assistant
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Answer 9 strategic questions and get a comprehensive AI-powered campaign brief 
-            with budget allocation, platform strategies, and performance forecasts.
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Enhanced Hero Section */}
+        <div className="text-center mb-12">
+          <div className="relative mb-8">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-40 h-40 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 rounded-full blur-3xl"></div>
+            </div>
+            <div className="relative">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent mb-6">
+                Campaign Planning Assistant
+              </h1>
+              <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto mb-6 rounded-full"></div>
+            </div>
+          </div>
+          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
+            Answer <span className="font-bold text-blue-600 dark:text-blue-400">9 strategic questions</span> and get a comprehensive 
+            <span className="font-bold text-purple-600 dark:text-purple-400"> AI-powered campaign brief</span> with budget allocation, 
+            platform strategies, and performance forecasts.
           </p>
+          <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>~5 minutes</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span>AI-Enhanced</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span>Professional Brief</span>
+            </div>
+          </div>
         </div>
 
         {session && sessionId && questions.length > 0 && (
