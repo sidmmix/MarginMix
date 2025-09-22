@@ -57,6 +57,18 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
     }
   }, [isAuthenticated]);
 
+  // Auto-download PDF when component loads for authenticated users
+  useEffect(() => {
+    if (isAuthenticated) {
+      // Auto-download after a short delay to let the component render
+      const timer = setTimeout(() => {
+        generatePDFAction();
+      }, 2000); // 2 seconds delay
+
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated]);
+
   // Paywall handler for premium features
   const handlePremiumFeature = (featureAction: () => void, featureName: string) => {
     if (!isAuthenticated) {
