@@ -58,7 +58,7 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
       {
         id: "greeting",
         type: "ai",
-        content: `${greeting} 👋 I'm here to help you create a comprehensive media plan brief. This will take about 5 minutes and I'll ask you 9 key questions to understand your campaign needs.`,
+        content: greeting,
         timestamp: new Date(),
       }
     ];
