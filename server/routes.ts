@@ -30,63 +30,17 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY
 });
 
+// Updated questions to match new schema
 const questions: Question[] = [
-  { 
-    id: 'name', 
-    question: "What's your name?", 
-    type: 'text',
-    placeholder: "Enter your name...",
-    validation: { required: true, minLength: 2 }
-  },
-  { 
-    id: 'company', 
-    question: "What's your company/brand's name?", 
-    type: 'text',
-    placeholder: "Enter company name...",
-    validation: { required: true, minLength: 2 }
-  },
-  { 
-    id: 'product', 
-    question: "What kind of product/service is this campaign promoting?", 
-    type: 'text',
-    placeholder: "Describe your product/service...",
-    validation: { required: true, minLength: 10 }
-  },
-  { 
-    id: 'platforms', 
-    question: "Where do you want to deploy your digital media campaign?", 
-    type: 'platform',
-    placeholder: "Select your preferred platforms...",
-    validation: { required: true }
-  },
-  { 
-    id: 'objective', 
-    question: "What's the objective of your campaign?", 
-    type: 'text',
-    placeholder: "E.g., Brand awareness, Lead generation, Sales...",
-    validation: { required: true, minLength: 5 }
-  },
-  { 
-    id: 'audience', 
-    question: "Define your target audience and geo location", 
-    type: 'text',
-    placeholder: "E.g., Women 25-45, United States, interested in fashion...",
-    validation: { required: true, minLength: 10 }
-  },
-  { 
-    id: 'budget', 
-    question: "What's your budget?", 
-    type: 'text',
-    placeholder: "E.g., $10,000 or $10K...",
-    validation: { required: true, minLength: 2 }
-  },
-  { 
-    id: 'duration', 
-    question: "How long do you want to run the campaign? Give specific dates.", 
-    type: 'text',
-    placeholder: "E.g., March 1 - March 31, 2024...",
-    validation: { required: true, minLength: 5 }
-  }
+  { id: 'name', question: "What's your name?", type: 'text', placeholder: "Enter your name...", validation: { required: true, minLength: 2 } },
+  { id: 'company', question: "What's your company/brand's name?", type: 'text', placeholder: "Enter company name...", validation: { required: true, minLength: 2 } },
+  { id: 'product', question: "What kind of product/service is this campaign promoting?", type: 'single_choice', validation: { required: true } },
+  { id: 'platforms', question: "Where do you want to deploy your digital media campaign?", type: 'single_choice', validation: { required: true } },
+  { id: 'objective', question: "What's the objective of your campaign?", type: 'single_choice', validation: { required: true } },
+  { id: 'audience', question: "Define your target audience and geo location", type: 'single_choice', validation: { required: true } },
+  { id: 'timeframe', question: "How long do you want to run the campaign?", type: 'single_choice', validation: { required: true } },
+  { id: 'season', question: "Will this campaign run during the festive season (India) / Holiday season (USA)?", type: 'multiple_choice', validation: { required: true } },
+  { id: 'budget', question: "What's your budget?", type: 'single_choice', validation: { required: true } }
 ];
 
 // Session configuration
@@ -416,26 +370,66 @@ export function registerRoutes(app: Express): Server {
 
       // Generate AI insights
       try {
-        const prompt = `Create a comprehensive media planning strategy for this campaign:
+        const prompt = `Create a comprehensive media planning strategy for this campaign based on the specific choices provided:
 
 Campaign Details:
 - Client: ${data.name}
 - Company: ${data.company}
-- Product/Service: ${data.product}
+- Product/Service Type: ${data.product}
 - Target Audience: ${data.audience}
-- Budget: ${data.budget}
-- Duration: ${data.duration}
+- Budget Range: ${data.budget}
+- Campaign Duration: ${data.timeframe}
+- Seasonal Timing: ${data.season}
 - Platforms: ${data.platforms}
-- Objectives: ${data.objective}
+- Primary Objective: ${data.objective}
 
-Please provide detailed insights including budget allocation, platform strategies, estimated reach, CPM estimates, and specific recommendations. Return as valid JSON with this structure:
+Based on these SPECIFIC selections, provide expert insights:
+
+For Product Type "${data.product}":
+- Industry-specific best practices and messaging strategies
+- Competitive landscape considerations
+- Platform-specific creative recommendations
+
+For Target Audience "${data.audience}":
+- Detailed demographic and psychographic insights
+- Platform usage patterns and optimal timing
+- Content format preferences
+
+For Budget "${data.budget}":
+- Realistic reach estimates based on current market rates
+- Optimal budget allocation across selected platforms
+- ROI expectations and KPI benchmarks
+
+For Platform Mix "${data.platforms}":
+- Platform-specific strategy recommendations
+- Cross-platform synergies and campaign flow
+- Creative format optimization for each platform
+
+For Objective "${data.objective}":
+- Funnel stage targeting and messaging
+- Success metrics and KPI tracking
+- Campaign optimization strategies
+
+For Timing "${data.timeframe}" during "${data.season}":
+- Seasonal considerations and market dynamics
+- Optimal launch timing and campaign pacing
+- Competition and saturation factors
+
+Return detailed insights as valid JSON:
 {
-  "estimatedReach": "X million users",
-  "estimatedCPM": "$X.XX",
-  "recommendations": ["recommendation1", "recommendation2", "recommendation3"],
-  "budgetAllocation": {"platform1": "percentage", "platform2": "percentage"},
-  "platformStrategies": {"platform1": "strategy", "platform2": "strategy"},
-  "kpis": ["kpi1", "kpi2", "kpi3"]
+  "estimatedReach": "Realistic reach estimate with reasoning",
+  "estimatedCPM": "Platform-specific CPM ranges",
+  "estimatedCTR": "Expected click-through rates by platform",
+  "recommendations": ["specific actionable recommendation 1", "specific actionable recommendation 2", "specific actionable recommendation 3"],
+  "budgetAllocation": {"YouTube": "X%", "Meta": "Y%", "description": "allocation reasoning"},
+  "platformStrategies": {
+    "YouTube": "specific strategy for this audience and product",
+    "Meta": "specific strategy for this audience and product"
+  },
+  "kpis": ["primary KPI 1", "secondary KPI 2", "tertiary KPI 3"],
+  "seasonalInsights": "specific insights about campaign timing and seasonal factors",
+  "industryBenchmarks": "relevant benchmarks for this product category",
+  "competitiveAdvantage": "positioning recommendations vs competitors"
 }`;
 
         const completion = await openai.chat.completions.create({
@@ -454,7 +448,7 @@ Please provide detailed insights including budget allocation, platform strategie
           budget: data.budget || "Not specified",
           platforms: data.platforms || "Not specified",
           objectives: data.objective || "Not specified",
-          timeline: data.duration || "Not specified",
+          timeline: data.timeframe || "Not specified",
           keyMessages: `Campaign promoting ${data.product} targeting ${data.audience}`,
           aiInsights
         };
@@ -472,7 +466,7 @@ Please provide detailed insights including budget allocation, platform strategie
           budget: data.budget || "Not specified",
           platforms: data.platforms || "Not specified",
           objectives: data.objective || "Not specified",
-          timeline: data.duration || "Not specified",
+          timeline: data.timeframe || "Not specified",
           keyMessages: `Campaign promoting ${data.product} targeting ${data.audience}`,
           aiInsights: {
             estimatedReach: "Analysis pending",
