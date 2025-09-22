@@ -140,6 +140,26 @@ export async function validateAndEnhanceAnswer(
   qualityScore: number;
 }> {
   try {
+    // Skip AI processing for predefined option selections
+    if (question.options && (question.type === 'single_choice' || question.type === 'multiple_choice')) {
+      const validOptionValues = question.options.map((opt: any) => opt.value);
+      const answerValues = answer.split(', ').map(v => v.trim());
+      
+      // Check if all answer values are valid predefined options
+      const allValidOptions = answerValues.every(value => validOptionValues.includes(value));
+      
+      if (allValidOptions) {
+        // Return the original answer without AI processing for predefined selections
+        return {
+          isValid: true,
+          enhancedAnswer: undefined, // Keep original answer as-is
+          suggestions: [],
+          qualityScore: 8, // High score for valid predefined selections
+        };
+      }
+    }
+
+    // Only process free-form text answers through AI
     const prompt = `You are validating and enhancing a user's answer to a campaign planning question.
 
 Question: "${question.question}"
