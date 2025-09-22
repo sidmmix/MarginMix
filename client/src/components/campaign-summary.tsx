@@ -107,7 +107,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
         <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white p-8 text-center">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold mb-3">
-              Digital Media Campaign Brief
+              Digital Media Campaign Brief{sessionData.company ? ` for ${sessionData.company}` : ''}
             </h2>
             <div className="flex items-center justify-center gap-3 text-blue-100 mb-2">
               <div className="w-2 h-2 bg-blue-200 rounded-full"></div>
