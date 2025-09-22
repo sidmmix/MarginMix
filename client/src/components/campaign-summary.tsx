@@ -209,22 +209,44 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
                 Budget
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent>
               {sessionData.budget && (
                 <div>
                   <p className="text-gray-700 dark:text-gray-300 text-lg font-medium">{formatBudget(sessionData.budget)}</p>
                 </div>
               )}
-              
-              {sessionData.duration && (
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <Calendar className="h-4 w-4 text-gray-500" />
-                    <span className="font-medium">Duration:</span>
-                  </div>
-                  <p className="text-gray-700 dark:text-gray-300">{formatTimeframe(sessionData.duration)}</p>
-                </div>
-              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6 mb-8">
+          {/* Timeframe */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-orange-600" />
+                Timeframe
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700 dark:text-gray-300">
+                {formatTimeframe(sessionData.timeframe)}
+              </p>
+            </CardContent>
+          </Card>
+
+          {/* Season */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-pink-600" />
+                Season
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-gray-700 dark:text-gray-300">
+                {formatSeasonal(sessionData.season)}
+              </p>
             </CardContent>
           </Card>
         </div>

@@ -324,6 +324,14 @@ Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not availab
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Objectives</span>
                     <span className="text-gray-900 dark:text-white">{formatObjective(campaignBrief.objectives)}</span>
                   </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Timeframe</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{formatTimeframe(campaignBrief.timeline)}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Season</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{formatSeasonal(campaignBrief.seasonal || "")}</span>
+                  </div>
                 </div>
               </div>
 
