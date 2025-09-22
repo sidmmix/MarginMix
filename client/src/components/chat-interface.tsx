@@ -3,9 +3,9 @@ import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChoiceSelection } from "@/components/choice-selection";
-import { IntelligentInput } from "@/components/intelligent-input";
 import { 
   Brain, 
   User, 
@@ -441,16 +441,19 @@ Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not availab
         <ChoiceSelection question={currentQuestion} onSelect={handleChoiceSelection} />
       ) : (
         <div className="space-y-3">
-          {/* Enhanced AI Input */}
-          <IntelligentInput
-            sessionId={sessionId || ""}
-            questionId={currentQuestion?.id || ""}
+          {/* Regular Input */}
+          <Textarea
             value={inputValue}
-            onChange={setInputValue}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value)}
             placeholder={currentQuestion?.placeholder || "Type your answer..."}
-            className={submitResponseMutation.isPending ? "opacity-50" : ""}
+            className={`min-h-[100px] resize-none ${submitResponseMutation.isPending ? "opacity-50" : ""}`}
             disabled={submitResponseMutation.isPending}
-            onSubmit={handleSubmit}
+            onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit();
+              }
+            }}
           />
           
           {/* Submit Button */}

@@ -5,7 +5,6 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
 import { setupOAuth } from "./oauth";
-import OpenAI from "openai";
 import { 
   insertConversationSessionSchema, 
   updateConversationSessionSchema,
@@ -14,21 +13,9 @@ import {
   type Question
 } from "@shared/schema";
 import { 
-  generatePredictiveResponse, 
-  generateDynamicQuestion, 
-  validateAndEnhanceAnswer,
-  generateContextualInsights,
   type ConversationContext 
 } from "./ai-conversation";
 
-// Security: Fail fast if OpenAI API key is missing
-if (!process.env.OPENAI_API_KEY) {
-  throw new Error("OPENAI_API_KEY environment variable is required");
-}
-
-const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY
-});
 
 // Updated questions to match new schema
 const questions: Question[] = [
@@ -259,9 +246,8 @@ export function registerRoutes(app: Express): Server {
         }
       }
 
-      // Generate dynamic question based on context
-      const dynamicQuestion = await generateDynamicQuestion(context, questions);
-      res.json(dynamicQuestion);
+      // Return static question (AI enhancement disabled)
+      res.json(questions[step] || questions[0]);
     } catch (error) {
       console.error("Error generating dynamic question:", error);
       res.json(questions[parseInt(req.params.step)] || questions[0]);
@@ -299,8 +285,13 @@ export function registerRoutes(app: Express): Server {
         sessionData: session.sessionData || {}
       };
 
-      const predictions = await generatePredictiveResponse(question, currentInput, context);
-      res.json(predictions);
+      // AI suggestions disabled - return empty response
+      res.json({
+        suggestions: [],
+        contextualHints: [],
+        validationFeedback: null,
+        nextQuestionPreview: null
+      });
     } catch (error) {
       console.error("Error generating predictions:", error);
       // Return empty predictions when API fails instead of error
@@ -328,8 +319,12 @@ export function registerRoutes(app: Express): Server {
         sessionData: session.sessionData || {}
       };
 
-      const insights = await generateContextualInsights(context);
-      res.json(insights);
+      // AI insights disabled - return empty response
+      res.json({
+        strategicInsights: [],
+        recommendations: [],
+        potentialChallenges: []
+      });
     } catch (error) {
       console.error("Error generating insights:", error);
       // Return empty insights when API fails instead of error
@@ -386,7 +381,13 @@ export function registerRoutes(app: Express): Server {
           sessionData: session.sessionData || {}
         };
 
-        const validation = await validateAndEnhanceAnswer(question, answer, context);
+        // AI validation disabled - basic validation only
+        const validation = { 
+          isValid: true, 
+          enhancedAnswer: answer,
+          qualityScore: 8,
+          suggestions: []
+        };
         
         // Use enhanced answer if available and quality score is high
         const finalAnswer = validation.enhancedAnswer && validation.qualityScore >= 7 
@@ -454,94 +455,8 @@ export function registerRoutes(app: Express): Server {
 
       const data = session.sessionData as ConversationData;
 
-      // Generate AI insights
-      try {
-        const prompt = `Create a comprehensive media planning strategy for this campaign based on the specific choices provided:
-
-Campaign Details:
-- Client: ${data.name}
-- Company: ${data.company}
-- Product/Service Type: ${data.product}
-- Target Audience: ${data.audience}
-- Budget Range: ${data.budget}
-- Campaign Duration: ${data.timeframe}
-- Seasonal Timing: ${data.season}
-- Platforms: ${data.platforms}
-- Primary Objective: ${data.objective}
-
-Based on these SPECIFIC selections, provide expert insights:
-
-For Product Type "${data.product}":
-- Industry-specific best practices and messaging strategies
-- Competitive landscape considerations
-- Platform-specific creative recommendations
-
-For Target Audience "${data.audience}":
-- Detailed demographic and psychographic insights
-- Platform usage patterns and optimal timing
-- Content format preferences
-
-For Budget "${data.budget}":
-- Realistic reach estimates based on current market rates
-- Optimal budget allocation across selected platforms
-- ROI expectations and KPI benchmarks
-
-For Platform Mix "${data.platforms}":
-- Platform-specific strategy recommendations
-- Cross-platform synergies and campaign flow
-- Creative format optimization for each platform
-
-For Objective "${data.objective}":
-- Funnel stage targeting and messaging
-- Success metrics and KPI tracking
-- Campaign optimization strategies
-
-For Timing "${data.timeframe}" during "${data.season}":
-- Seasonal considerations and market dynamics
-- Optimal launch timing and campaign pacing
-- Competition and saturation factors
-
-Return detailed insights as valid JSON:
-{
-  "estimatedReach": "Realistic reach estimate with reasoning",
-  "estimatedCPM": "Platform-specific CPM ranges",
-  "estimatedCTR": "Expected click-through rates by platform",
-  "recommendations": ["specific actionable recommendation 1", "specific actionable recommendation 2", "specific actionable recommendation 3"],
-  "budgetAllocation": {"YouTube": "X%", "Meta": "Y%", "description": "allocation reasoning"},
-  "platformStrategies": {
-    "YouTube": "specific strategy for this audience and product",
-    "Meta": "specific strategy for this audience and product"
-  },
-  "kpis": ["primary KPI 1", "secondary KPI 2", "tertiary KPI 3"],
-  "seasonalInsights": "specific insights about campaign timing and seasonal factors",
-  "industryBenchmarks": "relevant benchmarks for this product category",
-  "competitiveAdvantage": "positioning recommendations vs competitors"
-}`;
-
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [{ role: "user", content: prompt }],
-          response_format: { type: "json_object" }
-        });
-
-        const aiInsights = JSON.parse(completion.choices[0].message.content || "{}");
-
-        const brief = {
-          sessionId: sessionId,
-          clientName: data.name || "Unknown Client",
-          campaignName: `${data.company} - ${data.product}`,
-          targetAudience: data.audience || "Not specified",
-          budget: data.budget || "Not specified",
-          platforms: data.platforms || "Not specified",
-          objectives: data.objective || "Not specified",
-          timeline: data.timeframe || "Not specified",
-          keyMessages: `Campaign promoting ${data.product} targeting ${data.audience}`,
-          aiInsights
-        };
-
-        res.json(brief);
-      } catch (aiError) {
-        console.error("AI generation error:", aiError);
+      // AI insights disabled - return static brief
+      {
         
         // Fallback brief without AI insights
         const brief = {
@@ -598,62 +513,21 @@ Return detailed insights as valid JSON:
     try {
       const briefData = insertCampaignBriefSchema.parse(req.body);
       
-      // Generate AI insights
-      console.log("Generating AI insights for campaign brief...");
-      
-      try {
-        const prompt = `Create a comprehensive media planning strategy for this campaign:
-        Client: ${briefData.clientName}
-        Product/Service: ${briefData.product}
-        Target Audience: ${briefData.targetAudience}
-        Budget: ${briefData.budget}
-        Duration: ${briefData.timeline}
-        Platforms: ${briefData.platforms}
-        Objectives: ${briefData.objectives}
+      // AI insights disabled - save brief without AI processing
+      {
         
-        Please provide detailed insights including:
-        1. Platform-specific strategies
-        2. Budget allocation recommendations
-        3. Target audience insights
-        4. Content recommendations
-        5. Performance forecasts
-        
-        Return the response as JSON with structured data.`;
-        
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content: "You are an expert media planner. Provide comprehensive, actionable insights for digital media campaigns."
-            },
-            {
-              role: "user",
-              content: prompt
-            }
-          ],
-          response_format: { type: "json_object" },
-        });
-
-        const aiInsights = JSON.parse(completion.choices[0].message.content || "{}");
-        console.log("AI insights generated successfully");
-
-        // Save the brief with AI insights
+        // Save brief without AI insights
         const brief = await storage.createCampaignBrief({
           ...briefData,
           userId: (req.session as any).userId,
-          aiInsights
-        });
-        
-        res.json(brief);
-      } catch (aiError) {
-        console.error("AI generation error:", aiError);
-        
-        // Fallback: Save without AI insights
-        const brief = await storage.createCampaignBrief({
-          ...briefData,
-          userId: (req.session as any).userId,
-          aiInsights: { error: "AI insights temporarily unavailable" }
+          aiInsights: {
+            estimatedReach: "Analysis available after campaign setup",
+            estimatedCPM: "Analysis available after campaign setup",
+            recommendations: ["Complete campaign configuration", "Review targeting parameters", "Set performance benchmarks"],
+            budgetAllocation: {},
+            platformStrategies: {},
+            kpis: ["Reach", "Engagement", "Conversions"]
+          }
         });
         
         res.json(brief);
