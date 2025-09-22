@@ -79,7 +79,7 @@ export const QUESTIONS: Question[] = [
   { 
     id: 'season', 
     question: "Will this campaign run during the festive season (India) / Holiday season (USA)?", 
-    type: 'multiple_choice',
+    type: 'single_choice',
     options: [
       { value: 'yes', label: 'Yes' },
       { value: 'no', label: 'No' },
