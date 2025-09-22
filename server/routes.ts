@@ -118,7 +118,7 @@ const pgStore = connectPg(session);
 const sessionStore = new pgStore({
   conString: process.env.DATABASE_URL,
   createTableIfMissing: false,
-  ttl: 7 * 24 * 60 * 60, // 1 week
+  ttl: 2 * 60 * 60, // 2 hours - sessions expire quickly
   tableName: "sessions",
 });
 
@@ -168,7 +168,7 @@ export function registerRoutes(app: Express): Server {
     cookie: {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week
+      // Removed maxAge - sessions now expire when browser closes
       sameSite: 'strict' // CSRF protection
     },
   }));
