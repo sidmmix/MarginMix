@@ -139,8 +139,9 @@ export async function validateAndEnhanceAnswer(
   suggestions: string[];
   qualityScore: number;
 }> {
+  // AI enhancements turned off for all questions - return simple validation only
   try {
-    // Skip AI processing for predefined option selections
+    // For predefined option selections (single/multiple choice)
     if (question.options && (question.type === 'single_choice' || question.type === 'multiple_choice')) {
       const validOptionValues = question.options.map((opt: any) => opt.value);
       const answerValues = answer.split(', ').map(v => v.trim());
@@ -148,54 +149,22 @@ export async function validateAndEnhanceAnswer(
       // Check if all answer values are valid predefined options
       const allValidOptions = answerValues.every(value => validOptionValues.includes(value));
       
-      if (allValidOptions) {
-        // Return the original answer without AI processing for predefined selections
-        return {
-          isValid: true,
-          enhancedAnswer: undefined, // Keep original answer as-is
-          suggestions: [],
-          qualityScore: 8, // High score for valid predefined selections
-        };
-      }
+      return {
+        isValid: allValidOptions,
+        enhancedAnswer: undefined, // Keep original answer as-is
+        suggestions: [],
+        qualityScore: allValidOptions ? 8 : 3,
+      };
     }
 
-    // Only process free-form text answers through AI
-    const prompt = `You are validating and enhancing a user's answer to a campaign planning question.
-
-Question: "${question.question}"
-User's Answer: "${answer}"
-Context: ${JSON.stringify(context.userResponses)}
-
-Evaluate the answer and provide:
-1. Whether it's valid and complete (boolean)
-2. An enhanced version that adds strategic context (if needed)
-3. Specific suggestions for improvement
-4. A quality score from 1-10 (10 being comprehensive and strategic)
-
-Respond in JSON format:
-{
-  "isValid": true/false,
-  "enhancedAnswer": "enhanced version or null",
-  "suggestions": ["improvement1", "improvement2"],
-  "qualityScore": 1-10
-}`;
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: prompt },
-      ],
-      response_format: { type: "json_object" },
-      max_tokens: 400,
-    });
-
-    const result = JSON.parse(response.choices[0].message.content || "{}");
+    // For text inputs - simple validation without AI processing
+    const isValid = answer && answer.trim().length >= 2;
     
     return {
-      isValid: result.isValid !== false,
-      enhancedAnswer: result.enhancedAnswer || undefined,
-      suggestions: result.suggestions || [],
-      qualityScore: result.qualityScore || 5,
+      isValid,
+      enhancedAnswer: undefined, // Keep original answer as-is
+      suggestions: [],
+      qualityScore: isValid ? 7 : 3,
     };
   } catch (error) {
     console.error("Error validating answer:", error);
