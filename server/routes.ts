@@ -135,7 +135,8 @@ const requireAuth = (req: any, res: any, next: any) => {
     return res.status(429).json({ message: "Too many authentication attempts. Try again later." });
   }
 
-  if (req.session?.userId) {
+  // Check for Passport.js authenticated user (OAuth flow) or session userId (legacy)
+  if (req.user || req.session?.userId) {
     // Clear failed attempts on successful auth
     authAttempts.delete(clientIP);
     return next();
@@ -181,7 +182,14 @@ export function registerRoutes(app: Express): Server {
 
   app.get("/api/auth/me", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser((req.session as any).userId);
+      // For OAuth users, req.user is already populated by Passport
+      // For legacy session users, fetch from storage
+      let user = (req as any).user;
+      
+      if (!user && (req.session as any)?.userId) {
+        user = await storage.getUser((req.session as any).userId);
+      }
+      
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
