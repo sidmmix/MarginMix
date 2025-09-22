@@ -131,10 +131,15 @@ export type InsertCampaignBrief = z.infer<typeof insertCampaignBriefSchema>;
 
 // Question types for the conversation flow
 export const questionSchema = z.object({
-  id: z.enum(['name', 'company', 'product', 'platforms', 'objective', 'audience', 'budget', 'duration']),
+  id: z.enum(['name', 'company', 'product', 'platforms', 'objective', 'audience', 'timeframe', 'season', 'budget']),
   question: z.string(),
-  type: z.enum(['text', 'platform']),
-  placeholder: z.string(),
+  type: z.enum(['text', 'single_choice', 'multiple_choice']),
+  placeholder: z.string().optional(),
+  options: z.array(z.object({
+    value: z.string(),
+    label: z.string(),
+    description: z.string().optional(),
+  })).optional(),
   validation: z.object({
     required: z.boolean(),
     minLength: z.number().optional(),
@@ -151,8 +156,9 @@ export const conversationDataSchema = z.object({
   platforms: z.string().optional(),
   objective: z.string().optional(),
   audience: z.string().optional(),
+  timeframe: z.string().optional(),
+  season: z.string().optional(),
   budget: z.string().optional(),
-  duration: z.string().optional(),
 });
 
 export type ConversationData = z.infer<typeof conversationDataSchema>;

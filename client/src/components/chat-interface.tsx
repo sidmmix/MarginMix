@@ -4,7 +4,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { PlatformSelection } from "@/components/platform-selection";
+import { ChoiceSelection } from "@/components/choice-selection";
 import { IntelligentInput } from "@/components/intelligent-input";
 import { 
   Brain, 
@@ -36,7 +36,7 @@ interface ChatInterfaceProps {
 export function ChatInterface({ session, sessionId, questions, greeting, onComplete }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState("");
-  const [showPlatforms, setShowPlatforms] = useState(false);
+  const [showChoices, setShowChoices] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [campaignBrief, setCampaignBrief] = useState<CampaignBrief | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -58,7 +58,7 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
       {
         id: "greeting",
         type: "ai",
-        content: `${greeting} 👋 I'm here to help you create a comprehensive media plan brief. This will take about 5 minutes and I'll ask you 8 key questions to understand your campaign needs.`,
+        content: `${greeting} 👋 I'm here to help you create a comprehensive media plan brief. This will take about 5 minutes and I'll ask you 9 key questions to understand your campaign needs.`,
         timestamp: new Date(),
       }
     ];
@@ -96,7 +96,7 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
         content: currentQuestion.question,
         timestamp: new Date(),
       });
-      setShowPlatforms(currentQuestion.type === 'platform');
+      setShowChoices(currentQuestion.type === 'single_choice' || currentQuestion.type === 'multiple_choice');
     }
 
     setMessages(newMessages);
@@ -135,7 +135,7 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
           content: result.nextQuestion.question,
           timestamp: new Date(),
         }]);
-        setShowPlatforms(result.nextQuestion.type === 'platform');
+        setShowChoices(result.nextQuestion.type === 'single_choice' || result.nextQuestion.type === 'multiple_choice');
       }
 
       setInputValue("");
@@ -156,10 +156,11 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
     },
   });
 
-  // Platform selection handler
-  const handlePlatformSelection = (platform: string) => {
-    submitResponseMutation.mutate(platform);
-    setShowPlatforms(false);
+  // Choice selection handler
+  const handleChoiceSelection = (value: string | string[]) => {
+    const answer = Array.isArray(value) ? value.join(', ') : value;
+    submitResponseMutation.mutate(answer);
+    setShowChoices(false);
   };
 
   // Regular input submission
@@ -353,8 +354,8 @@ Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not availab
       </div>
 
       {/* Input area */}
-      {showPlatforms ? (
-        <PlatformSelection onSelect={handlePlatformSelection} />
+      {showChoices ? (
+        <ChoiceSelection question={currentQuestion} onSelect={handleChoiceSelection} />
       ) : (
         <div className="space-y-3">
           {/* Enhanced AI Input */}
