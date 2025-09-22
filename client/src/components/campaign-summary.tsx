@@ -14,9 +14,9 @@ import {
   User,
   TrendingUp,
   CheckCircle,
-  PieChart,
   PlayCircle,
-  IndianRupee
+  IndianRupee,
+  Percent
 } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -378,7 +378,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
           size="lg"
           className="flex items-center gap-2"
         >
-          <PieChart className="h-5 w-5" />
+          <Percent className="h-5 w-5" />
           {isGeneratingMediaMix ? "Generating..." : "Suggestive Inventory Level Media Mix"}
         </Button>
         
