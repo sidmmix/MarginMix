@@ -13,7 +13,6 @@ import {
   Briefcase,
   User,
   TrendingUp,
-  ArrowRight,
   CheckCircle
 } from "lucide-react";
 import jsPDF from "jspdf";
@@ -298,7 +297,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+      <div className="flex justify-center">
         <Button 
           onClick={generatePDF}
           disabled={isGeneratingPDF}
@@ -308,15 +307,6 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
         >
           <Download className="h-5 w-5" />
           {isGeneratingPDF ? "Generating Brief..." : "Download Brief"}
-        </Button>
-        
-        <Button 
-          onClick={onContinue}
-          size="lg"
-          className="flex items-center gap-2"
-        >
-          Continue to Full Platform
-          <ArrowRight className="h-5 w-5" />
         </Button>
       </div>
     </div>
