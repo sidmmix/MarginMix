@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -42,8 +42,20 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
   const [isGeneratingBenchmarks, setIsGeneratingBenchmarks] = useState(false);
   const [isGeneratingMediaMix, setIsGeneratingMediaMix] = useState(false);
   const [isGeneratingPlaybook, setIsGeneratingPlaybook] = useState(false);
+  const [isContentBlurred, setIsContentBlurred] = useState(false);
   
   const { isAuthenticated } = useAuth();
+
+  // Blur content after 5 seconds if user is not authenticated
+  useEffect(() => {
+    if (!isAuthenticated) {
+      const timer = setTimeout(() => {
+        setIsContentBlurred(true);
+      }, 5000); // 5 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [isAuthenticated]);
 
   // Paywall handler for premium features
   const handlePremiumFeature = (featureAction: () => void, featureName: string) => {
@@ -167,7 +179,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
         </div>
       </div>
 
-      <div id="campaign-summary-content" className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden mb-8">
+      <div id="campaign-summary-content" className={`bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-700 overflow-hidden mb-8 transition-all duration-500 ${isContentBlurred ? 'blur-md pointer-events-none' : ''}`}>
         {/* Header with gradient background */}
         <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white p-8 text-center">
           <div className="max-w-3xl mx-auto">
@@ -341,12 +353,23 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-col lg:flex-row gap-4 justify-center items-center">
+      {isContentBlurred && !isAuthenticated && (
+        <div className="text-center mb-6 p-4 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+          <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+            🔒 Content Preview Ended
+          </p>
+          <p className="text-gray-600 dark:text-gray-400">
+            Sign in with Google or Meta to access your full campaign brief and premium features
+          </p>
+        </div>
+      )}
+      
+      <div className={`flex flex-col lg:flex-row gap-4 justify-center items-center ${isContentBlurred ? 'animate-pulse' : ''}`}>
         <Button 
           onClick={generatePDF}
           disabled={isGeneratingPDF}
           size="lg"
-          className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+          className={`flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 ${isContentBlurred ? 'ring-4 ring-blue-300 ring-opacity-75 scale-105' : ''}`}
         >
           <Download className="h-5 w-5" />
           {isGeneratingPDF ? "Generating Brief..." : "Download Brief"}
@@ -356,7 +379,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
           onClick={generateBenchmarks}
           disabled={isGeneratingBenchmarks}
           size="lg"
-          className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+          className={`flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 ${isContentBlurred ? 'ring-4 ring-green-300 ring-opacity-75 scale-105' : ''}`}
         >
           <div className="flex items-center gap-1">
             <DollarSign className="h-4 w-4" />
@@ -369,7 +392,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
           onClick={generateMediaMix}
           disabled={isGeneratingMediaMix}
           size="lg"
-          className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+          className={`flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 ${isContentBlurred ? 'ring-4 ring-purple-300 ring-opacity-75 scale-105' : ''}`}
         >
           <Percent className="h-5 w-5" />
           {isGeneratingMediaMix ? "Generating..." : "Suggestive Inventory Level Media Mix"}
@@ -379,7 +402,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
           onClick={generatePlaybook}
           disabled={isGeneratingPlaybook}
           size="lg"
-          className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+          className={`flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white shadow-lg hover:shadow-xl transition-all duration-200 ${isContentBlurred ? 'ring-4 ring-indigo-300 ring-opacity-75 scale-105' : ''}`}
         >
           <Book className="h-5 w-5" />
           {isGeneratingPlaybook ? "Generating..." : "Generate Activation Playbook"}
