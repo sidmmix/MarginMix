@@ -17,6 +17,16 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { ConversationSession, Question, ConversationData, CampaignBrief } from "@shared/schema";
+import { 
+  formatBudget, 
+  formatPlatforms, 
+  formatProduct, 
+  formatObjective, 
+  formatAudience, 
+  formatTimeframe, 
+  formatSeasonal,
+  formatText
+} from "@/lib/format-utils";
 
 interface ChatMessage {
   id: string;
@@ -295,23 +305,23 @@ Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not availab
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Budget</span>
-                    <span className="text-gray-900 dark:text-white font-medium">{campaignBrief.budget}</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{formatBudget(campaignBrief.budget)}</span>
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Timeline</span>
-                    <span className="text-gray-900 dark:text-white font-medium">{campaignBrief.timeline}</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{formatTimeframe(campaignBrief.timeline)}</span>
                   </div>
                   <div className="flex flex-col md:col-span-2">
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Target Audience</span>
-                    <span className="text-gray-900 dark:text-white">{campaignBrief.targetAudience}</span>
+                    <span className="text-gray-900 dark:text-white">{formatAudience(campaignBrief.targetAudience)}</span>
                   </div>
                   <div className="flex flex-col md:col-span-2">
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Platforms</span>
-                    <span className="text-gray-900 dark:text-white">{campaignBrief.platforms}</span>
+                    <span className="text-gray-900 dark:text-white">{formatPlatforms(campaignBrief.platforms)}</span>
                   </div>
                   <div className="flex flex-col md:col-span-2">
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Objectives</span>
-                    <span className="text-gray-900 dark:text-white">{campaignBrief.objectives}</span>
+                    <span className="text-gray-900 dark:text-white">{formatObjective(campaignBrief.objectives)}</span>
                   </div>
                 </div>
               </div>

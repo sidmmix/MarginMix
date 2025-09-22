@@ -18,6 +18,16 @@ import {
 } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { 
+  formatBudget, 
+  formatPlatforms, 
+  formatProduct, 
+  formatObjective, 
+  formatAudience, 
+  formatTimeframe, 
+  formatSeasonal,
+  formatText
+} from "@/lib/format-utils";
 
 interface CampaignSummaryProps {
   sessionData: Record<string, any>;
@@ -27,12 +37,6 @@ interface CampaignSummaryProps {
 export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProps) {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
-  const formatPlatforms = (platforms: string[] | string) => {
-    if (Array.isArray(platforms)) {
-      return platforms.join(", ");
-    }
-    return platforms || "Not specified";
-  };
 
   const generatePDF = async () => {
     setIsGeneratingPDF(true);
@@ -159,7 +163,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
                     <TrendingUp className="h-4 w-4 text-gray-500" />
                     <span className="font-medium">Objective:</span>
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300">{sessionData.objective}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{formatObjective(sessionData.objective)}</p>
                 </div>
               )}
             </CardContent>
@@ -175,7 +179,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
             </CardHeader>
             <CardContent>
               <p className="text-gray-700 dark:text-gray-300">
-                {sessionData.product || "Not specified"}
+                {formatProduct(sessionData.product)}
               </p>
             </CardContent>
           </Card>
@@ -192,7 +196,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
             </CardHeader>
             <CardContent>
               <p className="text-gray-700 dark:text-gray-300">
-                {sessionData.audience || "Not specified"}
+                {formatAudience(sessionData.audience)}
               </p>
             </CardContent>
           </Card>
@@ -212,7 +216,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
                     <DollarSign className="h-4 w-4 text-gray-500" />
                     <span className="font-medium">Budget:</span>
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300">{sessionData.budget}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{formatBudget(sessionData.budget)}</p>
                 </div>
               )}
               
@@ -222,7 +226,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
                     <Calendar className="h-4 w-4 text-gray-500" />
                     <span className="font-medium">Duration:</span>
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300">{sessionData.duration}</p>
+                  <p className="text-gray-700 dark:text-gray-300">{formatTimeframe(sessionData.duration)}</p>
                 </div>
               )}
             </CardContent>
