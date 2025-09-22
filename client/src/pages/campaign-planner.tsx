@@ -137,7 +137,7 @@ export default function CampaignPlanner() {
             Campaign Planning Assistant
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Answer 8 strategic questions and get a comprehensive AI-powered campaign brief 
+            Answer 9 strategic questions and get a comprehensive AI-powered campaign brief 
             with budget allocation, platform strategies, and performance forecasts.
           </p>
         </div>
@@ -149,7 +149,7 @@ export default function CampaignPlanner() {
                 session={session}
                 sessionId={sessionId}
                 questions={questions}
-                greeting="Hi! I'm your AI campaign planning assistant. I'll ask you 8 strategic questions to create a comprehensive media plan for your campaign. Let's start!"
+                greeting="Hi! I'm your AI campaign planning assistant. I'll ask you 9 strategic questions to create a comprehensive media plan for your campaign. Let's start!"
                 onComplete={handleComplete}
               />
             </div>
