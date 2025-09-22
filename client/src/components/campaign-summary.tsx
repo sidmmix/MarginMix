@@ -191,7 +191,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-purple-600" />
-                Target Audience
+                Target Audience and Location
               </CardTitle>
             </CardHeader>
             <CardContent>
