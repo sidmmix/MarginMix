@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   Download, 
   Target, 
@@ -41,7 +42,18 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
   const [isGeneratingBenchmarks, setIsGeneratingBenchmarks] = useState(false);
   const [isGeneratingMediaMix, setIsGeneratingMediaMix] = useState(false);
   const [isGeneratingPlaybook, setIsGeneratingPlaybook] = useState(false);
+  
+  const { isAuthenticated } = useAuth();
 
+  // Paywall handler for premium features
+  const handlePremiumFeature = (featureAction: () => void, featureName: string) => {
+    if (!isAuthenticated) {
+      alert(`Please sign in to access ${featureName}. You'll be redirected to the login page.`);
+      window.location.href = "/auth";
+      return;
+    }
+    featureAction();
+  };
 
   const generatePDF = async () => {
     setIsGeneratingPDF(true);
@@ -87,7 +99,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
     }
   };
 
-  const generateBenchmarks = async () => {
+  const generateBenchmarksAction = async () => {
     setIsGeneratingBenchmarks(true);
     try {
       // Placeholder functionality - implement actual benchmarks generation
@@ -101,7 +113,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
     }
   };
 
-  const generateMediaMix = async () => {
+  const generateMediaMixAction = async () => {
     setIsGeneratingMediaMix(true);
     try {
       // Placeholder functionality - implement actual media mix generation
@@ -115,7 +127,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
     }
   };
 
-  const generatePlaybook = async () => {
+  const generatePlaybookAction = async () => {
     setIsGeneratingPlaybook(true);
     try {
       // Placeholder functionality - implement actual activation playbook generation
@@ -128,6 +140,11 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
       setIsGeneratingPlaybook(false);
     }
   };
+
+  // Premium feature handlers with paywall
+  const generateBenchmarks = () => handlePremiumFeature(generateBenchmarksAction, "Cost Efficiency Benchmarks");
+  const generateMediaMix = () => handlePremiumFeature(generateMediaMixAction, "Suggestive Inventory Level Media Mix");
+  const generatePlaybook = () => handlePremiumFeature(generatePlaybookAction, "Generate Activation Playbook");
 
   return (
     <div className="max-w-5xl mx-auto p-6">
