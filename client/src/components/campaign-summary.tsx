@@ -14,9 +14,9 @@ import {
   User,
   TrendingUp,
   CheckCircle,
-  PlayCircle,
   IndianRupee,
-  Percent
+  Percent,
+  Book
 } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -389,7 +389,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
           size="lg"
           className="flex items-center gap-2"
         >
-          <PlayCircle className="h-5 w-5" />
+          <Book className="h-5 w-5" />
           {isGeneratingPlaybook ? "Generating..." : "Generate Activation Playbook"}
         </Button>
       </div>
