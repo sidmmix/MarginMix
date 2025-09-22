@@ -40,16 +40,16 @@ const objectiveLabels: Record<string, string> = {
   'sales_lead_gen': 'Sales/Lead Generation'
 };
 
-// Audience options mapping
+// Audience options mapping - exact labels from question definition
 const audienceLabels: Record<string, string> = {
-  'india_inmarket_shoppers': 'India - In-Market Shoppers',
-  'india_affinity_shoppers': 'India - Affinity Shoppers', 
-  'us_inmarket_shoppers': 'US - In-Market Shoppers',
-  'us_affinity_shoppers': 'US - Affinity Shoppers',
-  'india_inmarket_financial': 'India - In-Market Financial',
-  'india_affinity_financial': 'India - Affinity Financial',
-  'us_inmarket_financial': 'US - In-Market Financial',
-  'us_affinity_financial': 'US - Affinity Financial'
+  'india_inmarket_shoppers': '18–54, Male and Female, India Top 8 cities, InMarket Shoppers',
+  'india_affinity_shoppers': '18–54, Male and Female, India Top 8 cities, Affinity Shoppers', 
+  'us_inmarket_shoppers': '18–54, Male and Female, US Metro Areas, InMarket Shoppers',
+  'us_affinity_shoppers': '18–54, Male and Female, US Metro Areas, Affinity Shoppers',
+  'india_inmarket_financial': '18–54, Male and Female, India Top 8 cities, InMarket Financial Services',
+  'india_affinity_financial': '18–54, Male and Female, India Top 8 cities, Affinity Financial Services',
+  'us_inmarket_financial': '18–54, Male and Female, US Metro Areas, InMarket Financial Services',
+  'us_affinity_financial': '18–54, Male and Female, US Metro Areas, Affinity Financial Services'
 };
 
 // Timeframe options mapping
