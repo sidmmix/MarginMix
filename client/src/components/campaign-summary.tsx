@@ -128,12 +128,12 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
         <div className="p-8 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
 
         <div className="grid md:grid-cols-2 gap-6 mb-8">
-          {/* Campaign Overview */}
+          {/* Basic Details */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Target className="h-5 w-5 text-blue-600" />
-                Campaign Overview
+                Basic Details
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
