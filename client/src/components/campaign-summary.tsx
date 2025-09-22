@@ -201,22 +201,18 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
             </CardContent>
           </Card>
 
-          {/* Campaign Details */}
+          {/* Budget */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5 text-orange-600" />
-                Campaign Details
+                <DollarSign className="h-5 w-5 text-green-600" />
+                Budget
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {sessionData.budget && (
                 <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <DollarSign className="h-4 w-4 text-gray-500" />
-                    <span className="font-medium">Budget:</span>
-                  </div>
-                  <p className="text-gray-700 dark:text-gray-300">{formatBudget(sessionData.budget)}</p>
+                  <p className="text-gray-700 dark:text-gray-300 text-lg font-medium">{formatBudget(sessionData.budget)}</p>
                 </div>
               )}
               
