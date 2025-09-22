@@ -149,7 +149,7 @@ export default function CampaignPlanner() {
                 session={session}
                 sessionId={sessionId}
                 questions={questions}
-                greeting="Hi! I'm your AI campaign planning assistant. I'll ask you 9 strategic questions to create a comprehensive media plan for your campaign. Let's start!"
+                greeting="Hi! I'm your AI campaign planning assistant. I'll ask you 9 strategic questions to create a comprehensive media plan for your campaign. Let's start! 👋 I'm here to help you create a comprehensive media plan brief. This will take about 5 minutes!"
                 onComplete={handleComplete}
               />
             </div>
