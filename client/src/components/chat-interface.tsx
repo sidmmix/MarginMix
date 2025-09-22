@@ -51,6 +51,7 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
   const [isComplete, setIsComplete] = useState(false);
   const [campaignBrief, setCampaignBrief] = useState<CampaignBrief | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
 
   const currentQuestion = session ? questions[session.currentStep] : questions[0];
@@ -119,6 +120,17 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
       onComplete();
     }
   }, [session?.isCompleted, session?.sessionData]);
+
+  // Auto-focus textarea for seamless Q&A flow
+  useEffect(() => {
+    if (!showChoices && textareaRef.current && currentQuestion && session?.isCompleted !== "true") {
+      // Add a small delay to ensure DOM is ready
+      const timer = setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [showChoices, session?.currentStep, session?.isCompleted]);
 
   // Submit response mutation
   const submitResponseMutation = useMutation({
@@ -443,11 +455,13 @@ Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not availab
         <div className="space-y-3">
           {/* Regular Input */}
           <Textarea
+            ref={textareaRef}
             value={inputValue}
             onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setInputValue(e.target.value)}
             placeholder={currentQuestion?.placeholder || "Type your answer..."}
             className={`min-h-[100px] resize-none ${submitResponseMutation.isPending ? "opacity-50" : ""}`}
             disabled={submitResponseMutation.isPending}
+            data-testid="input-answer"
             onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
