@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -39,6 +39,14 @@ export function IntelligentInput({
   const [predictions, setPredictions] = useState<PredictiveResponse | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Focus input when question changes
+  useEffect(() => {
+    if (textareaRef.current && !disabled) {
+      textareaRef.current.focus();
+    }
+  }, [questionId, disabled]);
 
   // Debounced prediction fetching - only for longer responses
   const fetchPredictions = useCallback(
@@ -111,6 +119,7 @@ export function IntelligentInput({
     <div className="space-y-3">
       <div className="relative">
         <Textarea
+          ref={textareaRef}
           value={value}
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -119,6 +128,7 @@ export function IntelligentInput({
           onFocus={() => setShowSuggestions(!!predictions)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           disabled={disabled}
+          autoFocus
         />
         
         {isTyping && (
