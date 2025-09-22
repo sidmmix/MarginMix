@@ -43,6 +43,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
   const [isGeneratingMediaMix, setIsGeneratingMediaMix] = useState(false);
   const [isGeneratingPlaybook, setIsGeneratingPlaybook] = useState(false);
   const [isContentBlurred, setIsContentBlurred] = useState(false);
+  const [hasAutoDownloaded, setHasAutoDownloaded] = useState(false);
   
   const { isAuthenticated } = useAuth();
 
@@ -57,17 +58,21 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
     }
   }, [isAuthenticated]);
 
-  // Auto-download PDF when component loads for authenticated users
+  // Auto-download PDF when user becomes authenticated (only once)
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !hasAutoDownloaded) {
+      console.log('User authenticated - triggering auto-download PDF');
+      setHasAutoDownloaded(true);
+      
       // Auto-download after a short delay to let the component render
       const timer = setTimeout(() => {
+        console.log('Executing auto-download PDF');
         generatePDFAction();
       }, 2000); // 2 seconds delay
 
       return () => clearTimeout(timer);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, hasAutoDownloaded]);
 
   // Paywall handler for premium features
   const handlePremiumFeature = (featureAction: () => void, featureName: string) => {
