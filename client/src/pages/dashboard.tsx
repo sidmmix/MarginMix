@@ -1,18 +1,35 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
-import { Download, User, LogOut, FileText } from "lucide-react";
+import { Download, User, LogOut, FileText, Heart, CheckCircle } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import type { User as UserType } from "@shared/schema";
 
 export default function Dashboard() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [showThankYouModal, setShowThankYouModal] = useState(false);
   const { user, logout, isLoggingOut } = useAuth();
   
   // Type guard for user
   const typedUser = user as UserType | undefined;
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setShowThankYouModal(true);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
+  const handleThankYouClose = () => {
+    setShowThankYouModal(false);
+    // Redirect to auth page after modal closes
+    window.location.href = '/auth';
+  };
 
   const generateSampleBrief = async () => {
     setIsGeneratingPDF(true);
@@ -131,7 +148,7 @@ export default function Dashboard() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => logout()}
+                onClick={handleLogout}
                 disabled={isLoggingOut}
                 data-testid="button-logout"
               >
@@ -253,6 +270,41 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </main>
+
+      {/* Thank You Modal */}
+      <Dialog open={showThankYouModal} onOpenChange={setShowThankYouModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3 justify-center text-center">
+              <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                <CheckCircle className="h-6 w-6 text-white" />
+              </div>
+              <span className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                Thank You!
+              </span>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-6">
+            <div className="mb-6">
+              <Heart className="h-8 w-8 text-red-500 mx-auto mb-4" />
+              <p className="text-lg text-gray-700 dark:text-gray-300 mb-2">
+                Thank you for using YourBrief!
+              </p>
+              <p className="text-gray-600 dark:text-gray-400">
+                We hope our AI-powered campaign planner helped you create amazing digital media strategies.
+              </p>
+            </div>
+            <Button 
+              onClick={handleThankYouClose}
+              size="lg"
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+              data-testid="button-thank-you-close"
+            >
+              Continue to Login
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
