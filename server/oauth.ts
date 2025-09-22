@@ -82,7 +82,7 @@ export function setupOAuth(app: Express) {
     if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       passport.authenticate("google", { 
         failureRedirect: "/auth?error=google_auth_failed",
-        successRedirect: "/"
+        successRedirect: "/dashboard"
       })(req, res, next);
     } else {
       res.redirect("/auth?error=google_not_configured");

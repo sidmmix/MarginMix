@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
 import CampaignPlanner from "@/pages/campaign-planner";
 import Home from "@/pages/home";
+import Dashboard from "@/pages/dashboard";
 import { AuthPage } from "@/pages/auth";
 import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
@@ -23,7 +24,8 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       
       {/* Protected routes - temporarily accessible for testing */}
-      <Route path="/dashboard" component={Home} />
+      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/home" component={Home} />
       
       <Route component={NotFound} />
     </Switch>
