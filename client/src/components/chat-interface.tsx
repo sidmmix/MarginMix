@@ -330,7 +330,7 @@ Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not availab
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Season</span>
-                    <span className="text-gray-900 dark:text-white font-medium">{formatSeasonal(campaignBrief.seasonal || "")}</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{formatSeasonal((campaignBrief as any).seasonal || "")}</span>
                   </div>
                 </div>
               </div>

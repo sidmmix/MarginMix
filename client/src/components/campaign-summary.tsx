@@ -141,7 +141,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <User className="h-4 w-4 text-gray-500" />
-                    <span className="font-medium">Contact:</span>
+                    <span className="font-medium">POC:</span>
                   </div>
                   <p className="text-gray-700 dark:text-gray-300">{sessionData.name}</p>
                 </div>
