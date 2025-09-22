@@ -14,9 +14,9 @@ import {
   User,
   TrendingUp,
   CheckCircle,
-  BarChart3,
   PieChart,
-  PlayCircle
+  PlayCircle,
+  IndianRupee
 } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -364,7 +364,10 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
           size="lg"
           className="flex items-center gap-2"
         >
-          <BarChart3 className="h-5 w-5" />
+          <div className="flex items-center gap-1">
+            <DollarSign className="h-4 w-4" />
+            <IndianRupee className="h-4 w-4" />
+          </div>
           {isGeneratingBenchmarks ? "Generating..." : "Generate Cost Efficiency Benchmarks"}
         </Button>
         
