@@ -33,7 +33,6 @@ const openai = new OpenAI({
 // Updated questions to match new schema
 const questions: Question[] = [
   { id: 'name', question: "What's your name?", type: 'text', placeholder: "Enter your name...", validation: { required: true, minLength: 2 } },
-  { id: 'company', question: "What's your company/brand's name?", type: 'text', placeholder: "Enter company name...", validation: { required: true, minLength: 2 } },
   { 
     id: 'product', 
     question: "What kind of product/service is this campaign promoting?", 
@@ -46,6 +45,7 @@ const questions: Question[] = [
     ],
     validation: { required: true }
   },
+  { id: 'company', question: "What's your company/brand's name?", type: 'text', placeholder: "Enter company name...", validation: { required: true, minLength: 2 } },
   { 
     id: 'platforms', 
     question: "Where do you want to deploy your digital media campaign?", 
