@@ -25,12 +25,12 @@ const platformLabels: Record<string, string> = {
   'both': 'YouTube and Meta'
 };
 
-// Product/service options mapping
+// Product/service options mapping - exact labels from question definition
 const productLabels: Record<string, string> = {
-  'ecommerce': 'E-commerce/Online Retail',
-  'fmcg': 'FMCG (Fast Moving Consumer Goods)',
-  'd2c_beauty': 'D2C Beauty',
-  'fintech': 'FinTech'
+  'ecommerce': 'Ecommerce app/Superapp',
+  'fmcg': 'FMCG/CPG',
+  'd2c_beauty': 'D2C Beauty/Skincare/Personal Care/Haircare/Wellness',
+  'fintech': 'Fintech/Financial Services'
 };
 
 // Objective options mapping
@@ -69,14 +69,16 @@ const seasonalLabels: Record<string, string> = {
 /**
  * Format budget value to include proper currency symbol and readable text
  */
-export function formatBudget(budgetValue: string): string {
+export function formatBudget(budgetValue: string | null): string {
+  if (!budgetValue) return 'Not specified';
   return budgetLabels[budgetValue] || budgetValue || 'Not specified';
 }
 
 /**
  * Format platform selection to show readable platform names
  */
-export function formatPlatforms(platforms: string[] | string): string {
+export function formatPlatforms(platforms: string[] | string | null): string {
+  if (!platforms) return "Not specified";
   if (Array.isArray(platforms)) {
     return platforms.map(platform => platformLabels[platform] || formatText(platform)).join(", ");
   }
@@ -86,35 +88,39 @@ export function formatPlatforms(platforms: string[] | string): string {
 /**
  * Format product/service value to readable text
  */
-export function formatProduct(productValue: string): string {
+export function formatProduct(productValue: string | null): string {
+  if (!productValue) return 'Not specified';
   return productLabels[productValue] || formatText(productValue) || 'Not specified';
 }
 
 /**
  * Format objective value to readable text
  */
-export function formatObjective(objectiveValue: string): string {
+export function formatObjective(objectiveValue: string | null): string {
+  if (!objectiveValue) return 'Not specified';
   return objectiveLabels[objectiveValue] || formatText(objectiveValue) || 'Not specified';
 }
 
 /**
  * Format audience value to readable text
  */
-export function formatAudience(audienceValue: string): string {
+export function formatAudience(audienceValue: string | null): string {
+  if (!audienceValue) return 'Not specified';
   return audienceLabels[audienceValue] || formatText(audienceValue) || 'Not specified';
 }
 
 /**
  * Format timeframe value to readable text
  */
-export function formatTimeframe(timeframeValue: string): string {
+export function formatTimeframe(timeframeValue: string | null): string {
+  if (!timeframeValue) return 'Not specified';
   return timeframeLabels[timeframeValue] || formatText(timeframeValue) || 'Not specified';
 }
 
 /**
  * Format seasonal values to readable text (handles multiple selections)
  */
-export function formatSeasonal(seasonalValue: string): string {
+export function formatSeasonal(seasonalValue: string | null): string {
   if (!seasonalValue) return 'Not specified';
   
   // Handle multiple selections separated by comma

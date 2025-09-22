@@ -13,7 +13,8 @@ import {
   CheckCircle,
   BarChart3,
   Download,
-  Sparkles
+  Sparkles,
+  Target
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { ConversationSession, Question, ConversationData, CampaignBrief } from "@shared/schema";
