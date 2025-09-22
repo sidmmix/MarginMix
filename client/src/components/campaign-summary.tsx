@@ -55,7 +55,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
     featureAction();
   };
 
-  const generatePDF = async () => {
+  const generatePDFAction = async () => {
     setIsGeneratingPDF(true);
     try {
       const element = document.getElementById('campaign-summary-content');
@@ -142,6 +142,7 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
   };
 
   // Premium feature handlers with paywall
+  const generatePDF = () => handlePremiumFeature(generatePDFAction, "Download Brief");
   const generateBenchmarks = () => handlePremiumFeature(generateBenchmarksAction, "Cost Efficiency Benchmarks");
   const generateMediaMix = () => handlePremiumFeature(generateMediaMixAction, "Suggestive Inventory Level Media Mix");
   const generatePlaybook = () => handlePremiumFeature(generatePlaybookAction, "Generate Activation Playbook");
