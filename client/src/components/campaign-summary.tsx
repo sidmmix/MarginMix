@@ -336,28 +336,6 @@ export function CampaignSummary({ sessionData, onContinue }: CampaignSummaryProp
           </Card>
         )}
 
-        <Separator className="my-8" />
-
-        {/* Next Steps */}
-        <div className="text-center">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            Next Steps
-          </h3>
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              Your campaign brief has been created! To access advanced features including:
-            </p>
-            <ul className="text-left text-gray-700 dark:text-gray-300 space-y-2 mb-4 max-w-md mx-auto">
-              <li>• Live reach and frequency forecasting</li>
-              <li>• Budget optimization recommendations</li>
-              <li>• Platform-specific setup guides</li>
-              <li>• Real-time campaign tracking</li>
-            </ul>
-            <p className="text-gray-700 dark:text-gray-300">
-              Sign in to continue with the full YourBrief platform.
-            </p>
-          </div>
-        </div>
         </div>
       </div>
 
