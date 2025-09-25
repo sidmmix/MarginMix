@@ -288,7 +288,7 @@ export default function Dashboard() {
                 <Download className="h-5 w-5 mr-2" />
                 {isGeneratingPDF ? "Generating Brief..." : 
                  isBriefsLoading ? "Loading..." :
-                 latestBrief ? "Download Campaign Brief" : "Create Campaign Brief"}
+                 latestBrief ? "Download Brief" : "Create Campaign Brief"}
               </Button>
             </CardContent>
           </Card>
