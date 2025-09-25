@@ -25,6 +25,7 @@ This is a full-stack web application that helps users create comprehensive digit
 Preferred communication style: Simple, everyday language.
 OAuth setup priority: Deferred for later refinement, focus on core functionality first.
 Brand messaging: Prominently feature YourBrief's AI media strategist positioning and live data capabilities on landing page.
+AI Policy: OpenAI enabled for backend brief generation and insights. Smart suggestions disabled in questionnaire interface to maintain clean user experience.
 
 ## System Architecture
 
