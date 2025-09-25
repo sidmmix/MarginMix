@@ -61,8 +61,8 @@ const timeframeLabels: Record<string, string> = {
 
 // Seasonal options mapping
 const seasonalLabels: Record<string, string> = {
-  'only_festive': 'Only Festive Season/Holiday Season',
-  'beyond_festive': 'Beyond Festive Season/Holiday Season'
+  'only_festive': 'Yes',
+  'beyond_festive': 'No, beyond holiday season'
 };
 
 /**

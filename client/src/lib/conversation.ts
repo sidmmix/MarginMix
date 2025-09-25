@@ -78,11 +78,11 @@ export const QUESTIONS: Question[] = [
   },
   { 
     id: 'season', 
-    question: "Will this campaign run during the festive season (India) / Holiday season (USA)?", 
+    question: "Are you advertising for the festive season/holiday season only?", 
     type: 'single_choice',
     options: [
-      { value: 'only_festive', label: 'Only Festive Season/Holiday Season' },
-      { value: 'beyond_festive', label: 'Beyond Festive Season/Holiday Season' }
+      { value: 'only_festive', label: 'Yes' },
+      { value: 'beyond_festive', label: 'No, beyond holiday season' }
     ],
     validation: { required: true }
   },
