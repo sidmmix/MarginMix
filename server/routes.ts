@@ -575,10 +575,12 @@ export function registerRoutes(app: Express): Server {
           kpis: ["Reach", "Video Completion Rate", "Click-Through Rate", "Cost Per Acquisition", "Brand Lift"]
         };
 
-        const brief = {
+        const briefData = {
+          userId: null, // Anonymous user - will be linked later if they log in
           sessionId: sessionId,
           clientName: data.name || "Unknown Client",
           campaignName: `${data.company} - ${data.product}`,
+          product: data.product || "Not specified",
           targetAudience: data.audience || "Not specified",
           budget: data.budget || "Not specified",
           platforms: data.platforms || "Not specified",
@@ -590,15 +592,19 @@ export function registerRoutes(app: Express): Server {
           aiInsights
         };
         
-        res.json(brief);
+        // Save the brief to database
+        const savedBrief = await storage.createCampaignBrief(briefData);
+        res.json(savedBrief);
       } catch (aiError) {
         console.error("AI brief generation failed:", aiError);
         
         // Fallback brief without AI insights on AI failure
-        const brief = {
+        const fallbackBriefData = {
+          userId: null, // Anonymous user - will be linked later if they log in
           sessionId: sessionId,
           clientName: data.name || "Unknown Client",
           campaignName: `${data.company} - ${data.product}`,
+          product: data.product || "Not specified",
           targetAudience: data.audience || "Not specified",
           budget: data.budget || "Not specified",
           platforms: data.platforms || "Not specified",
@@ -615,7 +621,9 @@ export function registerRoutes(app: Express): Server {
           }
         };
         
-        res.json(brief);
+        // Save the fallback brief to database
+        const savedFallbackBrief = await storage.createCampaignBrief(fallbackBriefData);
+        res.json(savedFallbackBrief);
       }
     } catch (error) {
       console.error("Error generating campaign brief:", error);

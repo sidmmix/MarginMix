@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, and, isNull, or } from "drizzle-orm";
 import { db } from "./db";
 import { users, conversationSessions, campaignBriefs } from "@shared/schema";
 import type { 
@@ -30,6 +30,7 @@ export interface IStorage {
   createCampaignBrief(brief: InsertCampaignBrief): Promise<CampaignBrief>;
   getUserCampaignBriefs(userId: string): Promise<CampaignBrief[]>;
   getCampaignBriefBySessionId(sessionId: string): Promise<CampaignBrief | undefined>;
+  linkAnonymousBriefToUser(sessionId: string, userId: string): Promise<CampaignBrief | undefined>;
   
   // Authentication helpers
   hashPassword(password: string): Promise<string>;
@@ -111,10 +112,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserCampaignBriefs(userId: string): Promise<CampaignBrief[]> {
+    // Get both user's specific briefs AND anonymous briefs (for cases where user created brief before login)
     return await db
       .select()
       .from(campaignBriefs)
-      .where(eq(campaignBriefs.userId, userId));
+      .where(or(
+        eq(campaignBriefs.userId, userId),
+        isNull(campaignBriefs.userId)
+      ));
   }
 
   async getCampaignBriefBySessionId(sessionId: string): Promise<CampaignBrief | undefined> {
@@ -122,6 +127,19 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(campaignBriefs)
       .where(eq(campaignBriefs.sessionId, sessionId));
+    return brief || undefined;
+  }
+
+  async linkAnonymousBriefToUser(sessionId: string, userId: string): Promise<CampaignBrief | undefined> {
+    // Find brief with sessionId and null userId (anonymous brief)
+    const [brief] = await db
+      .update(campaignBriefs)
+      .set({ userId: userId, updatedAt: new Date() })
+      .where(and(
+        eq(campaignBriefs.sessionId, sessionId),
+        isNull(campaignBriefs.userId)
+      ))
+      .returning();
     return brief || undefined;
   }
 
