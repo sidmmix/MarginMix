@@ -112,14 +112,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserCampaignBriefs(userId: string): Promise<CampaignBrief[]> {
-    // Get both user's specific briefs AND anonymous briefs (for cases where user created brief before login)
+    // Only return briefs that belong to the authenticated user
     return await db
       .select()
       .from(campaignBriefs)
-      .where(or(
-        eq(campaignBriefs.userId, userId),
-        isNull(campaignBriefs.userId)
-      ));
+      .where(eq(campaignBriefs.userId, userId));
   }
 
   async getCampaignBriefBySessionId(sessionId: string): Promise<CampaignBrief | undefined> {

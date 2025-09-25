@@ -37,6 +37,10 @@ export function initializeOAuthStrategies() {
           });
         }
 
+        // Note: Brief linking would happen here if we had session tracking
+        // For now, briefs created anonymously remain unlinked until we implement
+        // a mechanism to associate them with the login session
+
         return done(null, user);
       } catch (error) {
         return done(error, false);
