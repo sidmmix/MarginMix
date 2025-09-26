@@ -774,7 +774,14 @@ export function registerRoutes(app: Express): Server {
 
   app.get("/api/campaign-briefs", requireAuth, async (req, res) => {
     try {
-      const briefs = await storage.getUserCampaignBriefs((req.session as any).userId);
+      // Get user ID from OAuth (req.user.id) or session (req.session.userId) 
+      const userId = (req as any).user?.id || (req.session as any)?.userId;
+      
+      if (!userId) {
+        return res.status(401).json({ message: "User ID not found" });
+      }
+      
+      const briefs = await storage.getUserCampaignBriefs(userId);
       res.json(briefs);
     } catch (error) {
       console.error("Error fetching user campaign briefs:", error);
