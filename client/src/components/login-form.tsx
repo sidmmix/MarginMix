@@ -133,7 +133,7 @@ export function LoginForm({ onSuccess, onSwitchToRegister }: LoginFormProps) {
             className="w-full"
           >
             <FaGoogle className="mr-2 h-4 w-4" />
-            Google
+            Continue to YourBrief
           </Button>
           <Button
             variant="outline"
