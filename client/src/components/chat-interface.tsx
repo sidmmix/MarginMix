@@ -295,6 +295,8 @@ Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not availab
           onClick={() => generateBriefMutation.mutate()}
           disabled={generateBriefMutation.isPending}
           size="lg"
+          data-testid="button-generate-brief"
+          className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-3"
         >
           <BarChart3 className="mr-2 h-4 w-4" />
           {generateBriefMutation.isPending ? "Generating..." : "Generate Campaign Brief"}
