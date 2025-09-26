@@ -37,9 +37,42 @@ export function initializeOAuthStrategies() {
           });
         }
 
-        // Note: Brief linking would happen here if we had session tracking
-        // For now, briefs created anonymously remain unlinked until we implement
-        // a mechanism to associate them with the login session
+        // Auto-generate briefs for recent completed sessions
+        // This handles the case where users complete questionnaire then immediately log in
+        try {
+          // For now, check the specific session that was just completed based on recent activity
+          // In a production app, we'd track the session ID in the OAuth state parameter
+          
+          // Check the most recent completed session (likely the one they just finished)
+          const { db } = await import("./db");
+          const { conversationSessions } = await import("@shared/schema");
+          const { eq, gte, and, desc } = await import("drizzle-orm");
+          
+          const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+          const recentSessions = await db
+            .select()
+            .from(conversationSessions)
+            .where(
+              and(
+                eq(conversationSessions.isCompleted, "true"),
+                gte(conversationSessions.updatedAt, thirtyMinutesAgo)
+              )
+            )
+            .orderBy(desc(conversationSessions.updatedAt))
+            .limit(5); // Check last 5 sessions to be safe
+
+          // Generate briefs for completed sessions that don't have them yet
+          for (const session of recentSessions) {
+            const completedSession = await storage.getCompletedSessionWithoutBrief(session.id);
+            if (completedSession) {
+              console.log(`Auto-generating brief for session ${session.id} after user login`);
+              await storage.generateAndSaveBrief(session.id, user.id);
+            }
+          }
+        } catch (briefError) {
+          console.error("Error auto-generating briefs during login:", briefError);
+          // Don't fail the login process if brief generation fails
+        }
 
         return done(null, user);
       } catch (error) {

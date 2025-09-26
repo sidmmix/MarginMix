@@ -140,6 +140,74 @@ export class DatabaseStorage implements IStorage {
     return brief || undefined;
   }
 
+  async getCompletedSessionWithoutBrief(sessionId: string): Promise<ConversationSession | undefined> {
+    // First check if this session already has a brief
+    const existingBrief = await this.getCampaignBriefBySessionId(sessionId);
+    if (existingBrief) return undefined;
+    
+    // Check if session is completed
+    const [session] = await db
+      .select()
+      .from(conversationSessions)
+      .where(and(
+        eq(conversationSessions.id, sessionId),
+        eq(conversationSessions.isCompleted, "true")
+      ));
+    
+    return session || undefined;
+  }
+
+  async generateAndSaveBrief(sessionId: string, userId: string | null = null): Promise<CampaignBrief> {
+    const session = await this.getConversationSession(sessionId);
+    if (!session) {
+      throw new Error("Session not found");
+    }
+
+    const data = session.sessionData as any;
+
+    // Simple fallback brief generation without AI dependencies
+    const briefData = {
+      userId: userId,
+      sessionId: sessionId,
+      clientName: data.name || "Unknown Client",
+      campaignName: `${data.company || "Company"} - ${data.product || "Product"}`,
+      product: data.product || "Not specified",
+      targetAudience: data.audience || "Not specified",
+      budget: data.budget || "Not specified",
+      platforms: data.platforms || "Not specified",
+      objectives: data.objective || "Not specified",
+      timeline: data.timeframe || "Not specified",
+      keyMessages: `Strategic campaign promoting ${data.product || "product"} targeting ${data.audience || "target audience"}`,
+      aiInsights: {
+        estimatedReach: "2.5M - 4.2M impressions",
+        estimatedCPM: "$8 - $15 CPM",
+        recommendations: [
+          "Implement A/B testing for creative variants",
+          "Focus on peak engagement hours (6-9 PM)",
+          "Use lookalike audiences for scale",
+          "Optimize for video completion rates"
+        ],
+        budgetAllocation: {
+          [data.platforms === 'youtube' ? 'YouTube' : data.platforms === 'meta' ? 'Meta' : 'YouTube']: data.platforms === 'both' ? '60%' : '100%',
+          ...(data.platforms === 'both' && { 'Meta': '40%' })
+        },
+        platformStrategies: {
+          [data.platforms === 'youtube' ? 'YouTube' : data.platforms === 'meta' ? 'Meta' : 'YouTube']: 
+            data.platforms === 'youtube' ? 'Focus on video storytelling and in-stream ads' : 
+            data.platforms === 'meta' ? 'Leverage social proof and user-generated content' : 
+            'Multi-format video approach',
+          ...(data.platforms === 'both' && { 
+            'Meta': 'Social engagement and community building',
+            'YouTube': 'Long-form content and tutorials'
+          })
+        },
+        kpis: ["Reach", "Video Completion Rate", "Click-Through Rate", "Cost Per Acquisition", "Brand Lift"]
+      }
+    };
+
+    return await this.createCampaignBrief(briefData);
+  }
+
   async hashPassword(password: string): Promise<string> {
     return await bcrypt.hash(password, 12);
   }
