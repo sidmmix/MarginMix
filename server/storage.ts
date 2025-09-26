@@ -179,8 +179,6 @@ export class DatabaseStorage implements IStorage {
       timeline: data.timeframe || "Not specified",
       keyMessages: `Strategic campaign promoting ${data.product || "product"} targeting ${data.audience || "target audience"}`,
       aiInsights: {
-        estimatedReach: "2.5M - 4.2M impressions",
-        estimatedCPM: "$8 - $15 CPM",
         recommendations: [
           "Implement A/B testing for creative variants",
           "Focus on peak engagement hours (6-9 PM)",
