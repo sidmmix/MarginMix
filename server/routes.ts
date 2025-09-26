@@ -689,8 +689,6 @@ export function registerRoutes(app: Express): Server {
         
         // Create AI insights object
         const aiInsights = {
-          estimatedReach: "1.8M - 3.5M impressions",
-          estimatedCPM: "$6 - $12 CPM",
           recommendations: [
             "Optimize creative for mobile viewing",
             "Use retargeting for higher conversion rates",
@@ -730,8 +728,6 @@ export function registerRoutes(app: Express): Server {
           ...briefData,
           userId: (req.session as any).userId,
           aiInsights: {
-            estimatedReach: "Analysis available after campaign setup",
-            estimatedCPM: "Analysis available after campaign setup",
             recommendations: ["Complete campaign configuration", "Review targeting parameters", "Set performance benchmarks"],
             budgetAllocation: {},
             platformStrategies: {},
