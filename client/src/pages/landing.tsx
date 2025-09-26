@@ -76,13 +76,18 @@ export default function Landing() {
           <div className="text-center">
             
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Create Activation Ready
-              <span className="text-blue-600 dark:text-blue-400"> Digital Media Plan</span>
+              Generate Activation Ready
+              <span className="text-blue-600 dark:text-blue-400"> Digital Media Planning Inputs</span>
               <br />
               in Minutes
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-              YourBrief is the AI Media Strategist that builds campaign-ready media plans in minutes — powered by live data from Google Ads & Meta. Just answer a few smart questions, and YourBrief forecasts reach, allocates budgets, and delivers an activation-ready plan with platform-specific setup guides. <span className="font-semibold">Faster planning. Smarter decisions. Happier clients.</span>
+              YourBrief is the AI Media Strategist that's essentially a Planning Decision Engine for YouTube and Meta. 
+               <br />
+              Just answer a few relevant questions, and YourBrief gives you a structured Brief and Generates Platform-specific strategies with Performance Forecasts and Suggestive inventory level media mix.
+               <br />
+               <br />
+              <span className="font-semibold">Faster planning. Smarter decisions. Happier clients.</span>
             </p>
             <div className="flex justify-center">
               <Link href="/campaign-planner">
