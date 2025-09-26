@@ -581,7 +581,7 @@ export function registerRoutes(app: Express): Server {
           platforms: data.platforms || "Not specified",
           objectives: data.objective || "Not specified",
           timeline: data.timeframe || "Not specified",
-          keyMessages: `Strategic campaign promoting ${data.product} to ${data.audience} audience`,
+          keyMessages: "",
           aiInsights
         };
         
@@ -603,7 +603,7 @@ export function registerRoutes(app: Express): Server {
           platforms: data.platforms || "Not specified",
           objectives: data.objective || "Not specified",
           timeline: data.timeframe || "Not specified",
-          keyMessages: `Campaign promoting ${data.product} targeting ${data.audience}`,
+          keyMessages: "",
           aiInsights: {
             recommendations: ["Complete campaign setup", "Review targeting parameters", "Set performance benchmarks"],
             budgetAllocation: {},
