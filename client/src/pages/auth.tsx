@@ -15,7 +15,7 @@ export function AuthPage() {
             <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">YourBrief</h1>
           </div>
           <CardTitle className="text-2xl">Welcome </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-blue-600 dark:text-blue-400">
             Sign in to your account
           </CardDescription>
         </CardHeader>
