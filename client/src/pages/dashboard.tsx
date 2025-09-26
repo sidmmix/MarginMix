@@ -108,12 +108,6 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div style="margin-bottom: 15px;">
-          <h3 style="color: #374151; font-size: 13px; margin-bottom: 8px; font-weight: bold;">Key Messages</h3>
-          <div style="color: #6b7280; font-size: 11px; line-height: 1.3;">
-            ${latestBrief.keyMessages}
-          </div>
-        </div>
 
         ${recommendations.length > 0 ? `
         <div style="margin-bottom: 15px;">
