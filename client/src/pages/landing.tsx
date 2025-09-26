@@ -100,7 +100,7 @@ export default function Landing() {
             <div className="flex justify-center">
               <Link href="/campaign-planner">
                 <Button size="lg" className="text-lg px-8 py-3">
-                  Start Planning Your Campaign
+                  Access your AI powered Digital Media Strategist
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -249,8 +249,8 @@ export default function Landing() {
                 <div className="flex items-start">
                   <CheckCircle className="h-6 w-6 text-green-500 mt-1 mr-3 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Unified Campaign Management</h3>
-                    <p className="text-gray-600 dark:text-gray-300">Manage Google, Meta, YouTube, and DV360 campaigns from one platform.</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Quick Tailored Insights</h3>
+                    <p className="text-gray-600 dark:text-gray-300">Insights which matter to you.</p>
                   </div>
                 </div>
                 <div className="flex items-start">
@@ -272,8 +272,7 @@ export default function Landing() {
                 </p>
                 <Link href="/campaign-planner">
                   <Button size="lg" className="w-full text-lg">
-                    Start Your Free Campaign Brief
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    Access Your AI Media Strategist Now!
                   </Button>
                 </Link>
               </div>
