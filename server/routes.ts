@@ -518,13 +518,10 @@ export function registerRoutes(app: Express): Server {
         Season: ${data.season || 'Unknown'}
         
         Generate:
-        1. Key campaign messages (2-3 compelling messages)
-        2. Estimated reach analysis
-        3. Estimated CPM range
-        4. Strategic recommendations (4-5 actionable items)
-        5. Budget allocation across platforms
-        6. Platform-specific strategies
-        7. Key performance indicators (KPIs)
+        1. Strategic recommendations (4-5 actionable items)
+        2. Budget allocation across platforms
+        3. Platform-specific strategies
+        4. Key performance indicators (KPIs)
         
         Provide realistic, industry-standard estimates and actionable insights.
         `;
@@ -547,10 +544,8 @@ export function registerRoutes(app: Express): Server {
 
         const aiResponse = completion.choices[0]?.message?.content || "";
         
-        // Generate AI insights with realistic estimates
+        // Generate AI insights
         const aiInsights = {
-          estimatedReach: "2.5M - 4.2M impressions",
-          estimatedCPM: "$8 - $15 CPM",
           recommendations: [
             "Implement A/B testing for creative variants",
             "Focus on peak engagement hours (6-9 PM)",
@@ -586,9 +581,7 @@ export function registerRoutes(app: Express): Server {
           platforms: data.platforms || "Not specified",
           objectives: data.objective || "Not specified",
           timeline: data.timeframe || "Not specified",
-          keyMessages: aiResponse.includes('Key campaign messages') ? 
-            aiResponse.split('Key campaign messages')[1]?.split('\n').slice(0, 3).join(' ').trim() :
-            `Strategic campaign promoting ${data.product} to ${data.audience} audience`,
+          keyMessages: `Strategic campaign promoting ${data.product} to ${data.audience} audience`,
           aiInsights
         };
         
@@ -612,8 +605,6 @@ export function registerRoutes(app: Express): Server {
           timeline: data.timeframe || "Not specified",
           keyMessages: `Campaign promoting ${data.product} targeting ${data.audience}`,
           aiInsights: {
-            estimatedReach: "Analysis pending",
-            estimatedCPM: "Analysis pending",
             recommendations: ["Complete campaign setup", "Review targeting parameters", "Set performance benchmarks"],
             budgetAllocation: {},
             platformStrategies: {},
