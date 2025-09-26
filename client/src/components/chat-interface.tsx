@@ -383,21 +383,6 @@ ${((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i
                   AI-Powered Insights
                 </h4>
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-white/60 dark:bg-gray-800/60 rounded-lg p-4">
-                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 block mb-1">Estimated Reach</span>
-                      <span className="text-lg font-bold text-gray-900 dark:text-white">
-                        {(campaignBrief.aiInsights as any)?.estimatedReach || 'Calculating...'}
-                      </span>
-                    </div>
-                    <div className="bg-white/60 dark:bg-gray-800/60 rounded-lg p-4">
-                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 block mb-1">Estimated CPM</span>
-                      <span className="text-lg font-bold text-gray-900 dark:text-white">
-                        {(campaignBrief.aiInsights as any)?.estimatedCPM || 'Calculating...'}
-                      </span>
-                    </div>
-                  </div>
-                  
                   {((campaignBrief.aiInsights as any)?.recommendations || []).length > 0 && (
                     <div className="bg-white/60 dark:bg-gray-800/60 rounded-lg p-4">
                       <span className="text-sm font-medium text-gray-500 dark:text-gray-400 block mb-3">Key Recommendations</span>
