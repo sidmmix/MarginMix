@@ -211,7 +211,6 @@ Budget: ${brief.budget}
 Platforms: ${brief.platforms}
 Objectives: ${brief.objectives}
 Timeline: ${brief.timeline}
-Key Messages: ${brief.keyMessages}
 
 AI Insights:
 Budget Allocation: ${JSON.stringify((brief.aiInsights as any)?.budgetAllocation || {}, null, 2)}
@@ -219,9 +218,6 @@ Platform Strategies: ${JSON.stringify((brief.aiInsights as any)?.platformStrateg
 KPIs: ${((brief.aiInsights as any)?.kpis || []).join(", ")}
 Recommendations: 
 ${((brief.aiInsights as any)?.recommendations || []).map((rec: string, i: number) => `${i + 1}. ${rec}`).join('\n')}
-
-Estimated Reach: ${(brief.aiInsights as any)?.estimatedReach || 'Not available'}
-Estimated CPM: ${(brief.aiInsights as any)?.estimatedCPM || 'Not available'}
 `;
 
         const blob = new Blob([content], { type: 'text/plain' });
@@ -257,7 +253,6 @@ Budget: ${campaignBrief.budget}
 Platforms: ${campaignBrief.platforms}
 Objectives: ${campaignBrief.objectives}
 Timeline: ${campaignBrief.timeline}
-Key Messages: ${campaignBrief.keyMessages}
 
 AI Insights:
 Budget Allocation: ${JSON.stringify((campaignBrief.aiInsights as any)?.budgetAllocation || {}, null, 2)}
@@ -265,9 +260,6 @@ Platform Strategies: ${JSON.stringify((campaignBrief.aiInsights as any)?.platfor
 KPIs: ${((campaignBrief.aiInsights as any)?.kpis || []).join(", ")}
 Recommendations: 
 ${((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i: number) => `${i + 1}. ${rec}`).join('\n')}
-
-Estimated Reach: ${(campaignBrief.aiInsights as any)?.estimatedReach || 'Not available'}
-Estimated CPM: ${(campaignBrief.aiInsights as any)?.estimatedCPM || 'Not available'}
 `;
 
     const blob = new Blob([content], { type: 'text/plain' });
