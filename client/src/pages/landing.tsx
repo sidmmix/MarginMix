@@ -24,7 +24,15 @@ export default function Landing() {
     }
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200/30 dark:bg-blue-700/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200/30 dark:bg-purple-700/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-100/20 to-purple-100/20 dark:from-blue-800/10 dark:to-purple-800/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-20 right-1/4 w-64 h-64 bg-blue-100/20 dark:bg-blue-800/10 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-20 left-1/4 w-64 h-64 bg-purple-100/20 dark:bg-purple-800/10 rounded-full blur-2xl"></div>
+      </div>
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
