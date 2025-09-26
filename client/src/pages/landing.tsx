@@ -100,7 +100,7 @@ export default function Landing() {
             <div className="flex justify-center">
               <Link href="/campaign-planner">
                 <Button size="lg" className="text-lg px-8 py-3">
-                  Access your AI powered Digital Media Strategist
+                  Start Planning Your Campaign
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
