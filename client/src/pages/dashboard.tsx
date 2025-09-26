@@ -130,15 +130,6 @@ export default function Dashboard() {
           </div>
           ` : ''}
 
-          ${insights.estimatedReach || insights.estimatedCPM ? `
-          <div style="flex: 1;">
-            <h3 style="color: #374151; font-size: 13px; margin-bottom: 8px; font-weight: bold;">Performance Estimates</h3>
-            <div style="color: #6b7280; font-size: 11px; line-height: 1.3;">
-              ${insights.estimatedReach ? `<strong>Estimated Reach:</strong> ${insights.estimatedReach}<br>` : ''}
-              ${insights.estimatedCPM ? `<strong>Estimated CPM:</strong> ${insights.estimatedCPM}` : ''}
-            </div>
-          </div>
-          ` : ''}
         </div>
 
         ${Object.keys(platformStrategies).length > 0 ? `
