@@ -16,7 +16,7 @@ export function AuthPage() {
           </div>
           <CardTitle className="text-2xl">Welcome </CardTitle>
           <CardDescription>
-            Sign in to your account to start creating campaign briefs
+            Sign in to your account
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
