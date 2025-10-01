@@ -100,7 +100,7 @@ export default function Landing() {
             <div className="flex justify-center">
               <Link href="/campaign-planner">
                 <Button size="lg" className="text-lg px-8 py-3">
-                  Access your AI powered Digital Media Strategist
+                  Start Planning Your Campaign
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -190,7 +190,7 @@ export default function Landing() {
                 1
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Answer 8 Questions
+                Answer 9 Questions
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
                 Our AI guide asks strategic questions about your campaign goals, audience, and budget.
