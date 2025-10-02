@@ -34,6 +34,9 @@ export const users = pgTable("users", {
   consentDate: timestamp("consent_date"),
   marketingConsent: boolean("marketing_consent").default(false),
   dataRetentionConsent: boolean("data_retention_consent").default(true).notNull(),
+  // Stripe subscription fields
+  stripeCustomerId: varchar("stripe_customer_id", { length: 255 }),
+  stripeSubscriptionId: varchar("stripe_subscription_id", { length: 255 }),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
   updatedAt: timestamp("updated_at").notNull().default(sql`now()`),
 });
