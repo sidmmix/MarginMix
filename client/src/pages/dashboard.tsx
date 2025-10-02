@@ -306,7 +306,7 @@ export default function Dashboard() {
                       {Object.entries(budgetAllocation).map(([platform, allocation]) => (
                         <div key={platform} className="flex justify-between" data-testid={`budget-${platform.toLowerCase()}`}>
                           <span className="font-medium text-gray-700 dark:text-gray-300">{platform}</span>
-                          <span className="text-gray-900 dark:text-white">{allocation}</span>
+                          <span className="text-gray-900 dark:text-white">{String(allocation)}</span>
                         </div>
                       ))}
                     </div>
@@ -353,7 +353,7 @@ export default function Dashboard() {
                     {Object.entries(platformStrategies).map(([platform, strategy]) => (
                       <div key={platform} data-testid={`strategy-${platform.toLowerCase()}`}>
                         <h4 className="font-semibold text-gray-900 dark:text-white mb-1">{platform}</h4>
-                        <p className="text-gray-700 dark:text-gray-300">{strategy}</p>
+                        <p className="text-gray-700 dark:text-gray-300">{String(strategy)}</p>
                       </div>
                     ))}
                   </div>
