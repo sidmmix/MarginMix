@@ -6,9 +6,7 @@ This is a full-stack web application that helps users create comprehensive digit
 
 ## Recent Changes
 
-- **YourBrief API Integration & Dashboard Redesign (October 2, 2025)**: Integrated YourBrief.ai external API to fetch real platform insights (reach, impressions, CTR, CPC, CPA) and completely redesigned dashboard to display campaign briefs on-page instead of PDF download
-- **Platform Performance Insights (October 2, 2025)**: Added live platform metrics from YourBrief API displayed in gradient cards on dashboard with reach estimates, impression counts, click-through rates, cost-per-click, and cost-per-acquisition data
-- **Dashboard UI Overhaul (October 2, 2025)**: Removed PDF generation, rebuilt dashboard with clean React components showing campaign details, AI recommendations, budget allocation, KPIs, platform strategies, and YourBrief API insights
+- **Dashboard UI Overhaul (October 2, 2025)**: Removed PDF generation, rebuilt dashboard with clean React components showing campaign details, AI recommendations, budget allocation, KPIs, and platform strategies displayed on-page
 - **Comprehensive Security Audit & Hardening (August 19, 2025)**: Completed full backend security review and implemented enterprise-grade security measures including input validation, rate limiting, CORS protection, security headers, and environment validation
 - **OAuth-Only Authentication (August 13, 2025)**: Removed email/password authentication, now using only Google and Meta OAuth for streamlined social sign-in experience
 - **AI Features Cost-Optimized (August 13, 2025)**: Migrated all OpenAI API calls from GPT-4o to GPT-4o mini for better cost efficiency while maintaining intelligent conversation quality
@@ -27,7 +25,7 @@ This is a full-stack web application that helps users create comprehensive digit
 
 Preferred communication style: Simple, everyday language.
 OAuth setup priority: Deferred for later refinement, focus on core functionality first.
-Brand messaging: Prominently feature YourBrief's AI media strategist positioning and live data capabilities on landing page.
+Brand messaging: Prominently feature YourBrief's AI media strategist positioning on landing page.
 AI Policy: OpenAI enabled for backend brief generation and insights. Smart suggestions disabled in questionnaire interface to maintain clean user experience.
 
 ## System Architecture
@@ -68,11 +66,10 @@ AI Policy: OpenAI enabled for backend brief generation and insights. Smart sugge
 
 ### AI-Powered Insights
 - **OpenAI Integration**: GPT-4o-mini models for campaign analysis and recommendations
-- **YourBrief API Integration**: Real-time platform performance data (reach, impressions, CTR, CPC, CPA) from YourBrief.ai sandbox API
-- **Campaign Brief Generation**: Automated creation of comprehensive campaign documents with live platform insights
+- **Campaign Brief Generation**: Automated creation of comprehensive campaign documents with strategic insights
 - **Platform-specific Strategies**: Tailored recommendations for Google Ads, YouTube/DV360, and Meta platforms
 - **Budget Allocation**: Intelligent distribution across selected advertising platforms
-- **Dashboard Display**: On-page brief display with gradient cards showing all insights and metrics (PDF download removed)
+- **Dashboard Display**: On-page brief display showing all insights and metrics (PDF download removed)
 
 ## External Dependencies
 
@@ -95,9 +92,6 @@ AI Policy: OpenAI enabled for backend brief generation and insights. Smart sugge
 - **tsx**: TypeScript execution for Node.js
 - **esbuild**: JavaScript bundler for production builds
 - **@replit/vite-plugin-runtime-error-modal**: Development error handling
-
-### Active External Integrations
-- **YourBrief.ai API**: Platform performance insights including reach estimates, impressions, CTR, CPC, and CPA data from sandbox environment
 
 ### Planned Integrations
 - **Google Ads API**: Campaign forecasting and audience estimation

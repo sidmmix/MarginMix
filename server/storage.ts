@@ -165,25 +165,7 @@ export class DatabaseStorage implements IStorage {
 
     const data = session.sessionData as any;
 
-    // Fetch platform insights from YourBrief API
-    console.log('=== CALLING YOURBRIEF API FROM STORAGE ===');
-    console.log('Product:', data.product);
-    console.log('Audience:', data.audience);
-    console.log('Budget:', data.budget);
-    console.log('Season:', data.season);
-    
-    const { getYourBriefInsights } = await import('./yourbrief');
-    const platformInsights = await getYourBriefInsights(
-      data.product || '',
-      data.audience || '',
-      data.budget || '',
-      data.season || ''
-    );
-    
-    console.log('=== YOURBRIEF API RESULT FROM STORAGE ===');
-    console.log('platformInsights:', platformInsights);
-
-    // Brief generation with platform insights
+    // Simple brief generation
     const briefData = {
       userId: userId,
       sessionId: sessionId,
@@ -217,8 +199,7 @@ export class DatabaseStorage implements IStorage {
             'YouTube': 'Long-form content and tutorials'
           })
         },
-        kpis: ["Reach", "Video Completion Rate", "Click-Through Rate", "Cost Per Acquisition", "Brand Lift"],
-        platformInsights: platformInsights || {}
+        kpis: ["Reach", "Video Completion Rate", "Click-Through Rate", "Cost Per Acquisition", "Brand Lift"]
       }
     };
 

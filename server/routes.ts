@@ -6,7 +6,6 @@ import connectPg from "connect-pg-simple";
 import OpenAI from "openai";
 import { storage } from "./storage";
 import { setupOAuth } from "./oauth";
-import { getYourBriefInsights } from "./yourbrief";
 import { 
   insertConversationSessionSchema, 
   updateConversationSessionSchema,
@@ -545,24 +544,7 @@ export function registerRoutes(app: Express): Server {
 
         const aiResponse = completion.choices[0]?.message?.content || "";
         
-        // Fetch platform insights from YourBrief API
-        console.log('=== CALLING YOURBRIEF API ===');
-        console.log('Product:', data.product);
-        console.log('Audience:', data.audience);
-        console.log('Budget:', data.budget);
-        console.log('Season:', data.season);
-        
-        const platformInsights = await getYourBriefInsights(
-          data.product || '',
-          data.audience || '',
-          data.budget || '',
-          data.season || ''
-        );
-        
-        console.log('=== YOURBRIEF API RESULT ===');
-        console.log('platformInsights:', platformInsights);
-        
-        // Generate AI insights with platform insights from YourBrief
+        // Generate AI insights
         const aiInsights = {
           recommendations: [
             "Implement A/B testing for creative variants",
@@ -585,8 +567,7 @@ export function registerRoutes(app: Express): Server {
               'YouTube': 'Long-form content and tutorials'
             })
           },
-          kpis: ["Reach", "Video Completion Rate", "Click-Through Rate", "Cost Per Acquisition", "Brand Lift"],
-          platformInsights: platformInsights || {}
+          kpis: ["Reach", "Video Completion Rate", "Click-Through Rate", "Cost Per Acquisition", "Brand Lift"]
         };
 
         const briefData = {
