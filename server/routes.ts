@@ -4,6 +4,7 @@ import { z } from "zod";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import OpenAI from "openai";
+import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupOAuth } from "./oauth";
 import { 
@@ -18,6 +19,12 @@ import {
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+// Initialize Stripe client - blueprint:javascript_stripe
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.warn('Warning: STRIPE_SECRET_KEY not set. Stripe features will not work.');
+}
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 
 // Updated questions to match new schema
@@ -773,6 +780,88 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error("Error fetching user campaign briefs:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Stripe subscription endpoint - blueprint:javascript_stripe
+  app.post('/api/get-or-create-subscription', requireAuth, async (req, res) => {
+    try {
+      if (!stripe) {
+        return res.status(500).json({ error: { message: 'Stripe is not configured. Please add STRIPE_SECRET_KEY environment variable.' } });
+      }
+
+      const user = (req as any).user;
+      if (!user) {
+        return res.sendStatus(401);
+      }
+
+      // If user already has a subscription, retrieve it
+      if (user.stripeSubscriptionId) {
+        const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId, {
+          expand: ['latest_invoice.payment_intent']
+        });
+
+        // Get the latest invoice's payment intent client secret
+        const latestInvoice = subscription.latest_invoice;
+        const paymentIntent = latestInvoice && typeof latestInvoice !== 'string' 
+          ? (latestInvoice as any).payment_intent 
+          : null;
+        
+        const clientSecret = paymentIntent && typeof paymentIntent !== 'string'
+          ? (paymentIntent as any).client_secret
+          : null;
+
+        return res.send({
+          subscriptionId: subscription.id,
+          clientSecret: clientSecret,
+        });
+      }
+      
+      if (!user.email) {
+        return res.status(400).json({ error: { message: 'No user email on file' } });
+      }
+
+      // Create Stripe customer
+      const customer = await stripe.customers.create({
+        email: user.email,
+        name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email,
+      });
+
+      // Update user with Stripe customer ID
+      await storage.updateUser(user.id, { stripeCustomerId: customer.id });
+
+      // Create subscription with a test price (you'll need to set STRIPE_PRICE_ID env var)
+      const priceId = process.env.STRIPE_PRICE_ID || 'price_test'; // Placeholder
+
+      const subscription = await stripe.subscriptions.create({
+        customer: customer.id,
+        items: [{
+          price: priceId,
+        }],
+        payment_behavior: 'default_incomplete',
+        payment_settings: { save_default_payment_method: 'on_subscription' },
+        expand: ['latest_invoice.payment_intent'],
+      });
+
+      // Update user with subscription ID
+      await storage.updateUserStripeInfo(user.id, customer.id, subscription.id);
+  
+      const latestInvoice = subscription.latest_invoice;
+      const paymentIntent = latestInvoice && typeof latestInvoice !== 'string' 
+        ? (latestInvoice as any).payment_intent 
+        : null;
+      
+      const clientSecret = paymentIntent && typeof paymentIntent !== 'string'
+        ? (paymentIntent as any).client_secret
+        : null;
+
+      res.send({
+        subscriptionId: subscription.id,
+        clientSecret: clientSecret,
+      });
+    } catch (error: any) {
+      console.error('Subscription error:', error);
+      return res.status(400).send({ error: { message: error.message } });
     }
   });
 
