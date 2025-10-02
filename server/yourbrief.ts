@@ -7,8 +7,8 @@ import {
 } from './mappers';
 
 // API Configuration
-const apiEndpoint = 'https://api-sandbox.yourbrief.ai/advisor/brief';
-const apiKey = process.env.YOURBRIEF_API_KEY || 'YOURBRIEF_SANDBOX_API_KEY_001';
+const apiEndpoint = 'https://api.yourbrief.ai/advisor/brief';
+const apiKey = process.env.YOURBRIEF_API_KEY || '';
 
 // Axios Instance Setup
 const apiInstance = axios.create({
