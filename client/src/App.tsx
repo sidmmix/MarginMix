@@ -8,7 +8,6 @@ import Landing from "@/pages/landing";
 import CampaignPlanner from "@/pages/campaign-planner";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
-import Subscribe from "@/pages/subscribe";
 import { AuthPage } from "@/pages/auth";
 import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
@@ -26,7 +25,6 @@ function Router() {
       
       {/* Protected routes - temporarily accessible for testing */}
       <Route path="/dashboard" component={Dashboard} />
-      <Route path="/subscribe" component={Subscribe} />
       <Route path="/home" component={Home} />
       
       <Route component={NotFound} />

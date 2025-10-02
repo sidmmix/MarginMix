@@ -1,13 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
-import { User, LogOut, FileText, Heart, CheckCircle, TrendingUp, Target, DollarSign, Calendar, Eye, MousePointer, Repeat, Lock } from "lucide-react";
+import { User, LogOut, FileText, Heart, CheckCircle, TrendingUp, Target, DollarSign, Calendar, Eye, MousePointer, Repeat } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { User as UserType, CampaignBrief } from "@shared/schema";
-import { useLocation } from "wouter";
 
 // Helper function to format labels from question options
 const formatLabel = (value: string, questionId: string): string => {
@@ -69,15 +68,10 @@ const formatLabel = (value: string, questionId: string): string => {
 
 export default function Dashboard() {
   const [showThankYouModal, setShowThankYouModal] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
-  const [, navigate] = useLocation();
   const { user, logout, isLoggingOut, isAuthenticated } = useAuth();
   
   // Type guard for user
   const typedUser = user as UserType | undefined;
-  
-  // Check if user has active subscription
-  const hasSubscription = typedUser?.stripeSubscriptionId ? true : false;
 
   // Fetch user's campaign briefs
   const { data: campaignBriefs = [], isLoading: isBriefsLoading } = useQuery<CampaignBrief[]>({
@@ -95,17 +89,6 @@ export default function Dashboard() {
   });
 
   const sessionData = session?.sessionData || {};
-
-  // 10-second timer for paywall (only if no subscription)
-  useEffect(() => {
-    if (!hasSubscription && latestBrief) {
-      const timer = setTimeout(() => {
-        setShowPaywall(true);
-      }, 10000); // 10 seconds
-      
-      return () => clearTimeout(timer);
-    }
-  }, [hasSubscription, latestBrief]);
 
   // Auto-logout after 5 minutes of inactivity
   useActivityTracker({
@@ -218,45 +201,7 @@ export default function Dashboard() {
             </Card>
           </div>
         ) : (
-          <div className="relative">
-            {/* Blur Overlay - Shows after 10 seconds if no subscription */}
-            {showPaywall && (
-              <div className="absolute inset-0 z-50 flex items-center justify-center backdrop-blur-md bg-white/30 dark:bg-gray-900/30">
-                <Card className="max-w-md mx-4">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 justify-center text-2xl">
-                      <Lock className="h-8 w-8 text-blue-600" />
-                      Subscribe to Continue
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <p className="text-center text-gray-600 dark:text-gray-300">
-                      You've seen a preview of your campaign brief. Subscribe now to unlock full access to your insights and recommendations.
-                    </p>
-                    <div className="space-y-2">
-                      <Button 
-                        onClick={() => navigate('/subscribe')}
-                        className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
-                        size="lg"
-                        data-testid="button-subscribe"
-                      >
-                        Subscribe Now
-                      </Button>
-                      <Button 
-                        onClick={() => navigate('/')}
-                        variant="outline"
-                        className="w-full"
-                        data-testid="button-back-home"
-                      >
-                        Back to Home
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            )}
-            
-            <div className={`space-y-8 ${showPaywall ? 'blur-sm' : ''}`}>
+          <div className="space-y-8">
             {/* Campaign Header */}
             <Card className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
               <CardHeader>
@@ -437,7 +382,6 @@ export default function Dashboard() {
                 </div>
               </CardContent>
             </Card>
-          </div>
           </div>
         )}
       </main>
