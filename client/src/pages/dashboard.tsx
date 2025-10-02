@@ -4,14 +4,69 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
-import { Download, User, LogOut, FileText, Heart, CheckCircle } from "lucide-react";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { User, LogOut, FileText, Heart, CheckCircle, TrendingUp, Target, DollarSign, Calendar, Eye, MousePointer, Repeat } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { User as UserType, CampaignBrief } from "@shared/schema";
 
+// Helper function to format labels from question options
+const formatLabel = (value: string, questionId: string): string => {
+  const labels: Record<string, Record<string, string>> = {
+    product: {
+      'ecommerce': 'Ecommerce app/Superapp',
+      'fmcg': 'FMCG/CPG',
+      'd2c_beauty': 'D2C Beauty/Skincare/Personal Care/Haircare/Wellness',
+      'fintech': 'Fintech/Financial Services'
+    },
+    platforms: {
+      'youtube': 'YouTube',
+      'meta': 'Meta',
+      'both': 'Both YouTube & Meta'
+    },
+    objective: {
+      'awareness': 'Awareness',
+      'consideration': 'Consideration',
+      'sales_lead_gen': 'Sales/Lead Generation'
+    },
+    audience: {
+      'india_inmarket_shoppers': '18–54, Male and Female, India Top 8 cities, InMarket Shoppers',
+      'india_affinity_shoppers': '18–54, Male and Female, India Top 8 cities, Affinity Shoppers',
+      'us_inmarket_shoppers': '18–54, Male and Female, US Metro Areas, InMarket Shoppers',
+      'us_affinity_shoppers': '18–54, Male and Female, US Metro Areas, Affinity Shoppers',
+      'india_inmarket_financial': '18–54, Male and Female, India Top 8 cities, InMarket Financial Services',
+      'india_affinity_financial': '18–54, Male and Female, India Top 8 cities, Affinity Financial Services',
+      'us_inmarket_financial': '18–54, Male and Female, US Metro Areas, InMarket Financial Services',
+      'us_affinity_financial': '18–54, Male and Female, US Metro Areas, Affinity Financial Services'
+    },
+    timeframe: {
+      '1_2_weeks': '1-2 weeks',
+      '1_month': '1 month',
+      '2_3_months': '2-3 months'
+    },
+    season: {
+      'only_festive': 'Yes (Festive/Holiday Season)',
+      'beyond_festive': 'No (Beyond Holiday Season)'
+    },
+    budget: {
+      'inr_under_10l': '< INR 10 lakhs',
+      'inr_10_20l': '10 lakhs to 20 lakhs',
+      'inr_20_40l': '20 lakhs to 40 lakhs',
+      'inr_40_80l': '40 lakhs to 80 lakhs',
+      'inr_80l_plus': '80 lakhs+',
+      'inr_2cr_plus': '2 crores+',
+      'usd_under_100k': '< US$ 100,000',
+      'usd_100_200k': 'US$ 100,000 to 200,000',
+      'usd_200_500k': 'US$ 200,000 to 500,000',
+      'usd_500_800k': 'US$ 500,000 to 800,000',
+      'usd_800_1500k': 'US$ 800,000 to 1,500,000',
+      'usd_1500_3000k': 'US$ 1,500,000 to 3,000,000',
+      'usd_3m_plus': 'US$ 3 mn+',
+      'usd_5m_plus': 'US$ 5 mn+'
+    }
+  };
+  return labels[questionId]?.[value] || value;
+};
+
 export default function Dashboard() {
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [showThankYouModal, setShowThankYouModal] = useState(false);
   const { user, logout, isLoggingOut, isAuthenticated } = useAuth();
   
@@ -26,6 +81,14 @@ export default function Dashboard() {
 
   // Get the most recent campaign brief
   const latestBrief = campaignBriefs.length > 0 ? campaignBriefs[campaignBriefs.length - 1] : null;
+  
+  // Fetch session data for the latest brief
+  const { data: session } = useQuery<any>({
+    queryKey: [`/api/conversation/${latestBrief?.sessionId}`],
+    enabled: !!latestBrief?.sessionId,
+  });
+
+  const sessionData = session?.sessionData || {};
 
   // Auto-logout after 5 minutes of inactivity
   useActivityTracker({
@@ -48,229 +111,16 @@ export default function Dashboard() {
 
   const handleThankYouClose = () => {
     setShowThankYouModal(false);
-    // Redirect to homepage after modal closes
     window.location.href = '/';
   };
 
-  const generateCampaignBrief = async () => {
-    if (!latestBrief) {
-      console.error('No campaign brief available');
-      return;
-    }
-
-    setIsGeneratingPDF(true);
-    try {
-      // Fetch session data to get all 9 questionnaire answers
-      let sessionData: any = {};
-      if (latestBrief.sessionId) {
-        try {
-          const sessionResponse = await fetch(`/api/conversation/${latestBrief.sessionId}`);
-          if (sessionResponse.ok) {
-            const session = await sessionResponse.json();
-            sessionData = session.sessionData || {};
-          }
-        } catch (error) {
-          console.error('Error fetching session data:', error);
-        }
-      }
-
-      // Create the actual brief content using the campaign data
-      const briefContent = document.createElement('div');
-      briefContent.style.padding = '20px';
-      briefContent.style.fontFamily = 'Arial, sans-serif';
-      briefContent.style.backgroundColor = 'white';
-      briefContent.style.width = '600px';
-      briefContent.style.fontSize = '12px';
-      briefContent.style.lineHeight = '1.4';
-      
-      // Parse AI insights if they exist
-      const insights = latestBrief.aiInsights as any || {};
-      const recommendations = insights.recommendations || [];
-      const budgetAllocation = insights.budgetAllocation || {};
-      const platformStrategies = insights.platformStrategies || {};
-      const kpis = insights.kpis || [];
-      
-      // Helper function to format labels from question options
-      const formatLabel = (value: string, questionId: string) => {
-        const labels: Record<string, Record<string, string>> = {
-          product: {
-            'ecommerce': 'Ecommerce app/Superapp',
-            'fmcg': 'FMCG/CPG',
-            'd2c_beauty': 'D2C Beauty/Skincare/Personal Care/Haircare/Wellness',
-            'fintech': 'Fintech/Financial Services'
-          },
-          platforms: {
-            'youtube': 'YouTube',
-            'meta': 'Meta',
-            'both': 'Both YouTube & Meta'
-          },
-          objective: {
-            'awareness': 'Awareness',
-            'consideration': 'Consideration',
-            'sales_lead_gen': 'Sales/Lead Generation'
-          },
-          audience: {
-            'india_inmarket_shoppers': '18–54, Male and Female, India Top 8 cities, InMarket Shoppers',
-            'india_affinity_shoppers': '18–54, Male and Female, India Top 8 cities, Affinity Shoppers',
-            'us_inmarket_shoppers': '18–54, Male and Female, US Metro Areas, InMarket Shoppers',
-            'us_affinity_shoppers': '18–54, Male and Female, US Metro Areas, Affinity Shoppers',
-            'india_inmarket_financial': '18–54, Male and Female, India Top 8 cities, InMarket Financial Services',
-            'india_affinity_financial': '18–54, Male and Female, India Top 8 cities, Affinity Financial Services',
-            'us_inmarket_financial': '18–54, Male and Female, US Metro Areas, InMarket Financial Services',
-            'us_affinity_financial': '18–54, Male and Female, US Metro Areas, Affinity Financial Services'
-          },
-          timeframe: {
-            '1_2_weeks': '1-2 weeks',
-            '1_month': '1 month',
-            '2_3_months': '2-3 months'
-          },
-          season: {
-            'only_festive': 'Yes (Festive/Holiday Season)',
-            'beyond_festive': 'No (Beyond Holiday Season)'
-          },
-          budget: {
-            'inr_under_10l': '< INR 10 lakhs',
-            'inr_10_20l': '10 lakhs to 20 lakhs',
-            'inr_20_40l': '20 lakhs to 40 lakhs',
-            'inr_40_80l': '40 lakhs to 80 lakhs',
-            'inr_80l_plus': '80 lakhs+',
-            'inr_2cr_plus': '2 crores+',
-            'usd_under_100k': '< US$ 100,000',
-            'usd_100_200k': 'US$ 100,000 to 200,000',
-            'usd_200_500k': 'US$ 200,000 to 500,000',
-            'usd_500_800k': 'US$ 500,000 to 800,000',
-            'usd_800_1500k': 'US$ 800,000 to 1,500,000',
-            'usd_1500_3000k': 'US$ 1,500,000 to 3,000,000',
-            'usd_3m_plus': 'US$ 3 mn+',
-            'usd_5m_plus': 'US$ 5 mn+'
-          }
-        };
-        return labels[questionId]?.[value] || value;
-      };
-      
-      briefContent.innerHTML = `
-        <div style="text-align: center; margin-bottom: 20px;">
-          <h1 style="color: #1e40af; font-size: 18px; margin-bottom: 5px;">Digital Media Campaign Brief</h1>
-          <h2 style="color: #1e40af; font-size: 16px; margin-bottom: 8px;">${sessionData.company || latestBrief.clientName}</h2>
-          <p style="color: #6b7280; font-size: 11px;">Generated by YourBrief AI Media Strategist</p>
-          <p style="color: #6b7280; font-size: 10px;">${new Date(latestBrief.createdAt || new Date()).toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          })}</p>
-        </div>
-        
-        <div style="margin-bottom: 20px; border: 1px solid #e5e7eb; border-radius: 6px; padding: 12px; background-color: #f9fafb;">
-          <h3 style="color: #1e40af; font-size: 14px; margin-bottom: 10px; font-weight: bold; border-bottom: 2px solid #1e40af; padding-bottom: 5px;">Campaign Details</h3>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; color: #374151; font-size: 11px; line-height: 1.4;">
-            <div><strong>Contact Name:</strong> ${sessionData.name || 'Not specified'}</div>
-            <div><strong>Company:</strong> ${sessionData.company || 'Not specified'}</div>
-            <div><strong>Product/Service:</strong> ${formatLabel(sessionData.product || '', 'product')}</div>
-            <div><strong>Platforms:</strong> ${formatLabel(sessionData.platforms || '', 'platforms')}</div>
-            <div><strong>Campaign Objective:</strong> ${formatLabel(sessionData.objective || '', 'objective')}</div>
-            <div><strong>Target Audience:</strong> ${formatLabel(sessionData.audience || '', 'audience')}</div>
-            <div><strong>Campaign Duration:</strong> ${formatLabel(sessionData.timeframe || '', 'timeframe')}</div>
-            <div><strong>Seasonal Campaign:</strong> ${formatLabel(sessionData.season || '', 'season')}</div>
-            <div style="grid-column: 1 / -1;"><strong>Budget:</strong> ${formatLabel(sessionData.budget || '', 'budget')}</div>
-          </div>
-        </div>
-
-        ${recommendations.length > 0 ? `
-        <div style="margin-bottom: 15px;">
-          <h3 style="color: #1e40af; font-size: 14px; margin-bottom: 8px; font-weight: bold; border-bottom: 2px solid #1e40af; padding-bottom: 5px;">AI Strategic Recommendations</h3>
-          <ul style="color: #6b7280; font-size: 11px; line-height: 1.3; padding-left: 15px; margin: 0;">
-            ${recommendations.map((rec: string) => `<li style="margin-bottom: 4px;">${rec}</li>`).join('')}
-          </ul>
-        </div>
-        ` : ''}
-
-        <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-          ${Object.keys(budgetAllocation).length > 0 ? `
-          <div style="flex: 1;">
-            <h3 style="color: #374151; font-size: 13px; margin-bottom: 8px; font-weight: bold;">Budget Allocation</h3>
-            <div style="color: #6b7280; font-size: 11px; line-height: 1.3;">
-              ${Object.entries(budgetAllocation).map(([platform, allocation]) => 
-                `<div><strong>${platform}:</strong> ${allocation}</div>`
-              ).join('')}
-            </div>
-          </div>
-          ` : ''}
-          
-          ${kpis.length > 0 ? `
-          <div style="flex: 1;">
-            <h3 style="color: #374151; font-size: 13px; margin-bottom: 8px; font-weight: bold;">Key Performance Indicators</h3>
-            <div style="color: #6b7280; font-size: 11px; line-height: 1.3;">
-              ${kpis.join(' • ')}
-            </div>
-          </div>
-          ` : ''}
-        </div>
-
-        ${Object.keys(platformStrategies).length > 0 ? `
-        <div style="margin-bottom: 15px;">
-          <h3 style="color: #374151; font-size: 13px; margin-bottom: 8px; font-weight: bold;">Platform-Specific Strategies</h3>
-          <div style="color: #6b7280; font-size: 11px; line-height: 1.3;">
-            ${Object.entries(platformStrategies).map(([platform, strategy]) => 
-              `<div style="margin-bottom: 8px;"><strong>${platform}:</strong><br>${strategy}</div>`
-            ).join('')}
-          </div>
-        </div>
-        ` : ''}
-
-        <div style="margin-top: 20px; padding-top: 10px; border-top: 1px solid #e5e7eb; color: #9ca3af; font-size: 10px; text-align: center;">
-          Generated by YourBrief AI Media Strategist | Contact: ${sessionData.name || typedUser?.email}
-        </div>
-      `;
-
-      document.body.appendChild(briefContent);
-
-      const canvas = await html2canvas(briefContent, {
-        scale: 1.5,
-        logging: false,
-        useCORS: true,
-        allowTaint: true
-      });
-
-      document.body.removeChild(briefContent);
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      
-      // A4 page dimensions in mm
-      const pageWidth = 210;
-      const pageHeight = 295;
-      
-      // Calculate scaling to fit content on single page
-      const imgWidth = pageWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      // If content is taller than page, scale it down to fit
-      let finalWidth = imgWidth;
-      let finalHeight = imgHeight;
-      
-      if (imgHeight > pageHeight) {
-        finalHeight = pageHeight - 10; // Leave 5mm margin on top and bottom
-        finalWidth = (canvas.width * finalHeight) / canvas.height;
-      }
-
-      // Center the content on the page
-      const xOffset = (pageWidth - finalWidth) / 2;
-      const yOffset = (pageHeight - finalHeight) / 2;
-
-      // Use company name from brief data in filename
-      const companyName = latestBrief.clientName || 'Campaign';
-      const fileName = `${companyName.replace(/[^a-z0-9]/gi, '_')}_Campaign_Brief.pdf`;
-
-      // Add single page with properly scaled content
-      pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
-      
-      pdf.save(fileName);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
-    } finally {
-      setIsGeneratingPDF(false);
-    }
-  };
+  // Parse AI insights
+  const insights = latestBrief?.aiInsights as any || {};
+  const recommendations = insights.recommendations || [];
+  const budgetAllocation = insights.budgetAllocation || {};
+  const platformStrategies = insights.platformStrategies || {};
+  const kpis = insights.kpis || [];
+  const platformInsights = insights.platformInsights || {};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -304,7 +154,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Welcome Section */}
         <div className="text-center mb-12">
           <div className="relative">
@@ -316,107 +166,301 @@ export default function Dashboard() {
                 Welcome back, {typedUser?.firstName}!
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                Your AI-powered digital media campaign planner is ready to help you create comprehensive campaign strategies.
+                Your AI-powered campaign brief is ready
               </p>
             </div>
           </div>
         </div>
 
-        {/* Action Cards */}
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          {/* Download Brief Card */}
-          <Card className="bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow duration-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                  <Download className="h-5 w-5 text-white" />
-                </div>
-                {latestBrief ? "Campaign Brief" : "Create Campaign"}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 dark:text-gray-300 mb-6">
-                {latestBrief ? 
-                  "Download your AI-generated campaign brief with comprehensive strategies, budget allocations, and platform-specific recommendations." :
-                  "Complete a campaign questionnaire to generate and download your personalized AI campaign brief."
-                }
-              </p>
-              <Button 
-                onClick={latestBrief ? generateCampaignBrief : () => window.location.href = '/'}
-                disabled={isGeneratingPDF || isBriefsLoading}
-                size="lg"
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-200"
-                data-testid="button-download-brief"
-              >
-                <Download className="h-5 w-5 mr-2" />
-                {isGeneratingPDF ? "Generating Brief..." : 
-                 isBriefsLoading ? "Loading..." :
-                 latestBrief ? "Download Brief & Early Insights" : "Create Campaign Brief"}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Create New Campaign Card */}
-          <Card className="bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-shadow duration-200">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <FileText className="h-5 w-5 text-white" />
-                </div>
-                Create New Campaign
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-600 dark:text-gray-300 mb-6">
-                Start a new campaign planning session with our AI assistant. Answer strategic questions to get personalized recommendations.
-              </p>
-              <Button 
-                onClick={() => window.location.href = '/campaign-planner'}
-                size="lg"
-                variant="outline"
-                className="w-full border-purple-200 dark:border-purple-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200"
-                data-testid="button-new-campaign"
-              >
-                <FileText className="h-5 w-5 mr-2" />
-                Start Campaign Planner
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* User Info */}
-        <Card className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border border-gray-200 dark:border-gray-600">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <User className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-              Account Information
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Name:</span>
-                <p className="text-gray-900 dark:text-white" data-testid="text-user-name">
-                  {typedUser?.firstName} {typedUser?.lastName}
+        {isBriefsLoading ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600 dark:text-gray-300">Loading your campaign brief...</p>
+          </div>
+        ) : !latestBrief ? (
+          <div className="text-center py-12">
+            <Card className="max-w-2xl mx-auto">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3 justify-center">
+                  <FileText className="h-8 w-8 text-blue-600" />
+                  No Campaign Brief Yet
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                  Start a new campaign planning session to generate your personalized brief.
                 </p>
-              </div>
-              <div>
-                <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Email:</span>
-                <p className="text-gray-900 dark:text-white" data-testid="text-user-email">
-                  {typedUser?.email}
+                <Button 
+                  onClick={() => window.location.href = '/campaign-planner'}
+                  size="lg"
+                  className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+                  data-testid="button-start-campaign"
+                >
+                  <FileText className="h-5 w-5 mr-2" />
+                  Start Campaign Planner
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        ) : (
+          <div className="space-y-8">
+            {/* Campaign Header */}
+            <Card className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+              <CardHeader>
+                <CardTitle className="text-2xl">
+                  {sessionData.company || latestBrief.clientName}
+                </CardTitle>
+                <p className="text-blue-100">
+                  Generated by YourBrief AI Media Strategist • {new Date(latestBrief.createdAt || new Date()).toLocaleDateString('en-US', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
                 </p>
-              </div>
-              {typedUser?.company && (
-                <div className="md:col-span-2">
-                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Company:</span>
-                  <p className="text-gray-900 dark:text-white" data-testid="text-user-company">
-                    {typedUser.company}
-                  </p>
+              </CardHeader>
+            </Card>
+
+            {/* Campaign Details */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-blue-600" />
+                  Campaign Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div data-testid="detail-contact-name">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Contact Name</span>
+                    <p className="text-gray-900 dark:text-white">{sessionData.name || 'Not specified'}</p>
+                  </div>
+                  <div data-testid="detail-company">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Company</span>
+                    <p className="text-gray-900 dark:text-white">{sessionData.company || 'Not specified'}</p>
+                  </div>
+                  <div data-testid="detail-product">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Product/Service</span>
+                    <p className="text-gray-900 dark:text-white">{formatLabel(sessionData.product || '', 'product')}</p>
+                  </div>
+                  <div data-testid="detail-platforms">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Platforms</span>
+                    <p className="text-gray-900 dark:text-white">{formatLabel(sessionData.platforms || '', 'platforms')}</p>
+                  </div>
+                  <div data-testid="detail-objective">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Campaign Objective</span>
+                    <p className="text-gray-900 dark:text-white">{formatLabel(sessionData.objective || '', 'objective')}</p>
+                  </div>
+                  <div data-testid="detail-audience">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Target Audience</span>
+                    <p className="text-gray-900 dark:text-white">{formatLabel(sessionData.audience || '', 'audience')}</p>
+                  </div>
+                  <div data-testid="detail-timeframe">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Campaign Duration</span>
+                    <p className="text-gray-900 dark:text-white">{formatLabel(sessionData.timeframe || '', 'timeframe')}</p>
+                  </div>
+                  <div data-testid="detail-season">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Seasonal Campaign</span>
+                    <p className="text-gray-900 dark:text-white">{formatLabel(sessionData.season || '', 'season')}</p>
+                  </div>
+                  <div className="md:col-span-2" data-testid="detail-budget">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Budget</span>
+                    <p className="text-gray-900 dark:text-white">{formatLabel(sessionData.budget || '', 'budget')}</p>
+                  </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* AI Strategic Recommendations */}
+            {recommendations.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-purple-600" />
+                    AI Strategic Recommendations
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ul className="space-y-2">
+                    {recommendations.map((rec: string, index: number) => (
+                      <li key={index} className="flex items-start gap-2" data-testid={`recommendation-${index}`}>
+                        <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                        <span className="text-gray-700 dark:text-gray-300">{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Budget Allocation & KPIs */}
+            <div className="grid md:grid-cols-2 gap-8">
+              {Object.keys(budgetAllocation).length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <DollarSign className="h-5 w-5 text-green-600" />
+                      Budget Allocation
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {Object.entries(budgetAllocation).map(([platform, allocation]) => (
+                        <div key={platform} className="flex justify-between" data-testid={`budget-${platform.toLowerCase()}`}>
+                          <span className="font-medium text-gray-700 dark:text-gray-300">{platform}</span>
+                          <span className="text-gray-900 dark:text-white">{allocation}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {kpis.length > 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Target className="h-5 w-5 text-orange-600" />
+                      Key Performance Indicators
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                      {kpis.map((kpi: string, index: number) => (
+                        <span 
+                          key={index} 
+                          className="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-100 rounded-full text-sm"
+                          data-testid={`kpi-${index}`}
+                        >
+                          {kpi}
+                        </span>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
               )}
             </div>
-          </CardContent>
-        </Card>
+
+            {/* Platform-Specific Strategies */}
+            {Object.keys(platformStrategies).length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-indigo-600" />
+                    Platform-Specific Strategies
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {Object.entries(platformStrategies).map(([platform, strategy]) => (
+                      <div key={platform} data-testid={`strategy-${platform.toLowerCase()}`}>
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-1">{platform}</h4>
+                        <p className="text-gray-700 dark:text-gray-300">{strategy}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Platform Insights from YourBrief API */}
+            {Object.keys(platformInsights).length > 0 && (
+              <Card className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-6 w-6 text-purple-600" />
+                    Platform Performance Insights
+                  </CardTitle>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Live data from YourBrief.ai API
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {Object.entries(platformInsights).map(([platform, metrics]: [string, any]) => (
+                      <div key={platform} className="space-y-3">
+                        <h4 className="font-bold text-lg text-gray-900 dark:text-white border-b-2 border-purple-300 dark:border-purple-700 pb-2">
+                          {platform}
+                        </h4>
+                        
+                        {metrics.reach && (
+                          <div className="flex items-center gap-2" data-testid={`insight-${platform.toLowerCase()}-reach`}>
+                            <Eye className="h-4 w-4 text-blue-600" />
+                            <div>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Reach</p>
+                              <p className="font-semibold text-gray-900 dark:text-white">{metrics.reach}</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {metrics.impressions && (
+                          <div className="flex items-center gap-2" data-testid={`insight-${platform.toLowerCase()}-impressions`}>
+                            <Repeat className="h-4 w-4 text-green-600" />
+                            <div>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">Impressions</p>
+                              <p className="font-semibold text-gray-900 dark:text-white">{metrics.impressions}</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {metrics.ctr && (
+                          <div className="flex items-center gap-2" data-testid={`insight-${platform.toLowerCase()}-ctr`}>
+                            <MousePointer className="h-4 w-4 text-purple-600" />
+                            <div>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">CTR</p>
+                              <p className="font-semibold text-gray-900 dark:text-white">{metrics.ctr}</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {metrics.cpc && (
+                          <div className="flex items-center gap-2" data-testid={`insight-${platform.toLowerCase()}-cpc`}>
+                            <DollarSign className="h-4 w-4 text-orange-600" />
+                            <div>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">CPC</p>
+                              <p className="font-semibold text-gray-900 dark:text-white">{metrics.cpc}</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {metrics.cpa && (
+                          <div className="flex items-center gap-2" data-testid={`insight-${platform.toLowerCase()}-cpa`}>
+                            <Target className="h-4 w-4 text-red-600" />
+                            <div>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">CPA</p>
+                              <p className="font-semibold text-gray-900 dark:text-white">{metrics.cpa}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Create New Campaign Button */}
+            <Card className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+              <CardContent className="pt-6">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    Need a new campaign?
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">
+                    Start a new planning session to create another campaign brief
+                  </p>
+                  <Button 
+                    onClick={() => window.location.href = '/campaign-planner'}
+                    size="lg"
+                    className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+                    data-testid="button-new-campaign"
+                  >
+                    <FileText className="h-5 w-5 mr-2" />
+                    Create New Campaign
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </main>
 
       {/* Thank You Modal */}
