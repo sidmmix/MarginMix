@@ -73,8 +73,20 @@ export function mapBudget(budget: string): {
       case 'usd_under_100k':
         result.budget_usd = '$0-100000';
         break;
+      case 'usd_100_300k':
+        result.budget_usd = '$100000-300000';
+        break;
+      case 'usd_300_800k':
+        result.budget_usd = '$300000-800000';
+        break;
+      case 'usd_800_1500k':
+        result.budget_usd = '$800000-1500000';
+        break;
+      case 'usd_above_1500k':
+        result.budget_usd = '$1500000+';
+        break;
       default:
-        result.budget_usd = budget.toUpperCase().replace('USD_', '$');
+        result.budget_usd = budget.replace('usd_', '$').replace('_', '-');
     }
   }
 

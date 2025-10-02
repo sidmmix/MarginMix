@@ -6,8 +6,8 @@ import {
   mapSeasonality
 } from './mappers';
 
-// API Configuration
-const apiEndpoint = 'https://api.yourbrief.ai/advisor/brief';
+// API Configuration - Using sandbox endpoint since production domain not found
+const apiEndpoint = 'https://api-sandbox.yourbrief.ai/advisor/brief';
 const apiKey = process.env.YOURBRIEF_API_KEY || '';
 
 // Axios Instance Setup
