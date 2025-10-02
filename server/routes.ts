@@ -6,6 +6,7 @@ import connectPg from "connect-pg-simple";
 import OpenAI from "openai";
 import { storage } from "./storage";
 import { setupOAuth } from "./oauth";
+import { getYourBriefInsights } from "./yourbrief";
 import { 
   insertConversationSessionSchema, 
   updateConversationSessionSchema,
@@ -544,7 +545,15 @@ export function registerRoutes(app: Express): Server {
 
         const aiResponse = completion.choices[0]?.message?.content || "";
         
-        // Generate AI insights
+        // Fetch platform insights from YourBrief API
+        const platformInsights = await getYourBriefInsights(
+          data.product || '',
+          data.audience || '',
+          data.budget || '',
+          data.season || ''
+        );
+        
+        // Generate AI insights with platform insights from YourBrief
         const aiInsights = {
           recommendations: [
             "Implement A/B testing for creative variants",
@@ -567,7 +576,8 @@ export function registerRoutes(app: Express): Server {
               'YouTube': 'Long-form content and tutorials'
             })
           },
-          kpis: ["Reach", "Video Completion Rate", "Click-Through Rate", "Cost Per Acquisition", "Brand Lift"]
+          kpis: ["Reach", "Video Completion Rate", "Click-Through Rate", "Cost Per Acquisition", "Brand Lift"],
+          platformInsights: platformInsights || {}
         };
 
         const briefData = {
