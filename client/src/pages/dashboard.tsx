@@ -120,7 +120,6 @@ export default function Dashboard() {
   const budgetAllocation = insights.budgetAllocation || {};
   const platformStrategies = insights.platformStrategies || {};
   const kpis = insights.kpis || [];
-  const platformInsights = insights.platformInsights || {};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -354,79 +353,6 @@ export default function Dashboard() {
                       <div key={platform} data-testid={`strategy-${platform.toLowerCase()}`}>
                         <h4 className="font-semibold text-gray-900 dark:text-white mb-1">{platform}</h4>
                         <p className="text-gray-700 dark:text-gray-300">{String(strategy)}</p>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Platform Insights */}
-            {Object.keys(platformInsights).length > 0 && (
-              <Card className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-6 w-6 text-purple-600" />
-                    Platform Performance Insights
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {Object.entries(platformInsights).map(([platform, metrics]: [string, any]) => (
-                      <div key={platform} className="space-y-3">
-                        <h4 className="font-bold text-lg text-gray-900 dark:text-white border-b-2 border-purple-300 dark:border-purple-700 pb-2">
-                          {platform}
-                        </h4>
-                        
-                        {metrics.reach && (
-                          <div className="flex items-center gap-2" data-testid={`insight-${platform.toLowerCase()}-reach`}>
-                            <Eye className="h-4 w-4 text-blue-600" />
-                            <div>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">Reach</p>
-                              <p className="font-semibold text-gray-900 dark:text-white">{metrics.reach}</p>
-                            </div>
-                          </div>
-                        )}
-                        
-                        {metrics.impressions && (
-                          <div className="flex items-center gap-2" data-testid={`insight-${platform.toLowerCase()}-impressions`}>
-                            <Repeat className="h-4 w-4 text-green-600" />
-                            <div>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">Impressions</p>
-                              <p className="font-semibold text-gray-900 dark:text-white">{metrics.impressions}</p>
-                            </div>
-                          </div>
-                        )}
-                        
-                        {metrics.ctr && (
-                          <div className="flex items-center gap-2" data-testid={`insight-${platform.toLowerCase()}-ctr`}>
-                            <MousePointer className="h-4 w-4 text-purple-600" />
-                            <div>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">CTR</p>
-                              <p className="font-semibold text-gray-900 dark:text-white">{metrics.ctr}</p>
-                            </div>
-                          </div>
-                        )}
-                        
-                        {metrics.cpc && (
-                          <div className="flex items-center gap-2" data-testid={`insight-${platform.toLowerCase()}-cpc`}>
-                            <DollarSign className="h-4 w-4 text-orange-600" />
-                            <div>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">CPC</p>
-                              <p className="font-semibold text-gray-900 dark:text-white">{metrics.cpc}</p>
-                            </div>
-                          </div>
-                        )}
-                        
-                        {metrics.cpa && (
-                          <div className="flex items-center gap-2" data-testid={`insight-${platform.toLowerCase()}-cpa`}>
-                            <Target className="h-4 w-4 text-red-600" />
-                            <div>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">CPA</p>
-                              <p className="font-semibold text-gray-900 dark:text-white">{metrics.cpa}</p>
-                            </div>
-                          </div>
-                        )}
                       </div>
                     ))}
                   </div>

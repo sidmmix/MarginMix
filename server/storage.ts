@@ -165,29 +165,6 @@ export class DatabaseStorage implements IStorage {
 
     const data = session.sessionData as any;
 
-    // Generate platform insights based on campaign data
-    const platformInsights: Record<string, any> = {};
-    
-    if (data.platforms === 'youtube' || data.platforms === 'both') {
-      platformInsights['YouTube'] = {
-        reach: '2.5M - 3.2M',
-        impressions: '15M - 18M',
-        ctr: '2.8% - 3.5%',
-        cpc: '$0.45 - $0.65',
-        cpa: '$12 - $18'
-      };
-    }
-    
-    if (data.platforms === 'meta' || data.platforms === 'both') {
-      platformInsights['Meta'] = {
-        reach: '1.8M - 2.4M',
-        impressions: '12M - 14M',
-        ctr: '3.2% - 4.1%',
-        cpc: '$0.35 - $0.55',
-        cpa: '$10 - $15'
-      };
-    }
-
     // Simple brief generation
     const briefData = {
       userId: userId,
@@ -222,8 +199,7 @@ export class DatabaseStorage implements IStorage {
             'YouTube': 'Long-form content and tutorials'
           })
         },
-        kpis: ["Reach", "Video Completion Rate", "Click-Through Rate", "Cost Per Acquisition", "Brand Lift"],
-        platformInsights: platformInsights
+        kpis: ["Reach", "Video Completion Rate", "Click-Through Rate", "Cost Per Acquisition", "Brand Lift"]
       }
     };
 
