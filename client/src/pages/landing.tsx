@@ -89,8 +89,9 @@ export default function Landing() {
               <br />
               in Minutes
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl text-blue-600 dark:text-blue-300 mb-8 max-w-3xl mx-auto">
               YourBrief is the AI Media Strategist that's essentially a Planning Decision Engine for YouTube and Meta. 
+               <br />
                <br />
               Just answer a few relevant questions, and YourBrief gives you a Structured Brief and Generates Platform-specific strategies with Performance Forecasts & Suggestive inventory level Media Mix.
                <br />
