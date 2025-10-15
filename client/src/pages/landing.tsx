@@ -287,6 +287,9 @@ export default function Landing() {
           <div className="text-center">
             <h3 className="text-2xl font-bold text-blue-400 mb-4">YourBrief</h3>
             <p className="text-gray-400 mb-4">AI-powered Digital Media Planning & Activation</p>
+            <p className="text-gray-400 text-sm mb-2">
+              YourBrief is a brand under Digital Lexicon Sdn Bhd
+            </p>
             <p className="text-gray-500 text-sm">
               © 2025 YourBrief. All rights reserved.
             </p>
