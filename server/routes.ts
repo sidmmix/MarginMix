@@ -63,12 +63,8 @@ const questions: Question[] = [
     question: "Define your target audience and geo location", 
     type: 'single_choice',
     options: [
-      { value: 'india_inmarket_shoppers', label: '18–54, Male and Female, India Top 8 cities, InMarket Shoppers' },
-      { value: 'india_affinity_shoppers', label: '18–54, Male and Female, India Top 8 cities, Affinity Shoppers' },
       { value: 'us_inmarket_shoppers', label: '18–54, Male and Female, US Metro Areas, InMarket Shoppers' },
       { value: 'us_affinity_shoppers', label: '18–54, Male and Female, US Metro Areas, Affinity Shoppers' },
-      { value: 'india_inmarket_financial', label: '18–54, Male and Female, India Top 8 cities, InMarket Financial Services' },
-      { value: 'india_affinity_financial', label: '18–54, Male and Female, India Top 8 cities, Affinity Financial Services' },
       { value: 'us_inmarket_financial', label: '18–54, Male and Female, US Metro Areas, InMarket Financial Services' },
       { value: 'us_affinity_financial', label: '18–54, Male and Female, US Metro Areas, Affinity Financial Services' }
     ],
@@ -100,12 +96,6 @@ const questions: Question[] = [
     question: "What's your budget?", 
     type: 'single_choice',
     options: [
-      { value: 'inr_under_10l', label: '< INR 10 lakhs' },
-      { value: 'inr_10_20l', label: '10 lakhs to 20 lakhs' },
-      { value: 'inr_20_40l', label: '20 lakhs to 40 lakhs' },
-      { value: 'inr_40_80l', label: '40 lakhs to 80 lakhs' },
-      { value: 'inr_80l_plus', label: '80 lakhs+' },
-      { value: 'inr_2cr_plus', label: '2 crores+' },
       { value: 'usd_under_100k', label: '< US$ 100,000' },
       { value: 'usd_100_200k', label: 'US$ 100,000 to 200,000' },
       { value: 'usd_200_500k', label: 'US$ 200,000 to 500,000' },

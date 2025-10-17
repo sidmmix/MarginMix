@@ -28,12 +28,8 @@ const formatLabel = (value: string, questionId: string): string => {
       'sales_lead_gen': 'Sales/Lead Generation'
     },
     audience: {
-      'india_inmarket_shoppers': '18–54, Male and Female, India Top 8 cities, InMarket Shoppers',
-      'india_affinity_shoppers': '18–54, Male and Female, India Top 8 cities, Affinity Shoppers',
       'us_inmarket_shoppers': '18–54, Male and Female, US Metro Areas, InMarket Shoppers',
       'us_affinity_shoppers': '18–54, Male and Female, US Metro Areas, Affinity Shoppers',
-      'india_inmarket_financial': '18–54, Male and Female, India Top 8 cities, InMarket Financial Services',
-      'india_affinity_financial': '18–54, Male and Female, India Top 8 cities, Affinity Financial Services',
       'us_inmarket_financial': '18–54, Male and Female, US Metro Areas, InMarket Financial Services',
       'us_affinity_financial': '18–54, Male and Female, US Metro Areas, Affinity Financial Services'
     },
@@ -47,12 +43,6 @@ const formatLabel = (value: string, questionId: string): string => {
       'beyond_festive': 'No (Beyond Holiday Season)'
     },
     budget: {
-      'inr_under_10l': '< INR 10 lakhs',
-      'inr_10_20l': '10 lakhs to 20 lakhs',
-      'inr_20_40l': '20 lakhs to 40 lakhs',
-      'inr_40_80l': '40 lakhs to 80 lakhs',
-      'inr_80l_plus': '80 lakhs+',
-      'inr_2cr_plus': '2 crores+',
       'usd_under_100k': '< US$ 100,000',
       'usd_100_200k': 'US$ 100,000 to 200,000',
       'usd_200_500k': 'US$ 200,000 to 500,000',
