@@ -31,7 +31,11 @@ const formatLabel = (value: string, questionId: string): string => {
       'us_inmarket_shoppers': '18–54, Male and Female, US Metro Areas, InMarket Shoppers',
       'us_affinity_shoppers': '18–54, Male and Female, US Metro Areas, Affinity Shoppers',
       'us_inmarket_financial': '18–54, Male and Female, US Metro Areas, InMarket Financial Services',
-      'us_affinity_financial': '18–54, Male and Female, US Metro Areas, Affinity Financial Services'
+      'us_affinity_financial': '18–54, Male and Female, US Metro Areas, Affinity Financial Services',
+      'au_inmarket_shoppers': '18–54, Male and Female, Australia Urban, InMarket Shoppers',
+      'au_affinity_shoppers': '18–54, Male and Female, Australia Urban, Affinity Shoppers',
+      'au_inmarket_financial': '18–54, Male and Female, Australia Urban, InMarket Financial Services',
+      'au_affinity_financial': '18–54, Male and Female, Australia Urban, Affinity Financial Services'
     },
     timeframe: {
       '1_2_weeks': '1-2 weeks',
@@ -50,7 +54,15 @@ const formatLabel = (value: string, questionId: string): string => {
       'usd_800_1500k': 'US$ 800,000 to 1,500,000',
       'usd_1500_3000k': 'US$ 1,500,000 to 3,000,000',
       'usd_3m_plus': 'US$ 3 mn+',
-      'usd_5m_plus': 'US$ 5 mn+'
+      'usd_5m_plus': 'US$ 5 mn+',
+      'aud_under_150k': '< AU$ 150,000',
+      'aud_150_300k': 'AU$ 150,000 to 300,000',
+      'aud_300_750k': 'AU$ 300,000 to 750,000',
+      'aud_750_1200k': 'AU$ 750,000 to 1,200,000',
+      'aud_1200_2250k': 'AU$ 1,200,000 to 2,250,000',
+      'aud_2250_4500k': 'AU$ 2,250,000 to 4,500,000',
+      'aud_4500k_plus': 'AU$ 4.5 mn+',
+      'aud_7500k_plus': 'AU$ 7.5 mn+'
     }
   };
   return labels[questionId]?.[value] || value;

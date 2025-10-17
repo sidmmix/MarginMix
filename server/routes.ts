@@ -66,7 +66,11 @@ const questions: Question[] = [
       { value: 'us_inmarket_shoppers', label: '18–54, Male and Female, US Metro Areas, InMarket Shoppers' },
       { value: 'us_affinity_shoppers', label: '18–54, Male and Female, US Metro Areas, Affinity Shoppers' },
       { value: 'us_inmarket_financial', label: '18–54, Male and Female, US Metro Areas, InMarket Financial Services' },
-      { value: 'us_affinity_financial', label: '18–54, Male and Female, US Metro Areas, Affinity Financial Services' }
+      { value: 'us_affinity_financial', label: '18–54, Male and Female, US Metro Areas, Affinity Financial Services' },
+      { value: 'au_inmarket_shoppers', label: '18–54, Male and Female, Australia Urban, InMarket Shoppers' },
+      { value: 'au_affinity_shoppers', label: '18–54, Male and Female, Australia Urban, Affinity Shoppers' },
+      { value: 'au_inmarket_financial', label: '18–54, Male and Female, Australia Urban, InMarket Financial Services' },
+      { value: 'au_affinity_financial', label: '18–54, Male and Female, Australia Urban, Affinity Financial Services' }
     ],
     validation: { required: true }
   },
@@ -103,7 +107,15 @@ const questions: Question[] = [
       { value: 'usd_800_1500k', label: 'US$ 800,000 to 1,500,000' },
       { value: 'usd_1500_3000k', label: 'US$ 1,500,000 to 3,000,000' },
       { value: 'usd_3m_plus', label: 'US$ 3 mn+' },
-      { value: 'usd_5m_plus', label: 'US$ 5 mn+' }
+      { value: 'usd_5m_plus', label: 'US$ 5 mn+' },
+      { value: 'aud_under_150k', label: '< AU$ 150,000' },
+      { value: 'aud_150_300k', label: 'AU$ 150,000 to 300,000' },
+      { value: 'aud_300_750k', label: 'AU$ 300,000 to 750,000' },
+      { value: 'aud_750_1200k', label: 'AU$ 750,000 to 1,200,000' },
+      { value: 'aud_1200_2250k', label: 'AU$ 1,200,000 to 2,250,000' },
+      { value: 'aud_2250_4500k', label: 'AU$ 2,250,000 to 4,500,000' },
+      { value: 'aud_4500k_plus', label: 'AU$ 4.5 mn+' },
+      { value: 'aud_7500k_plus', label: 'AU$ 7.5 mn+' }
     ],
     validation: { required: true }
   }
