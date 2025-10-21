@@ -191,10 +191,10 @@ export default function Landing() {
                 1
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Answer 4 Questions
+                Answer 11 Questions
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Describe your targeting in natural language - our VP of Media Strategy AI transforms it into professional briefs.
+                Share campaign details in natural language - our VP of Media Strategy AI creates professional, comprehensive media briefs.
               </p>
             </div>
             

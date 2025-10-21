@@ -20,7 +20,7 @@ const openai = new OpenAI({
 });
 
 
-// Open-ended questions for natural language input
+// Open-ended questions for natural language input - 11 questions
 const questions: Question[] = [
   { 
     id: 'geo', 
@@ -39,20 +39,76 @@ const questions: Question[] = [
     validation: { required: true, minLength: 5 }
   },
   { 
-    id: 'affinity', 
-    question: "Interests & Affinities", 
-    type: 'textarea',
-    placeholder: "What are they interested in? (e.g., 'luxury shoppers, travel enthusiasts' or 'gamers, tech early adopters')",
-    helpText: "What hobbies, interests, or behaviors define your target audience?",
-    validation: { required: true, minLength: 5 }
-  },
-  { 
     id: 'industry', 
     question: "Industry & Campaign Goal", 
     type: 'textarea',
     placeholder: "What's your business and campaign goal? (e.g., 'DTC skincare brand, driving online sales' or 'Fintech app, user acquisition')",
     helpText: "Tell us about your business type and what you want to achieve with this campaign.",
     validation: { required: true, minLength: 10 }
+  },
+  { 
+    id: 'budget', 
+    question: "Budget / Investment Level", 
+    type: 'textarea',
+    placeholder: "What's your campaign budget? (e.g., '$50K monthly' or '€100K for 3 months' or 'flexible, looking for ROI guidance')",
+    helpText: "Share your budget range or investment level. This helps us recommend the right platforms and strategies.",
+    validation: { required: true, minLength: 5 }
+  },
+  { 
+    id: 'timeline', 
+    question: "Campaign Timeline", 
+    type: 'textarea',
+    placeholder: "When do you want to run this campaign? (e.g., 'Q4 2025 holiday season' or 'Starting Jan 2026, 6-month flight')",
+    helpText: "Tell us about timing, duration, seasonality, or any important dates.",
+    validation: { required: true, minLength: 5 }
+  },
+  { 
+    id: 'kpis', 
+    question: "Key Performance Indicators (KPIs)", 
+    type: 'textarea',
+    placeholder: "What defines success? (e.g., 'Drive 10K conversions, $50 CPA' or 'Brand awareness lift, 20M impressions')",
+    helpText: "Share your success metrics, target KPIs, or performance goals.",
+    validation: { required: true, minLength: 5 }
+  },
+  { 
+    id: 'creative', 
+    question: "Creative / Messaging Theme", 
+    type: 'textarea',
+    placeholder: "What's your brand message or creative approach? (e.g., 'Premium, aspirational lifestyle' or 'Fun, quirky, Gen-Z humor')",
+    helpText: "Describe your brand voice, creative themes, or key messaging points.",
+    validation: { required: true, minLength: 5 }
+  },
+  { 
+    id: 'competitive', 
+    question: "Competitive Landscape", 
+    type: 'textarea',
+    placeholder: "Who are your competitors? (e.g., 'Nike, Adidas in athletic wear' or 'New entrant vs. legacy banks')",
+    helpText: "Share competitive context, market positioning, or differentiation.",
+    validation: { required: true, minLength: 5 }
+  },
+  { 
+    id: 'platforms', 
+    question: "Platform Preferences", 
+    type: 'textarea',
+    placeholder: "Any platform preferences? (e.g., 'Must include Meta, considering YouTube' or 'Open to all channels')",
+    helpText: "Tell us if you have specific platform requirements or preferences.",
+    validation: { required: true, minLength: 5 }
+  },
+  { 
+    id: 'affinity', 
+    question: "Affinity / Interest Segments", 
+    type: 'textarea',
+    placeholder: "What interests define your audience? (e.g., 'luxury shoppers, travel enthusiasts' or 'gamers, tech early adopters')",
+    helpText: "Describe affinity segments, interests, hobbies, or lifestyle preferences.",
+    validation: { required: true, minLength: 5 }
+  },
+  { 
+    id: 'inmarket', 
+    question: "InMarket / Behaviour Segments", 
+    type: 'textarea',
+    placeholder: "What purchase behaviors or signals? (e.g., 'In-market for SUVs' or 'Recently searched for mortgages')",
+    helpText: "Share behavioral signals, purchase intent, or in-market categories.",
+    validation: { required: true, minLength: 5 }
   }
 ];
 
@@ -320,17 +376,25 @@ export function registerRoutes(app: Express): Server {
       // Generate AI-powered campaign brief using VP of Media Strategy role
       try {
         const prompt = `
-Process the following raw targeting inputs and generate a formal, structured Media Brief in JSON format.
+Process the following raw campaign inputs and generate a comprehensive, formal Media Brief in JSON format.
 
 Raw Inputs:
 - Geographic Targeting: ${data.geo || 'Not specified'}
 - Demographics: ${data.demo || 'Not specified'}
-- Interests & Affinities: ${data.affinity || 'Not specified'}
 - Industry & Campaign Goal: ${data.industry || 'Not specified'}
+- Budget / Investment Level: ${data.budget || 'Not specified'}
+- Campaign Timeline: ${data.timeline || 'Not specified'}
+- KPIs & Success Metrics: ${data.kpis || 'Not specified'}
+- Creative / Messaging Theme: ${data.creative || 'Not specified'}
+- Competitive Landscape: ${data.competitive || 'Not specified'}
+- Platform Preferences: ${data.platforms || 'Not specified'}
+- Affinity / Interest Segments: ${data.affinity || 'Not specified'}
+- InMarket / Behaviour Segments: ${data.inmarket || 'Not specified'}
 
-Transform this raw input into professional, industry-standard targeting terminology. For example:
+Transform this raw input into professional, industry-standard media planning terminology. For example:
 - "rich people" → "High-Net-Worth Individual (HNI)"
-- "USA" → specific DMA markets
+- "USA" → specific DMA markets (e.g., "New York, Los Angeles, Chicago DMAs")
+- "$50K monthly" → "Monthly Investment: $50,000 USD"
 - "young people who like tech" → "Tech-Savvy Millennials, Age 25-34"
 
 Return a JSON object with this exact structure:
@@ -338,15 +402,37 @@ Return a JSON object with this exact structure:
   "brief_title": "Descriptive campaign title based on industry and goals",
   "industry_vertical": "Industry category (e.g., E-commerce, Finance, Healthcare)",
   "geo_targeting": {
-    "primary_markets": ["List of primary target markets/regions"],
+    "primary_markets": ["List of primary target markets/regions with professional terminology"],
     "secondary_markets": ["List of secondary markets if applicable"]
   },
   "demographics": {
     "age_range": "Age range (e.g., 25-54, 18-34)",
     "hhi_segment": "Household income segment (e.g., HNI, Upper-Middle Class, Mass Market)"
   },
-  "affinity_buckets": ["List of interest categories and affinities"],
-  "in_market_segments": ["List of in-market purchase intent segments"]
+  "budget_details": {
+    "total_budget": "Budget amount with currency",
+    "flight_duration": "Campaign duration",
+    "allocation_strategy": "Recommended budget allocation approach"
+  },
+  "campaign_objectives": {
+    "primary_kpi": "Main success metric",
+    "secondary_kpis": ["Supporting metrics"],
+    "target_timeline": "Campaign flight dates"
+  },
+  "creative_strategy": {
+    "messaging_theme": "Creative approach and brand voice",
+    "key_messages": ["Core messaging points"]
+  },
+  "competitive_analysis": {
+    "key_competitors": ["Main competitors"],
+    "differentiation": "Unique positioning"
+  },
+  "platform_strategy": {
+    "recommended_platforms": ["Platforms to use"],
+    "rationale": "Why these platforms"
+  },
+  "affinity_buckets": ["List of interest categories and affinities with professional terminology"],
+  "in_market_segments": ["List of in-market purchase intent segments with industry-standard categories"]
 }
 `;
 
@@ -355,7 +441,7 @@ Return a JSON object with this exact structure:
           messages: [
             {
               role: "system",
-              content: "You are a Vice President of Media Strategy with 15 years of experience. Your sole purpose is to process raw, open-ended targeting inputs from a planner and output a formal, structured Media Brief JSON. Analyze the user's raw input (Geo, Demo, Affinity, Industry) and map it into actionable, high-level, industry-standard targeting terminology. For example, turn 'rich people' into 'High-Net-Worth Individual (HNI)'."
+              content: "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology and provide strategic insights across budget, targeting, creative, competitive positioning, and platform strategy."
             },
             {
               role: "user",
@@ -363,7 +449,7 @@ Return a JSON object with this exact structure:
             }
           ],
           response_format: { type: "json_object" },
-          max_tokens: 1500,
+          max_tokens: 2500,
           temperature: 0.7,
         });
 
@@ -391,8 +477,15 @@ Return a JSON object with this exact structure:
           rawInputs: { 
             geo: data.geo || "", 
             demo: data.demo || "", 
-            affinity: data.affinity || "", 
-            industry: data.industry || "" 
+            industry: data.industry || "",
+            budget: data.budget || "",
+            timeline: data.timeline || "",
+            kpis: data.kpis || "",
+            creative: data.creative || "",
+            competitive: data.competitive || "",
+            platforms: data.platforms || "",
+            affinity: data.affinity || "",
+            inmarket: data.inmarket || ""
           },
           aiInsights: { 
             generatedBrief: mediaBrief, 
@@ -419,8 +512,15 @@ Return a JSON object with this exact structure:
           rawInputs: { 
             geo: data.geo || "", 
             demo: data.demo || "", 
-            affinity: data.affinity || "", 
-            industry: data.industry || "" 
+            industry: data.industry || "",
+            budget: data.budget || "",
+            timeline: data.timeline || "",
+            kpis: data.kpis || "",
+            creative: data.creative || "",
+            competitive: data.competitive || "",
+            platforms: data.platforms || "",
+            affinity: data.affinity || "",
+            inmarket: data.inmarket || ""
           },
           aiInsights: {
             generatedBrief: {},

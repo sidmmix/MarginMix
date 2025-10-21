@@ -130,9 +130,9 @@ export type UpdateConversationSession = z.infer<typeof updateConversationSession
 export type CampaignBrief = typeof campaignBriefs.$inferSelect;
 export type InsertCampaignBrief = z.infer<typeof insertCampaignBriefSchema>;
 
-// Question types for the conversation flow
+// Question types for the conversation flow - 11 questions
 export const questionSchema = z.object({
-  id: z.enum(['geo', 'demo', 'affinity', 'industry']),
+  id: z.enum(['geo', 'demo', 'industry', 'budget', 'timeline', 'kpis', 'creative', 'competitive', 'platforms', 'affinity', 'inmarket']),
   question: z.string(),
   type: z.literal('textarea'),
   placeholder: z.string().optional(),
@@ -149,8 +149,15 @@ export type Question = z.infer<typeof questionSchema>;
 export const conversationDataSchema = z.object({
   geo: z.string().optional(),
   demo: z.string().optional(),
-  affinity: z.string().optional(),
   industry: z.string().optional(),
+  budget: z.string().optional(),
+  timeline: z.string().optional(),
+  kpis: z.string().optional(),
+  creative: z.string().optional(),
+  competitive: z.string().optional(),
+  platforms: z.string().optional(),
+  affinity: z.string().optional(),
+  inmarket: z.string().optional(),
 });
 
 export type ConversationData = z.infer<typeof conversationDataSchema>;

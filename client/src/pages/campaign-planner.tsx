@@ -145,9 +145,9 @@ export default function CampaignPlanner() {
             </div>
           </div>
           <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-            Answer <span className="font-bold text-blue-600 dark:text-blue-400">4 open-ended questions</span> and get a comprehensive 
-            <span className="font-bold text-purple-600 dark:text-purple-400"> AI-powered campaign brief</span> with professional targeting terminology 
-            and structured media recommendations.
+            Answer <span className="font-bold text-blue-600 dark:text-blue-400">11 strategic questions</span> and get a comprehensive 
+            <span className="font-bold text-purple-600 dark:text-purple-400"> AI-powered campaign brief</span> with professional media planning insights, 
+            budget strategy, and platform recommendations.
           </p>
           <div className="mt-8 flex items-center justify-center gap-8 text-sm text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-2">
@@ -171,7 +171,7 @@ export default function CampaignPlanner() {
               session={session}
               sessionId={sessionId}
               questions={questions}
-              greeting="Hi! I'm your AI campaign planning assistant. 👋 I'll ask you 4 questions to create a comprehensive media plan brief for your campaign. Describe your targeting in natural language - I'll transform it into professional industry-standard terminology. Let's get started!"
+              greeting="Hi! I'm your AI campaign planning assistant. 👋 I'll ask you 11 strategic questions to create a comprehensive media plan brief for your campaign. Describe everything in natural language - I'll transform it into professional industry-standard media planning terminology. Let's get started!"
               onComplete={handleComplete}
             />
           </div>
