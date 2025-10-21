@@ -14,7 +14,9 @@ import {
   BarChart3,
   Download,
   Sparkles,
-  Target
+  Target,
+  DollarSign,
+  Globe
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { ConversationSession, Question, ConversationData, CampaignBrief } from "@shared/schema";
