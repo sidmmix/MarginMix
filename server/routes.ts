@@ -427,9 +427,19 @@ Return a JSON object with this exact structure:
     "key_competitors": ["Main competitors"],
     "differentiation": "Unique positioning"
   },
-  "platform_strategy": {
-    "recommended_platforms": ["Platforms to use"],
-    "rationale": "Why these platforms"
+  "youtube_strategy": {
+    "recommended": true/false,
+    "rationale": "Strategic rationale for YouTube",
+    "suggested_formats": ["Video ad formats"],
+    "estimated_cpm": "CPM range based on industry benchmarks (e.g., '$8-$12 CPM')",
+    "estimated_impressions": "Monthly impression estimate based on budget"
+  },
+  "meta_strategy": {
+    "recommended": true/false,
+    "rationale": "Strategic rationale for Meta (Facebook/Instagram)",
+    "suggested_formats": ["Ad formats"],
+    "estimated_cpm": "CPM range based on industry benchmarks (e.g., '$5-$8 CPM')",
+    "estimated_impressions": "Monthly impression estimate based on budget"
   },
   "affinity_buckets": ["List of interest categories and affinities with professional terminology"],
   "in_market_segments": ["List of in-market purchase intent segments with industry-standard categories"]
@@ -441,7 +451,7 @@ Return a JSON object with this exact structure:
           messages: [
             {
               role: "system",
-              content: "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology and provide strategic insights across budget, targeting, creative, competitive positioning, and platform strategy."
+              content: "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology and provide strategic insights across budget, targeting, creative, competitive positioning, and platform strategy. For YouTube and Meta strategies, calculate estimated CPM and monthly impressions based on industry benchmarks for the specified vertical, audience, and objectives. Use realistic CPM ranges (YouTube: $8-15, Meta: $5-10 depending on targeting) and calculate impressions based on the provided budget."
             },
             {
               role: "user",
@@ -474,19 +484,6 @@ Return a JSON object with this exact structure:
           demographics: mediaBrief.demographics || { age_range: "", hhi_segment: "" },
           affinityBuckets: mediaBrief.affinity_buckets || [],
           inMarketSegments: mediaBrief.in_market_segments || [],
-          rawInputs: { 
-            geo: data.geo || "", 
-            demo: data.demo || "", 
-            industry: data.industry || "",
-            budget: data.budget || "",
-            timeline: data.timeline || "",
-            kpis: data.kpis || "",
-            creative: data.creative || "",
-            competitive: data.competitive || "",
-            platforms: data.platforms || "",
-            affinity: data.affinity || "",
-            inmarket: data.inmarket || ""
-          },
           aiInsights: { 
             generatedBrief: mediaBrief, 
             recommendations 
@@ -509,19 +506,6 @@ Return a JSON object with this exact structure:
           demographics: { age_range: "", hhi_segment: "" },
           affinityBuckets: [],
           inMarketSegments: [],
-          rawInputs: { 
-            geo: data.geo || "", 
-            demo: data.demo || "", 
-            industry: data.industry || "",
-            budget: data.budget || "",
-            timeline: data.timeline || "",
-            kpis: data.kpis || "",
-            creative: data.creative || "",
-            competitive: data.competitive || "",
-            platforms: data.platforms || "",
-            affinity: data.affinity || "",
-            inmarket: data.inmarket || ""
-          },
           aiInsights: {
             generatedBrief: {},
             recommendations: ["Complete campaign setup", "Review targeting parameters", "Set performance benchmarks"]
