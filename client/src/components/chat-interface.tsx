@@ -336,7 +336,7 @@ ${((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i
               <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
                 <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-blue-600 dark:text-blue-400">
                   <Target className="h-5 w-5" />
-                  Basic Details
+                  Campaign Overview
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col">
@@ -359,43 +359,160 @@ ${((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i
                       {((campaignBrief.demographics as any)?.age_range || '') + ' | ' + ((campaignBrief.demographics as any)?.hhi_segment || '') || 'Not specified'}
                     </span>
                   </div>
-                  <div className="flex flex-col md:col-span-2">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Affinity Segments</span>
-                    <span className="text-gray-900 dark:text-white">
-                      {(campaignBrief.affinityBuckets as string[] || []).join(', ') || 'Not specified'}
-                    </span>
-                  </div>
-                  <div className="flex flex-col md:col-span-2">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">In-Market Segments</span>
-                    <span className="text-gray-900 dark:text-white">
-                      {(campaignBrief.inMarketSegments as string[] || []).join(', ') || 'Not specified'}
-                    </span>
-                  </div>
                 </div>
               </div>
 
-              {/* AI-Powered Insights */}
-              <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-5 border border-purple-200 dark:border-purple-700">
-                <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-purple-600 dark:text-purple-400">
-                  <Brain className="h-5 w-5" />
-                  AI-Powered Insights
-                </h4>
-                <div className="space-y-4">
-                  {((campaignBrief.aiInsights as any)?.recommendations || []).length > 0 && (
-                    <div className="bg-white/60 dark:bg-gray-800/60 rounded-lg p-4">
-                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 block mb-3">Key Recommendations</span>
-                      <ul className="space-y-2">
-                        {((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i: number) => (
-                          <li key={i} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
-                            <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
-                            <span className="text-sm">{rec}</span>
-                          </li>
-                        ))}
-                      </ul>
+              {/* Budget & Investment Strategy */}
+              {(campaignBrief.aiInsights as any)?.generatedBrief?.budget_details && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-green-600 dark:text-green-400">
+                    <DollarSign className="h-5 w-5" />
+                    Budget & Investment Strategy
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Total Budget</span>
+                      <span className="text-gray-900 dark:text-white font-semibold">
+                        {(campaignBrief.aiInsights as any)?.generatedBrief?.budget_details?.total_budget || 'Not specified'}
+                      </span>
                     </div>
-                  )}
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Flight Duration</span>
+                      <span className="text-gray-900 dark:text-white">
+                        {(campaignBrief.aiInsights as any)?.generatedBrief?.budget_details?.flight_duration || 'Not specified'}
+                      </span>
+                    </div>
+                    <div className="flex flex-col md:col-span-2">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Allocation Strategy</span>
+                      <span className="text-gray-900 dark:text-white">
+                        {(campaignBrief.aiInsights as any)?.generatedBrief?.budget_details?.allocation_strategy || 'Not specified'}
+                      </span>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* Campaign Objectives */}
+              {(campaignBrief.aiInsights as any)?.generatedBrief?.campaign_objectives && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                    <Target className="h-5 w-5" />
+                    Campaign Objectives & KPIs
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Primary KPI</span>
+                      <span className="text-gray-900 dark:text-white font-semibold">
+                        {(campaignBrief.aiInsights as any)?.generatedBrief?.campaign_objectives?.primary_kpi || 'Not specified'}
+                      </span>
+                    </div>
+                    {(campaignBrief.aiInsights as any)?.generatedBrief?.campaign_objectives?.secondary_kpis && (
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Secondary KPIs</span>
+                        <ul className="list-disc list-inside text-gray-900 dark:text-white text-sm space-y-1">
+                          {((campaignBrief.aiInsights as any)?.generatedBrief?.campaign_objectives?.secondary_kpis || []).map((kpi: string, idx: number) => (
+                            <li key={idx}>{kpi}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* YouTube Strategy */}
+              {(campaignBrief.aiInsights as any)?.generatedBrief?.youtube_strategy && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-red-600 dark:text-red-400">
+                    <Globe className="h-5 w-5" />
+                    YouTube Strategy
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Status:</span>
+                      <span className="text-gray-900 dark:text-white font-semibold">
+                        {(campaignBrief.aiInsights as any)?.generatedBrief?.youtube_strategy?.recommended ? '✅ Recommended' : '❌ Not Recommended'}
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Rationale</span>
+                      <span className="text-gray-900 dark:text-white text-sm">
+                        {(campaignBrief.aiInsights as any)?.generatedBrief?.youtube_strategy?.rationale || 'Not specified'}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Est. CPM</span>
+                        <span className="text-gray-900 dark:text-white font-semibold">
+                          {(campaignBrief.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_cpm || 'Not specified'}
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Est. Monthly Impressions</span>
+                        <span className="text-gray-900 dark:text-white font-semibold">
+                          {(campaignBrief.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_impressions || 'Not specified'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Meta Strategy */}
+              {(campaignBrief.aiInsights as any)?.generatedBrief?.meta_strategy && (
+                <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                    <Globe className="h-5 w-5" />
+                    Meta (Facebook/Instagram) Strategy
+                  </h4>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Status:</span>
+                      <span className="text-gray-900 dark:text-white font-semibold">
+                        {(campaignBrief.aiInsights as any)?.generatedBrief?.meta_strategy?.recommended ? '✅ Recommended' : '❌ Not Recommended'}
+                      </span>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Rationale</span>
+                      <span className="text-gray-900 dark:text-white text-sm">
+                        {(campaignBrief.aiInsights as any)?.generatedBrief?.meta_strategy?.rationale || 'Not specified'}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Est. CPM</span>
+                        <span className="text-gray-900 dark:text-white font-semibold">
+                          {(campaignBrief.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_cpm || 'Not specified'}
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Est. Monthly Impressions</span>
+                        <span className="text-gray-900 dark:text-white font-semibold">
+                          {(campaignBrief.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_impressions || 'Not specified'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* AI Strategic Recommendations */}
+              {((campaignBrief.aiInsights as any)?.recommendations || []).length > 0 && (
+                <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl p-5 border border-purple-200 dark:border-purple-700">
+                  <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-purple-600 dark:text-purple-400">
+                    <Brain className="h-5 w-5" />
+                    AI Strategic Recommendations
+                  </h4>
+                  <ul className="space-y-2">
+                    {((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i: number) => (
+                      <li key={i} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
+                        <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <span className="text-sm">{rec}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>
