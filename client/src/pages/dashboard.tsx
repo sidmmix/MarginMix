@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
-import { User, LogOut, FileText, Heart, CheckCircle, TrendingUp, Target, DollarSign, Calendar, Eye, MousePointer, Repeat } from "lucide-react";
+import { User, LogOut, FileText, Heart, CheckCircle, TrendingUp, Target, DollarSign, Calendar, Eye, MousePointer, Repeat, Sparkles, Globe } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { User as UserType, CampaignBrief } from "@shared/schema";
 
@@ -287,6 +287,155 @@ export default function Dashboard() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Enhanced Brief Sections */}
+            {(latestBrief?.aiInsights as any)?.generatedBrief && (
+              <>
+                {/* Budget Details */}
+                {(latestBrief?.aiInsights as any)?.generatedBrief?.budget_details && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <DollarSign className="h-5 w-5 text-green-600" />
+                        Budget & Investment Strategy
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid md:grid-cols-3 gap-4">
+                        <div data-testid="budget-total">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Budget</span>
+                          <p className="text-gray-900 dark:text-white font-semibold">{(latestBrief?.aiInsights as any)?.generatedBrief?.budget_details?.total_budget || 'Not specified'}</p>
+                        </div>
+                        <div data-testid="budget-duration">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Flight Duration</span>
+                          <p className="text-gray-900 dark:text-white">{(latestBrief?.aiInsights as any)?.generatedBrief?.budget_details?.flight_duration || 'Not specified'}</p>
+                        </div>
+                        <div data-testid="budget-strategy" className="md:col-span-3">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Allocation Strategy</span>
+                          <p className="text-gray-900 dark:text-white">{(latestBrief?.aiInsights as any)?.generatedBrief?.budget_details?.allocation_strategy || 'Not specified'}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Campaign Objectives */}
+                {(latestBrief?.aiInsights as any)?.generatedBrief?.campaign_objectives && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Target className="h-5 w-5 text-blue-600" />
+                        Campaign Objectives & KPIs
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div data-testid="kpi-primary">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Primary KPI</span>
+                          <p className="text-gray-900 dark:text-white font-semibold">{(latestBrief?.aiInsights as any)?.generatedBrief?.campaign_objectives?.primary_kpi || 'Not specified'}</p>
+                        </div>
+                        {(latestBrief?.aiInsights as any)?.generatedBrief?.campaign_objectives?.secondary_kpis && (
+                          <div data-testid="kpi-secondary">
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Secondary KPIs</span>
+                            <ul className="list-disc list-inside text-gray-900 dark:text-white">
+                              {((latestBrief?.aiInsights as any)?.generatedBrief?.campaign_objectives?.secondary_kpis || []).map((kpi: string, idx: number) => (
+                                <li key={idx}>{kpi}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        <div data-testid="kpi-timeline">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Target Timeline</span>
+                          <p className="text-gray-900 dark:text-white">{(latestBrief?.aiInsights as any)?.generatedBrief?.campaign_objectives?.target_timeline || 'Not specified'}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Creative Strategy */}
+                {(latestBrief?.aiInsights as any)?.generatedBrief?.creative_strategy && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Sparkles className="h-5 w-5 text-purple-600" />
+                        Creative Strategy & Messaging
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div data-testid="creative-theme">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Messaging Theme</span>
+                          <p className="text-gray-900 dark:text-white">{(latestBrief?.aiInsights as any)?.generatedBrief?.creative_strategy?.messaging_theme || 'Not specified'}</p>
+                        </div>
+                        {(latestBrief?.aiInsights as any)?.generatedBrief?.creative_strategy?.key_messages && (
+                          <div data-testid="creative-messages">
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Key Messages</span>
+                            <ul className="list-disc list-inside text-gray-900 dark:text-white">
+                              {((latestBrief?.aiInsights as any)?.generatedBrief?.creative_strategy?.key_messages || []).map((msg: string, idx: number) => (
+                                <li key={idx}>{msg}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Competitive Analysis */}
+                {(latestBrief?.aiInsights as any)?.generatedBrief?.competitive_analysis && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5 text-orange-600" />
+                        Competitive Analysis
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {(latestBrief?.aiInsights as any)?.generatedBrief?.competitive_analysis?.key_competitors && (
+                          <div data-testid="competitors">
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Key Competitors</span>
+                            <p className="text-gray-900 dark:text-white">{((latestBrief?.aiInsights as any)?.generatedBrief?.competitive_analysis?.key_competitors || []).join(', ')}</p>
+                          </div>
+                        )}
+                        <div data-testid="differentiation">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Differentiation</span>
+                          <p className="text-gray-900 dark:text-white">{(latestBrief?.aiInsights as any)?.generatedBrief?.competitive_analysis?.differentiation || 'Not specified'}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Platform Strategy */}
+                {(latestBrief?.aiInsights as any)?.generatedBrief?.platform_strategy && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Globe className="h-5 w-5 text-indigo-600" />
+                        Platform Strategy
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {(latestBrief?.aiInsights as any)?.generatedBrief?.platform_strategy?.recommended_platforms && (
+                          <div data-testid="platforms">
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Recommended Platforms</span>
+                            <p className="text-gray-900 dark:text-white font-semibold">{((latestBrief?.aiInsights as any)?.generatedBrief?.platform_strategy?.recommended_platforms || []).join(', ')}</p>
+                          </div>
+                        )}
+                        <div data-testid="platform-rationale">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Strategic Rationale</span>
+                          <p className="text-gray-900 dark:text-white">{(latestBrief?.aiInsights as any)?.generatedBrief?.platform_strategy?.rationale || 'Not specified'}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </>
+            )}
 
             {/* AI Strategic Recommendations */}
             {recommendations.length > 0 && (
