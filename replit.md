@@ -6,7 +6,7 @@ This is a full-stack web application that helps users create comprehensive digit
 
 ## Recent Changes
 
-- **VP of Media Strategy AI System (October 21, 2025)**: Complete architectural overhaul replacing 9-question multiple-choice questionnaire with 4-question open-ended textarea system. AI now acts as "VP of Media Strategy with 15 years experience" processing raw targeting inputs (Geo, Demo, Affinity, Industry) into formal structured Media Brief JSON. Output includes industry-standard targeting terminology, structured geo targeting (primary/secondary markets), demographics (age range + HHI segment), affinity buckets, and in-market segments. Database schema updated to store briefTitle, industryVertical, geoTargeting, demographics, affinityBuckets, inMarketSegments, and rawInputs.
+- **11-Question Comprehensive Brief System (October 21, 2025)**: Expanded questionnaire to 11 strategic open-ended questions covering Geo, Demo, Industry, Budget, Timeline, KPIs, Creative, Competitive, Platforms, Affinity, and InMarket segments. Enhanced VP of Media Strategy AI to generate comprehensive briefs including budget_details, campaign_objectives, creative_strategy, competitive_analysis, and platform_strategy. Dashboard updated to display all enhanced brief sections with structured insights.
 - **Dashboard UI Overhaul (October 2, 2025)**: Removed PDF generation, rebuilt dashboard with clean React components showing campaign details, AI recommendations, budget allocation, KPIs, and platform strategies displayed on-page
 - **Comprehensive Security Audit & Hardening (August 19, 2025)**: Completed full backend security review and implemented enterprise-grade security measures including input validation, rate limiting, CORS protection, security headers, and environment validation
 - **OAuth-Only Authentication (August 13, 2025)**: Removed email/password authentication, now using only Google and Meta OAuth for streamlined social sign-in experience
@@ -60,18 +60,18 @@ AI Policy: OpenAI enabled for backend brief generation and insights. Smart sugge
 - **Security Headers**: Comprehensive security headers including XSS, CSRF, and clickjacking protection
 
 ### Conversation Flow Management
-- **Open-Ended Input System**: 4 textarea questions collecting natural language inputs (Geo, Demo, Affinity, Industry)
+- **Comprehensive 11-Question System**: Open-ended textarea questions collecting: Geo, Demo, Industry, Budget, Timeline, KPIs, Creative, Competitive, Platforms, Affinity, InMarket segments
 - **State Persistence**: Session data stored as JSONB for flexible data structures
 - **Progress Tracking**: Current step and completion status maintained per session
 - **Validation**: Client and server-side validation using Zod schemas
 
 ### AI-Powered Media Brief Generation
-- **VP of Media Strategy Role**: OpenAI GPT-4o-mini acting as VP with 15 years experience
-- **Natural Language Processing**: Converts raw user inputs into professional industry-standard terminology (e.g., 'rich people' → 'High-Net-Worth Individual (HNI)')
-- **Structured JSON Output**: Forces JSON response format with strict schema validation
-- **Media Brief Schema**: Outputs briefTitle, industryVertical, geoTargeting (primary/secondary markets), demographics (ageRange + HHI segment), affinityBuckets, inMarketSegments
+- **VP of Media Strategy Role**: OpenAI GPT-4o-mini acting as VP with 15 years experience processing 11 comprehensive inputs
+- **Natural Language Processing**: Converts raw user inputs into professional industry-standard media planning terminology (e.g., 'rich people' → 'High-Net-Worth Individual (HNI)', '$50K monthly' → 'Monthly Investment: $50,000 USD')
+- **Structured JSON Output**: Forces JSON response format with comprehensive schema validation (2500 max tokens)
+- **Enhanced Brief Schema**: Outputs briefTitle, industryVertical, geoTargeting, demographics, budget_details (total_budget, flight_duration, allocation_strategy), campaign_objectives (primary_kpi, secondary_kpis, target_timeline), creative_strategy (messaging_theme, key_messages), competitive_analysis (key_competitors, differentiation), platform_strategy (recommended_platforms, rationale), affinityBuckets, inMarketSegments
 - **Fallback Handling**: Graceful degradation with structured fallback briefs when AI processing fails
-- **Dashboard Display**: On-page brief display showing all structured insights and raw inputs
+- **Dashboard Display**: Comprehensive on-page brief display with dedicated cards for Budget Strategy, Campaign Objectives, Creative Strategy, Competitive Analysis, Platform Strategy, plus all raw inputs
 
 ## External Dependencies
 
