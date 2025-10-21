@@ -122,13 +122,6 @@ export default function Dashboard() {
   const budgetAllocation = insights.budgetAllocation || {};
   const platformStrategies = insights.platformStrategies || {};
   const kpis = insights.kpis || [];
-  
-  // Format raw inputs for display
-  const rawInputsText = latestBrief?.rawInputs 
-    ? (typeof latestBrief.rawInputs === 'object' 
-        ? JSON.stringify(latestBrief.rawInputs, null, 2) 
-        : String(latestBrief.rawInputs))
-    : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -276,14 +269,6 @@ export default function Dashboard() {
                       {(latestBrief?.inMarketSegments as string[] || []).join(', ') || 'Not specified'}
                     </p>
                   </div>
-                  {rawInputsText && (
-                    <div data-testid="detail-raw-inputs" className="md:col-span-2">
-                      <span className="text-sm font-medium text-gray-500 dark:text-gray-400 block mb-2">Raw Inputs</span>
-                      <div className="text-gray-900 dark:text-white text-sm bg-gray-50 dark:bg-gray-800 p-3 rounded-md overflow-x-auto">
-                        <code>{rawInputsText}</code>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </CardContent>
             </Card>
@@ -409,26 +394,84 @@ export default function Dashboard() {
                   </Card>
                 )}
 
-                {/* Platform Strategy */}
-                {(latestBrief?.aiInsights as any)?.generatedBrief?.platform_strategy && (
+                {/* YouTube Strategy */}
+                {(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy && (
                   <Card>
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
-                        <Globe className="h-5 w-5 text-indigo-600" />
-                        Platform Strategy
+                        <Globe className="h-5 w-5 text-red-600" />
+                        YouTube Strategy
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-4">
-                        {(latestBrief?.aiInsights as any)?.generatedBrief?.platform_strategy?.recommended_platforms && (
-                          <div data-testid="platforms">
-                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Recommended Platforms</span>
-                            <p className="text-gray-900 dark:text-white font-semibold">{((latestBrief?.aiInsights as any)?.generatedBrief?.platform_strategy?.recommended_platforms || []).join(', ')}</p>
+                        <div data-testid="youtube-recommended">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Recommendation Status</span>
+                          <p className="text-gray-900 dark:text-white font-semibold">
+                            {(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.recommended ? '✅ Recommended' : '❌ Not Recommended'}
+                          </p>
+                        </div>
+                        <div data-testid="youtube-rationale">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Strategic Rationale</span>
+                          <p className="text-gray-900 dark:text-white">{(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.rationale || 'Not specified'}</p>
+                        </div>
+                        {(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.suggested_formats && (
+                          <div data-testid="youtube-formats">
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Suggested Formats</span>
+                            <p className="text-gray-900 dark:text-white">{((latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.suggested_formats || []).join(', ')}</p>
                           </div>
                         )}
-                        <div data-testid="platform-rationale">
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div data-testid="youtube-cpm">
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Estimated CPM</span>
+                            <p className="text-gray-900 dark:text-white font-semibold">{(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_cpm || 'Not specified'}</p>
+                          </div>
+                          <div data-testid="youtube-impressions">
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Est. Monthly Impressions</span>
+                            <p className="text-gray-900 dark:text-white font-semibold">{(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_impressions || 'Not specified'}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Meta Strategy */}
+                {(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy && (
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Globe className="h-5 w-5 text-blue-600" />
+                        Meta (Facebook/Instagram) Strategy
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        <div data-testid="meta-recommended">
+                          <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Recommendation Status</span>
+                          <p className="text-gray-900 dark:text-white font-semibold">
+                            {(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.recommended ? '✅ Recommended' : '❌ Not Recommended'}
+                          </p>
+                        </div>
+                        <div data-testid="meta-rationale">
                           <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Strategic Rationale</span>
-                          <p className="text-gray-900 dark:text-white">{(latestBrief?.aiInsights as any)?.generatedBrief?.platform_strategy?.rationale || 'Not specified'}</p>
+                          <p className="text-gray-900 dark:text-white">{(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.rationale || 'Not specified'}</p>
+                        </div>
+                        {(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.suggested_formats && (
+                          <div data-testid="meta-formats">
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Suggested Formats</span>
+                            <p className="text-gray-900 dark:text-white">{((latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.suggested_formats || []).join(', ')}</p>
+                          </div>
+                        )}
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div data-testid="meta-cpm">
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Estimated CPM</span>
+                            <p className="text-gray-900 dark:text-white font-semibold">{(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_cpm || 'Not specified'}</p>
+                          </div>
+                          <div data-testid="meta-impressions">
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Est. Monthly Impressions</span>
+                            <p className="text-gray-900 dark:text-white font-semibold">{(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_impressions || 'Not specified'}</p>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
