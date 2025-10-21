@@ -54,15 +54,13 @@ export const campaignBriefs = pgTable("campaign_briefs", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
   sessionId: varchar("session_id").references(() => conversationSessions.id),
-  clientName: varchar("client_name", { length: 255 }),
-  campaignName: varchar("campaign_name", { length: 255 }),
-  product: text("product"),
-  targetAudience: text("target_audience"),
-  budget: varchar("budget", { length: 100 }),
-  platforms: varchar("platforms", { length: 500 }),
-  objectives: text("objectives"),
-  timeline: varchar("timeline", { length: 255 }),
-  keyMessages: text("key_messages"),
+  briefTitle: varchar("brief_title", { length: 500 }),
+  industryVertical: varchar("industry_vertical", { length: 255 }),
+  geoTargeting: jsonb("geo_targeting"),
+  demographics: jsonb("demographics"),
+  affinityBuckets: jsonb("affinity_buckets"),
+  inMarketSegments: jsonb("in_market_segments"),
+  rawInputs: jsonb("raw_inputs"),
   aiInsights: jsonb("ai_insights"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
   updatedAt: timestamp("updated_at").notNull().default(sql`now()`),
@@ -134,15 +132,11 @@ export type InsertCampaignBrief = z.infer<typeof insertCampaignBriefSchema>;
 
 // Question types for the conversation flow
 export const questionSchema = z.object({
-  id: z.enum(['name', 'company', 'product', 'platforms', 'objective', 'audience', 'timeframe', 'season', 'budget']),
+  id: z.enum(['geo', 'demo', 'affinity', 'industry']),
   question: z.string(),
-  type: z.enum(['text', 'single_choice', 'multiple_choice']),
+  type: z.literal('textarea'),
   placeholder: z.string().optional(),
-  options: z.array(z.object({
-    value: z.string(),
-    label: z.string(),
-    description: z.string().optional(),
-  })).optional(),
+  helpText: z.string().optional(),
   validation: z.object({
     required: z.boolean(),
     minLength: z.number().optional(),
@@ -153,15 +147,28 @@ export const questionSchema = z.object({
 export type Question = z.infer<typeof questionSchema>;
 
 export const conversationDataSchema = z.object({
-  name: z.string().optional(),
-  company: z.string().optional(),
-  product: z.string().optional(),
-  platforms: z.string().optional(),
-  objective: z.string().optional(),
-  audience: z.string().optional(),
-  timeframe: z.string().optional(),
-  season: z.string().optional(),
-  budget: z.string().optional(),
+  geo: z.string().optional(),
+  demo: z.string().optional(),
+  affinity: z.string().optional(),
+  industry: z.string().optional(),
 });
 
 export type ConversationData = z.infer<typeof conversationDataSchema>;
+
+// Media Brief output schema matching the JSON structure
+export const mediaBriefSchema = z.object({
+  brief_title: z.string(),
+  industry_vertical: z.string(),
+  geo_targeting: z.object({
+    primary_markets: z.array(z.string()),
+    secondary_markets: z.array(z.string()).optional(),
+  }),
+  demographics: z.object({
+    age_range: z.string(),
+    hhi_segment: z.string(),
+  }),
+  affinity_buckets: z.array(z.string()).optional(),
+  in_market_segments: z.array(z.string()).optional(),
+});
+
+export type MediaBrief = z.infer<typeof mediaBriefSchema>;

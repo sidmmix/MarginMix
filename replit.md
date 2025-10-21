@@ -6,6 +6,7 @@ This is a full-stack web application that helps users create comprehensive digit
 
 ## Recent Changes
 
+- **VP of Media Strategy AI System (October 21, 2025)**: Complete architectural overhaul replacing 9-question multiple-choice questionnaire with 4-question open-ended textarea system. AI now acts as "VP of Media Strategy with 15 years experience" processing raw targeting inputs (Geo, Demo, Affinity, Industry) into formal structured Media Brief JSON. Output includes industry-standard targeting terminology, structured geo targeting (primary/secondary markets), demographics (age range + HHI segment), affinity buckets, and in-market segments. Database schema updated to store briefTitle, industryVertical, geoTargeting, demographics, affinityBuckets, inMarketSegments, and rawInputs.
 - **Dashboard UI Overhaul (October 2, 2025)**: Removed PDF generation, rebuilt dashboard with clean React components showing campaign details, AI recommendations, budget allocation, KPIs, and platform strategies displayed on-page
 - **Comprehensive Security Audit & Hardening (August 19, 2025)**: Completed full backend security review and implemented enterprise-grade security measures including input validation, rate limiting, CORS protection, security headers, and environment validation
 - **OAuth-Only Authentication (August 13, 2025)**: Removed email/password authentication, now using only Google and Meta OAuth for streamlined social sign-in experience
@@ -59,17 +60,18 @@ AI Policy: OpenAI enabled for backend brief generation and insights. Smart sugge
 - **Security Headers**: Comprehensive security headers including XSS, CSRF, and clickjacking protection
 
 ### Conversation Flow Management
-- **Multi-step Process**: Structured questionnaire with 8 predefined questions
+- **Open-Ended Input System**: 4 textarea questions collecting natural language inputs (Geo, Demo, Affinity, Industry)
 - **State Persistence**: Session data stored as JSONB for flexible data structures
 - **Progress Tracking**: Current step and completion status maintained per session
 - **Validation**: Client and server-side validation using Zod schemas
 
-### AI-Powered Insights
-- **OpenAI Integration**: GPT-4o-mini models for campaign analysis and recommendations
-- **Campaign Brief Generation**: Automated creation of comprehensive campaign documents with strategic insights
-- **Platform-specific Strategies**: Tailored recommendations for Google Ads, YouTube/DV360, and Meta platforms
-- **Budget Allocation**: Intelligent distribution across selected advertising platforms
-- **Dashboard Display**: On-page brief display showing all insights and metrics (PDF download removed)
+### AI-Powered Media Brief Generation
+- **VP of Media Strategy Role**: OpenAI GPT-4o-mini acting as VP with 15 years experience
+- **Natural Language Processing**: Converts raw user inputs into professional industry-standard terminology (e.g., 'rich people' → 'High-Net-Worth Individual (HNI)')
+- **Structured JSON Output**: Forces JSON response format with strict schema validation
+- **Media Brief Schema**: Outputs briefTitle, industryVertical, geoTargeting (primary/secondary markets), demographics (ageRange + HHI segment), affinityBuckets, inMarketSegments
+- **Fallback Handling**: Graceful degradation with structured fallback briefs when AI processing fails
+- **Dashboard Display**: On-page brief display showing all structured insights and raw inputs
 
 ## External Dependencies
 

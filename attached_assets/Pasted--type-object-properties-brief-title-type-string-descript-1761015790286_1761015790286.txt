@@ -1,0 +1,59 @@
+{
+  "type": "object",
+  "properties": {
+    "brief_title": {
+      "type": "string",
+      "description": "A professional, concise title for the brief based on the user's industry and goal (e.g., 'Q3 Acquisition Strategy for Luxury DTC Brand')."
+    },
+    "industry_vertical": {
+      "type": "string",
+      "description": "The high-level industry and business model, e.g., 'Financial Services (B2C)' or 'CPG (DTC E-commerce)'."
+    },
+    "geo_targeting": {
+      "type": "object",
+      "description": "Structured breakdown of the geographic target markets.",
+      "properties": {
+        "primary_markets": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "The top 3-5 high-value markets, using professional terms (e.g., 'USA (Tier 1 Metros)', 'UK-London', 'APAC-Singapore')."
+        },
+        "secondary_markets": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Any additional or test markets specified by the user."
+        }
+      }
+    },
+    "demographics": {
+      "type": "object",
+      "description": "Structured breakdown of the demographic target.",
+      "properties": {
+        "age_range": {
+          "type": "string",
+          "description": "The professional age range (e.g., '25-45', '18+')."
+        },
+        "hhi_segment": {
+          "type": "string",
+          "description": "The mapped Household Income segment (e.g., 'Upper Affluent', 'Mass Market', 'Student')."
+        }
+      }
+    },
+    "affinity_buckets": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "The top 3-5 high-level interest/affinity segments mapped from the user's raw input (e.g., 'Active Stock Traders', 'Luxury Consumers', 'Gaming Enthusiasts')."
+    },
+    "in_market_segments": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Any key purchase intent signals (e.g., 'In-Market for New Auto', 'Mortgage Services', 'Life Insurance')."
+    }
+  },
+  "required": [
+    "brief_title",
+    "industry_vertical",
+    "geo_targeting",
+    "demographics"
+  ]
+}

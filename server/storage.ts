@@ -179,41 +179,36 @@ export class DatabaseStorage implements IStorage {
 
     const data = session.sessionData as any;
 
-    // Simple brief generation
+    // Simple brief generation using new schema
     const briefData = {
       userId: userId,
       sessionId: sessionId,
-      clientName: data.name || "Unknown Client",
-      campaignName: `${data.company || "Company"} - ${data.product || "Product"}`,
-      product: data.product || "Not specified",
-      targetAudience: data.audience || "Not specified",
-      budget: data.budget || "Not specified",
-      platforms: data.platforms || "Not specified",
-      objectives: data.objective || "Not specified",
-      timeline: data.timeframe || "Not specified",
-      keyMessages: `Strategic campaign promoting ${data.product || "product"} targeting ${data.audience || "target audience"}`,
+      briefTitle: `Campaign Brief - ${data.industry || "Business Campaign"}`,
+      industryVertical: data.industry || "Not specified",
+      geoTargeting: {
+        primary_markets: data.geo ? [data.geo] : [],
+        secondary_markets: []
+      },
+      demographics: {
+        age_range: data.demo || "Not specified",
+        hhi_segment: "To be determined"
+      },
+      affinityBuckets: data.affinity ? [data.affinity] : [],
+      inMarketSegments: [],
+      rawInputs: {
+        geo: data.geo || "",
+        demo: data.demo || "",
+        affinity: data.affinity || "",
+        industry: data.industry || ""
+      },
       aiInsights: {
         recommendations: [
-          "Implement A/B testing for creative variants",
-          "Focus on peak engagement hours (6-9 PM)",
-          "Use lookalike audiences for scale",
-          "Optimize for video completion rates"
+          "Refine targeting based on performance data",
+          "Test multiple creative variants",
+          "Monitor competitive landscape",
+          "Optimize budget allocation across segments"
         ],
-        budgetAllocation: {
-          [data.platforms === 'youtube' ? 'YouTube' : data.platforms === 'meta' ? 'Meta' : 'YouTube']: data.platforms === 'both' ? '60%' : '100%',
-          ...(data.platforms === 'both' && { 'Meta': '40%' })
-        },
-        platformStrategies: {
-          [data.platforms === 'youtube' ? 'YouTube' : data.platforms === 'meta' ? 'Meta' : 'YouTube']: 
-            data.platforms === 'youtube' ? 'Focus on video storytelling and in-stream ads' : 
-            data.platforms === 'meta' ? 'Leverage social proof and user-generated content' : 
-            'Multi-format video approach',
-          ...(data.platforms === 'both' && { 
-            'Meta': 'Social engagement and community building',
-            'YouTube': 'Long-form content and tutorials'
-          })
-        },
-        kpis: ["Reach", "Video Completion Rate", "Click-Through Rate", "Cost Per Acquisition", "Brand Lift"]
+        fallbackGeneration: true
       }
     };
 

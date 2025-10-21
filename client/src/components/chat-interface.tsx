@@ -108,7 +108,7 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
         content: currentQuestion.question,
         timestamp: new Date(),
       });
-      setShowChoices(currentQuestion.type === 'single_choice' || currentQuestion.type === 'multiple_choice');
+      setShowChoices(false); // Always show textarea for new question types
     }
 
     setMessages(newMessages);
@@ -158,7 +158,7 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
           content: result.nextQuestion.question,
           timestamp: new Date(),
         }]);
-        setShowChoices(result.nextQuestion.type === 'single_choice' || result.nextQuestion.type === 'multiple_choice');
+        setShowChoices(false); // Always show textarea for new question types
       }
 
       setInputValue("");
@@ -202,15 +202,16 @@ export function ChatInterface({ session, sessionId, questions, greeting, onCompl
       
       // Auto-download the brief
       setTimeout(() => {
+        const geoTargeting = brief.geoTargeting as any || {};
+        const demographics = brief.demographics as any || {};
         const content = `Campaign Brief
 
-Client: ${brief.clientName}
-Campaign: ${brief.campaignName}
-Target Audience: ${brief.targetAudience}
-Budget: ${brief.budget}
-Platforms: ${brief.platforms}
-Objectives: ${brief.objectives}
-Timeline: ${brief.timeline}
+Brief Title: ${brief.briefTitle || 'Not specified'}
+Industry Vertical: ${brief.industryVertical || 'Not specified'}
+Geographic Targeting: ${JSON.stringify(geoTargeting)}
+Demographics: ${JSON.stringify(demographics)}
+Affinity Buckets: ${(brief.affinityBuckets as string[] || []).join(', ') || 'Not specified'}
+In-Market Segments: ${(brief.inMarketSegments as string[] || []).join(', ') || 'Not specified'}
 
 AI Insights:
 Budget Allocation: ${JSON.stringify((brief.aiInsights as any)?.budgetAllocation || {}, null, 2)}
@@ -224,7 +225,7 @@ ${((brief.aiInsights as any)?.recommendations || []).map((rec: string, i: number
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${brief.campaignName}-brief.txt`;
+        a.download = `${brief.briefTitle || 'campaign'}-brief.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -244,15 +245,16 @@ ${((brief.aiInsights as any)?.recommendations || []).map((rec: string, i: number
   const downloadBrief = () => {
     if (!campaignBrief) return;
     
+    const geoTargeting = campaignBrief.geoTargeting as any || {};
+    const demographics = campaignBrief.demographics as any || {};
     const content = `Campaign Brief
 
-Client: ${campaignBrief.clientName}
-Campaign: ${campaignBrief.campaignName}
-Target Audience: ${campaignBrief.targetAudience}
-Budget: ${campaignBrief.budget}
-Platforms: ${campaignBrief.platforms}
-Objectives: ${campaignBrief.objectives}
-Timeline: ${campaignBrief.timeline}
+Brief Title: ${campaignBrief.briefTitle || 'Not specified'}
+Industry Vertical: ${campaignBrief.industryVertical || 'Not specified'}
+Geographic Targeting: ${JSON.stringify(geoTargeting)}
+Demographics: ${JSON.stringify(demographics)}
+Affinity Buckets: ${(campaignBrief.affinityBuckets as string[] || []).join(', ') || 'Not specified'}
+In-Market Segments: ${(campaignBrief.inMarketSegments as string[] || []).join(', ') || 'Not specified'}
 
 AI Insights:
 Budget Allocation: ${JSON.stringify((campaignBrief.aiInsights as any)?.budgetAllocation || {}, null, 2)}
@@ -266,7 +268,7 @@ ${((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${campaignBrief.campaignName}-brief.txt`;
+    a.download = `${campaignBrief.briefTitle || 'campaign'}-brief.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -338,40 +340,36 @@ ${((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Client</span>
-                    <span className="text-gray-900 dark:text-white font-medium">{campaignBrief.clientName}</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Brief Title</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{campaignBrief.briefTitle || 'Not specified'}</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Campaign</span>
-                    <span className="text-gray-900 dark:text-white font-medium">{campaignBrief.campaignName}</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Industry</span>
+                    <span className="text-gray-900 dark:text-white font-medium">{campaignBrief.industryVertical || 'Not specified'}</span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Budget</span>
-                    <span className="text-gray-900 dark:text-white font-medium">{formatBudget(campaignBrief.budget)}</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Primary Markets</span>
+                    <span className="text-gray-900 dark:text-white font-medium">
+                      {((campaignBrief.geoTargeting as any)?.primary_markets || []).join(', ') || 'Not specified'}
+                    </span>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Timeline</span>
-                    <span className="text-gray-900 dark:text-white font-medium">{formatTimeframe(campaignBrief.timeline)}</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Demographics</span>
+                    <span className="text-gray-900 dark:text-white font-medium">
+                      {((campaignBrief.demographics as any)?.age_range || '') + ' | ' + ((campaignBrief.demographics as any)?.hhi_segment || '') || 'Not specified'}
+                    </span>
                   </div>
                   <div className="flex flex-col md:col-span-2">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Target Audience</span>
-                    <span className="text-gray-900 dark:text-white">{formatAudience(campaignBrief.targetAudience)}</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Affinity Segments</span>
+                    <span className="text-gray-900 dark:text-white">
+                      {(campaignBrief.affinityBuckets as string[] || []).join(', ') || 'Not specified'}
+                    </span>
                   </div>
                   <div className="flex flex-col md:col-span-2">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Platforms</span>
-                    <span className="text-gray-900 dark:text-white">{formatPlatforms(campaignBrief.platforms)}</span>
-                  </div>
-                  <div className="flex flex-col md:col-span-2">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Objectives</span>
-                    <span className="text-gray-900 dark:text-white">{formatObjective(campaignBrief.objectives)}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Timeframe</span>
-                    <span className="text-gray-900 dark:text-white font-medium">{formatTimeframe(campaignBrief.timeline)}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Season</span>
-                    <span className="text-gray-900 dark:text-white font-medium">{formatSeasonal((campaignBrief as any).seasonal || "")}</span>
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">In-Market Segments</span>
+                    <span className="text-gray-900 dark:text-white">
+                      {(campaignBrief.inMarketSegments as string[] || []).join(', ') || 'Not specified'}
+                    </span>
                   </div>
                 </div>
               </div>

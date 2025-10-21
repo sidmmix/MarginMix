@@ -20,104 +20,39 @@ const openai = new OpenAI({
 });
 
 
-// Updated questions to match new schema
+// Open-ended questions for natural language input
 const questions: Question[] = [
-  { id: 'name', question: "What's your name?", type: 'text', placeholder: "Enter your name...", validation: { required: true, minLength: 2 } },
   { 
-    id: 'product', 
-    question: "What kind of product/service is this campaign promoting?", 
-    type: 'single_choice',
-    options: [
-      { value: 'ecommerce', label: 'Ecommerce app/Superapp' },
-      { value: 'fmcg', label: 'FMCG/CPG' },
-      { value: 'd2c_beauty', label: 'D2C Beauty/Skincare/Personal Care/Haircare/Wellness' },
-      { value: 'fintech', label: 'Fintech/Financial Services' }
-    ],
-    validation: { required: true }
-  },
-  { id: 'company', question: "What's your company/brand's name?", type: 'text', placeholder: "Enter company name...", validation: { required: true, minLength: 2 } },
-  { 
-    id: 'platforms', 
-    question: "Where do you want to deploy your digital media campaign?", 
-    type: 'single_choice',
-    options: [
-      { value: 'youtube', label: 'YouTube' },
-      { value: 'meta', label: 'Meta' },
-      { value: 'both', label: 'Both' }
-    ],
-    validation: { required: true }
+    id: 'geo', 
+    question: "Geographic Targeting", 
+    type: 'textarea',
+    placeholder: "Describe your target markets (e.g., 'USA and UK, focusing on major cities' or 'Southeast Asia - Singapore, Malaysia')",
+    helpText: "Tell us where you want to reach your audience. Be as specific or broad as you need.",
+    validation: { required: true, minLength: 5 }
   },
   { 
-    id: 'objective', 
-    question: "What's the objective of your campaign?", 
-    type: 'single_choice',
-    options: [
-      { value: 'awareness', label: 'Awareness' },
-      { value: 'consideration', label: 'Consideration' },
-      { value: 'sales_lead_gen', label: 'Sales/Lead Generation' }
-    ],
-    validation: { required: true }
+    id: 'demo', 
+    question: "Demographics", 
+    type: 'textarea',
+    placeholder: "Describe your target audience (e.g., 'wealthy professionals aged 30-50' or 'college students interested in tech')",
+    helpText: "Who is your ideal customer? Include age, income level, interests, or any other relevant details.",
+    validation: { required: true, minLength: 5 }
   },
   { 
-    id: 'audience', 
-    question: "Define your target audience and geo location", 
-    type: 'single_choice',
-    options: [
-      { value: 'us_inmarket_shoppers', label: '18–54, Male and Female, US Metro Areas, InMarket Shoppers' },
-      { value: 'us_affinity_shoppers', label: '18–54, Male and Female, US Metro Areas, Affinity Shoppers' },
-      { value: 'us_inmarket_financial', label: '18–54, Male and Female, US Metro Areas, InMarket Financial Services' },
-      { value: 'us_affinity_financial', label: '18–54, Male and Female, US Metro Areas, Affinity Financial Services' },
-      { value: 'au_inmarket_shoppers', label: '18–54, Male and Female, Australia Urban, InMarket Shoppers' },
-      { value: 'au_affinity_shoppers', label: '18–54, Male and Female, Australia Urban, Affinity Shoppers' },
-      { value: 'au_inmarket_financial', label: '18–54, Male and Female, Australia Urban, InMarket Financial Services' },
-      { value: 'au_affinity_financial', label: '18–54, Male and Female, Australia Urban, Affinity Financial Services' }
-    ],
-    validation: { required: true }
+    id: 'affinity', 
+    question: "Interests & Affinities", 
+    type: 'textarea',
+    placeholder: "What are they interested in? (e.g., 'luxury shoppers, travel enthusiasts' or 'gamers, tech early adopters')",
+    helpText: "What hobbies, interests, or behaviors define your target audience?",
+    validation: { required: true, minLength: 5 }
   },
   { 
-    id: 'timeframe', 
-    question: "How long do you want to run the campaign?", 
-    type: 'single_choice',
-    options: [
-      { value: '1_2_weeks', label: '1-2 weeks' },
-      { value: '1_month', label: '1 month' },
-      { value: '2_3_months', label: '2-3 months' }
-    ],
-    validation: { required: true }
-  },
-  { 
-    id: 'season', 
-    question: "Are you advertising for the festive season/holiday season only?", 
-    type: 'single_choice',
-    options: [
-      { value: 'only_festive', label: 'Yes' },
-      { value: 'beyond_festive', label: 'No, beyond holiday season' }
-    ],
-    validation: { required: true }
-  },
-  { 
-    id: 'budget', 
-    question: "What's your budget?", 
-    type: 'single_choice',
-    options: [
-      { value: 'usd_under_100k', label: '< US$ 100,000' },
-      { value: 'usd_100_200k', label: 'US$ 100,000 to 200,000' },
-      { value: 'usd_200_500k', label: 'US$ 200,000 to 500,000' },
-      { value: 'usd_500_800k', label: 'US$ 500,000 to 800,000' },
-      { value: 'usd_800_1500k', label: 'US$ 800,000 to 1,500,000' },
-      { value: 'usd_1500_3000k', label: 'US$ 1,500,000 to 3,000,000' },
-      { value: 'usd_3m_plus', label: 'US$ 3 mn+' },
-      { value: 'usd_5m_plus', label: 'US$ 5 mn+' },
-      { value: 'aud_under_150k', label: '< AU$ 150,000' },
-      { value: 'aud_150_300k', label: 'AU$ 150,000 to 300,000' },
-      { value: 'aud_300_750k', label: 'AU$ 300,000 to 750,000' },
-      { value: 'aud_750_1200k', label: 'AU$ 750,000 to 1,200,000' },
-      { value: 'aud_1200_2250k', label: 'AU$ 1,200,000 to 2,250,000' },
-      { value: 'aud_2250_4500k', label: 'AU$ 2,250,000 to 4,500,000' },
-      { value: 'aud_4500k_plus', label: 'AU$ 4.5 mn+' },
-      { value: 'aud_7500k_plus', label: 'AU$ 7.5 mn+' }
-    ],
-    validation: { required: true }
+    id: 'industry', 
+    question: "Industry & Campaign Goal", 
+    type: 'textarea',
+    placeholder: "What's your business and campaign goal? (e.g., 'DTC skincare brand, driving online sales' or 'Fintech app, user acquisition')",
+    helpText: "Tell us about your business type and what you want to achieve with this campaign.",
+    validation: { required: true, minLength: 10 }
   }
 ];
 
@@ -249,147 +184,25 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-  // Get predictive suggestions for current input
+  // Get predictive suggestions for current input (stubbed out - not used with new schema)
   app.post("/api/conversation/:id/predict", async (req, res) => {
-    try {
-      // Security: Validate and sanitize inputs
-      const { currentInput, questionId } = req.body;
-      
-      if (!currentInput || typeof currentInput !== 'string' || currentInput.length > 1000) {
-        return res.status(400).json({ message: "Invalid input" });
-      }
-      
-      if (!questionId || typeof questionId !== 'string') {
-        return res.status(400).json({ message: "Invalid question ID" });
-      }
-
-      const session = await storage.getConversationSession(req.params.id);
-      
-      if (!session) {
-        return res.status(404).json({ message: "Session not found" });
-      }
-
-      const question = questions.find(q => q.id === questionId);
-      if (!question) {
-        return res.status(404).json({ message: "Question not found" });
-      }
-
-      // AI suggestions disabled - return empty response
-      res.json({
-        suggestions: [],
-        contextualHints: [],
-        validationFeedback: null,
-        nextQuestionPreview: null
-      });
-    } catch (error) {
-      console.error("Error generating predictions:", error);
-      // Return empty predictions when API fails instead of error
-      res.json({
-        suggestions: [],
-        contextualHints: [],
-        validationFeedback: null,
-        nextQuestionPreview: null
-      });
-    }
+    // Stubbed out - return empty predictions
+    res.json({
+      suggestions: [],
+      contextualHints: [],
+      validationFeedback: null,
+      nextQuestionPreview: null
+    });
   });
 
-  // Get contextual insights for current conversation
+  // Get contextual insights for current conversation (stubbed out - not used with new schema)
   app.get("/api/conversation/:id/insights", async (req, res) => {
-    try {
-      const session = await storage.getConversationSession(req.params.id);
-      
-      if (!session) {
-        return res.status(404).json({ message: "Session not found" });
-      }
-
-      // Generate AI insights from conversation data
-      try {
-        const data = session.sessionData as ConversationData;
-        const prompt = `
-        Analyze this digital media campaign data and provide strategic insights:
-        
-        Company: ${data.company || 'Unknown'}
-        Product: ${data.product || 'Unknown'}
-        Platforms: ${data.platforms || 'Unknown'}
-        Objective: ${data.objective || 'Unknown'}
-        Target Audience: ${data.audience || 'Unknown'}
-        Budget: ${data.budget || 'Unknown'}
-        Timeline: ${data.timeframe || 'Unknown'}
-        Season: ${data.season || 'Unknown'}
-        
-        Provide insights in this format:
-        Strategic Insights: [3-4 key strategic insights]
-        Recommendations: [3-4 actionable recommendations]
-        Potential Challenges: [2-3 potential challenges to watch for]
-        `;
-
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content: "You are a digital media strategy expert. Provide concise, actionable insights based on campaign data."
-            },
-            {
-              role: "user",
-              content: prompt
-            }
-          ],
-          max_tokens: 800,
-          temperature: 0.7,
-        });
-
-        const response = completion.choices[0]?.message?.content || "";
-        
-        // Parse the response into structured format
-        const strategicInsights = [];
-        const recommendations = [];
-        const potentialChallenges = [];
-        
-        const sections = response.split('\n');
-        let currentSection = '';
-        
-        for (const line of sections) {
-          const trimmed = line.trim();
-          if (trimmed.toLowerCase().includes('strategic insights')) {
-            currentSection = 'insights';
-          } else if (trimmed.toLowerCase().includes('recommendations')) {
-            currentSection = 'recommendations';
-          } else if (trimmed.toLowerCase().includes('potential challenges')) {
-            currentSection = 'challenges';
-          } else if (trimmed && trimmed.startsWith('-') || trimmed.match(/^\d+\./)) {
-            const insight = trimmed.replace(/^[-\d.]\s*/, '').trim();
-            if (insight) {
-              if (currentSection === 'insights') strategicInsights.push(insight);
-              else if (currentSection === 'recommendations') recommendations.push(insight);
-              else if (currentSection === 'challenges') potentialChallenges.push(insight);
-            }
-          }
-        }
-
-        res.json({
-          strategicInsights,
-          recommendations,
-          potentialChallenges
-        });
-      } catch (aiError) {
-        console.error("AI insights generation failed:", aiError);
-        // Fallback to empty response on AI failure
-        res.json({
-          strategicInsights: [],
-          recommendations: [],
-          potentialChallenges: []
-        });
-      }
-    } catch (error) {
-      console.error("Error generating insights:", error);
-      // Return empty insights when API fails instead of error
-      res.json({
-        strategicInsights: [],
-        recommendations: [],
-        potentialChallenges: []
-      });
-    }
+    // Stubbed out - return empty insights
+    res.json({
+      strategicInsights: [],
+      recommendations: [],
+      potentialChallenges: []
+    });
   });
 
   // Conversation routes
@@ -504,87 +317,87 @@ export function registerRoutes(app: Express): Server {
 
       const data = session.sessionData as ConversationData;
 
-      // Generate AI-powered campaign brief
+      // Generate AI-powered campaign brief using VP of Media Strategy role
       try {
         const prompt = `
-        Create a comprehensive digital media campaign brief based on this data:
-        
-        Client: ${data.name || 'Unknown'}
-        Company: ${data.company || 'Unknown'}
-        Product/Service: ${data.product || 'Unknown'}
-        Campaign Platforms: ${data.platforms || 'Unknown'}
-        Campaign Objective: ${data.objective || 'Unknown'}
-        Target Audience: ${data.audience || 'Unknown'}
-        Budget: ${data.budget || 'Unknown'}
-        Timeline: ${data.timeframe || 'Unknown'}
-        Season: ${data.season || 'Unknown'}
-        
-        Generate:
-        1. Strategic recommendations (4-5 actionable items)
-        2. Budget allocation across platforms
-        3. Platform-specific strategies
-        4. Key performance indicators (KPIs)
-        
-        Provide realistic, industry-standard estimates and actionable insights.
-        `;
+Process the following raw targeting inputs and generate a formal, structured Media Brief in JSON format.
+
+Raw Inputs:
+- Geographic Targeting: ${data.geo || 'Not specified'}
+- Demographics: ${data.demo || 'Not specified'}
+- Interests & Affinities: ${data.affinity || 'Not specified'}
+- Industry & Campaign Goal: ${data.industry || 'Not specified'}
+
+Transform this raw input into professional, industry-standard targeting terminology. For example:
+- "rich people" → "High-Net-Worth Individual (HNI)"
+- "USA" → specific DMA markets
+- "young people who like tech" → "Tech-Savvy Millennials, Age 25-34"
+
+Return a JSON object with this exact structure:
+{
+  "brief_title": "Descriptive campaign title based on industry and goals",
+  "industry_vertical": "Industry category (e.g., E-commerce, Finance, Healthcare)",
+  "geo_targeting": {
+    "primary_markets": ["List of primary target markets/regions"],
+    "secondary_markets": ["List of secondary markets if applicable"]
+  },
+  "demographics": {
+    "age_range": "Age range (e.g., 25-54, 18-34)",
+    "hhi_segment": "Household income segment (e.g., HNI, Upper-Middle Class, Mass Market)"
+  },
+  "affinity_buckets": ["List of interest categories and affinities"],
+  "in_market_segments": ["List of in-market purchase intent segments"]
+}
+`;
 
         const completion = await openai.chat.completions.create({
           model: "gpt-4o-mini",
           messages: [
             {
               role: "system",
-              content: "You are a senior digital media strategist with expertise in campaign planning, budget allocation, and performance forecasting. Provide detailed, actionable campaign briefs."
+              content: "You are a Vice President of Media Strategy with 15 years of experience. Your sole purpose is to process raw, open-ended targeting inputs from a planner and output a formal, structured Media Brief JSON. Analyze the user's raw input (Geo, Demo, Affinity, Industry) and map it into actionable, high-level, industry-standard targeting terminology. For example, turn 'rich people' into 'High-Net-Worth Individual (HNI)'."
             },
             {
               role: "user",
               content: prompt
             }
           ],
-          max_tokens: 1200,
+          response_format: { type: "json_object" },
+          max_tokens: 1500,
           temperature: 0.7,
         });
 
-        const aiResponse = completion.choices[0]?.message?.content || "";
+        const aiResponse = completion.choices[0]?.message?.content || "{}";
+        const mediaBrief = JSON.parse(aiResponse);
         
-        // Generate AI insights
-        const aiInsights = {
-          recommendations: [
-            "Implement A/B testing for creative variants",
-            "Focus on peak engagement hours (6-9 PM)",
-            "Use lookalike audiences for scale",
-            "Optimize for video completion rates",
-            "Monitor competitive landscape weekly"
-          ],
-          budgetAllocation: {
-            [data.platforms === 'youtube' ? 'YouTube' : data.platforms === 'meta' ? 'Meta' : 'YouTube']: data.platforms === 'both' ? '60%' : '100%',
-            ...(data.platforms === 'both' && { 'Meta': '40%' })
-          },
-          platformStrategies: {
-            [data.platforms === 'youtube' ? 'YouTube' : data.platforms === 'meta' ? 'Meta' : 'YouTube']: 
-              data.platforms === 'youtube' ? 'Focus on video storytelling and in-stream ads' : 
-              data.platforms === 'meta' ? 'Leverage social proof and user-generated content' : 
-              'Multi-format video approach',
-            ...(data.platforms === 'both' && { 
-              'Meta': 'Social engagement and community building',
-              'YouTube': 'Long-form content and tutorials'
-            })
-          },
-          kpis: ["Reach", "Video Completion Rate", "Click-Through Rate", "Cost Per Acquisition", "Brand Lift"]
-        };
+        // Generate recommendations based on the brief
+        const recommendations = [
+          "Leverage audience lookalike modeling for scale",
+          "Implement A/B testing for creative optimization",
+          "Monitor frequency caps to prevent ad fatigue",
+          "Track incremental lift with brand studies",
+          "Optimize bidding based on performance data"
+        ];
 
         const briefData = {
           userId: null, // Anonymous user - will be linked later if they log in
           sessionId: sessionId,
-          clientName: data.name || "Unknown Client",
-          campaignName: `${data.company} - ${data.product}`,
-          product: data.product || "Not specified",
-          targetAudience: data.audience || "Not specified",
-          budget: data.budget || "Not specified",
-          platforms: data.platforms || "Not specified",
-          objectives: data.objective || "Not specified",
-          timeline: data.timeframe || "Not specified",
-          keyMessages: "",
-          aiInsights
+          briefTitle: mediaBrief.brief_title || "Campaign Brief",
+          industryVertical: mediaBrief.industry_vertical || "Not specified",
+          geoTargeting: mediaBrief.geo_targeting || { primary_markets: [], secondary_markets: [] },
+          demographics: mediaBrief.demographics || { age_range: "", hhi_segment: "" },
+          affinityBuckets: mediaBrief.affinity_buckets || [],
+          inMarketSegments: mediaBrief.in_market_segments || [],
+          rawInputs: { 
+            geo: data.geo || "", 
+            demo: data.demo || "", 
+            affinity: data.affinity || "", 
+            industry: data.industry || "" 
+          },
+          aiInsights: { 
+            generatedBrief: mediaBrief, 
+            recommendations 
+          }
         };
         
         // Save the brief to database
@@ -595,22 +408,23 @@ export function registerRoutes(app: Express): Server {
         
         // Fallback brief without AI insights on AI failure
         const fallbackBriefData = {
-          userId: null, // Anonymous user - will be linked later if they log in
+          userId: null,
           sessionId: sessionId,
-          clientName: data.name || "Unknown Client",
-          campaignName: `${data.company} - ${data.product}`,
-          product: data.product || "Not specified",
-          targetAudience: data.audience || "Not specified",
-          budget: data.budget || "Not specified",
-          platforms: data.platforms || "Not specified",
-          objectives: data.objective || "Not specified",
-          timeline: data.timeframe || "Not specified",
-          keyMessages: "",
+          briefTitle: "Campaign Brief",
+          industryVertical: "Not specified",
+          geoTargeting: { primary_markets: [], secondary_markets: [] },
+          demographics: { age_range: "", hhi_segment: "" },
+          affinityBuckets: [],
+          inMarketSegments: [],
+          rawInputs: { 
+            geo: data.geo || "", 
+            demo: data.demo || "", 
+            affinity: data.affinity || "", 
+            industry: data.industry || "" 
+          },
           aiInsights: {
-            recommendations: ["Complete campaign setup", "Review targeting parameters", "Set performance benchmarks"],
-            budgetAllocation: {},
-            platformStrategies: {},
-            kpis: ["Reach", "Engagement", "Conversions"]
+            generatedBrief: {},
+            recommendations: ["Complete campaign setup", "Review targeting parameters", "Set performance benchmarks"]
           }
         };
         
@@ -646,106 +460,12 @@ export function registerRoutes(app: Express): Server {
 
 
   // Campaign brief routes (require authentication for creation)
+  // Note: Direct brief creation is deprecated - use /api/conversation/:id/brief instead
   app.post("/api/campaign-brief", requireAuth, async (req, res) => {
-    try {
-      const briefData = insertCampaignBriefSchema.parse(req.body);
-      
-      // Generate AI-enhanced campaign brief
-      try {
-        const prompt = `
-        Generate enhanced AI insights for this campaign brief:
-        
-        Campaign: ${briefData.campaignName}
-        Target Audience: ${briefData.targetAudience}
-        Budget: ${briefData.budget}
-        Platforms: ${briefData.platforms}
-        Objectives: ${briefData.objectives}
-        Timeline: ${briefData.timeline}
-        
-        Provide:
-        1. Realistic reach estimation based on budget and platforms
-        2. Industry-standard CPM ranges
-        3. 5 strategic recommendations
-        4. Budget allocation by platform
-        5. Platform-specific strategies
-        6. Relevant KPIs for this campaign type
-        `;
-
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content: "You are a digital media planning expert. Provide realistic, data-driven insights for campaign optimization."
-            },
-            {
-              role: "user",
-              content: prompt
-            }
-          ],
-          max_tokens: 800,
-          temperature: 0.6,
-        });
-
-        const aiResponse = completion.choices[0]?.message?.content || "";
-        
-        // Create AI insights object
-        const aiInsights = {
-          recommendations: [
-            "Optimize creative for mobile viewing",
-            "Use retargeting for higher conversion rates",
-            "Test multiple ad formats for performance",
-            "Monitor frequency capping to avoid fatigue",
-            "Implement conversion tracking for ROI measurement"
-          ],
-          budgetAllocation: briefData.platforms === 'both' ? 
-            { "YouTube": "65%", "Meta": "35%" } : 
-            { [briefData.platforms === 'youtube' ? 'YouTube' : 'Meta']: "100%" },
-          platformStrategies: briefData.platforms === 'both' ? 
-            { 
-              "YouTube": "Long-form storytelling and tutorials",
-              "Meta": "Social proof and engagement-focused content"
-            } : 
-            { 
-              [briefData.platforms === 'youtube' ? 'YouTube' : 'Meta']: 
-                briefData.platforms === 'youtube' ? 
-                "Video-first approach with strong CTAs" : 
-                "Visual storytelling with community engagement"
-            },
-          kpis: ["Reach", "Engagement Rate", "Video Completion", "Click-Through Rate", "Cost Per Acquisition"]
-        };
-
-        const brief = await storage.createCampaignBrief({
-          ...briefData,
-          userId: (req.session as any).userId,
-          aiInsights
-        });
-        
-        res.json(brief);
-      } catch (aiError) {
-        console.error("AI enhancement failed, saving with basic insights:", aiError);
-        
-        // Fallback to basic insights on AI failure
-        const brief = await storage.createCampaignBrief({
-          ...briefData,
-          userId: (req.session as any).userId,
-          aiInsights: {
-            recommendations: ["Complete campaign configuration", "Review targeting parameters", "Set performance benchmarks"],
-            budgetAllocation: {},
-            platformStrategies: {},
-            kpis: ["Reach", "Engagement", "Conversions"]
-          }
-        });
-        
-        res.json(brief);
-      }
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        return res.status(400).json({ message: "Invalid data", errors: error.errors });
-      }
-      console.error("Error creating campaign brief:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
+    res.status(410).json({ 
+      message: "Direct brief creation is deprecated. Please use the conversation flow: POST /api/conversation/:id/brief",
+      redirectTo: "/api/conversation/start"
+    });
   });
 
   app.get("/api/campaign-brief/session/:sessionId", async (req, res) => {
