@@ -1,6 +1,6 @@
-import { eq, and, isNull, or } from "drizzle-orm";
+import { eq, and, isNull, or, sql as drizzleSql } from "drizzle-orm";
 import { db } from "./db";
-import { users, conversationSessions, campaignBriefs } from "@shared/schema";
+import { users, conversationSessions, campaignBriefs, cpmBenchmarks } from "@shared/schema";
 import type { 
   User, 
   InsertUser, 
@@ -8,7 +8,9 @@ import type {
   InsertConversationSession, 
   UpdateConversationSession,
   CampaignBrief,
-  InsertCampaignBrief 
+  InsertCampaignBrief,
+  CpmBenchmark,
+  InsertCpmBenchmark
 } from "@shared/schema";
 import bcrypt from "bcryptjs";
 
@@ -32,6 +34,12 @@ export interface IStorage {
   getUserCampaignBriefs(userId: string): Promise<CampaignBrief[]>;
   getCampaignBriefBySessionId(sessionId: string): Promise<CampaignBrief | undefined>;
   linkAnonymousBriefToUser(sessionId: string, userId: string): Promise<CampaignBrief | undefined>;
+  
+  // CPM Benchmark operations
+  createBenchmark(benchmark: InsertCpmBenchmark): Promise<CpmBenchmark>;
+  getBenchmarks(filters?: { platform?: string; geo?: string; industry?: string }): Promise<CpmBenchmark[]>;
+  searchBenchmarksByVector(embedding: number[], filters?: { platform?: string; geo?: string }, limit?: number): Promise<Array<CpmBenchmark & { similarity: number }>>;
+  deleteAllBenchmarks(): Promise<void>;
   
   // Authentication helpers
   hashPassword(password: string): Promise<string>;
@@ -213,6 +221,67 @@ export class DatabaseStorage implements IStorage {
     };
 
     return await this.createCampaignBrief(briefData);
+  }
+
+  async createBenchmark(insertBenchmark: InsertCpmBenchmark): Promise<CpmBenchmark> {
+    const [benchmark] = await db
+      .insert(cpmBenchmarks)
+      .values(insertBenchmark)
+      .returning();
+    return benchmark;
+  }
+
+  async getBenchmarks(filters?: { platform?: string; geo?: string; industry?: string }): Promise<CpmBenchmark[]> {
+    let query = db.select().from(cpmBenchmarks);
+    
+    const conditions = [];
+    if (filters?.platform) {
+      conditions.push(eq(cpmBenchmarks.platform, filters.platform));
+    }
+    if (filters?.geo) {
+      conditions.push(eq(cpmBenchmarks.geo, filters.geo));
+    }
+    if (filters?.industry) {
+      conditions.push(eq(cpmBenchmarks.industry, filters.industry));
+    }
+    
+    if (conditions.length > 0) {
+      query = query.where(and(...conditions)) as any;
+    }
+    
+    return await query;
+  }
+
+  async searchBenchmarksByVector(
+    embedding: number[], 
+    filters?: { platform?: string; geo?: string }, 
+    limit: number = 10
+  ): Promise<Array<CpmBenchmark & { similarity: number }>> {
+    const embeddingStr = `[${embedding.join(',')}]`;
+    
+    let queryText = `
+      SELECT 
+        id, industry, platform, objective, targeting, cpm, cpa, geo, metadata, created_at, updated_at,
+        1 - (embedding <=> '${embeddingStr}'::vector) as similarity
+      FROM cpm_benchmarks
+    `;
+    
+    if (filters?.platform && filters?.geo) {
+      queryText += ` WHERE platform = '${filters.platform}' AND geo = '${filters.geo}'`;
+    } else if (filters?.platform) {
+      queryText += ` WHERE platform = '${filters.platform}'`;
+    } else if (filters?.geo) {
+      queryText += ` WHERE geo = '${filters.geo}'`;
+    }
+    
+    queryText += ` ORDER BY embedding <=> '${embeddingStr}'::vector LIMIT ${limit}`;
+    
+    const result = await db.execute(drizzleSql.raw(queryText));
+    return result.rows as any;
+  }
+
+  async deleteAllBenchmarks(): Promise<void> {
+    await db.delete(cpmBenchmarks);
   }
 
   async hashPassword(password: string): Promise<string> {

@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, jsonb, timestamp, integer, boolean, index } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, jsonb, timestamp, integer, boolean, index, vector } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -66,6 +66,29 @@ export const campaignBriefs = pgTable("campaign_briefs", {
   updatedAt: timestamp("updated_at").notNull().default(sql`now()`),
 });
 
+export const cpmBenchmarks = pgTable(
+  "cpm_benchmarks",
+  {
+    id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+    industry: text("industry").notNull(),
+    platform: text("platform").notNull(),
+    objective: text("objective").notNull(),
+    targeting: text("targeting"),
+    cpm: text("cpm"),
+    cpa: text("cpa"),
+    geo: text("geo").notNull().default("India"),
+    embedding: vector("embedding", { dimensions: 3072 }),
+    metadata: jsonb("metadata"),
+    createdAt: timestamp("created_at").notNull().default(sql`now()`),
+    updatedAt: timestamp("updated_at").notNull().default(sql`now()`),
+  },
+  (table) => [
+    index("idx_cpm_platform").on(table.platform),
+    index("idx_cpm_geo").on(table.geo),
+    index("idx_cpm_industry").on(table.industry),
+  ],
+);
+
 // Authentication schemas
 export const registerSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -114,6 +137,12 @@ export const insertCampaignBriefSchema = createInsertSchema(campaignBriefs).omit
   updatedAt: true,
 });
 
+export const insertCpmBenchmarkSchema = createInsertSchema(cpmBenchmarks).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const updateConversationSessionSchema = createInsertSchema(conversationSessions).pick({
   sessionData: true,
   currentStep: true,
@@ -129,6 +158,8 @@ export type InsertConversationSession = z.infer<typeof insertConversationSession
 export type UpdateConversationSession = z.infer<typeof updateConversationSessionSchema>;
 export type CampaignBrief = typeof campaignBriefs.$inferSelect;
 export type InsertCampaignBrief = z.infer<typeof insertCampaignBriefSchema>;
+export type CpmBenchmark = typeof cpmBenchmarks.$inferSelect;
+export type InsertCpmBenchmark = z.infer<typeof insertCpmBenchmarkSchema>;
 
 // Question types for the conversation flow - 11 questions
 export const questionSchema = z.object({

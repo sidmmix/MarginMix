@@ -4,6 +4,8 @@ import { z } from "zod";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import OpenAI from "openai";
+import multer from "multer";
+import * as XLSX from "xlsx";
 import { storage } from "./storage";
 import { setupOAuth } from "./oauth";
 import { 
@@ -19,6 +21,11 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Multer configuration for file uploads
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+});
 
 // Open-ended questions for natural language input - 11 questions
 const questions: Question[] = [
@@ -373,8 +380,67 @@ export function registerRoutes(app: Express): Server {
 
       const data = session.sessionData as ConversationData;
 
+      // RAG: Retrieve relevant benchmarks before AI generation
+      let youtubeBenchmarks: any[] = [];
+      let metaBenchmarks: any[] = [];
+
+      try {
+        // Build search query from user inputs - combine industry, objectives, targeting
+        const searchQuery = [
+          data.industry || '',
+          data.kpis || '',
+          data.demo || '',
+          data.affinity || ''
+        ].filter(Boolean).join(' ');
+
+        // Search for YouTube benchmarks
+        if (searchQuery) {
+          const youtubeEmbedding = await openai.embeddings.create({
+            model: "text-embedding-3-large",
+            input: searchQuery,
+            dimensions: 3072
+          });
+
+          const youtubeResults = await storage.searchBenchmarksByVector(
+            youtubeEmbedding.data[0].embedding,
+            { platform: 'YouTube', geo: 'India' },
+            5
+          );
+          youtubeBenchmarks = youtubeResults;
+
+          // Search for Meta benchmarks
+          const metaEmbedding = await openai.embeddings.create({
+            model: "text-embedding-3-large",
+            input: searchQuery,
+            dimensions: 3072
+          });
+
+          const metaResults = await storage.searchBenchmarksByVector(
+            metaEmbedding.data[0].embedding,
+            { platform: 'Meta', geo: 'India' },
+            5
+          );
+          metaBenchmarks = metaResults;
+        }
+      } catch (ragError) {
+        console.error("RAG benchmark retrieval failed, continuing with AI estimates:", ragError);
+      }
+
       // Generate AI-powered campaign brief using VP of Media Strategy role
       try {
+        // Format benchmarks for AI context
+        const youtubeBenchmarkContext = youtubeBenchmarks.length > 0
+          ? `\n\nREAL YOUTUBE CPM BENCHMARKS (Historical India data 2024-2025):\n${youtubeBenchmarks.map(b => 
+              `- ${b.industry} | ${b.objective} | ${b.targeting || 'General'} | CPM: ${b.cpm || 'N/A'}${b.cpa ? ` | CPA: ${b.cpa}` : ''} (Similarity: ${(b.similarity * 100).toFixed(1)}%)`
+            ).join('\n')}`
+          : '';
+
+        const metaBenchmarkContext = metaBenchmarks.length > 0
+          ? `\n\nREAL META CPM BENCHMARKS (Historical India data 2024-2025):\n${metaBenchmarks.map(b => 
+              `- ${b.industry} | ${b.objective} | ${b.targeting || 'General'} | CPM: ${b.cpm || 'N/A'}${b.cpa ? ` | CPA: ${b.cpa}` : ''} (Similarity: ${(b.similarity * 100).toFixed(1)}%)`
+            ).join('\n')}`
+          : '';
+
         const prompt = `
 Process the following raw campaign inputs and generate a comprehensive, formal Media Brief in JSON format.
 
@@ -390,12 +456,16 @@ Raw Inputs:
 - Platform Preferences: ${data.platforms || 'Not specified'}
 - Affinity / Interest Segments: ${data.affinity || 'Not specified'}
 - InMarket / Behaviour Segments: ${data.inmarket || 'Not specified'}
+${youtubeBenchmarkContext}
+${metaBenchmarkContext}
 
 Transform this raw input into professional, industry-standard media planning terminology. For example:
 - "rich people" → "High-Net-Worth Individual (HNI)"
 - "USA" → specific DMA markets (e.g., "New York, Los Angeles, Chicago DMAs")
 - "$50K monthly" → "Monthly Investment: $50,000 USD"
 - "young people who like tech" → "Tech-Savvy Millennials, Age 25-34"
+
+CRITICAL: For YouTube and Meta strategies, you MUST use the REAL BENCHMARKS provided above. DO NOT estimate or guess CPM values. Use the actual historical campaign data from the benchmarks. If multiple benchmarks match, use the most relevant one based on similarity score or provide a range based on the retrieved data.
 
 Return a JSON object with this exact structure:
 {
@@ -431,27 +501,33 @@ Return a JSON object with this exact structure:
     "recommended": true/false,
     "rationale": "Strategic rationale for YouTube",
     "suggested_formats": ["Video ad formats"],
-    "estimated_cpm": "CPM range based on industry benchmarks (e.g., '$8-$12 CPM')",
-    "estimated_impressions": "Monthly impression estimate based on budget"
+    "estimated_cpm": "CPM value or range from historical benchmarks (e.g., '₹850' or '₹650-850')",
+    "estimated_impressions": "Monthly impression estimate based on budget",
+    "benchmark_source": "Source attribution (e.g., 'Historical campaigns 2024-2025, India' if using real data, or omit if estimated)"
   },
   "meta_strategy": {
     "recommended": true/false,
     "rationale": "Strategic rationale for Meta (Facebook/Instagram)",
     "suggested_formats": ["Ad formats"],
-    "estimated_cpm": "CPM range based on industry benchmarks (e.g., '$5-$8 CPM')",
-    "estimated_impressions": "Monthly impression estimate based on budget"
+    "estimated_cpm": "CPM value or range from historical benchmarks (e.g., '₹550' or '₹450-650')",
+    "estimated_impressions": "Monthly impression estimate based on budget",
+    "benchmark_source": "Source attribution (e.g., 'Historical campaigns 2024-2025, India' if using real data, or omit if estimated)"
   },
   "affinity_buckets": ["List of interest categories and affinities with professional terminology"],
   "in_market_segments": ["List of in-market purchase intent segments with industry-standard categories"]
 }
 `;
 
+        const systemPrompt = youtubeBenchmarks.length > 0 || metaBenchmarks.length > 0
+          ? "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology and provide strategic insights across budget, targeting, creative, competitive positioning, and platform strategy. CRITICAL: You have been provided with REAL historical CPM benchmark data from actual campaigns (India, 2024-2025). You MUST use these exact CPM values in your YouTube and Meta strategies - DO NOT estimate or make up numbers. Use the provided benchmark data to calculate accurate monthly impressions based on the budget. Include 'benchmark_source: Historical campaigns 2024-2025, India' in both youtube_strategy and meta_strategy."
+          : "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology and provide strategic insights across budget, targeting, creative, competitive positioning, and platform strategy. For YouTube and Meta strategies, calculate estimated CPM and monthly impressions based on industry benchmarks for the specified vertical, audience, and objectives. Use realistic CPM ranges (YouTube: ₹600-1200, Meta: ₹400-800 depending on targeting) and calculate impressions based on the provided budget.";
+
         const completion = await openai.chat.completions.create({
           model: "gpt-4o-mini",
           messages: [
             {
               role: "system",
-              content: "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology and provide strategic insights across budget, targeting, creative, competitive positioning, and platform strategy. For YouTube and Meta strategies, calculate estimated CPM and monthly impressions based on industry benchmarks for the specified vertical, audience, and objectives. Use realistic CPM ranges (YouTube: $8-15, Meta: $5-10 depending on targeting) and calculate impressions based on the provided budget."
+              content: systemPrompt
             },
             {
               role: "user",
@@ -578,6 +654,150 @@ Return a JSON object with this exact structure:
       res.json(briefs);
     } catch (error) {
       console.error("Error fetching user campaign briefs:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Benchmark import endpoint - accepts Excel file
+  app.post("/api/benchmarks/import", requireAuth, upload.single('file'), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      // Parse Excel file
+      const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+      const sheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[sheetName];
+      const data = XLSX.utils.sheet_to_json(worksheet);
+
+      // Delete existing benchmarks before importing new data
+      await storage.deleteAllBenchmarks();
+
+      let importedCount = 0;
+      const errors: string[] = [];
+
+      // Process each row and generate embeddings
+      for (let index = 0; index < data.length; index++) {
+        try {
+          const rowData = data[index] as any;
+          
+          // Validate required fields
+          if (!rowData.Industry || !rowData.Platform || !rowData.Objective) {
+            errors.push(`Row ${index + 2}: Missing required fields (Industry, Platform, or Objective)`);
+            continue;
+          }
+
+          // Create text for embedding: combines industry, objective, targeting for semantic search
+          const embeddingText = [
+            rowData.Industry,
+            rowData.Objective,
+            rowData.Targeting || ''
+          ].filter(Boolean).join(' - ');
+
+          // Generate embedding using OpenAI
+          const embeddingResponse = await openai.embeddings.create({
+            model: "text-embedding-3-large",
+            input: embeddingText,
+            dimensions: 3072
+          });
+
+          const embedding = embeddingResponse.data[0].embedding;
+
+          // Create benchmark record
+          await storage.createBenchmark({
+            industry: rowData.Industry,
+            platform: rowData.Platform,
+            objective: rowData.Objective,
+            targeting: rowData.Targeting || null,
+            cpm: rowData.CPM ? String(rowData.CPM) : null,
+            cpa: rowData.CPA ? String(rowData.CPA) : null,
+            geo: rowData.Geo || "India",
+            embedding: embedding,
+            metadata: {
+              importDate: new Date().toISOString(),
+              sourceFile: req.file.originalname
+            }
+          });
+
+          importedCount++;
+        } catch (rowError: any) {
+          console.error(`Error processing row ${index + 2}:`, rowError);
+          errors.push(`Row ${index + 2}: ${rowError.message}`);
+        }
+      }
+
+      res.json({
+        success: true,
+        message: `Successfully imported ${importedCount} benchmarks`,
+        importedCount,
+        totalRows: data.length,
+        errors: errors.length > 0 ? errors : undefined
+      });
+    } catch (error: any) {
+      console.error("Error importing benchmarks:", error);
+      res.status(500).json({ 
+        message: "Error importing benchmarks", 
+        error: error.message 
+      });
+    }
+  });
+
+  // Benchmark search endpoint - hybrid semantic + exact filters
+  app.post("/api/benchmarks/search", async (req, res) => {
+    try {
+      const { query, platform, geo, limit } = req.body;
+
+      if (!query || typeof query !== 'string') {
+        return res.status(400).json({ message: "Query text is required" });
+      }
+
+      // Generate embedding for search query
+      const embeddingResponse = await openai.embeddings.create({
+        model: "text-embedding-3-large",
+        input: query,
+        dimensions: 3072
+      });
+
+      const queryEmbedding = embeddingResponse.data[0].embedding;
+
+      // Search with hybrid approach: semantic similarity + exact filters
+      const results = await storage.searchBenchmarksByVector(
+        queryEmbedding,
+        {
+          platform: platform || undefined,
+          geo: geo || "India"
+        },
+        limit || 10
+      );
+
+      res.json({
+        results,
+        query,
+        filters: { platform, geo },
+        count: results.length
+      });
+    } catch (error: any) {
+      console.error("Error searching benchmarks:", error);
+      res.status(500).json({ 
+        message: "Error searching benchmarks", 
+        error: error.message 
+      });
+    }
+  });
+
+  // Get all benchmarks (for testing/admin)
+  app.get("/api/benchmarks", requireAuth, async (req, res) => {
+    try {
+      const { platform, geo, industry } = req.query;
+      const benchmarks = await storage.getBenchmarks({
+        platform: platform as string,
+        geo: geo as string,
+        industry: industry as string
+      });
+      res.json(benchmarks);
+    } catch (error) {
+      console.error("Error fetching benchmarks:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
