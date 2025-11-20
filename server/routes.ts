@@ -373,225 +373,8 @@ export function registerRoutes(app: Express): Server {
         return res.status(400).json({ message: "Invalid session ID" });
       }
 
-      const session = await storage.getConversationSession(sessionId);
-      if (!session) {
-        return res.status(404).json({ message: "Session not found" });
-      }
-
-      const data = session.sessionData as ConversationData;
-
-      // RAG: Retrieve relevant benchmarks before AI generation
-      let youtubeBenchmarks: any[] = [];
-      let metaBenchmarks: any[] = [];
-
-      try {
-        // Build search query from user inputs - combine industry, objectives, targeting
-        const searchQuery = [
-          data.industry || '',
-          data.kpis || '',
-          data.demo || '',
-          data.affinity || ''
-        ].filter(Boolean).join(' ');
-
-        // Search for YouTube benchmarks
-        if (searchQuery) {
-          const youtubeEmbedding = await openai.embeddings.create({
-            model: "text-embedding-3-large",
-            input: searchQuery,
-            dimensions: 3072
-          });
-
-          const youtubeResults = await storage.searchBenchmarksByVector(
-            youtubeEmbedding.data[0].embedding,
-            { platform: 'YouTube', geo: 'India' },
-            5
-          );
-          youtubeBenchmarks = youtubeResults;
-
-          // Search for Meta benchmarks
-          const metaEmbedding = await openai.embeddings.create({
-            model: "text-embedding-3-large",
-            input: searchQuery,
-            dimensions: 3072
-          });
-
-          const metaResults = await storage.searchBenchmarksByVector(
-            metaEmbedding.data[0].embedding,
-            { platform: 'Meta', geo: 'India' },
-            5
-          );
-          metaBenchmarks = metaResults;
-        }
-      } catch (ragError) {
-        console.error("RAG benchmark retrieval failed, continuing with AI estimates:", ragError);
-      }
-
-      // Generate AI-powered campaign brief using VP of Media Strategy role
-      try {
-        // Format benchmarks for AI context
-        const youtubeBenchmarkContext = youtubeBenchmarks.length > 0
-          ? `\n\nREAL YOUTUBE CPM BENCHMARKS (Historical India data 2024-2025):\n${youtubeBenchmarks.map(b => 
-              `- ${b.industry} | ${b.objective} | ${b.targeting || 'General'} | CPM: ${b.cpm || 'N/A'}${b.cpa ? ` | CPA: ${b.cpa}` : ''} (Similarity: ${(b.similarity * 100).toFixed(1)}%)`
-            ).join('\n')}`
-          : '';
-
-        const metaBenchmarkContext = metaBenchmarks.length > 0
-          ? `\n\nREAL META CPM BENCHMARKS (Historical India data 2024-2025):\n${metaBenchmarks.map(b => 
-              `- ${b.industry} | ${b.objective} | ${b.targeting || 'General'} | CPM: ${b.cpm || 'N/A'}${b.cpa ? ` | CPA: ${b.cpa}` : ''} (Similarity: ${(b.similarity * 100).toFixed(1)}%)`
-            ).join('\n')}`
-          : '';
-
-        const prompt = `
-Process the following raw campaign inputs and generate a comprehensive, formal Media Brief in JSON format.
-
-Raw Inputs:
-- Geographic Targeting: ${data.geo || 'Not specified'}
-- Demographics: ${data.demo || 'Not specified'}
-- Industry & Campaign Goal: ${data.industry || 'Not specified'}
-- Budget / Investment Level: ${data.budget || 'Not specified'}
-- Campaign Timeline: ${data.timeline || 'Not specified'}
-- KPIs & Success Metrics: ${data.kpis || 'Not specified'}
-- Creative / Messaging Theme: ${data.creative || 'Not specified'}
-- Competitive Landscape: ${data.competitive || 'Not specified'}
-- Platform Preferences: ${data.platforms || 'Not specified'}
-- Affinity / Interest Segments: ${data.affinity || 'Not specified'}
-- InMarket / Behaviour Segments: ${data.inmarket || 'Not specified'}
-${youtubeBenchmarkContext}
-${metaBenchmarkContext}
-
-Transform this raw input into professional, industry-standard media planning terminology. For example:
-- "rich people" → "High-Net-Worth Individual (HNI)"
-- "USA" → specific DMA markets (e.g., "New York, Los Angeles, Chicago DMAs")
-- "$50K monthly" → "Monthly Investment: $50,000 USD"
-- "young people who like tech" → "Tech-Savvy Millennials, Age 25-34"
-
-CRITICAL: For YouTube and Meta strategies, you MUST use the REAL BENCHMARKS provided above. DO NOT estimate or guess CPM values. Use the actual historical campaign data from the benchmarks. If multiple benchmarks match, use the most relevant one based on similarity score or provide a range based on the retrieved data.
-
-Return a JSON object with this exact structure:
-{
-  "brief_title": "Descriptive campaign title based on industry and goals",
-  "industry_vertical": "Industry category (e.g., E-commerce, Finance, Healthcare)",
-  "geo_targeting": {
-    "primary_markets": ["List of primary target markets/regions with professional terminology"],
-    "secondary_markets": ["List of secondary markets if applicable"]
-  },
-  "demographics": {
-    "age_range": "Age range (e.g., 25-54, 18-34)",
-    "hhi_segment": "Household income segment (e.g., HNI, Upper-Middle Class, Mass Market)"
-  },
-  "budget_details": {
-    "total_budget": "Budget amount with currency",
-    "flight_duration": "Campaign duration",
-    "allocation_strategy": "Recommended budget allocation approach"
-  },
-  "campaign_objectives": {
-    "primary_kpi": "Main success metric",
-    "secondary_kpis": ["Supporting metrics"],
-    "target_timeline": "Campaign flight dates"
-  },
-  "creative_strategy": {
-    "messaging_theme": "Creative approach and brand voice",
-    "key_messages": ["Core messaging points"]
-  },
-  "competitive_analysis": {
-    "key_competitors": ["Main competitors"],
-    "differentiation": "Unique positioning"
-  },
-  "youtube_strategy": {
-    "recommended": true/false,
-    "rationale": "Strategic rationale for YouTube",
-    "suggested_formats": ["Video ad formats"],
-    "estimated_cpm": "CPM value or range from historical benchmarks (e.g., '₹850' or '₹650-850')",
-    "estimated_impressions": "Monthly impression estimate based on budget",
-    "benchmark_source": "Source attribution (e.g., 'Historical campaigns 2024-2025, India' if using real data, or omit if estimated)"
-  },
-  "meta_strategy": {
-    "recommended": true/false,
-    "rationale": "Strategic rationale for Meta (Facebook/Instagram)",
-    "suggested_formats": ["Ad formats"],
-    "estimated_cpm": "CPM value or range from historical benchmarks (e.g., '₹550' or '₹450-650')",
-    "estimated_impressions": "Monthly impression estimate based on budget",
-    "benchmark_source": "Source attribution (e.g., 'Historical campaigns 2024-2025, India' if using real data, or omit if estimated)"
-  },
-  "affinity_buckets": ["List of interest categories and affinities with professional terminology"],
-  "in_market_segments": ["List of in-market purchase intent segments with industry-standard categories"]
-}
-`;
-
-        const systemPrompt = youtubeBenchmarks.length > 0 || metaBenchmarks.length > 0
-          ? "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology and provide strategic insights across budget, targeting, creative, competitive positioning, and platform strategy. CRITICAL: You have been provided with REAL historical CPM benchmark data from actual campaigns (India, 2024-2025). You MUST use these exact CPM values in your YouTube and Meta strategies - DO NOT estimate or make up numbers. Use the provided benchmark data to calculate accurate monthly impressions based on the budget. Include 'benchmark_source: Historical campaigns 2024-2025, India' in both youtube_strategy and meta_strategy."
-          : "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology and provide strategic insights across budget, targeting, creative, competitive positioning, and platform strategy. For YouTube and Meta strategies, calculate estimated CPM and monthly impressions based on industry benchmarks for the specified vertical, audience, and objectives. Use realistic CPM ranges (YouTube: ₹600-1200, Meta: ₹400-800 depending on targeting) and calculate impressions based on the provided budget.";
-
-        const completion = await openai.chat.completions.create({
-          model: "gpt-4o-mini",
-          messages: [
-            {
-              role: "system",
-              content: systemPrompt
-            },
-            {
-              role: "user",
-              content: prompt
-            }
-          ],
-          response_format: { type: "json_object" },
-          max_tokens: 2500,
-          temperature: 0.7,
-        });
-
-        const aiResponse = completion.choices[0]?.message?.content || "{}";
-        const mediaBrief = JSON.parse(aiResponse);
-        
-        // Generate recommendations based on the brief
-        const recommendations = [
-          "Leverage audience lookalike modeling for scale",
-          "Implement A/B testing for creative optimization",
-          "Monitor frequency caps to prevent ad fatigue",
-          "Track incremental lift with brand studies",
-          "Optimize bidding based on performance data"
-        ];
-
-        const briefData = {
-          userId: null, // Anonymous user - will be linked later if they log in
-          sessionId: sessionId,
-          briefTitle: mediaBrief.brief_title || "Campaign Brief",
-          industryVertical: mediaBrief.industry_vertical || "Not specified",
-          geoTargeting: mediaBrief.geo_targeting || { primary_markets: [], secondary_markets: [] },
-          demographics: mediaBrief.demographics || { age_range: "", hhi_segment: "" },
-          affinityBuckets: mediaBrief.affinity_buckets || [],
-          inMarketSegments: mediaBrief.in_market_segments || [],
-          aiInsights: { 
-            generatedBrief: mediaBrief, 
-            recommendations 
-          }
-        };
-        
-        // Save the brief to database
-        const savedBrief = await storage.createCampaignBrief(briefData);
-        res.json(savedBrief);
-      } catch (aiError) {
-        console.error("AI brief generation failed:", aiError);
-        
-        // Fallback brief without AI insights on AI failure
-        const fallbackBriefData = {
-          userId: null,
-          sessionId: sessionId,
-          briefTitle: "Campaign Brief",
-          industryVertical: "Not specified",
-          geoTargeting: { primary_markets: [], secondary_markets: [] },
-          demographics: { age_range: "", hhi_segment: "" },
-          affinityBuckets: [],
-          inMarketSegments: [],
-          aiInsights: {
-            generatedBrief: {},
-            recommendations: ["Complete campaign setup", "Review targeting parameters", "Set performance benchmarks"]
-          }
-        };
-        
-        // Save the fallback brief to database
-        const savedFallbackBrief = await storage.createCampaignBrief(fallbackBriefData);
-        res.json(savedFallbackBrief);
-      }
+      const brief = await generateAIBriefForSession(sessionId, null);
+      res.json(brief);
     } catch (error) {
       console.error("Error generating campaign brief:", error);
       res.status(500).json({ message: "Internal server error" });
@@ -804,4 +587,226 @@ Return a JSON object with this exact structure:
 
   const httpServer = createServer(app);
   return httpServer;
+}
+
+// Exported helper function for AI-powered campaign brief generation (used in OAuth and API routes)
+export async function generateAIBriefForSession(sessionId: string, userId: string | null = null) {
+  const session = await storage.getConversationSession(sessionId);
+  if (!session) {
+    throw new Error("Session not found");
+  }
+
+  const data = session.sessionData as ConversationData;
+
+  // RAG: Retrieve relevant benchmarks before AI generation
+  let youtubeBenchmarks: any[] = [];
+  let metaBenchmarks: any[] = [];
+
+  try {
+    // Build search query from user inputs
+    const searchQuery = [
+      data.industry || '',
+      data.kpis || '',
+      data.demo || '',
+      data.affinity || ''
+    ].filter(Boolean).join(' ');
+
+    // Search for YouTube benchmarks
+    if (searchQuery) {
+      const youtubeEmbedding = await openai.embeddings.create({
+        model: "text-embedding-3-large",
+        input: searchQuery,
+        dimensions: 3072
+      });
+
+      const youtubeResults = await storage.searchBenchmarksByVector(
+        youtubeEmbedding.data[0].embedding,
+        { platform: 'YouTube', geo: 'India' },
+        5
+      );
+      youtubeBenchmarks = youtubeResults;
+
+      // Search for Meta benchmarks
+      const metaEmbedding = await openai.embeddings.create({
+        model: "text-embedding-3-large",
+        input: searchQuery,
+        dimensions: 3072
+      });
+
+      const metaResults = await storage.searchBenchmarksByVector(
+        metaEmbedding.data[0].embedding,
+        { platform: 'Meta', geo: 'India' },
+        5
+      );
+      metaBenchmarks = metaResults;
+    }
+  } catch (ragError) {
+    console.error("RAG benchmark retrieval failed, continuing with AI estimates:", ragError);
+  }
+
+  // Generate AI-powered campaign brief
+  try {
+    // Format benchmarks for AI context
+    const youtubeBenchmarkContext = youtubeBenchmarks.length > 0
+      ? `\n\nREAL YOUTUBE CPM BENCHMARKS (Historical India data 2024-2025):\n${youtubeBenchmarks.map(b => 
+          `- ${b.industry} | ${b.objective} | ${b.targeting || 'General'} | CPM: ${b.cpm || 'N/A'}${b.cpa ? ` | CPA: ${b.cpa}` : ''} (Similarity: ${(b.similarity * 100).toFixed(1)}%)`
+        ).join('\n')}`
+      : '';
+
+    const metaBenchmarkContext = metaBenchmarks.length > 0
+      ? `\n\nREAL META CPM BENCHMARKS (Historical India data 2024-2025):\n${metaBenchmarks.map(b => 
+          `- ${b.industry} | ${b.objective} | ${b.targeting || 'General'} | CPM: ${b.cpm || 'N/A'}${b.cpa ? ` | CPA: ${b.cpa}` : ''} (Similarity: ${(b.similarity * 100).toFixed(1)}%)`
+        ).join('\n')}`
+      : '';
+
+    const prompt = `
+Process the following raw campaign inputs and generate a comprehensive, formal Media Brief in JSON format.
+
+Raw Inputs:
+- Geographic Targeting: ${data.geo || 'Not specified'}
+- Demographics: ${data.demo || 'Not specified'}
+- Industry & Campaign Goal: ${data.industry || 'Not specified'}
+- Budget / Investment Level: ${data.budget || 'Not specified'}
+- Campaign Timeline: ${data.timeline || 'Not specified'}
+- KPIs & Success Metrics: ${data.kpis || 'Not specified'}
+- Creative / Messaging Theme: ${data.creative || 'Not specified'}
+- Competitive Landscape: ${data.competitive || 'Not specified'}
+- Platform Preferences: ${data.platforms || 'Not specified'}
+- Affinity / Interest Segments: ${data.affinity || 'Not specified'}
+- InMarket / Behaviour Segments: ${data.inmarket || 'Not specified'}
+${youtubeBenchmarkContext}
+${metaBenchmarkContext}
+
+Transform this raw input into professional, industry-standard media planning terminology. For example:
+- "rich people" → "High-Net-Worth Individual (HNI)"
+- "USA" → specific DMA markets (e.g., "New York, Los Angeles, Chicago DMAs")
+- "$50K monthly" → "Monthly Investment: $50,000 USD"
+- "young people who like tech" → "Tech-Savvy Millennials, Age 25-34"
+
+CRITICAL: For YouTube and Meta strategies, you MUST use the REAL BENCHMARKS provided above. DO NOT estimate or guess CPM values. Use the actual historical campaign data from the benchmarks. If multiple benchmarks match, use the most relevant one based on similarity score or provide a range based on the retrieved data.
+
+Return a JSON object with this exact structure:
+{
+  "brief_title": "Descriptive campaign title based on industry and goals",
+  "industry_vertical": "Industry category (e.g., E-commerce, Finance, Healthcare)",
+  "geo_targeting": {
+    "primary_markets": ["List of primary target markets/regions with professional terminology"],
+    "secondary_markets": ["List of secondary markets if applicable"]
+  },
+  "demographics": {
+    "age_range": "Age range (e.g., 25-54, 18-34)",
+    "hhi_segment": "Household income segment (e.g., HNI, Upper-Middle Class, Mass Market)"
+  },
+  "budget_details": {
+    "total_budget": "Budget amount with currency",
+    "flight_duration": "Campaign duration",
+    "allocation_strategy": "Recommended budget allocation approach"
+  },
+  "campaign_objectives": {
+    "primary_kpi": "Main success metric",
+    "secondary_kpis": ["Supporting metrics"],
+    "target_timeline": "Campaign flight dates"
+  },
+  "creative_strategy": {
+    "messaging_theme": "Creative approach and brand voice",
+    "key_messages": ["Core messaging points"]
+  },
+  "competitive_analysis": {
+    "key_competitors": ["Main competitors"],
+    "differentiation": "Unique positioning"
+  },
+  "youtube_strategy": {
+    "recommended": true/false,
+    "rationale": "Strategic rationale for YouTube",
+    "suggested_formats": ["Video ad formats"],
+    "estimated_cpm": "CPM value or range from historical benchmarks (e.g., '₹850' or '₹650-850')",
+    "estimated_impressions": "Monthly impression estimate based on budget",
+    "benchmark_source": "Source attribution (e.g., 'Historical campaigns 2024-2025, India' if using real data, or omit if estimated)"
+  },
+  "meta_strategy": {
+    "recommended": true/false,
+    "rationale": "Strategic rationale for Meta (Facebook/Instagram)",
+    "suggested_formats": ["Ad formats"],
+    "estimated_cpm": "CPM value or range from historical benchmarks (e.g., '₹550' or '₹450-650')",
+    "estimated_impressions": "Monthly impression estimate based on budget",
+    "benchmark_source": "Source attribution (e.g., 'Historical campaigns 2024-2025, India' if using real data, or omit if estimated)"
+  },
+  "affinity_buckets": ["List of interest categories and affinities with professional terminology"],
+  "in_market_segments": ["List of in-market purchase intent segments with industry-standard categories"]
+}
+`;
+
+    const systemPrompt = youtubeBenchmarks.length > 0 || metaBenchmarks.length > 0
+      ? "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology and provide strategic insights across budget, targeting, creative, competitive positioning, and platform strategy. CRITICAL: You have been provided with REAL historical CPM benchmark data from actual campaigns (India, 2024-2025). You MUST use these exact CPM values in your YouTube and Meta strategies - DO NOT estimate or make up numbers. Use the provided benchmark data to calculate accurate monthly impressions based on the budget. Include 'benchmark_source: Historical campaigns 2024-2025, India' in both youtube_strategy and meta_strategy."
+      : "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology and provide strategic insights across budget, targeting, creative, competitive positioning, and platform strategy. For YouTube and Meta strategies, calculate estimated CPM and monthly impressions based on industry benchmarks for the specified vertical, audience, and objectives. Use realistic CPM ranges (YouTube: ₹600-1200, Meta: ₹400-800 depending on targeting) and calculate impressions based on the provided budget.";
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      response_format: { type: "json_object" },
+      max_tokens: 2500,
+      temperature: 0.7,
+    });
+
+    const aiResponse = completion.choices[0]?.message?.content || "{}";
+    const mediaBrief = JSON.parse(aiResponse);
+    
+    // Generate recommendations
+    const recommendations = [
+      "Leverage audience lookalike modeling for scale",
+      "Implement A/B testing for creative optimization",
+      "Monitor frequency caps to prevent ad fatigue",
+      "Track incremental lift with brand studies",
+      "Optimize bidding based on performance data"
+    ];
+
+    const briefData = {
+      userId,
+      sessionId: sessionId,
+      briefTitle: mediaBrief.brief_title || "Campaign Brief",
+      industryVertical: mediaBrief.industry_vertical || "Not specified",
+      geoTargeting: mediaBrief.geo_targeting || { primary_markets: [], secondary_markets: [] },
+      demographics: mediaBrief.demographics || { age_range: "", hhi_segment: "" },
+      affinityBuckets: mediaBrief.affinity_buckets || [],
+      inMarketSegments: mediaBrief.in_market_segments || [],
+      aiInsights: { 
+        generatedBrief: mediaBrief, 
+        recommendations 
+      }
+    };
+    
+    // Save the brief to database
+    const savedBrief = await storage.createCampaignBrief(briefData);
+    return savedBrief;
+  } catch (aiError) {
+    console.error("AI brief generation failed:", aiError);
+    
+    // Fallback brief
+    const fallbackBriefData = {
+      userId,
+      sessionId: sessionId,
+      briefTitle: "Campaign Brief",
+      industryVertical: "Not specified",
+      geoTargeting: { primary_markets: [], secondary_markets: [] },
+      demographics: { age_range: "", hhi_segment: "" },
+      affinityBuckets: [],
+      inMarketSegments: [],
+      aiInsights: {
+        generatedBrief: {},
+        recommendations: ["Complete campaign setup", "Review targeting parameters", "Set performance benchmarks"]
+      }
+    };
+    
+    const savedFallbackBrief = await storage.createCampaignBrief(fallbackBriefData);
+    return savedFallbackBrief;
+  }
 }

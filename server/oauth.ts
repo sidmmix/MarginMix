@@ -61,12 +61,13 @@ export function initializeOAuthStrategies() {
             .orderBy(desc(conversationSessions.updatedAt))
             .limit(5); // Check last 5 sessions to be safe
 
-          // Generate briefs for completed sessions that don't have them yet
+          // Generate AI-powered briefs for completed sessions that don't have them yet
           for (const session of recentSessions) {
             const completedSession = await storage.getCompletedSessionWithoutBrief(session.id);
             if (completedSession) {
-              console.log(`Auto-generating brief for session ${session.id} after user login`);
-              await storage.generateAndSaveBrief(session.id, user.id);
+              console.log(`Auto-generating AI brief with RAG for session ${session.id} after user login`);
+              const { generateAIBriefForSession } = await import('./routes.js');
+              await generateAIBriefForSession(session.id, user.id);
             }
           }
         } catch (briefError) {
