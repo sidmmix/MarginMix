@@ -378,7 +378,31 @@ ${((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Demographics</span>
                     <span className="text-gray-900 dark:text-white font-medium">
-                      {((campaignBrief.demographics as any)?.age_range || '') + ' | ' + ((campaignBrief.demographics as any)?.hhi_segment || '') || 'Not specified'}
+                      {((campaignBrief.demographics as any)?.age_range || 'Not specified')}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">YouTube CPM</span>
+                    <span className="text-gray-900 dark:text-white font-medium">
+                      {(campaignBrief.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_cpm || 'N/A'}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">YouTube Impressions</span>
+                    <span className="text-gray-900 dark:text-white font-medium">
+                      {(campaignBrief.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_impressions || 'N/A'}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Meta CPM</span>
+                    <span className="text-gray-900 dark:text-white font-medium">
+                      {(campaignBrief.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_cpm || 'N/A'}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Meta Impressions</span>
+                    <span className="text-gray-900 dark:text-white font-medium">
+                      {(campaignBrief.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_impressions || 'N/A'}
                     </span>
                   </div>
                 </div>

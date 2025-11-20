@@ -283,9 +283,7 @@ export default function Dashboard() {
                   <div data-testid="detail-demographics">
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Demographics</span>
                     <p className="text-gray-900 dark:text-white">
-                      Age: {((latestBrief?.demographics as any)?.age_range || 'Not specified')}
-                      <br />
-                      HHI: {((latestBrief?.demographics as any)?.hhi_segment || 'Not specified')}
+                      {((latestBrief?.demographics as any)?.age_range || 'Not specified')}
                     </p>
                   </div>
                   <div data-testid="detail-affinity-buckets">
@@ -298,6 +296,30 @@ export default function Dashboard() {
                     <span className="text-sm font-medium text-gray-500 dark:text-gray-400">In-Market Segments</span>
                     <p className="text-gray-900 dark:text-white">
                       {(latestBrief?.inMarketSegments as string[] || []).join(', ') || 'Not specified'}
+                    </p>
+                  </div>
+                  <div data-testid="detail-youtube-cpm">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">YouTube CPM</span>
+                    <p className="text-gray-900 dark:text-white font-semibold">
+                      {(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_cpm || 'N/A'}
+                    </p>
+                  </div>
+                  <div data-testid="detail-youtube-impressions">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">YouTube Impressions</span>
+                    <p className="text-gray-900 dark:text-white font-semibold">
+                      {(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_impressions || 'N/A'}
+                    </p>
+                  </div>
+                  <div data-testid="detail-meta-cpm">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Meta CPM</span>
+                    <p className="text-gray-900 dark:text-white font-semibold">
+                      {(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_cpm || 'N/A'}
+                    </p>
+                  </div>
+                  <div data-testid="detail-meta-impressions">
+                    <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Meta Impressions</span>
+                    <p className="text-gray-900 dark:text-white font-semibold">
+                      {(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_impressions || 'N/A'}
                     </p>
                   </div>
                 </div>
