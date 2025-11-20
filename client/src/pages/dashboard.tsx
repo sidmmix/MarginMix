@@ -547,6 +547,117 @@ export default function Dashboard() {
               </>
             )}
 
+            {/* Budget Allocation Table */}
+            {(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy && 
+             (latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy && 
+             (latestBrief?.aiInsights as any)?.generatedBrief?.budget_details && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <DollarSign className="h-5 w-5 text-green-600" />
+                    Budget Allocation & Forecast Summary
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <table className="w-full border-collapse" data-testid="budget-allocation-table">
+                      <thead>
+                        <tr className="border-b-2 border-gray-300 dark:border-gray-600">
+                          <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Platform</th>
+                          <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Budget Split</th>
+                          <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Allocated Budget</th>
+                          <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Benchmark CPM</th>
+                          <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Monthly Impressions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b border-gray-200 dark:border-gray-700" data-testid="youtube-row">
+                          <td className="py-3 px-4 text-sm font-medium text-gray-900 dark:text-white">YouTube</td>
+                          <td className="py-3 px-4 text-sm text-gray-700 dark:text-gray-300">60%</td>
+                          <td className="py-3 px-4 text-sm text-gray-700 dark:text-gray-300" data-testid="youtube-allocated-budget">
+                            {(() => {
+                              const totalBudget = (latestBrief?.aiInsights as any)?.generatedBrief?.budget_details?.total_budget || '';
+                              const match = totalBudget.match(/[\d,]+/);
+                              if (match) {
+                                const amount = parseInt(match[0].replace(/,/g, ''));
+                                const allocated = (amount * 0.60).toLocaleString('en-IN');
+                                return totalBudget.includes('₹') ? `₹${allocated}` : 
+                                       totalBudget.includes('$') ? `$${allocated}` : allocated;
+                              }
+                              return '60% of budget';
+                            })()}
+                          </td>
+                          <td className="py-3 px-4 text-sm font-semibold text-gray-900 dark:text-white" data-testid="youtube-table-cpm">
+                            {(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_cpm || 'N/A'}
+                          </td>
+                          <td className="py-3 px-4 text-sm font-semibold text-gray-900 dark:text-white" data-testid="youtube-table-impressions">
+                            {(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_impressions || 'N/A'}
+                          </td>
+                        </tr>
+                        <tr className="border-b border-gray-200 dark:border-gray-700" data-testid="meta-row">
+                          <td className="py-3 px-4 text-sm font-medium text-gray-900 dark:text-white">Meta</td>
+                          <td className="py-3 px-4 text-sm text-gray-700 dark:text-gray-300">40%</td>
+                          <td className="py-3 px-4 text-sm text-gray-700 dark:text-gray-300" data-testid="meta-allocated-budget">
+                            {(() => {
+                              const totalBudget = (latestBrief?.aiInsights as any)?.generatedBrief?.budget_details?.total_budget || '';
+                              const match = totalBudget.match(/[\d,]+/);
+                              if (match) {
+                                const amount = parseInt(match[0].replace(/,/g, ''));
+                                const allocated = (amount * 0.40).toLocaleString('en-IN');
+                                return totalBudget.includes('₹') ? `₹${allocated}` : 
+                                       totalBudget.includes('$') ? `$${allocated}` : allocated;
+                              }
+                              return '40% of budget';
+                            })()}
+                          </td>
+                          <td className="py-3 px-4 text-sm font-semibold text-gray-900 dark:text-white" data-testid="meta-table-cpm">
+                            {(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_cpm || 'N/A'}
+                          </td>
+                          <td className="py-3 px-4 text-sm font-semibold text-gray-900 dark:text-white" data-testid="meta-table-impressions">
+                            {(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_impressions || 'N/A'}
+                          </td>
+                        </tr>
+                        <tr className="bg-gray-50 dark:bg-gray-800 font-semibold" data-testid="total-row">
+                          <td className="py-3 px-4 text-sm font-bold text-gray-900 dark:text-white">TOTAL</td>
+                          <td className="py-3 px-4 text-sm text-gray-900 dark:text-white">100%</td>
+                          <td className="py-3 px-4 text-sm text-gray-900 dark:text-white" data-testid="total-budget">
+                            {(latestBrief?.aiInsights as any)?.generatedBrief?.budget_details?.total_budget || 'N/A'}
+                          </td>
+                          <td className="py-3 px-4 text-sm text-gray-500 dark:text-gray-400">-</td>
+                          <td className="py-3 px-4 text-sm font-bold text-gray-900 dark:text-white" data-testid="total-impressions">
+                            {(() => {
+                              const youtubeImpr = (latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_impressions || '';
+                              const metaImpr = (latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_impressions || '';
+                              
+                              const extractNumber = (str: string) => {
+                                const match = str.match(/[\d,]+/);
+                                return match ? parseInt(match[0].replace(/,/g, '')) : 0;
+                              };
+                              
+                              const ytTotal = extractNumber(youtubeImpr);
+                              const metaTotal = extractNumber(metaImpr);
+                              const total = ytTotal + metaTotal;
+                              
+                              if (total > 0) {
+                                return `${total.toLocaleString('en-IN')} impressions`;
+                              }
+                              return 'N/A';
+                            })()}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 italic" data-testid="allocation-note">
+                      Note: Budget allocated using 60:40 split strategy (YouTube 60%, Meta 40%). 
+                      Impressions calculated using historical benchmark CPMs from India campaigns 2024-2025.
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* AI Strategic Recommendations */}
             {recommendations.length > 0 && (
               <Card>
