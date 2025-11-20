@@ -683,15 +683,41 @@ Transform this raw input into professional, industry-standard media planning ter
 - "$50K monthly" → "Monthly Investment: $50,000 USD"
 - "young people who like tech" → "Tech-Savvy Millennials, Age 25-34"
 
-CRITICAL INSTRUCTIONS:
-1. BUDGET ALLOCATION: Use a 60:40 split between YouTube and Meta. If total budget is ₹10,000, allocate ₹6,000 (60%) to YouTube and ₹4,000 (40%) to Meta.
-2. CPM BENCHMARKS: You MUST use the REAL BENCHMARKS provided above. DO NOT estimate or guess CPM values. Use the actual historical campaign data from the benchmarks. If multiple benchmarks match, use the most relevant one based on similarity score or provide a range.
-3. IMPRESSIONS CALCULATION: Calculate monthly impressions for each platform using:
-   - YouTube Impressions = (Total Budget × 0.60) ÷ YouTube CPM × 1000
-   - Meta Impressions = (Total Budget × 0.40) ÷ Meta CPM × 1000
-   Example: If budget is ₹10,000/month, YouTube CPM is ₹800, Meta CPM is ₹500:
-   - YouTube: (10,000 × 0.60) ÷ 800 × 1000 = 7,500 impressions
-   - Meta: (10,000 × 0.40) ÷ 500 × 1000 = 8,000 impressions
+CRITICAL INSTRUCTIONS FOR CPM & IMPRESSIONS:
+
+1. SELECT EXACT CPM FROM BENCHMARKS:
+   - Look at the REAL BENCHMARKS provided above (from Excel data: Industry, Objective, Platform, Targeting, CPM)
+   - For YouTube: Find the benchmark that BEST MATCHES the campaign's Industry, Objective, and Targeting
+   - For Meta: Find the benchmark that BEST MATCHES the campaign's Industry, Objective, and Targeting  
+   - Use the EXACT CPM VALUE from the matched benchmark (e.g., if benchmark shows CPM: ₹850, use ₹850)
+   - Prioritize benchmarks with higher similarity scores (they're more relevant)
+   - If multiple similar benchmarks exist, use the average or provide a range
+
+2. BUDGET ALLOCATION (60:40 SPLIT):
+   - YouTube gets 60% of total budget
+   - Meta gets 40% of total budget
+   - Example: Total budget ₹10,000 → YouTube ₹6,000, Meta ₹4,000
+
+3. CALCULATE IMPRESSIONS USING BENCHMARK CPM:
+   Step-by-step formula:
+   - YouTube Impressions = (Total Budget × 0.60) ÷ [CPM from YouTube benchmark] × 1000
+   - Meta Impressions = (Total Budget × 0.40) ÷ [CPM from Meta benchmark] × 1000
+   
+   WORKED EXAMPLE:
+   Total Budget: ₹10,000/month
+   YouTube Benchmark: Ecommerce | Brand Awareness | General | CPM: ₹800 (from Excel)
+   Meta Benchmark: Ecommerce | Brand Awareness | General | CPM: ₹500 (from Excel)
+   
+   Calculations:
+   - YouTube Budget: ₹10,000 × 0.60 = ₹6,000
+   - YouTube Impressions: 6,000 ÷ 800 × 1000 = 7,500 impressions/month
+   - Meta Budget: ₹10,000 × 0.40 = ₹4,000  
+   - Meta Impressions: 4,000 ÷ 500 × 1000 = 8,000 impressions/month
+
+4. OUTPUT THE EXACT BENCHMARK CPM:
+   - In estimated_cpm field, use the exact CPM from the benchmark (e.g., "₹850" not "₹800-900")
+   - In estimated_impressions field, show the calculated impressions (e.g., "7,500 monthly impressions")
+   - Always include benchmark_source: "Historical campaigns 2024-2025, India"
 
 Return a JSON object with this exact structure:
 {
@@ -745,8 +771,8 @@ Return a JSON object with this exact structure:
 `;
 
     const systemPrompt = youtubeBenchmarks.length > 0 || metaBenchmarks.length > 0
-      ? "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology and provide strategic insights across budget, targeting, creative, competitive positioning, and platform strategy. CRITICAL: You have been provided with REAL historical CPM benchmark data from actual campaigns (India, 2024-2025). You MUST use these exact CPM values in your YouTube and Meta strategies - DO NOT estimate or make up numbers. BUDGET ALLOCATION: Always use a 60:40 split (YouTube 60%, Meta 40%). Calculate impressions using: YouTube Impressions = (Total Budget × 0.60) ÷ YouTube CPM × 1000, Meta Impressions = (Total Budget × 0.40) ÷ Meta CPM × 1000. Include 'benchmark_source: Historical campaigns 2024-2025, India' in both youtube_strategy and meta_strategy."
-      : "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology and provide strategic insights across budget, targeting, creative, competitive positioning, and platform strategy. For YouTube and Meta strategies, calculate estimated CPM and monthly impressions based on industry benchmarks for the specified vertical, audience, and objectives. Use realistic CPM ranges (YouTube: ₹600-1200, Meta: ₹400-800 depending on targeting). BUDGET ALLOCATION: Always use a 60:40 split (YouTube 60%, Meta 40%). Calculate impressions using: YouTube Impressions = (Total Budget × 0.60) ÷ YouTube CPM × 1000, Meta Impressions = (Total Budget × 0.40) ÷ Meta CPM × 1000.";
+      ? "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology. CRITICAL CPM SELECTION: You have been provided with REAL CPM benchmarks from Excel data (India 2024-2025) showing Industry, Objective, Platform, Targeting, and CPM values. You MUST: (1) Find the benchmark that BEST MATCHES the campaign's Industry, Objective, and Targeting for each platform, (2) Use the EXACT CPM VALUE from that matched benchmark - DO NOT estimate or modify, (3) Use 60:40 budget split (YouTube 60%, Meta 40%), (4) Calculate impressions: YouTube = (Budget × 0.60) ÷ YouTube_CPM × 1000, Meta = (Budget × 0.40) ÷ Meta_CPM × 1000. Include 'benchmark_source: Historical campaigns 2024-2025, India' in both strategies."
+      : "You are a Vice President of Media Strategy with 15 years of experience. Process comprehensive campaign inputs from a planner and output a formal, detailed Media Brief JSON. Transform all raw inputs into professional, industry-standard media planning terminology. For YouTube and Meta strategies: Use realistic CPM ranges (YouTube: ₹600-1200, Meta: ₹400-800 depending on targeting). BUDGET ALLOCATION: Always use a 60:40 split (YouTube 60%, Meta 40%). Calculate impressions using: YouTube Impressions = (Total Budget × 0.60) ÷ YouTube CPM × 1000, Meta Impressions = (Total Budget × 0.40) ÷ Meta CPM × 1000.";
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
