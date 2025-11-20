@@ -474,23 +474,6 @@ export default function Dashboard() {
                             <p className="text-gray-900 dark:text-white">{((latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.suggested_formats || []).join(', ')}</p>
                           </div>
                         )}
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div data-testid="youtube-cpm">
-                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Estimated CPM</span>
-                            <p className="text-gray-900 dark:text-white font-semibold">{(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_cpm || 'Not specified'}</p>
-                          </div>
-                          <div data-testid="youtube-impressions">
-                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Est. Monthly Impressions</span>
-                            <p className="text-gray-900 dark:text-white font-semibold">{(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_impressions || 'Not specified'}</p>
-                          </div>
-                        </div>
-                        {(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.benchmark_source && (
-                          <div data-testid="youtube-benchmark-source" className="pt-3 border-t border-gray-200 dark:border-gray-700">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 italic">
-                              Source: {(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.benchmark_source}
-                            </p>
-                          </div>
-                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -521,23 +504,6 @@ export default function Dashboard() {
                           <div data-testid="meta-formats">
                             <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Suggested Formats</span>
                             <p className="text-gray-900 dark:text-white">{((latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.suggested_formats || []).join(', ')}</p>
-                          </div>
-                        )}
-                        <div className="grid md:grid-cols-2 gap-4">
-                          <div data-testid="meta-cpm">
-                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Estimated CPM</span>
-                            <p className="text-gray-900 dark:text-white font-semibold">{(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_cpm || 'Not specified'}</p>
-                          </div>
-                          <div data-testid="meta-impressions">
-                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">Est. Monthly Impressions</span>
-                            <p className="text-gray-900 dark:text-white font-semibold">{(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_impressions || 'Not specified'}</p>
-                          </div>
-                        </div>
-                        {(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.benchmark_source && (
-                          <div data-testid="meta-benchmark-source" className="pt-3 border-t border-gray-200 dark:border-gray-700">
-                            <p className="text-xs text-gray-500 dark:text-gray-400 italic">
-                              Source: {(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.benchmark_source}
-                            </p>
                           </div>
                         )}
                       </div>
