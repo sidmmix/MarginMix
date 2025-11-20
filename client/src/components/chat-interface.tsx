@@ -456,6 +456,13 @@ ${((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i
                         </span>
                       </div>
                     </div>
+                    {(campaignBrief.aiInsights as any)?.generatedBrief?.youtube_strategy?.benchmark_source && (
+                      <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                          Source: {(campaignBrief.aiInsights as any)?.generatedBrief?.youtube_strategy?.benchmark_source}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -494,6 +501,13 @@ ${((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i
                         </span>
                       </div>
                     </div>
+                    {(campaignBrief.aiInsights as any)?.generatedBrief?.meta_strategy?.benchmark_source && (
+                      <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                          Source: {(campaignBrief.aiInsights as any)?.generatedBrief?.meta_strategy?.benchmark_source}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}

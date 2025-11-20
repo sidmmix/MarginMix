@@ -431,6 +431,13 @@ export default function Dashboard() {
                             <p className="text-gray-900 dark:text-white font-semibold">{(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.estimated_impressions || 'Not specified'}</p>
                           </div>
                         </div>
+                        {(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.benchmark_source && (
+                          <div data-testid="youtube-benchmark-source" className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                              Source: {(latestBrief?.aiInsights as any)?.generatedBrief?.youtube_strategy?.benchmark_source}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -473,6 +480,13 @@ export default function Dashboard() {
                             <p className="text-gray-900 dark:text-white font-semibold">{(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.estimated_impressions || 'Not specified'}</p>
                           </div>
                         </div>
+                        {(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.benchmark_source && (
+                          <div data-testid="meta-benchmark-source" className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                              Source: {(latestBrief?.aiInsights as any)?.generatedBrief?.meta_strategy?.benchmark_source}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
