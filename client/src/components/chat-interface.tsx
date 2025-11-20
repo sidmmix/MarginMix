@@ -334,11 +334,31 @@ ${((campaignBrief.aiInsights as any)?.recommendations || []).map((rec: string, i
           {/* Content */}
           <div className="p-6 bg-gradient-to-b from-gray-50 to-white dark:from-gray-800 dark:to-gray-900">
             <div className="space-y-6">
+              {/* Your Campaign Requirements - 11 Questions */}
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-5 border border-blue-200 dark:border-blue-700 shadow-sm">
+                <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                  <User className="h-5 w-5" />
+                  Your Campaign Requirements
+                </h4>
+                <div className="grid grid-cols-1 gap-4">
+                  {questions.map((q) => {
+                    const answer = conversationData[q.id as keyof ConversationData];
+                    if (!answer) return null;
+                    return (
+                      <div key={q.id} className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 block mb-2">{q.question}</span>
+                        <p className="text-gray-900 dark:text-white text-sm whitespace-pre-wrap">{answer}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Basic Details */}
               <div className="bg-white dark:bg-gray-800 rounded-xl p-5 border border-gray-200 dark:border-gray-700 shadow-sm">
                 <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-blue-600 dark:text-blue-400">
                   <Target className="h-5 w-5" />
-                  Campaign Overview
+                  AI-Generated Campaign Overview
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex flex-col">

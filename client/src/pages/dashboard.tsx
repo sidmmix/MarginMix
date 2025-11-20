@@ -90,6 +90,11 @@ export default function Dashboard() {
     enabled: !!latestBrief?.sessionId,
   });
 
+  // Fetch questions for displaying user inputs
+  const { data: questions = [] } = useQuery<any[]>({
+    queryKey: ["/api/questions"],
+  });
+
   const sessionData = session?.sessionData || {};
 
   // Auto-logout after 5 minutes of inactivity
@@ -220,12 +225,38 @@ export default function Dashboard() {
               </CardHeader>
             </Card>
 
+            {/* Your Campaign Requirements - 11 Questions */}
+            {questions.length > 0 && Object.keys(sessionData).length > 0 && (
+              <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-700">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5 text-blue-600" />
+                    Your Campaign Requirements
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {questions.map((q: any) => {
+                      const answer = sessionData[q.id];
+                      if (!answer) return null;
+                      return (
+                        <div key={q.id} className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700" data-testid={`requirement-${q.id}`}>
+                          <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 block mb-2">{q.question}</span>
+                          <p className="text-gray-900 dark:text-white text-sm whitespace-pre-wrap">{answer}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Campaign Details */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="h-5 w-5 text-blue-600" />
-                  Campaign Details
+                  AI-Generated Campaign Overview
                 </CardTitle>
               </CardHeader>
               <CardContent>
