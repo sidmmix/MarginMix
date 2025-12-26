@@ -207,7 +207,7 @@ export default function Landing() {
                 </Button>
               </form>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
-                We'll analyze your brand to personalize your experience
+                We'll analyze the brand to customise suggestions!
               </p>
             </div>
           </div>
