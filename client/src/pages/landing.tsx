@@ -398,7 +398,7 @@ export default function Landing() {
               Digital Lexicon, Delaware, DE
             </p>
             <p className="text-gray-500 text-sm">
-              © 2025 Margin Mix. All rights reserved.
+              © 2025 Digital Lexicon. All rights reserved.
             </p>
           </div>
         </div>
