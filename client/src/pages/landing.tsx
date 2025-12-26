@@ -82,8 +82,8 @@ export default function Landing() {
           description: `Found: ${data.brief.brand_name} in ${data.brief.industry_category}`,
         });
 
-        // Navigate to campaign planner
-        setLocation('/campaign-planner');
+        // Navigate to dashboard with analysis results
+        setLocation('/dashboard');
       } else {
         throw new Error(data.message || 'Failed to analyze website');
       }

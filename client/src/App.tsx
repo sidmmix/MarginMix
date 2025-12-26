@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
-import CampaignPlanner from "@/pages/campaign-planner";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import { AuthPage } from "@/pages/auth";
@@ -13,17 +12,13 @@ import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
 
 function Router() {
-  // Temporarily disable auth checking to prevent infinite loop during testing
-  // const { isAuthenticated, isLoading } = useAuth();
-
   return (
     <Switch>
       {/* Public routes */}
       <Route path="/" component={Landing} />
-      <Route path="/campaign-planner" component={CampaignPlanner} />
       <Route path="/auth" component={AuthPage} />
       
-      {/* Protected routes - temporarily accessible for testing */}
+      {/* Dashboard - displays brand analysis results */}
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/home" component={Home} />
       
