@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
-import { User, LogOut, Building2, Target, Sparkles, BarChart3, Heart, CheckCircle } from "lucide-react";
+import { User, LogOut, Building2, Target, Sparkles, BarChart3, Heart, CheckCircle, Users, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
 import type { User as UserType } from "@shared/schema";
 
@@ -13,6 +13,8 @@ interface BrandBrief {
   industry_category: string;
   top_3_usps: string[];
   complexity_score: number;
+  target_audience_persona?: string;
+  market_challenger_status?: string;
 }
 
 export default function Dashboard() {
@@ -167,7 +169,7 @@ export default function Dashboard() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Sparkles className="h-5 w-5 text-emerald-600" />
-                  Top 3 Unique Selling Propositions
+                  Strategic Moats & USPs
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -183,6 +185,40 @@ export default function Dashboard() {
                 </ul>
               </CardContent>
             </Card>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {brandBrief.target_audience_persona && (
+                <Card className="border-emerald-200 dark:border-emerald-800">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <Users className="h-5 w-5 text-emerald-600" />
+                      Target Audience Persona
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700 dark:text-gray-300" data-testid="text-audience-persona">
+                      {brandBrief.target_audience_persona}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              {brandBrief.market_challenger_status && (
+                <Card className="border-emerald-200 dark:border-emerald-800">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg">
+                      <TrendingUp className="h-5 w-5 text-emerald-600" />
+                      Market Position
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-700 dark:text-gray-300" data-testid="text-market-position">
+                      {brandBrief.market_challenger_status}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
 
             <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200 dark:border-emerald-700">
               <CardContent className="pt-6">
