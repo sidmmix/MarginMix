@@ -1,12 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, TrendingUp, Shield, Calculator, Brain, CheckCircle, User, LogOut, DollarSign, PieChart, AlertTriangle } from "lucide-react";
-import { Link } from "wouter";
+import { Input } from "@/components/ui/input";
+import { ArrowRight, TrendingUp, Shield, Calculator, Brain, CheckCircle, User, LogOut, DollarSign, PieChart, AlertTriangle, Globe, Loader2 } from "lucide-react";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { useState, type FormEvent } from "react";
 
 export default function Landing() {
   const { user, isAuthenticated, logout, isLoggingOut } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const [websiteUrl, setWebsiteUrl] = useState("");
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -21,6 +26,75 @@ export default function Landing() {
         description: "Failed to log out. Please try again.",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleAnalyzeWebsite = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    if (!websiteUrl.trim()) {
+      toast({
+        title: "URL Required",
+        description: "Please enter your website URL to get started.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Add protocol if missing
+    let urlToAnalyze = websiteUrl.trim();
+    if (!urlToAnalyze.startsWith('http://') && !urlToAnalyze.startsWith('https://')) {
+      urlToAnalyze = 'https://' + urlToAnalyze;
+    }
+
+    // Validate URL format
+    try {
+      new URL(urlToAnalyze);
+    } catch {
+      toast({
+        title: "Invalid URL",
+        description: "Please enter a valid website URL (e.g., example.com)",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsAnalyzing(true);
+
+    try {
+      const response = await fetch('/api/dna-scraper', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url: urlToAnalyze }),
+      });
+
+      const data = await response.json();
+
+      if (data.success && data.brief) {
+        // Store the brand brief in sessionStorage for the campaign planner
+        sessionStorage.setItem('brandBrief', JSON.stringify(data.brief));
+        sessionStorage.setItem('analyzedUrl', urlToAnalyze);
+        
+        toast({
+          title: "Website Analyzed!",
+          description: `Found: ${data.brief.brand_name} in ${data.brief.industry_category}`,
+        });
+
+        // Navigate to campaign planner
+        setLocation('/campaign-planner');
+      } else {
+        throw new Error(data.message || 'Failed to analyze website');
+      }
+    } catch (error: any) {
+      toast({
+        title: "Analysis Failed",
+        description: error.message || "Could not analyze website. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
     }
   };
   return (
@@ -98,13 +172,43 @@ export default function Landing() {
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
               Identify margin leaks. Optimize resource allocation. Maximize agency profitability.
             </p>
-            <div className="flex justify-center gap-4">
-              <Link href="/campaign-planner">
-                <Button size="lg" className="text-lg px-8 py-3 bg-emerald-600 hover:bg-emerald-700">
-                  Start Protecting Your Margins
-                  <ArrowRight className="ml-2 h-5 w-5" />
+            <div className="max-w-2xl mx-auto">
+              <form onSubmit={handleAnalyzeWebsite} className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <Globe className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Enter your website URL (e.g., stripe.com)"
+                    value={websiteUrl}
+                    onChange={(e) => setWebsiteUrl(e.target.value)}
+                    disabled={isAnalyzing}
+                    className="pl-12 h-14 text-lg bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 focus:border-emerald-500 rounded-xl"
+                    data-testid="input-website-url"
+                  />
+                </div>
+                <Button 
+                  type="submit"
+                  size="lg" 
+                  disabled={isAnalyzing}
+                  className="h-14 text-lg px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl whitespace-nowrap"
+                  data-testid="button-analyze-website"
+                >
+                  {isAnalyzing ? (
+                    <>
+                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      Get Started
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </>
+                  )}
                 </Button>
-              </Link>
+              </form>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-3">
+                We'll analyze your brand to personalize your experience
+              </p>
             </div>
           </div>
         </div>
