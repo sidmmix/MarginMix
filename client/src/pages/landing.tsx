@@ -392,7 +392,10 @@ export default function Landing() {
             <h3 className="text-2xl font-bold text-emerald-400 mb-4">Margin Mix</h3>
             <p className="text-gray-400 mb-4">The Financial Reasoning Engine for Media Agencies</p>
             <p className="text-gray-400 text-sm mb-2">
-              Margin Mix is a brand under Digital Lexicon Sdn Bhd
+              Margin Mix is a Digital Lexicon Corp brand.
+            </p>
+            <p className="text-gray-500 text-sm mb-2">
+              Digital Lexicon, Delaware, DE
             </p>
             <p className="text-gray-500 text-sm">
               © 2025 Margin Mix. All rights reserved.
