@@ -15,6 +15,7 @@ import {
   type ConversationData,
   type Question
 } from "@shared/schema";
+import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -582,6 +583,52 @@ export function registerRoutes(app: Express): Server {
     } catch (error) {
       console.error("Error fetching benchmarks:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // DNA Scraper endpoint - scrape website and generate Brand Brief
+  app.post("/api/dna-scraper", async (req, res) => {
+    try {
+      const { url } = req.body;
+      
+      if (!url) {
+        return res.status(400).json({ 
+          success: false,
+          message: "URL is required",
+          brief: null
+        });
+      }
+
+      // Validate URL format
+      try {
+        new URL(url);
+      } catch {
+        return res.status(400).json({ 
+          success: false,
+          message: "Invalid URL format",
+          brief: null
+        });
+      }
+
+      console.log(`[API] DNA Scraper request for: ${url}`);
+      
+      // Scrape the website and generate Brand Brief
+      const brandBrief = await scrapeBrandDNA(url);
+      
+      res.json({
+        success: true,
+        message: "Brand Brief generated successfully",
+        brief: brandBrief
+      });
+      
+    } catch (error: any) {
+      console.error("DNA Scraper error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Error generating Brand Brief",
+        error: error.message,
+        brief: null
+      });
     }
   });
 
