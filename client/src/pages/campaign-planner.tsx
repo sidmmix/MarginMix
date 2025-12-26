@@ -48,13 +48,6 @@ export default function CampaignPlanner() {
                 <h1 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Margin Mix</h1>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/auth">
-                <Button variant="outline" size="sm" data-testid="button-signin">
-                  Sign In
-                </Button>
-              </Link>
-            </div>
           </div>
         </div>
       </nav>
