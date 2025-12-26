@@ -390,14 +390,14 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h3 className="text-2xl font-bold text-emerald-400 mb-4">Margin Mix</h3>
-            <p className="text-gray-400 mb-4">The Financial Reasoning Engine for Media Agencies</p>
-            <p className="text-gray-400 text-sm mb-2">
+            <p className="text-white mb-4">The Financial Reasoning Engine for Media Agencies</p>
+            <p className="text-white text-sm mb-2">
               Margin Mix is a Digital Lexicon Corp brand.
             </p>
-            <p className="text-gray-500 text-sm mb-2">
+            <p className="text-white text-sm mb-2">
               Digital Lexicon, Delaware, DE
             </p>
-            <p className="text-gray-500 text-sm">
+            <p className="text-white text-sm">
               © 2025 Digital Lexicon. All rights reserved.
             </p>
           </div>
