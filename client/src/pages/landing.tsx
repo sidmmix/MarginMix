@@ -178,7 +178,7 @@ export default function Landing() {
                   <Globe className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <Input
                     type="text"
-                    placeholder="Enter your website URL (e.g., stripe.com)"
+                    placeholder="Enter your client's website URL (e.g., stripe.com)"
                     value={websiteUrl}
                     onChange={(e) => setWebsiteUrl(e.target.value)}
                     disabled={isAnalyzing}
