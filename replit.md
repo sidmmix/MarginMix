@@ -1,40 +1,33 @@
-# Digital Media Campaign Planner
+# Margin Mix - Financial Reasoning Engine
 
 ## Overview
 
-This is a full-stack web application that helps users create comprehensive digital media campaign plans through an AI-powered conversational interface. The application features a professional landing page that introduces the platform, then guides users through a structured questionnaire to gather campaign requirements and generates intelligent insights and recommendations using OpenAI's GPT models. Built with React, Express, and PostgreSQL, it features a modern UI with shadcn/ui components and integrates with multiple advertising platforms including Google Ads, DV360/YouTube, and Meta Marketing APIs.
+Margin Mix is a full-stack web application that serves as an Intelligent Financial Reasoning Engine built on the World's first Workforce Intensity Matrix. Designed specifically for Media Agencies to be more profitable, it helps identify margin leaks, optimize resource allocation, and maximize agency profitability. Built with React, Express, and PostgreSQL, it features a modern UI with shadcn/ui components and an emerald/teal color scheme.
 
 ## Recent Changes
 
-- **11-Question Comprehensive Brief System with Platform CPM/Impressions (October 21, 2025)**: Expanded questionnaire to 11 strategic open-ended questions covering Geo, Demo, Industry, Budget, Timeline, KPIs, Creative, Competitive, Platforms, Affinity, and InMarket segments. Enhanced VP of Media Strategy AI to generate comprehensive briefs including budget_details, campaign_objectives, creative_strategy, competitive_analysis, separate youtube_strategy and meta_strategy with industry benchmark-based CPM and impression estimates. Dashboard displays separate YouTube and Meta strategy cards with estimated CPM ranges and monthly impressions. Raw inputs removed from final brief presentation for cleaner professional output.
+- **Brand Rebrand to Margin Mix (December 26, 2025)**: Complete rebrand from YourBrief to Margin Mix with new value proposition: "The Financial Reasoning Engine for Media Agencies - Stopping Margin Leak!" Updated all branding, colors (blue → emerald/teal), messaging, and feature descriptions across the entire application.
+- **DNA_Scraper Capability (December 26, 2025)**: Added Playwright-based web scraper that analyzes websites and generates Brand Briefs with brand_name, industry_category, top_3_usps, and complexity_score using GPT-4o-mini.
+- **11-Question Comprehensive Brief System with Platform CPM/Impressions (October 21, 2025)**: Expanded questionnaire to 11 strategic open-ended questions covering Geo, Demo, Industry, Budget, Timeline, KPIs, Creative, Competitive, Platforms, Affinity, and InMarket segments.
 - **Dashboard UI Overhaul (October 2, 2025)**: Removed PDF generation, rebuilt dashboard with clean React components showing campaign details, AI recommendations, budget allocation, KPIs, and platform strategies displayed on-page
 - **Comprehensive Security Audit & Hardening (August 19, 2025)**: Completed full backend security review and implemented enterprise-grade security measures including input validation, rate limiting, CORS protection, security headers, and environment validation
 - **OAuth-Only Authentication (August 13, 2025)**: Removed email/password authentication, now using only Google and Meta OAuth for streamlined social sign-in experience
-- **AI Features Cost-Optimized (August 13, 2025)**: Migrated all OpenAI API calls from GPT-4o to GPT-4o mini for better cost efficiency while maintaining intelligent conversation quality
-- **Landing Page Brand Enhancement (August 13, 2025)**: Added prominent brand highlight statement emphasizing YourBrief's AI media strategist positioning and live data capabilities
-- **Intelligent Conversation System (August 13, 2025)**: Enhanced campaign planner with AI-powered predictive responses, contextual insights, dynamic question adaptation, and intelligent input suggestions using OpenAI GPT-4o mini
-- **Smart Input Components**: Implemented IntelligentInput component with real-time suggestions, contextual hints, validation feedback, and next question previews
-- **Real-time AI Analysis**: Added ConversationInsights panel with live strategy insights, recommendations, and potential challenge identification
-- **Enhanced Chat Experience**: Upgraded chat interface with intelligent features including answer enhancement, quality scoring, and contextual conversation flow
-- **OAuth Authentication Framework (August 13, 2025)**: Implemented complete OAuth system for Google and Meta authentication with proper strategy configuration, credential validation, and comprehensive setup guide
-- **Authentication Flow Stabilization**: Fixed infinite loops and strategy errors, established stable email/password authentication as primary method with OAuth as optional enhancement
-- **Landing Page Implementation (August 13, 2025)**: Created professional dedicated landing page for yourbrief.co featuring hero section, features overview, how-it-works steps, benefits, and clear call-to-action buttons leading to the campaign planner
-- **Campaign Planner Completion**: Full 8-step questionnaire with AI brief generation working end-to-end
-- **User Journey Optimization**: Landing page → Campaign planner → Authentication → Dashboard flow established and tested
+- **AI Features Cost-Optimized (August 13, 2025)**: Migrated all OpenAI API calls from GPT-4o to GPT-4o mini for better cost efficiency
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
 OAuth setup priority: Deferred for later refinement, focus on core functionality first.
-Brand messaging: Prominently feature YourBrief's AI media strategist positioning on landing page.
+Brand messaging: Prominently feature Margin Mix's Financial Reasoning Engine positioning and Workforce Intensity Matrix on landing page.
 AI Policy: OpenAI enabled for backend brief generation and insights. Smart suggestions disabled in questionnaire interface to maintain clean user experience.
+Product Focus: Financial reasoning engine for media planning margins and media mix optimization.
 
 ## System Architecture
 
 ### Frontend Architecture
 - **Framework**: React with TypeScript using Vite as the build tool
 - **UI Library**: shadcn/ui components built on Radix UI primitives
-- **Styling**: Tailwind CSS with CSS variables for theming
+- **Styling**: Tailwind CSS with CSS variables for theming (emerald/teal color scheme)
 - **State Management**: TanStack Query (React Query) for server state management
 - **Routing**: Wouter for lightweight client-side routing
 - **Form Handling**: React Hook Form with Zod validation schemas
@@ -53,26 +46,25 @@ AI Policy: OpenAI enabled for backend brief generation and insights. Smart sugge
 - **Migration System**: Drizzle Kit for database migrations
 - **Connection**: Neon Database serverless PostgreSQL for cloud deployment
 
+### DNA_Scraper Module
+- **Web Scraping**: Playwright with Chromium for JavaScript-rendered websites
+- **Data Extraction**: Cheerio for parsing HTML (page title, meta description, headers, nav items)
+- **AI Analysis**: GPT-4o-mini generates structured Brand Brief JSON
+- **Output Schema**: brand_name, industry_category, top_3_usps, complexity_score (1-10)
+- **Error Handling**: Generic Brief fallback ensures user flow never breaks
+- **Endpoint**: POST /api/dna-scraper
+
 ### Authentication and Authorization
 - **OAuth-Only System**: Google and Meta OAuth providers for secure authentication
 - **Session Security**: Enhanced session management with CSRF protection and secure cookies
 - **Rate Limiting**: Brute force protection with IP-based attempt tracking
 - **Security Headers**: Comprehensive security headers including XSS, CSRF, and clickjacking protection
 
-### Conversation Flow Management
-- **Comprehensive 11-Question System**: Open-ended textarea questions collecting: Geo, Demo, Industry, Budget, Timeline, KPIs, Creative, Competitive, Platforms, Affinity, InMarket segments
-- **State Persistence**: Session data stored as JSONB for flexible data structures
-- **Progress Tracking**: Current step and completion status maintained per session
-- **Validation**: Client and server-side validation using Zod schemas
-
-### AI-Powered Media Brief Generation
-- **VP of Media Strategy Role**: OpenAI GPT-4o-mini acting as VP with 15 years experience processing 11 comprehensive inputs
-- **Natural Language Processing**: Converts raw user inputs into professional industry-standard media planning terminology (e.g., 'rich people' → 'High-Net-Worth Individual (HNI)', '$50K monthly' → 'Monthly Investment: $50,000 USD')
-- **Structured JSON Output**: Forces JSON response format with comprehensive schema validation (2500 max tokens)
-- **Enhanced Brief Schema**: Outputs briefTitle, industryVertical, geoTargeting, demographics, budget_details (total_budget, flight_duration, allocation_strategy), campaign_objectives (primary_kpi, secondary_kpis, target_timeline), creative_strategy (messaging_theme, key_messages), competitive_analysis (key_competitors, differentiation), youtube_strategy (recommended, rationale, suggested_formats, estimated_cpm, estimated_impressions), meta_strategy (recommended, rationale, suggested_formats, estimated_cpm, estimated_impressions), affinityBuckets, inMarketSegments
-- **Industry Benchmark CPM Calculations**: AI calculates realistic CPM ranges (YouTube: $8-15, Meta: $5-10) and monthly impressions based on budget, vertical, audience, and objectives
-- **Fallback Handling**: Graceful degradation with structured fallback briefs when AI processing fails
-- **Dashboard Display**: Comprehensive on-page brief display with dedicated cards for Budget Strategy, Campaign Objectives, Creative Strategy, Competitive Analysis, YouTube Strategy (with CPM/impressions), and Meta Strategy (with CPM/impressions). Raw inputs excluded from final presentation for professional formatting.
+### AI-Powered Financial Reasoning
+- **Workforce Intensity Matrix**: World's first framework correlating workforce effort with media planning margins
+- **Margin Leak Detection**: Automatically identify where agencies lose money on media planning
+- **Media Mix Optimization**: Data-driven recommendations for optimal budget allocation
+- **Profitability Insights**: Clear visibility into margins, costs, and profit potential per campaign
 
 ## External Dependencies
 
@@ -83,6 +75,8 @@ AI Policy: OpenAI enabled for backend brief generation and insights. Smart sugge
 - **express**: Web application framework for Node.js
 - **react**: Frontend UI library with TypeScript support
 - **@tanstack/react-query**: Data fetching and caching library
+- **playwright**: Browser automation for DNA_Scraper
+- **cheerio**: HTML parsing for web scraping
 
 ### UI and Design System
 - **@radix-ui/***: Accessible UI primitives (40+ components including dialogs, dropdowns, forms)
@@ -95,13 +89,6 @@ AI Policy: OpenAI enabled for backend brief generation and insights. Smart sugge
 - **tsx**: TypeScript execution for Node.js
 - **esbuild**: JavaScript bundler for production builds
 - **@replit/vite-plugin-runtime-error-modal**: Development error handling
-
-### Planned Integrations
-- **Google Ads API**: Campaign forecasting and audience estimation
-- **DV360 API**: Display and video advertising reach planning
-- **YouTube Reach Planner API**: Video campaign reach forecasting
-- **Meta Marketing API**: Facebook and Instagram reach and frequency planning
-- **Google Cloud Platform**: Backend API hosting and orchestration
 
 ### Data Processing and Validation
 - **zod**: TypeScript-first schema validation

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Target, BarChart3, Users, Zap, CheckCircle, User, LogOut } from "lucide-react";
+import { ArrowRight, TrendingUp, Shield, Calculator, Brain, CheckCircle, User, LogOut, DollarSign, PieChart, AlertTriangle } from "lucide-react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -24,14 +24,14 @@ export default function Landing() {
     }
   };
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-100 dark:from-gray-900 dark:via-gray-800 dark:to-emerald-900 relative overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200/30 dark:bg-blue-700/20 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200/30 dark:bg-purple-700/20 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-blue-100/20 to-purple-100/20 dark:from-blue-800/10 dark:to-purple-800/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-20 right-1/4 w-64 h-64 bg-blue-100/20 dark:bg-blue-800/10 rounded-full blur-2xl"></div>
-        <div className="absolute bottom-20 left-1/4 w-64 h-64 bg-purple-100/20 dark:bg-purple-800/10 rounded-full blur-2xl"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-200/30 dark:bg-emerald-700/20 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-200/30 dark:bg-teal-700/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-emerald-100/20 to-teal-100/20 dark:from-emerald-800/10 dark:to-teal-800/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-20 right-1/4 w-64 h-64 bg-emerald-100/20 dark:bg-emerald-800/10 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-20 left-1/4 w-64 h-64 bg-teal-100/20 dark:bg-teal-800/10 rounded-full blur-2xl"></div>
       </div>
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 dark:border-gray-800">
@@ -39,14 +39,14 @@ export default function Landing() {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <div className="flex-shrink-0">
-                <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">YourBrief</h1>
+                <h1 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Margin Mix</h1>
               </div>
             </div>
             <div className="flex items-center space-x-4">
               {isAuthenticated && user ? (
                 <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-2 px-3 py-1 bg-blue-50 dark:bg-blue-900/20 rounded-full">
-                    <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
+                    <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-gray-900 dark:text-white" data-testid="text-username">
                         {(user as any).firstName} {(user as any).lastName}
@@ -82,26 +82,26 @@ export default function Landing() {
       <section className="relative overflow-hidden pt-16 pb-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
+            <div className="inline-flex items-center px-4 py-2 bg-red-100 dark:bg-red-900/30 rounded-full mb-6">
+              <AlertTriangle className="h-4 w-4 text-red-600 dark:text-red-400 mr-2" />
+              <span className="text-sm font-medium text-red-700 dark:text-red-300">Stop the Margin Leak!</span>
+            </div>
             
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-              Generate Activation Ready
-              <span className="text-blue-600 dark:text-blue-400"> Digital Media Planning Inputs</span>
-              <br />
-              in Minutes
+              The Financial Reasoning Engine
+              <span className="text-emerald-600 dark:text-emerald-400"> for Media Agencies</span>
             </h1>
-            <p className="text-xl text-blue-600 dark:text-blue-300 mb-8 max-w-3xl mx-auto">
-              YourBrief is the AI Media Strategist that's essentially a Planning Decision Engine for YouTube and Meta. 
-               <br />
-               <br />
-              Just answer a few relevant questions, and YourBrief gives you a Structured Brief and Generates Platform-specific strategies with Performance Forecasts & Suggestive inventory level Media Mix.
-               <br />
-               <br />
-              <span className="font-semibold">Faster planning. Smarter decisions. Precise advertising.</span>
+            <p className="text-xl text-gray-700 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+              Margin Mix is an <span className="font-semibold text-emerald-600 dark:text-emerald-400">Intelligent Financial Reasoning Engine</span> built on the World's first 
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400"> Workforce Intensity Matrix</span> — designed specifically for Media Agencies to be more profitable.
             </p>
-            <div className="flex justify-center">
+            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
+              Identify margin leaks. Optimize resource allocation. Maximize agency profitability.
+            </p>
+            <div className="flex justify-center gap-4">
               <Link href="/campaign-planner">
-                <Button size="lg" className="text-lg px-8 py-3">
-                  Start Planning Your Campaign
+                <Button size="lg" className="text-lg px-8 py-3 bg-emerald-600 hover:bg-emerald-700">
+                  Start Protecting Your Margins
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -114,60 +114,60 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Everything You Need for Media Planning
+              Powered by the Workforce Intensity Matrix
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              From strategy to execution, our AI-powered platform handles the complexity 
-              while you focus on creative excellence.
+              The world's first framework that correlates workforce effort with media planning margins — 
+              giving you unprecedented visibility into profitability.
             </p>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Target className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+              <div className="w-16 h-16 bg-emerald-100 dark:bg-emerald-900 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Brain className="h-8 w-8 text-emerald-600 dark:text-emerald-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                AI-Powered Strategy
+                Financial Reasoning AI
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Get intelligent recommendations based on your campaign objectives and target audience.
+                Intelligent analysis that understands the true cost of media planning operations.
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <BarChart3 className="h-8 w-8 text-green-600 dark:text-green-400" />
+              <div className="w-16 h-16 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="h-8 w-8 text-red-600 dark:text-red-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Multi-Platform Integration
+                Margin Leak Detection
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Plan across Google Ads, YouTube, Meta, and DV360 with unified budget allocation.
+                Automatically identify where your agency is losing money on media planning.
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Users className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+              <div className="w-16 h-16 bg-teal-100 dark:bg-teal-900 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <PieChart className="h-8 w-8 text-teal-600 dark:text-teal-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Audience Insights
+                Media Mix Optimization
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Deep audience analysis and targeting recommendations for maximum impact.
+                Data-driven recommendations for optimal budget allocation across channels.
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-16 h-16 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Zap className="h-8 w-8 text-orange-600 dark:text-orange-400" />
+              <div className="w-16 h-16 bg-amber-100 dark:bg-amber-900 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <DollarSign className="h-8 w-8 text-amber-600 dark:text-amber-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Instant Briefs
+                Profitability Insights
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Generate comprehensive campaign briefs in minutes, not hours.
+                Clear visibility into margins, costs, and profit potential per campaign.
               </p>
             </div>
           </div>
@@ -178,47 +178,47 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              How It Works
+              How Margin Mix Works
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Three simple steps to transform your campaign ideas into actionable media plans.
+              Three steps to transform your agency's financial performance.
             </p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+              <div className="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                 1
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Answer 11 Questions
+                Input Your Campaign Data
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Share campaign details in natural language - our VP of Media Strategy AI creates professional, comprehensive media briefs.
+                Enter your media planning parameters, budgets, and workforce allocation details.
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+              <div className="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                 2
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Get AI Insights
+                Analyze with AI
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Receive intelligent recommendations, budget allocation, and platform strategies.
+                Our Financial Reasoning Engine processes your data through the Workforce Intensity Matrix.
               </p>
             </div>
             
             <div className="text-center">
-              <div className="w-12 h-12 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
+              <div className="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
                 3
               </div>
               <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                Execute & Optimize
+                Optimize & Profit
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Access the full platform to manage campaigns and track performance across all channels.
+                Receive actionable insights to stop margin leaks and maximize profitability.
               </p>
             </div>
           </div>
@@ -230,50 +230,50 @@ export default function Landing() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                Why Marketing Teams & Digital Media Agencies Choose YourBrief
+                Why Media Agencies Choose Margin Mix
               </h2>
               <div className="space-y-4">
                 <div className="flex items-start">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 mr-3 flex-shrink-0" />
+                  <CheckCircle className="h-6 w-6 text-emerald-500 mt-1 mr-3 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Save 90% Planning Time</h3>
-                    <p className="text-gray-600 dark:text-gray-300">Transform weeks of planning into minutes with AI-powered automation.</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Stop Margin Erosion</h3>
+                    <p className="text-gray-600 dark:text-gray-300">Identify and eliminate hidden costs that eat into your profitability.</p>
                   </div>
                 </div>
                 <div className="flex items-start">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 mr-3 flex-shrink-0" />
+                  <CheckCircle className="h-6 w-6 text-emerald-500 mt-1 mr-3 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Data-Driven Decisions</h3>
-                    <p className="text-gray-600 dark:text-gray-300">Make informed choices with real platform data and audience insights.</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Workforce Intensity Insights</h3>
+                    <p className="text-gray-600 dark:text-gray-300">Understand the true cost of human effort in every campaign.</p>
                   </div>
                 </div>
                 <div className="flex items-start">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 mr-3 flex-shrink-0" />
+                  <CheckCircle className="h-6 w-6 text-emerald-500 mt-1 mr-3 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Quick Tailored Insights</h3>
-                    <p className="text-gray-600 dark:text-gray-300">Insights which matter to you.</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Optimize Media Mix</h3>
+                    <p className="text-gray-600 dark:text-gray-300">Data-driven allocation that balances performance with profitability.</p>
                   </div>
                 </div>
                 <div className="flex items-start">
-                  <CheckCircle className="h-6 w-6 text-green-500 mt-1 mr-3 flex-shrink-0" />
+                  <CheckCircle className="h-6 w-6 text-emerald-500 mt-1 mr-3 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Expert-Level Strategy</h3>
-                    <p className="text-gray-600 dark:text-gray-300">Access strategies typically available only through expensive agencies.</p>
+                    <h3 className="font-semibold text-gray-900 dark:text-white">Financial Transparency</h3>
+                    <p className="text-gray-600 dark:text-gray-300">Clear visibility into margins, costs, and profit drivers across all campaigns.</p>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 rounded-2xl p-8">
+            <div className="bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900 dark:to-teal-900 rounded-2xl p-8">
               <div className="text-center">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                  Ready to Get Started?
+                  Ready to Protect Your Margins?
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-6">
-                  Join thousands of marketers who've transformed their campaign planning process.
+                  Join leading media agencies that have transformed their profitability with Margin Mix.
                 </p>
                 <Link href="/campaign-planner">
-                  <Button size="lg" className="w-full text-lg">
-                    Access Your AI Media Strategist Now!
+                  <Button size="lg" className="w-full text-lg bg-emerald-600 hover:bg-emerald-700">
+                    Get Started Now
                   </Button>
                 </Link>
               </div>
@@ -285,13 +285,13 @@ export default function Landing() {
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h3 className="text-2xl font-bold text-blue-400 mb-4">YourBrief</h3>
-            <p className="text-gray-400 mb-4">AI-powered Digital Media Planning & Activation</p>
+            <h3 className="text-2xl font-bold text-emerald-400 mb-4">Margin Mix</h3>
+            <p className="text-gray-400 mb-4">The Financial Reasoning Engine for Media Agencies</p>
             <p className="text-gray-400 text-sm mb-2">
-              YourBrief is a brand under Digital Lexicon Sdn Bhd
+              Margin Mix is a brand under Digital Lexicon Sdn Bhd
             </p>
             <p className="text-gray-500 text-sm">
-              © 2025 YourBrief. All rights reserved.
+              © 2025 Margin Mix. All rights reserved.
             </p>
           </div>
         </div>

@@ -91,7 +91,7 @@ export default function Home() {
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading YourBrief...</p>
+          <p className="text-slate-600">Loading Margin Mix...</p>
         </div>
       </div>
     );
@@ -107,13 +107,13 @@ export default function Home() {
               <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <ChartLine className="text-white text-sm" />
               </div>
-              <h1 className="text-xl font-bold text-secondary">YourBrief</h1>
+              <h1 className="text-xl font-bold text-secondary">Margin Mix</h1>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-slate-600 hidden sm:block">AI-Powered Media Planning</span>
               <Button 
                 onClick={() => window.location.href = '/auth'}
-                className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium"
               >
                 Sign In
               </Button>
@@ -136,7 +136,7 @@ export default function Home() {
           {/* Chat Header */}
           <div className="p-6 border-b border-slate-200">
             <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
                 <Brain className="text-white text-lg" />
               </div>
               <div>
@@ -196,7 +196,7 @@ export default function Home() {
               <div className="w-6 h-6 bg-primary rounded flex items-center justify-center">
                 <ChartLine className="text-white text-xs" />
               </div>
-              <span className="text-secondary font-medium">YourBrief</span>
+              <span className="text-secondary font-medium">Margin Mix</span>
             </div>
             <div className="flex space-x-6 text-sm text-slate-600">
               <a href="#" className="hover:text-secondary transition-colors">Privacy Policy</a>

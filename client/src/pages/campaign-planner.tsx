@@ -48,9 +48,9 @@ export default function CampaignPlanner() {
 
   if (questionsLoading || startConversationMutation.isPending || sessionLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-300">Starting your campaign planner...</p>
         </div>
       </div>
@@ -60,7 +60,7 @@ export default function CampaignPlanner() {
   // Show summary if conversation is complete
   if (showSummary && session?.sessionData) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         {/* Navigation */}
         <nav className="border-b bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 dark:border-gray-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -76,7 +76,7 @@ export default function CampaignPlanner() {
                   Back to Chat
                 </Button>
                 <div className="flex-shrink-0">
-                  <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">YourBrief</h1>
+                  <h1 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Margin Mix</h1>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
@@ -102,7 +102,7 @@ export default function CampaignPlanner() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       {/* Navigation */}
       <nav className="border-b bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -115,7 +115,7 @@ export default function CampaignPlanner() {
                 </Button>
               </Link>
               <div className="flex-shrink-0">
-                <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">YourBrief</h1>
+                <h1 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Margin Mix</h1>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -135,17 +135,17 @@ export default function CampaignPlanner() {
         <div className="text-center mb-12">
           <div className="relative mb-8">
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-40 h-40 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 rounded-full blur-3xl"></div>
+              <div className="w-40 h-40 bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-emerald-500/20 rounded-full blur-3xl"></div>
             </div>
             <div className="relative">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 bg-clip-text text-transparent mb-6">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 bg-clip-text text-transparent mb-6">
                 Campaign Planning Assistant
               </h1>
-              <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-purple-600 mx-auto mb-6 rounded-full"></div>
+              <div className="w-24 h-1 bg-gradient-to-r from-emerald-600 to-teal-600 mx-auto mb-6 rounded-full"></div>
             </div>
           </div>
           <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-            Answer <span className="font-bold text-blue-600 dark:text-blue-400">11 strategic questions</span> and get a comprehensive 
+            Answer <span className="font-bold text-emerald-600 dark:text-emerald-400">11 strategic questions</span> and get a comprehensive 
             <span className="font-bold text-purple-600 dark:text-purple-400"> AI-powered campaign brief</span> with professional media planning insights, 
             budget strategy, and platform recommendations.
           </p>
@@ -155,7 +155,7 @@ export default function CampaignPlanner() {
               <span>~5 minutes</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
               <span>AI-Enhanced</span>
             </div>
             <div className="flex items-center gap-2">
