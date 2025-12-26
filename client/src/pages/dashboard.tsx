@@ -4,9 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
-import { User, LogOut, Building2, Target, Sparkles, BarChart3, Heart, CheckCircle, Users, TrendingUp } from "lucide-react";
+import { User, LogOut, Building2, Target, Sparkles, BarChart3, Heart, CheckCircle, Users, TrendingUp, Shield, Megaphone, Clock, Zap } from "lucide-react";
 import { Link } from "wouter";
 import type { User as UserType } from "@shared/schema";
+
+interface CommercialLogic {
+  the_moat: string;
+  media_implications: string;
+  labor_intensity_justification: string;
+}
 
 interface BrandBrief {
   brand_name: string;
@@ -15,6 +21,8 @@ interface BrandBrief {
   complexity_score: number;
   target_audience_persona?: string;
   market_challenger_status?: string;
+  commercial_logic?: CommercialLogic;
+  media_strategy_dna?: string;
 }
 
 export default function Dashboard() {
@@ -220,16 +228,67 @@ export default function Dashboard() {
               )}
             </div>
 
+            {brandBrief.commercial_logic && (
+              <Card className="border-emerald-200 dark:border-emerald-800">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Zap className="h-5 w-5 text-emerald-600" />
+                    Commercial Logic
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+                      <Shield className="h-4 w-4" />
+                      The Moat (Unfair Advantage)
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 pl-6" data-testid="text-the-moat">
+                      {brandBrief.commercial_logic.the_moat}
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+                      <Megaphone className="h-4 w-4" />
+                      Media Implications
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 pl-6" data-testid="text-media-implications">
+                      {brandBrief.commercial_logic.media_implications}
+                    </p>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+                      <Clock className="h-4 w-4" />
+                      Labor Intensity (LIM) Justification
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 pl-6" data-testid="text-labor-intensity">
+                      {brandBrief.commercial_logic.labor_intensity_justification}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {brandBrief.media_strategy_dna && (
+              <Card className="border-emerald-200 dark:border-emerald-800 bg-gradient-to-r from-emerald-50/50 to-teal-50/50 dark:from-emerald-900/10 dark:to-teal-900/10">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Target className="h-5 w-5 text-emerald-600" />
+                    Media Strategy DNA
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed" data-testid="text-media-strategy-dna">
+                    {brandBrief.media_strategy_dna}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
             <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200 dark:border-emerald-700">
               <CardContent className="pt-6">
                 <div className="text-center">
-                  <Target className="h-12 w-12 text-emerald-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                    Margin Analysis Coming Soon
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-lg mx-auto">
-                    The full Workforce Intensity Matrix and margin optimization features are being developed.
-                  </p>
                   <Link href="/">
                     <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700" data-testid="button-analyze-new">
                       Analyze Another Brand

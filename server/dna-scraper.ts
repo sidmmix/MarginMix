@@ -4,6 +4,12 @@ import OpenAI from 'openai';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+export interface CommercialLogic {
+  the_moat: string;
+  media_implications: string;
+  labor_intensity_justification: string;
+}
+
 export interface BrandBrief {
   brand_name: string;
   industry_category: string;
@@ -11,6 +17,8 @@ export interface BrandBrief {
   complexity_score: number;
   target_audience_persona: string;
   market_challenger_status: string;
+  commercial_logic: CommercialLogic;
+  media_strategy_dna: string;
   scraped_data?: {
     page_title: string;
     meta_description: string;
@@ -47,7 +55,13 @@ const GENERIC_BRIEF: BrandBrief = {
   ],
   complexity_score: 5,
   target_audience_persona: "General consumers seeking reliable solutions",
-  market_challenger_status: "Emerging player in competitive landscape"
+  market_challenger_status: "Emerging player in competitive landscape",
+  commercial_logic: {
+    the_moat: "Operational efficiency and market presence",
+    media_implications: "Standard media buying approach with broad targeting",
+    labor_intensity_justification: "Moderate account complexity requiring standard agency resources"
+  },
+  media_strategy_dna: "Balanced media mix with emphasis on awareness and conversion optimization"
 };
 
 const SCRAPE_TIMEOUT = 30000; // 30 seconds
@@ -276,59 +290,87 @@ async function generateBrandBrief(scrapedData: ScrapedData): Promise<BrandBrief>
   const categoryCount = scrapedData.mega_menu_categories.length;
   const navCount = scrapedData.nav_items.length;
   
-  const prompt = `You are a senior brand strategist and competitive intelligence analyst. Analyze the following website data and generate a nuanced Brand Insight Brief.
+  const prompt = `You are a senior brand strategist, competitive intelligence analyst, and media planning expert. Analyze the following website data and generate a nuanced Brand Insight Brief with AI Strategic Analysis.
 
 SCRAPED WEBSITE DATA:
 ${scrapedData.raw_text}
 
-ANALYSIS REQUIREMENTS:
+=== ANALYSIS FRAMEWORK ===
+
+BANNED GENERIC PHRASES (If you find yourself writing these, dig deeper into the 'Why'):
+- "Quality products"
+- "Customer-focused"
+- "Innovation"
+- "Competitive pricing"
+- "Leading provider"
+- "Wide selection"
+- "Great customer service"
+- "Trusted brand"
+
+=== DEEP TAXONOMY EXTRACTION ===
+
+Analyze the Navigation Menu and Product Footers carefully.
+- Found ${categoryCount} product/service categories and ${navCount} navigation items
+- If the brand has >5 distinct product categories (e.g., Pharmacy + Grocery + Auto for Walmart), set complexity_score to 8 or higher
+- This brand has ${categoryCount > 5 ? 'MANY categories - complexity_score MUST be 8-10' : categoryCount > 2 ? 'moderate categories - score 5-7' : 'few categories - score accordingly'}
+
+=== REQUIRED ANALYSIS SECTIONS ===
 
 1. BRAND NAME: Extract the company/brand name from the data.
 
 2. INDUSTRY CATEGORY (Be Specific):
    - Do NOT use generic terms like "Retail" or "E-commerce"
    - Define their specific niche (e.g., "Hypermarket Retail & Omnichannel Grocery", "Enterprise SaaS Payment Infrastructure", "DTC Luxury Fashion")
-   - Consider their positioning: Are they discount-focused? Premium? Mass-market?
 
-3. COMPLEXITY SCORE (1-10) - Based on Menu Depth:
-   - Found ${categoryCount} product/service categories and ${navCount} navigation items
-   - If they have >5 distinct sub-categories or departments, score MUST be 7-10
-   - Simple single-product companies: 1-3
-   - Multi-category retailers with departments (Pharmacy, Auto, Groceries, etc.): 9-10
-   - This brand has ${categoryCount > 5 ? 'MANY categories - score should be HIGH (8-10)' : categoryCount > 2 ? 'moderate categories - score should be MEDIUM (5-7)' : 'few categories - score accordingly'}
+3. COMPLEXITY SCORE (1-10): Based on menu depth and product/service breadth.
 
-4. TOP 3 USPs - NUANCED INSIGHTS ONLY:
-   BANNED PHRASES (Never use these generic statements):
-   - "Quality products"
-   - "Customer-focused"
-   - "Competitive pricing"
-   - "Wide selection"
-   - "Great customer service"
-   - "Trusted brand"
-   
-   REQUIRED: Identify specific strategic moats like:
-   - Pricing strategy moats: "Everyday Low Price (EDLP) logistics model", "Premium positioning with aspirational branding"
-   - Operational moats: "Private Label Brand dominance", "Vertical integration in supply chain"
-   - Customer moats: "High-Frequency Essentials Footfall strategy", "Subscription-first retention model"
-   - Technology moats: "API-first developer ecosystem", "Proprietary matching algorithm"
+4. TOP 3 USPs - STRATEGIC MOATS ONLY:
+   Identify specific competitive advantages:
+   - Pricing moats: "EDLP logistics model", "Premium positioning"
+   - Operational moats: "Private Label dominance (Great Value)", "Vertical integration"
+   - Customer moats: "High-Frequency Essentials Footfall", "Subscription-first retention"
+   - Technology moats: "API-first ecosystem", "Proprietary algorithms"
 
 5. TARGET AUDIENCE PERSONA:
-   - Be specific: NOT "general consumers"
-   - Examples: "Value-conscious suburban families with children", "Tech-forward SMB finance teams", "Affluent urban millennials seeking sustainable fashion"
-   - Use pricing indicators found: ${scrapedData.pricing_indicators.join(', ') || 'None detected'}
+   - Be specific, NOT "general consumers"
+   - Use pricing indicators: ${scrapedData.pricing_indicators.join(', ') || 'None detected'}
+   - Example: "Value-conscious suburban families with children"
 
 6. MARKET CHALLENGER STATUS:
-   - Define their competitive position
-   - Examples: "Dominant incumbent defending against Amazon", "Challenger brand disrupting legacy players", "Niche specialist in fragmented market"
+   - Example: "Dominant incumbent defending against Amazon"
+
+=== AI STRATEGIC ANALYSIS - COMMERCIAL LOGIC ===
+
+7. COMMERCIAL LOGIC (Critical for Media Agency Planning):
+
+   a) THE MOAT: What is their actual unfair advantage?
+      - Examples: "Logistical scale enabling same-day delivery", "First-party data from 150M+ weekly shoppers", "Proprietary tech stack"
+   
+   b) MEDIA IMPLICATIONS: How does their business model impact media buying?
+      - Examples: "Requires hyper-local targeting for store-level promotions", "High creative fatigue due to weekly promo cycles", "Heavy reliance on retail media networks"
+   
+   c) LABOR INTENSITY (LIM) JUSTIFICATION: Why will the agency team burn hours on this account?
+      - Examples: "Weekly promotional calendar requires constant creative refresh", "Multi-format retailer needs separate strategies per department", "Complex approval workflows across regional marketing teams"
+
+8. MEDIA STRATEGY DNA:
+   - A nuanced, brand-specific media strategy insight
+   - NOT generic statements like "use digital and traditional media"
+   - Example: "Geo-targeted promotional bursts aligned with weekly circular drops, heavy investment in retail media networks (Walmart Connect), and always-on local radio for store-level awareness"
 
 Return ONLY valid JSON with this exact structure:
 {
   "brand_name": "string",
   "industry_category": "specific niche category",
-  "top_3_usps": ["nuanced insight 1", "nuanced insight 2", "nuanced insight 3"],
+  "top_3_usps": ["strategic moat 1", "strategic moat 2", "strategic moat 3"],
   "complexity_score": number (1-10),
   "target_audience_persona": "specific audience description",
-  "market_challenger_status": "competitive position statement"
+  "market_challenger_status": "competitive position statement",
+  "commercial_logic": {
+    "the_moat": "their actual unfair advantage",
+    "media_implications": "how business model impacts media buying",
+    "labor_intensity_justification": "why agency team will burn hours"
+  },
+  "media_strategy_dna": "nuanced brand-specific media strategy insight"
 }`;
 
   try {
@@ -337,7 +379,7 @@ Return ONLY valid JSON with this exact structure:
       messages: [
         {
           role: "system",
-          content: "You are a senior competitive intelligence analyst specializing in brand strategy. Your insights must be specific, nuanced, and actionable - never generic. You identify specific strategic moats, audience segments, and competitive dynamics. Always return valid JSON only."
+          content: "You are a senior competitive intelligence analyst and media planning strategist. Your insights must be specific, nuanced, and actionable for media agency planning - never generic. You identify strategic moats, audience segments, competitive dynamics, and media implications. Always return valid JSON only."
         },
         {
           role: "user",
@@ -345,7 +387,7 @@ Return ONLY valid JSON with this exact structure:
         }
       ],
       response_format: { type: "json_object" },
-      max_tokens: 800,
+      max_tokens: 1200,
       temperature: 0.4
     });
 
@@ -382,6 +424,30 @@ Return ONLY valid JSON with this exact structure:
     }
     if (!brief.market_challenger_status) {
       brief.market_challenger_status = "Established player in competitive market";
+    }
+    
+    // Ensure commercial_logic has defaults
+    if (!brief.commercial_logic) {
+      brief.commercial_logic = {
+        the_moat: "Operational efficiency and established market presence",
+        media_implications: "Standard media buying approach with broad targeting",
+        labor_intensity_justification: "Moderate account complexity requiring standard agency resources"
+      };
+    } else {
+      if (!brief.commercial_logic.the_moat) {
+        brief.commercial_logic.the_moat = "Operational efficiency and market presence";
+      }
+      if (!brief.commercial_logic.media_implications) {
+        brief.commercial_logic.media_implications = "Standard media buying approach";
+      }
+      if (!brief.commercial_logic.labor_intensity_justification) {
+        brief.commercial_logic.labor_intensity_justification = "Standard account management requirements";
+      }
+    }
+    
+    // Ensure media_strategy_dna has default
+    if (!brief.media_strategy_dna) {
+      brief.media_strategy_dna = "Balanced media mix optimized for brand awareness and conversion";
     }
     
     // Attach scraped data for reference
