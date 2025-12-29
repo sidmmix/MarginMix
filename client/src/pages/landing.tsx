@@ -328,6 +328,118 @@ export default function Landing() {
           </div>
         </div>
       </section>
+
+      {/* Competitive Differentiation */}
+      <section className="py-20 bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              How We Compare
+            </h2>
+            <p className="text-lg text-gray-300 max-w-2xl mx-auto">
+              See why leading agencies are switching to Margin Mix.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* vs. Consulting Firms */}
+            <div className="bg-gray-800 rounded-xl overflow-hidden">
+              <h3 className="text-xl font-bold text-white p-4 border-b border-gray-700">
+                vs. Consulting Firms:
+              </h3>
+              <div className="divide-y divide-gray-700">
+                <div className="grid grid-cols-2">
+                  <div className="p-4 font-semibold text-white bg-gray-750">Big 4 Consulting</div>
+                  <div className="p-4 font-semibold text-emerald-400">Margin Mix</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">$200K+ engagement</div>
+                  <div className="p-4 text-emerald-300">$9.6K/year</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">12-week timeline</div>
+                  <div className="p-4 text-emerald-300">Real-time, continuous</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">Point-in-time analysis</div>
+                  <div className="p-4 text-emerald-300">Always-on monitoring</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">Generic frameworks</div>
+                  <div className="p-4 text-emerald-300">Agency-specific models</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">Consultants leave</div>
+                  <div className="p-4 text-emerald-300">Intelligence persists</div>
+                </div>
+              </div>
+            </div>
+
+            {/* vs. Project Management Tools */}
+            <div className="bg-gray-800 rounded-xl overflow-hidden">
+              <h3 className="text-xl font-bold text-white p-4 border-b border-gray-700">
+                vs. Project Management Tools:
+              </h3>
+              <div className="divide-y divide-gray-700">
+                <div className="grid grid-cols-2">
+                  <div className="p-4 font-semibold text-white bg-gray-750">PM Tools (Monday, Asana)</div>
+                  <div className="p-4 font-semibold text-emerald-400">Margin Mix</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">Operational task tracking</div>
+                  <div className="p-4 text-emerald-300">Strategic financial intelligence</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">Project-level visibility</div>
+                  <div className="p-4 text-emerald-300">Portfolio-level optimization</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">Designed for PMs</div>
+                  <div className="p-4 text-emerald-300">Designed for CFOs/CEOs</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">Time & task management</div>
+                  <div className="p-4 text-emerald-300">Margin & profitability management</div>
+                </div>
+              </div>
+            </div>
+
+            {/* vs. Traditional BI Tools */}
+            <div className="bg-gray-800 rounded-xl overflow-hidden">
+              <h3 className="text-xl font-bold text-white p-4 border-b border-gray-700">
+                vs. Traditional BI Tools:
+              </h3>
+              <div className="divide-y divide-gray-700">
+                <div className="grid grid-cols-2">
+                  <div className="p-4 font-semibold text-white bg-gray-750">Traditional BI Tools</div>
+                  <div className="p-4 font-semibold text-emerald-400">Margin Mix</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">Descriptive (what happened?)</div>
+                  <div className="p-4 text-emerald-300">Prescriptive (what should we do?)</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">Requires analyst to interpret</div>
+                  <div className="p-4 text-emerald-300">AI generates executive insights</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">Generic dashboards</div>
+                  <div className="p-4 text-emerald-300">Agency-specific financial models</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">Backward-looking</div>
+                  <div className="p-4 text-emerald-300">Predictive + scenario planning</div>
+                </div>
+                <div className="grid grid-cols-2">
+                  <div className="p-4 text-gray-300">Dashboard fatigue</div>
+                  <div className="p-4 text-emerald-300">Actionable alerts only</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Benefits */}
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
