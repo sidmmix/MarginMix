@@ -163,11 +163,11 @@ export default function Landing() {
             
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
               The Financial Reasoning Engine
-              <span className="text-emerald-600 dark:text-emerald-400"> for Media Agencies</span>
+              <span className="text-emerald-600 dark:text-emerald-400"> for Agencies</span>
             </h1>
             <p className="text-xl text-gray-700 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
               Margin Mix is an <span className="font-semibold text-emerald-600 dark:text-emerald-400">Intelligent Financial Reasoning Engine</span> built on the World's first 
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400"> Workforce Intensity Matrix</span> — designed specifically for Media Agencies to be more profitable.
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400"> Workforce Intensity Matrix</span> — designed specifically for Agencies to be more profitable.
             </p>
             <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 max-w-2xl mx-auto">
               Identify margin leaks. Optimize resource allocation. Maximize agency profitability.
@@ -446,7 +446,7 @@ export default function Landing() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                Why Media Agencies Choose Margin Mix
+                Why Agencies Choose Margin Mix
               </h2>
               <div className="space-y-4">
                 <div className="flex items-start">
@@ -502,7 +502,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h3 className="text-2xl font-bold text-emerald-400 mb-4">Margin Mix</h3>
-            <p className="text-white mb-4">The Financial Reasoning Engine for Media Agencies</p>
+            <p className="text-white mb-4">The Financial Reasoning Engine for Agencies</p>
             <p className="text-white text-sm mb-2">
               Margin Mix is a Digital Lexicon Corp brand.
             </p>
