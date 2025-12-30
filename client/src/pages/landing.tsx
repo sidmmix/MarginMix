@@ -221,7 +221,7 @@ export default function Landing() {
               Powered by the Workforce Intensity Matrix
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              The world's first framework that correlates workforce effort with media planning margins — 
+              The world's first framework that correlates workforce effort with margins — 
               giving you unprecedented visibility into profitability.
             </p>
           </div>
@@ -235,7 +235,7 @@ export default function Landing() {
                 Financial Reasoning AI
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Intelligent analysis that understands the true cost of media planning operations.
+                Intelligent analysis that understands the true cost of operations.
               </p>
             </div>
             
@@ -247,7 +247,7 @@ export default function Landing() {
                 Margin Leak Detection
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Automatically identify where your agency is losing money on media planning.
+                Automatically identify where your agency is losing money.
               </p>
             </div>
             
@@ -259,7 +259,7 @@ export default function Landing() {
                 Media Mix Optimization
               </h3>
               <p className="text-gray-600 dark:text-gray-300">
-                Data-driven recommendations for optimal budget allocation across channels.
+                Data-driven recommendations for optimal resource allocation across channels.
               </p>
             </div>
             
@@ -485,7 +485,7 @@ export default function Landing() {
                   Ready to Protect Your Margins?
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300 mb-6">
-                  Join leading media agencies that have transformed their profitability with Margin Mix.
+                  Join leading agencies that have transformed their profitability with Margin Mix.
                 </p>
                 <Link href="/campaign-planner">
                   <Button size="lg" className="w-full text-lg bg-emerald-600 hover:bg-emerald-700">
@@ -502,7 +502,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h3 className="text-2xl font-bold text-emerald-400 mb-4">Margin Mix</h3>
-            <p className="text-white mb-4">The Financial Reasoning Engine for Agencies</p>
+            <p className="text-white mb-4">The Financial Reasoning Engine for Media Agencies</p>
             <p className="text-white text-sm mb-2">
               Margin Mix is a Digital Lexicon Corp brand.
             </p>
