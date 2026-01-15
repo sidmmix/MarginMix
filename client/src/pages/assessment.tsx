@@ -293,13 +293,13 @@ export default function Assessment() {
                   )}
                 />
 
-                {/* Q7: Expected Engagement Duration */}
+                {/* Q7: Client Engagement Duration */}
                 <FormField
                   control={form.control}
                   name="engagementDuration"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>7. Expected Engagement Duration</FormLabel>
+                      <FormLabel>7. Client Engagement Duration</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
