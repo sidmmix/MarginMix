@@ -65,13 +65,7 @@ export default function Landing() {
                     {isLoggingOut ? "Logging out..." : "Logout"}
                   </Button>
                 </div>
-              ) : (
-                <Link href="/auth">
-                  <Button variant="outline" size="sm" data-testid="button-signin">
-                    Sign In
-                  </Button>
-                </Link>
-              )}
+              ) : null}
             </div>
           </div>
         </div>
