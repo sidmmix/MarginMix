@@ -94,7 +94,7 @@ export async function sendAssessmentEmail(assessmentData: {
 
   const result = await resend.emails.send({
     from: 'Sid <sid@marginmix.ai>',
-    to: ['sid@marginmix.ai'],
+    to: ['sid@marginmix.ai', assessmentData.workEmail],
     subject: `New Margin Risk Assessment: ${assessmentData.organisationName} - ${assessmentData.fullName}`,
     html: htmlContent
   });
