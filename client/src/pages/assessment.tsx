@@ -146,11 +146,9 @@ export default function Assessment() {
               Once submitted, a structured Margin Risk Assessment — including a clear margin-risk verdict 
               and decision guidance — will be prepared and delivered to the email you provide below.
             </p>
-            <img 
-              src="/attached_assets/image_1768462145717.png" 
-              alt="MarginMix Assessment" 
-              className="mx-auto my-6"
-            />
+            <p className="text-gray-600 dark:text-gray-400 text-sm mt-4">
+              All Information is treated Confidentially. MarginMix is GDPR & CCPA compliant.
+            </p>
             <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
               Let's begin.
             </p>
