@@ -35,8 +35,8 @@ const assessmentSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
   workEmail: z.string().email("Valid email is required"),
   roleTitle: z.string().min(1, "Role/Title is required"),
-  organisationName: z.string().min(1, "Organisation name is required"),
-  organisationSize: z.string().min(1, "Please select organisation size"),
+  organisationName: z.string().min(1, "Organization name is required"),
+  organisationSize: z.string().min(1, "Please select organization size"),
   engagementType: z.string().min(1, "Please select engagement type"),
   engagementDuration: z.string().min(1, "Please select engagement duration"),
   clientVolatility: z.string().min(1, "Please select client volatility"),
@@ -142,7 +142,7 @@ export default function Assessment() {
               senior involvement, and coordination overhead — not delivery performance or individual productivity.
             </p>
             <p>
-              You'll be asked <strong>16 short, judgement-based questions</strong>, all designed as simple 
+              You'll be asked <strong>16 short, judgment-based questions</strong>, all designed as simple 
               dropdown selections. The form takes approximately <strong>5 minutes</strong> to complete.
             </p>
             <p>
@@ -215,32 +215,32 @@ export default function Assessment() {
                   )}
                 />
 
-                {/* Q4: Organisation Name */}
+                {/* Q4: Organization Name */}
                 <FormField
                   control={form.control}
                   name="organisationName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>4. Organisation Name</FormLabel>
+                      <FormLabel>4. Organization Name</FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter your organisation name" {...field} />
+                        <Input placeholder="Enter your organization name" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Q5: Organisation Size - Dropdown */}
+                {/* Q5: Organization Size - Dropdown */}
                 <FormField
                   control={form.control}
                   name="organisationSize"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>5. Organisation Size</FormLabel>
+                      <FormLabel>5. Organization Size</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select organisation size" />
+                            <SelectValue placeholder="Select organization size" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
