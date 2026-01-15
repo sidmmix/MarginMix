@@ -85,11 +85,10 @@ export default function Landing() {
             <Link href="/assessment">
               <Button 
                 size="lg" 
-                className="h-12 sm:h-14 text-base sm:text-lg px-6 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
+                className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
                 data-testid="button-cta-hero"
               >
-                <span className="hidden sm:inline">Run a Margin Risk Assessment</span>
-                <span className="sm:hidden">Start Assessment</span>
+                Run a Margin Risk Assessment
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -309,11 +308,10 @@ export default function Landing() {
             <Link href="/assessment">
               <Button 
                 size="lg" 
-                className="h-12 sm:h-14 text-base sm:text-lg px-6 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
+                className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
                 data-testid="button-cta-footer"
               >
-                <span className="hidden sm:inline">Run a Margin Risk Assessment</span>
-                <span className="sm:hidden">Start Assessment</span>
+                Run a Margin Risk Assessment
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
