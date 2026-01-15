@@ -244,7 +244,7 @@ export default function Landing() {
               </p>
             </div>
           </div>
-          <p className="text-center text-gray-600 dark:text-gray-400 mt-8 text-lg">
+          <p className="text-center text-emerald-600 dark:text-emerald-400 mt-8 text-lg font-bold">
             This is an assessment of economic viability — not a delivery forecast.
           </p>
         </div>
