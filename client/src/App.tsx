@@ -7,6 +7,7 @@ import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
+import Assessment from "@/pages/assessment";
 import { AuthPage } from "@/pages/auth";
 import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
@@ -16,6 +17,7 @@ function Router() {
     <Switch>
       {/* Public routes */}
       <Route path="/" component={Landing} />
+      <Route path="/assessment" component={Assessment} />
       <Route path="/auth" component={AuthPage} />
       
       {/* Dashboard - displays brand analysis results */}

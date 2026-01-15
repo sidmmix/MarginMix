@@ -210,3 +210,37 @@ export const mediaBriefSchema = z.object({
 });
 
 export type MediaBrief = z.infer<typeof mediaBriefSchema>;
+
+// Margin Risk Assessment table
+export const marginAssessments = pgTable("margin_assessments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  fullName: varchar("full_name", { length: 255 }).notNull(),
+  workEmail: varchar("work_email", { length: 255 }).notNull(),
+  roleTitle: varchar("role_title", { length: 255 }).notNull(),
+  organisationName: varchar("organisation_name", { length: 255 }).notNull(),
+  organisationSize: varchar("organisation_size", { length: 50 }).notNull(),
+  engagementType: varchar("engagement_type", { length: 50 }).notNull(),
+  engagementDuration: varchar("engagement_duration", { length: 50 }).notNull(),
+  clientVolatility: varchar("client_volatility", { length: 100 }).notNull(),
+  stakeholderComplexity: varchar("stakeholder_complexity", { length: 50 }).notNull(),
+  seniorLeadershipInvolvement: varchar("senior_leadership_involvement", { length: 50 }).notNull(),
+  midLevelOversight: varchar("mid_level_oversight", { length: 50 }).notNull(),
+  executionThinkingMix: varchar("execution_thinking_mix", { length: 50 }).notNull(),
+  iterationIntensity: varchar("iteration_intensity", { length: 50 }).notNull(),
+  scopeChangeLikelihood: varchar("scope_change_likelihood", { length: 50 }).notNull(),
+  crossFunctionalCoordination: varchar("cross_functional_coordination", { length: 50 }).notNull(),
+  openSignal: text("open_signal"),
+  status: varchar("status", { length: 50 }).notNull().default("pending"),
+  createdAt: timestamp("created_at").notNull().default(sql`now()`),
+  updatedAt: timestamp("updated_at").notNull().default(sql`now()`),
+});
+
+export const insertMarginAssessmentSchema = createInsertSchema(marginAssessments).omit({
+  id: true,
+  status: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type MarginAssessment = typeof marginAssessments.$inferSelect;
+export type InsertMarginAssessment = z.infer<typeof insertMarginAssessmentSchema>;

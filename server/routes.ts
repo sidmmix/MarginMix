@@ -9,7 +9,8 @@ import * as XLSX from "xlsx";
 import { storage } from "./storage";
 import { setupOAuth } from "./oauth";
 import { 
-  insertCampaignBriefSchema
+  insertCampaignBriefSchema,
+  insertMarginAssessmentSchema
 } from "@shared/schema";
 import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
 
@@ -309,6 +310,32 @@ export function registerRoutes(app: Express): Server {
         message: "Error generating Brand Brief",
         error: error.message,
         brief: null
+      });
+    }
+  });
+
+  // Margin Risk Assessment endpoint
+  app.post("/api/assessments", async (req, res) => {
+    try {
+      const validatedData = insertMarginAssessmentSchema.parse(req.body);
+      const assessment = await storage.createMarginAssessment(validatedData);
+      res.status(201).json({ 
+        success: true, 
+        message: "Assessment submitted successfully",
+        assessmentId: assessment.id 
+      });
+    } catch (error: any) {
+      console.error("Assessment submission error:", error);
+      if (error.name === "ZodError") {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Validation error", 
+          errors: error.errors 
+        });
+      }
+      res.status(500).json({ 
+        success: false, 
+        message: "Failed to submit assessment" 
       });
     }
   });

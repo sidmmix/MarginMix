@@ -1,6 +1,6 @@
 import { eq, and, isNull, or, sql as drizzleSql } from "drizzle-orm";
 import { db } from "./db";
-import { users, conversationSessions, campaignBriefs, cpmBenchmarks } from "@shared/schema";
+import { users, conversationSessions, campaignBriefs, cpmBenchmarks, marginAssessments } from "@shared/schema";
 import type { 
   User, 
   InsertUser, 
@@ -10,7 +10,9 @@ import type {
   CampaignBrief,
   InsertCampaignBrief,
   CpmBenchmark,
-  InsertCpmBenchmark
+  InsertCpmBenchmark,
+  MarginAssessment,
+  InsertMarginAssessment
 } from "@shared/schema";
 import bcrypt from "bcryptjs";
 
@@ -40,6 +42,10 @@ export interface IStorage {
   getBenchmarks(filters?: { platform?: string; geo?: string; industry?: string }): Promise<CpmBenchmark[]>;
   searchBenchmarksByVector(embedding: number[], filters?: { platform?: string; geo?: string }, limit?: number): Promise<Array<CpmBenchmark & { similarity: number }>>;
   deleteAllBenchmarks(): Promise<void>;
+  
+  // Margin Assessment operations
+  createMarginAssessment(assessment: InsertMarginAssessment): Promise<MarginAssessment>;
+  getMarginAssessments(): Promise<MarginAssessment[]>;
   
   // Authentication helpers
   hashPassword(password: string): Promise<string>;
@@ -282,6 +288,18 @@ export class DatabaseStorage implements IStorage {
 
   async deleteAllBenchmarks(): Promise<void> {
     await db.delete(cpmBenchmarks);
+  }
+
+  async createMarginAssessment(insertAssessment: InsertMarginAssessment): Promise<MarginAssessment> {
+    const [assessment] = await db
+      .insert(marginAssessments)
+      .values(insertAssessment)
+      .returning();
+    return assessment;
+  }
+
+  async getMarginAssessments(): Promise<MarginAssessment[]> {
+    return await db.select().from(marginAssessments);
   }
 
   async hashPassword(password: string): Promise<string> {

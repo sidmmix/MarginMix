@@ -81,14 +81,16 @@ export default function Landing() {
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               MarginMix helps agency and consulting leaders assess margin risk early — by accounting for hidden senior effort, coordination overhead, and workforce intensity.
             </p>
-            <Button 
-              size="lg" 
-              className="h-14 text-lg px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
-              data-testid="button-cta-hero"
-            >
-              Run a Margin Risk Assessment
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link href="/assessment">
+              <Button 
+                size="lg" 
+                className="h-14 text-lg px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
+                data-testid="button-cta-hero"
+              >
+                Run a Margin Risk Assessment
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
             <div className="mt-6 text-xl font-bold">
               <p className="text-red-600 dark:text-red-400">Not a Tool!</p>
               <p className="text-emerald-600 dark:text-emerald-400">A Decision Support System</p>
@@ -302,14 +304,16 @@ export default function Landing() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               Assess margin risk before it becomes a problem.
             </h2>
-            <Button 
-              size="lg" 
-              className="h-14 text-lg px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
-              data-testid="button-cta-footer"
-            >
-              Run a Margin Risk Assessment
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
+            <Link href="/assessment">
+              <Button 
+                size="lg" 
+                className="h-14 text-lg px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
+                data-testid="button-cta-footer"
+              >
+                Run a Margin Risk Assessment
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
             <p className="text-emerald-100 mt-4 text-sm">
               Early access assessments are reviewed for fit.
             </p>
