@@ -76,7 +76,7 @@ export default function Landing() {
       <section className="relative overflow-hidden pt-16 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
               Most <span className="text-emerald-600 dark:text-emerald-400">Agencies & Consulting Firms</span> lose margin long before delivery begins.
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
