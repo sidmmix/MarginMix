@@ -178,7 +178,7 @@ export default function Landing() {
                   <span className="text-gray-700 dark:text-gray-300">Agencies and consultancies with 500–5,000 employees</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Briefcase className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <Users className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
                   <span className="text-gray-700 dark:text-gray-300">CEOs, CFOs, COOs, Managing Partners, and Client Leads</span>
                 </li>
                 <li className="flex items-start gap-3">
