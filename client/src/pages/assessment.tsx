@@ -147,6 +147,7 @@ export default function Assessment() {
               and decision guidance — will be prepared and delivered to the email you provide below.
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-sm mt-4">
+              No financial data, timesheets or individual performance information is required.<br />
               All Information is treated Confidentially. MarginMix is GDPR & CCPA compliant.
             </p>
             <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
