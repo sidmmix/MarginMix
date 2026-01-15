@@ -13,6 +13,7 @@ import {
   insertMarginAssessmentSchema
 } from "@shared/schema";
 import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
+import { sendAssessmentEmail } from "./resend";
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -319,6 +320,33 @@ export function registerRoutes(app: Express): Server {
     try {
       const validatedData = insertMarginAssessmentSchema.parse(req.body);
       const assessment = await storage.createMarginAssessment(validatedData);
+      
+      // Send email notification with assessment details
+      try {
+        await sendAssessmentEmail({
+          fullName: validatedData.fullName,
+          workEmail: validatedData.workEmail,
+          roleTitle: validatedData.roleTitle,
+          organisationName: validatedData.organisationName,
+          organisationSize: validatedData.organisationSize,
+          engagementType: validatedData.engagementType,
+          engagementDuration: validatedData.engagementDuration,
+          clientVolatility: validatedData.clientVolatility,
+          stakeholderComplexity: validatedData.stakeholderComplexity,
+          seniorLeadershipInvolvement: validatedData.seniorLeadershipInvolvement,
+          midLevelOversight: validatedData.midLevelOversight,
+          executionThinkingMix: validatedData.executionThinkingMix,
+          iterationIntensity: validatedData.iterationIntensity,
+          scopeChangeLikelihood: validatedData.scopeChangeLikelihood,
+          crossFunctionalCoordination: validatedData.crossFunctionalCoordination,
+          openSignal: validatedData.openSignal,
+          submittedAt: new Date()
+        });
+        console.log(`Assessment email sent for: ${validatedData.organisationName}`);
+      } catch (emailError: any) {
+        console.error("Failed to send assessment email:", emailError.message);
+      }
+      
       res.status(201).json({ 
         success: true, 
         message: "Assessment submitted successfully",
