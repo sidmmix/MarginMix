@@ -95,6 +95,9 @@ export default function Landing() {
               Run a Margin Risk Assessment
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
+            <p className="mt-6 text-xl font-bold text-emerald-600 dark:text-emerald-400">
+              It's not a Tool, it's a Decision Support System!
+            </p>
           </div>
         </div>
       </section>
