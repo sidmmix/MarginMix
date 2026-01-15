@@ -79,9 +79,12 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
-                Margin Mix Dashboard
-              </h1>
+              <div className="flex flex-col">
+                <h1 className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                  MarginMix Dashboard
+                </h1>
+                <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
+              </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">

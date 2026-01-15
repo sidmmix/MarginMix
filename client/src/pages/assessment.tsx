@@ -106,9 +106,12 @@ export default function Assessment() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/">
-              <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400 cursor-pointer">
-                MarginMix
-              </span>
+              <div className="flex flex-col cursor-pointer">
+                <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                  MarginMix
+                </span>
+                <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
+              </div>
             </Link>
             <Link href="/">
               <Button variant="ghost" size="sm">
