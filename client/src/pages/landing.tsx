@@ -1,17 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowRight, User, LogOut, Globe, Loader2, AlertTriangle, CheckCircle, XCircle, Users, Building2, Briefcase, Target } from "lucide-react";
-import { Link, useLocation } from "wouter";
+import { ArrowRight, User, LogOut, AlertTriangle, CheckCircle, XCircle, Users, Building2, Briefcase, Target } from "lucide-react";
+import { Link } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { useState, type FormEvent } from "react";
 
 export default function Landing() {
   const { user, isAuthenticated, logout, isLoggingOut } = useAuth();
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
-  const [websiteUrl, setWebsiteUrl] = useState("");
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -26,71 +21,6 @@ export default function Landing() {
         description: "Failed to log out. Please try again.",
         variant: "destructive",
       });
-    }
-  };
-
-  const handleAnalyzeWebsite = async (e: FormEvent) => {
-    e.preventDefault();
-    
-    if (!websiteUrl.trim()) {
-      toast({
-        title: "URL Required",
-        description: "Please enter your website URL to get started.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    let urlToAnalyze = websiteUrl.trim();
-    if (!urlToAnalyze.startsWith('http://') && !urlToAnalyze.startsWith('https://')) {
-      urlToAnalyze = 'https://' + urlToAnalyze;
-    }
-
-    try {
-      new URL(urlToAnalyze);
-    } catch {
-      toast({
-        title: "Invalid URL",
-        description: "Please enter a valid website URL (e.g., example.com)",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsAnalyzing(true);
-
-    try {
-      const response = await fetch('/api/dna-scraper', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url: urlToAnalyze }),
-      });
-
-      const data = await response.json();
-
-      if (data.success && data.brief) {
-        sessionStorage.setItem('brandBrief', JSON.stringify(data.brief));
-        sessionStorage.setItem('analyzedUrl', urlToAnalyze);
-        
-        toast({
-          title: "Assessment Complete!",
-          description: `Analyzed: ${data.brief.brand_name} in ${data.brief.industry_category}`,
-        });
-
-        setLocation('/dashboard');
-      } else {
-        throw new Error(data.message || 'Failed to analyze website');
-      }
-    } catch (error: any) {
-      toast({
-        title: "Assessment Failed",
-        description: error.message || "Could not complete assessment. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsAnalyzing(false);
     }
   };
 
@@ -157,41 +87,14 @@ export default function Landing() {
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               MarginMix helps agency and consulting leaders assess margin risk early — by accounting for hidden senior effort, coordination overhead, and workforce intensity.
             </p>
-            <div className="max-w-2xl mx-auto">
-              <form onSubmit={handleAnalyzeWebsite} className="flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                  <Globe className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Enter client website URL"
-                    value={websiteUrl}
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    disabled={isAnalyzing}
-                    className="pl-12 h-14 text-lg bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 focus:border-emerald-500 rounded-xl"
-                    data-testid="input-website-url"
-                  />
-                </div>
-                <Button 
-                  type="submit"
-                  size="lg" 
-                  disabled={isAnalyzing}
-                  className="h-14 text-lg px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl whitespace-nowrap"
-                  data-testid="button-analyze-website"
-                >
-                  {isAnalyzing ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Assessing...
-                    </>
-                  ) : (
-                    <>
-                      Run a Margin Risk Assessment
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </>
-                  )}
-                </Button>
-              </form>
-            </div>
+            <Button 
+              size="lg" 
+              className="h-14 text-lg px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
+              data-testid="button-cta-hero"
+            >
+              Run a Margin Risk Assessment
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
           </div>
         </div>
       </section>
@@ -401,42 +304,17 @@ export default function Landing() {
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
               Assess margin risk before it becomes a problem.
             </h2>
-            <div className="max-w-2xl mx-auto">
-              <form onSubmit={handleAnalyzeWebsite} className="flex flex-col sm:flex-row gap-3">
-                <div className="relative flex-1">
-                  <Globe className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Enter client website URL"
-                    value={websiteUrl}
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    disabled={isAnalyzing}
-                    className="pl-12 h-14 text-lg bg-white dark:bg-gray-800 border-2 border-white focus:border-emerald-300 rounded-xl"
-                  />
-                </div>
-                <Button 
-                  type="submit"
-                  size="lg" 
-                  disabled={isAnalyzing}
-                  className="h-14 text-lg px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl whitespace-nowrap"
-                >
-                  {isAnalyzing ? (
-                    <>
-                      <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                      Assessing...
-                    </>
-                  ) : (
-                    <>
-                      Run a Margin Risk Assessment
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </>
-                  )}
-                </Button>
-              </form>
-              <p className="text-emerald-100 mt-4 text-sm">
-                Early access assessments are reviewed for fit.
-              </p>
-            </div>
+            <Button 
+              size="lg" 
+              className="h-14 text-lg px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
+              data-testid="button-cta-footer"
+            >
+              Run a Margin Risk Assessment
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <p className="text-emerald-100 mt-4 text-sm">
+              Early access assessments are reviewed for fit.
+            </p>
           </div>
         </div>
       </section>
