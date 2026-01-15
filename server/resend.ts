@@ -37,18 +37,18 @@ export async function sendAssessmentEmail(assessmentData: {
 
   const responseLines = questions
     .map(({ label, value }) => {
-      return `<tr>
-        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #374151; width: 40%; vertical-align: top;">${label}</td>
-        <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">${value}</td>
-      </tr>`;
+      return `<div style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+        <div style="font-weight: 600; color: #374151; margin-bottom: 4px;">${label}</div>
+        <div style="color: #4b5563;">${value}</div>
+      </div>`;
     })
     .join('');
 
   const openSignalRow = assessmentData.openSignal ? `
-    <tr>
-      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: 600; color: #374151; width: 40%; vertical-align: top;">Open Signal (Additional Comments)</td>
-      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; color: #4b5563;">${assessmentData.openSignal}</td>
-    </tr>
+    <div style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+      <div style="font-weight: 600; color: #374151; margin-bottom: 4px;">Open Signal (Additional Comments)</div>
+      <div style="color: #4b5563;">${assessmentData.openSignal}</div>
+    </div>
   ` : '';
 
   const htmlContent = `
@@ -78,10 +78,8 @@ export async function sendAssessmentEmail(assessmentData: {
         
         <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb;">
           <h3 style="color: #374151; margin-top: 0; border-bottom: 2px solid #059669; padding-bottom: 10px;">Assessment Responses</h3>
-          <table style="width: 100%; border-collapse: collapse;">
-            ${responseLines}
-            ${openSignalRow}
-          </table>
+          ${responseLines}
+          ${openSignalRow}
         </div>
       </div>
       
