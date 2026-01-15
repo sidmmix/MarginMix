@@ -115,19 +115,19 @@ export default function Assessment() {
             </Link>
             <Link href="/">
               <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Home
+                <ArrowLeft className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Back to Home</span>
               </Button>
             </Link>
           </div>
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
         {/* Intro Section */}
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle className="text-2xl text-emerald-600 dark:text-emerald-400">
+            <CardTitle className="text-xl sm:text-2xl text-emerald-600 dark:text-emerald-400">
               Margin Risk Assessment
             </CardTitle>
           </CardHeader>
@@ -608,12 +608,12 @@ export default function Assessment() {
       </Dialog>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12 mt-12">
+      <footer className="bg-gray-900 text-white py-8 sm:py-12 mt-8 sm:mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h3 className="text-2xl font-bold text-emerald-400 mb-1">MarginMix</h3>
-            <p className="text-sm italic text-gray-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</p>
-            <p className="text-gray-300 mb-6">
+            <h3 className="text-xl sm:text-2xl font-bold text-emerald-400 mb-1">MarginMix</h3>
+            <p className="text-xs sm:text-sm italic text-gray-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</p>
+            <p className="text-gray-300 mb-6 text-sm sm:text-base">
               MarginMix is a decision system for margin governance — not a delivery or productivity platform.
             </p>
             <p className="text-gray-400 text-sm mb-2">

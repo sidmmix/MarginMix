@@ -41,10 +41,10 @@ export default function Landing() {
                 <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               {isAuthenticated && user ? (
-                <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
+                <div className="flex items-center space-x-2 sm:space-x-3">
+                  <div className="hidden sm:flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
                     <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     <div className="flex flex-col">
                       <span className="text-sm font-medium text-gray-900 dark:text-white" data-testid="text-username">
@@ -62,8 +62,8 @@ export default function Landing() {
                     disabled={isLoggingOut}
                     data-testid="button-logout"
                   >
-                    <LogOut className="h-4 w-4 mr-1" />
-                    {isLoggingOut ? "Logging out..." : "Logout"}
+                    <LogOut className="h-4 w-4 sm:mr-1" />
+                    <span className="hidden sm:inline">{isLoggingOut ? "Logging out..." : "Logout"}</span>
                   </Button>
                 </div>
               ) : null}
@@ -85,10 +85,11 @@ export default function Landing() {
             <Link href="/assessment">
               <Button 
                 size="lg" 
-                className="h-14 text-lg px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
+                className="h-12 sm:h-14 text-base sm:text-lg px-6 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
                 data-testid="button-cta-hero"
               >
-                Run a Margin Risk Assessment
+                <span className="hidden sm:inline">Run a Margin Risk Assessment</span>
+                <span className="sm:hidden">Start Assessment</span>
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
@@ -299,19 +300,20 @@ export default function Landing() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 bg-emerald-600 dark:bg-emerald-700">
+      <section className="py-12 sm:py-20 bg-emerald-600 dark:bg-emerald-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
               Assess margin risk before it becomes a problem.
             </h2>
             <Link href="/assessment">
               <Button 
                 size="lg" 
-                className="h-14 text-lg px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
+                className="h-12 sm:h-14 text-base sm:text-lg px-6 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
                 data-testid="button-cta-footer"
               >
-                Run a Margin Risk Assessment
+                <span className="hidden sm:inline">Run a Margin Risk Assessment</span>
+                <span className="sm:hidden">Start Assessment</span>
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>

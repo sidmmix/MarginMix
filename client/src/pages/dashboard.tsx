@@ -86,8 +86,8 @@ export default function Dashboard() {
                 <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
               </div>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
                 <User className="h-4 w-4" />
                 <span>{typedUser?.firstName} {typedUser?.lastName}</span>
               </div>
@@ -98,8 +98,8 @@ export default function Dashboard() {
                 disabled={isLoggingOut}
                 data-testid="button-logout"
               >
-                <LogOut className="h-4 w-4 mr-2" />
-                {isLoggingOut ? "Logging out..." : "Logout"}
+                <LogOut className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{isLoggingOut ? "Logging out..." : "Logout"}</span>
               </Button>
             </div>
           </div>
@@ -113,7 +113,7 @@ export default function Dashboard() {
               <div className="w-32 h-32 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full blur-3xl"></div>
             </div>
             <div className="relative">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-4">
                 Welcome back, {typedUser?.firstName}!
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
