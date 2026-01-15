@@ -147,7 +147,7 @@ export default function Landing() {
                 MarginMix is <span className="font-semibold">not</span> a productivity tool.
               </p>
               <p className="text-center text-xl font-medium text-gray-900 dark:text-white">
-                It is a decision-support system for senior leaders approving work.
+                It is a decision-support system for senior leaders.
               </p>
               <p className="text-center">
                 MarginMix evaluates whether an engagement is economically viable before delivery begins — using a workforce-intensity lens that makes shadow labour visible.
@@ -178,12 +178,8 @@ export default function Landing() {
                   <span className="text-gray-700 dark:text-gray-300">Agencies and consultancies with 500–5,000 employees</span>
                 </li>
                 <li className="flex items-start gap-3">
-                  <Users className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-gray-700 dark:text-gray-300">Leadership teams approving fixed-fee or retainer work</span>
-                </li>
-                <li className="flex items-start gap-3">
                   <Briefcase className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-gray-700 dark:text-gray-300">CFOs, COOs, Managing Partners, and Client Leads</span>
+                  <span className="text-gray-700 dark:text-gray-300">CEOs, CFOs, COOs, Managing Partners, and Client Leads</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
