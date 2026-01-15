@@ -134,7 +134,7 @@ export default function Assessment() {
             <p>
               You're about to provide information for a <strong>Margin Risk Assessment</strong>.
             </p>
-            <p>
+            <p className="text-emerald-600 dark:text-emerald-400">
               MarginMix is currently being built as a decision system for assessing margin risk early — before delivery begins. While the platform is in development, assessments are conducted using a structured review of engagement assumptions, workforce intensity, and senior involvement.
             </p>
             <p>
