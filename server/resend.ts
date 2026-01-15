@@ -134,7 +134,7 @@ export async function sendAssessmentEmail(assessmentData: {
 
   const result = await client.emails.send({
     from: fromEmail || 'MarginMix <onboarding@resend.dev>',
-    to: ['sid1612@gmail.com'],
+    to: ['sid@marginmix.ai'],
     subject: `New Margin Risk Assessment: ${assessmentData.organisationName} - ${assessmentData.fullName}`,
     html: htmlContent
   });
