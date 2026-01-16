@@ -77,7 +77,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-              Most <span className="text-emerald-600 dark:text-emerald-400">Agencies & Consulting Firms</span> lose margin long before delivery begins.
+              Most <span className="text-emerald-600 dark:text-emerald-400">Agencies & Consulting Firms</span> lose margin long before delivery begins!
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               MarginMix helps agency and consulting leaders assess margin risk early — by accounting for hidden senior effort, coordination overhead, and workforce intensity.
@@ -324,7 +324,10 @@ export default function Landing() {
           <div className="text-center">
             <h3 className="text-2xl font-bold text-emerald-400 mb-1">MarginMix</h3>
             <p className="text-sm italic text-gray-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</p>
-            <p className="text-gray-300 mb-6">
+            <Link href="/founder">
+              <span className="text-emerald-400 hover:text-emerald-300 underline cursor-pointer text-sm font-medium">Why MarginMix Exists →</span>
+            </Link>
+            <p className="text-gray-300 mb-6 mt-4">
               MarginMix is a decision system for margin governance — not a delivery or productivity platform.
             </p>
             <p className="text-gray-400 text-sm mb-2">
