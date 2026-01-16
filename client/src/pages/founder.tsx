@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import founderPhoto from "@assets/1586921422945_1768559339757.jpeg";
 
 export default function Founder() {
   return (
@@ -201,15 +202,26 @@ export default function Founder() {
               About Me
             </h2>
 
-            <p>
-              I've spent my career across creative, media, corporate marketing and performance-led environments working with global networks including Dentsu, Ogilvy, Grey, Publicis as well as building and running an independent consultancy.
-            </p>
+            <div className="flex flex-col sm:flex-row gap-6 items-start">
+              <img 
+                src={founderPhoto} 
+                alt="Siddhartha Dasgupta (Sid)" 
+                className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-emerald-600 flex-shrink-0"
+              />
+              <div className="space-y-4">
+                <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                  Siddhartha Dasgupta (Sid)
+                </p>
+                <p>
+                  I've spent my career across creative, media, corporate marketing and performance-led environments working with global networks including Dentsu, Ogilvy, Grey, Publicis as well as building and running an independent consultancy.
+                </p>
+                <p>
+                  I've led large accounts, managed cross-market teams, sat in commercial and operational conversations, and been accountable for both growth and profitability.
+                </p>
+              </div>
+            </div>
 
-            <p>
-              I've led large accounts, managed cross-market teams, sat in commercial and operational conversations, and been accountable for both growth and profitability.
-            </p>
-
-            <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-lg">
+            <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-lg mt-6">
               MarginMix is not an abstract idea.<br />
               It is a synthesis of patterns observed over years inside the system.
             </p>
