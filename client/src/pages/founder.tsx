@@ -312,11 +312,11 @@ export default function Founder() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Link href="/assessment">
             <Button 
-              size="lg" 
-              className="h-14 sm:h-16 text-lg sm:text-xl px-8 sm:px-12 bg-white hover:bg-gray-100 text-emerald-700 rounded-xl font-semibold shadow-lg"
+              size="default" 
+              className="h-12 text-base px-6 bg-white hover:bg-gray-100 text-emerald-700 rounded-xl font-semibold shadow-lg"
             >
               Run a Margin Risk Assessment
-              <ArrowRight className="ml-2 h-6 w-6" />
+              <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
           </Link>
         </div>
