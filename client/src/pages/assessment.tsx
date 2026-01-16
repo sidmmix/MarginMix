@@ -47,6 +47,7 @@ const assessmentSchema = z.object({
   iterationIntensity: z.string().min(1, "Please select iteration intensity"),
   scopeChangeLikelihood: z.string().min(1, "Please select scope change likelihood"),
   crossFunctionalCoordination: z.string().min(1, "Please select cross-functional coordination"),
+  aiImpactMeasurement: z.string().min(1, "Please select AI impact measurement status"),
   openSignal: z.string().optional(),
 });
 
@@ -74,6 +75,7 @@ export default function Assessment() {
       iterationIntensity: "",
       scopeChangeLikelihood: "",
       crossFunctionalCoordination: "",
+      aiImpactMeasurement: "",
       openSignal: "",
     },
   });
@@ -145,7 +147,7 @@ export default function Assessment() {
               senior involvement, and coordination overhead — not delivery performance or individual productivity.
             </p>
             <p>
-              You'll be asked <strong>16 short, judgment-based questions</strong>, all designed as simple 
+              You'll be asked <strong>17 short, judgment-based questions</strong>, all designed as simple 
               dropdown selections. The form takes approximately <strong>5 minutes</strong> to complete.
             </p>
             <p>
@@ -530,6 +532,30 @@ export default function Assessment() {
                     </FormItem>
                   )}
                 />
+
+                {/* Q16: AI Impact Measurement */}
+                <FormField
+                  control={form.control}
+                  name="aiImpactMeasurement"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>16. Are you measuring the Impact of AI in your Client Delivery?</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select an option" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="yes">Yes</SelectItem>
+                          <SelectItem value="no">No</SelectItem>
+                          <SelectItem value="not_applicable">Not Applicable</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </CardContent>
             </Card>
 
@@ -541,14 +567,14 @@ export default function Assessment() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Q16: Open Signal */}
+                {/* Q17: Open Signal */}
                 <FormField
                   control={form.control}
                   name="openSignal"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        16. Is there anything about this particular client engagement that feels risky or unusual?
+                        17. Is there anything about this particular client engagement that feels risky or unusual?
                       </FormLabel>
                       <FormControl>
                         <Textarea

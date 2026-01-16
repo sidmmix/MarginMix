@@ -18,6 +18,7 @@ export async function sendAssessmentEmail(assessmentData: {
   iterationIntensity: string;
   scopeChangeLikelihood: string;
   crossFunctionalCoordination: string;
+  aiImpactMeasurement: string;
   openSignal?: string | null;
   submittedAt: Date;
 }) {
@@ -33,6 +34,7 @@ export async function sendAssessmentEmail(assessmentData: {
     { label: "Iteration Intensity", value: assessmentData.iterationIntensity },
     { label: "Scope Change Likelihood", value: assessmentData.scopeChangeLikelihood },
     { label: "Cross-Functional Coordination", value: assessmentData.crossFunctionalCoordination },
+    { label: "AI Impact Measurement", value: assessmentData.aiImpactMeasurement },
   ];
 
   const responseLines = questions

@@ -229,6 +229,7 @@ export const marginAssessments = pgTable("margin_assessments", {
   iterationIntensity: varchar("iteration_intensity", { length: 50 }).notNull(),
   scopeChangeLikelihood: varchar("scope_change_likelihood", { length: 50 }).notNull(),
   crossFunctionalCoordination: varchar("cross_functional_coordination", { length: 50 }).notNull(),
+  aiImpactMeasurement: varchar("ai_impact_measurement", { length: 50 }).notNull().default("not_applicable"),
   openSignal: text("open_signal"),
   status: varchar("status", { length: 50 }).notNull().default("pending"),
   createdAt: timestamp("created_at").notNull().default(sql`now()`),
