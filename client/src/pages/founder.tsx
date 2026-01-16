@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft, ArrowRight, AlertTriangle, Eye, Target, Lightbulb, UserCheck, Building2 } from "lucide-react";
 import founderPhoto from "@assets/1586921422945_1768559339757.jpeg";
 
 export default function Founder() {
@@ -32,221 +33,296 @@ export default function Founder() {
         </div>
       </nav>
 
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
-        <article className="prose prose-lg dark:prose-invert max-w-none">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-8">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white py-12 sm:py-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
             Why MarginMix Exists
           </h1>
+          <p className="text-xl sm:text-2xl text-emerald-100 font-medium">
+            Most agencies & consulting firms don't lose margin in a dramatic way.
+          </p>
+        </div>
+      </section>
 
-          <div className="space-y-6 text-gray-700 dark:text-gray-300">
-            <p className="text-xl font-medium text-gray-900 dark:text-white">
-              Most agencies & consulting firms don't lose margin in a dramatic way.
-            </p>
+      {/* The Silent Pattern */}
+      <section className="py-12 sm:py-16 bg-white dark:bg-gray-800">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid sm:grid-cols-2 gap-4 mb-8">
+            <Card className="bg-gray-50 dark:bg-gray-900 border-0">
+              <CardContent className="p-6 text-center">
+                <p className="text-lg text-gray-700 dark:text-gray-300">They win work that looks commercially sound.</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gray-50 dark:bg-gray-900 border-0">
+              <CardContent className="p-6 text-center">
+                <p className="text-lg text-gray-700 dark:text-gray-300">The team is busy.</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gray-50 dark:bg-gray-900 border-0">
+              <CardContent className="p-6 text-center">
+                <p className="text-lg text-gray-700 dark:text-gray-300">The client is satisfied.</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-gray-50 dark:bg-gray-900 border-0">
+              <CardContent className="p-6 text-center">
+                <p className="text-lg text-gray-700 dark:text-gray-300">Delivery feels under control.</p>
+              </CardContent>
+            </Card>
+          </div>
 
-            <div className="space-y-2 text-lg">
-              <p>They win work that looks commercially sound.</p>
-              <p>The team is busy.</p>
-              <p>The client is satisfied.</p>
-              <p>Delivery feels under control.</p>
+          <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-6 rounded-r-lg mb-8">
+            <div className="flex items-start gap-4">
+              <AlertTriangle className="h-6 w-6 text-amber-500 flex-shrink-0 mt-1" />
+              <div className="space-y-3 text-gray-700 dark:text-gray-300">
+                <p className="font-medium">And yet, a few months in, margin starts to feel… harder to explain.</p>
+                <p>Senior leaders are spending more time than expected. Conversations multiply. Decisions that should be straightforward take longer.</p>
+                <p className="text-amber-700 dark:text-amber-400 font-semibold">None of this feels like failure. But somehow, the economics don't add up.</p>
+              </div>
             </div>
+          </div>
 
-            <p>
-              And yet, a few months in, margin starts to feel… harder to explain.
-            </p>
+          <p className="text-lg text-gray-600 dark:text-gray-400 text-center">
+            This pattern shows up repeatedly — across retainers, fixed-fee projects, and complex transformation work — and it rarely surfaces early enough to act on.
+          </p>
+        </div>
+      </section>
 
-            <div className="space-y-2">
-              <p>Senior leaders are spending more time than expected.</p>
-              <p>Conversations multiply.</p>
-              <p>Decisions that should be straightforward take longer.</p>
-              <p>Small changes accumulate, even when no one is explicitly "scope creeping".</p>
+      {/* The Pattern Behind the Problem */}
+      <section className="py-12 sm:py-16 bg-emerald-50 dark:bg-emerald-900/10">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center">
+              <Eye className="h-6 w-6 text-white" />
             </div>
-
-            <p>
-              None of this feels like failure.<br />
-              But somehow, the economics don't add up the way they were meant to.
-            </p>
-
-            <p>
-              This pattern shows up repeatedly — across retainers, fixed-fee projects, and complex transformation work — and it rarely surfaces early enough to act on.
-            </p>
-
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-12 mb-6">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               The Pattern Behind the Problem
             </h2>
+          </div>
 
-            <p>
-              When margin erodes, the conversation usually turns to pricing, utilization, or delivery efficiency.
-            </p>
+          <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
+            When margin erodes, the conversation usually turns to pricing, utilization, or delivery efficiency. Sometimes those are the issues. <span className="font-semibold text-emerald-600 dark:text-emerald-400">Often, they're not.</span>
+          </p>
 
-            <p>
-              Sometimes those are the issues. Often, they're not.
-            </p>
+          <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
+            More commonly, margin is being quietly shaped by things that sit outside formal reporting:
+          </p>
 
-            <p>
-              More commonly, margin is being quietly shaped by things that sit outside formal reporting:
-            </p>
+          <div className="space-y-4 mb-8">
+            <div className="flex items-start gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">1</span>
+              </div>
+              <p className="text-gray-700 dark:text-gray-300">How much senior attention an engagement really demands over time</p>
+            </div>
+            <div className="flex items-start gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">2</span>
+              </div>
+              <p className="text-gray-700 dark:text-gray-300">How much coordination is required as stakeholders multiply</p>
+            </div>
+            <div className="flex items-start gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
+              <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-emerald-600 dark:text-emerald-400 font-bold">3</span>
+              </div>
+              <p className="text-gray-700 dark:text-gray-300">How often work needs to be revisited, refined, or re-explained</p>
+            </div>
+          </div>
 
-            <ul className="space-y-3 my-6">
-              <li className="flex items-start gap-3">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">•</span>
-                <span>How much senior attention an engagement really demands over time</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">•</span>
-                <span>How much coordination is required as stakeholders multiply</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">•</span>
-                <span>How often work needs to be revisited, refined, or re-explained</span>
-              </li>
-            </ul>
+          <Card className="bg-emerald-600 dark:bg-emerald-700 border-0">
+            <CardContent className="p-6">
+              <p className="text-white text-lg sm:text-xl font-semibold text-center">
+                MarginMix exists to make this pattern visible earlier — while there are still decisions to be made.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
 
-            <p>
-              These pressures don't appear cleanly in timesheets.<br />
-              They don't always trigger alarms.<br />
-              And by the time they show up in a P&L, they're already embedded in how the work is being done.
-            </p>
-
-            <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-xl">
-              MarginMix exists to make this pattern visible earlier — while there are still decisions to be made.
-            </p>
-
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-12 mb-6">
+      {/* The Problem I Kept Seeing */}
+      <section className="py-12 sm:py-16 bg-white dark:bg-gray-800">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-gray-900 dark:bg-gray-700 rounded-full flex items-center justify-center">
+              <Target className="h-6 w-6 text-white" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               The Problem I Kept Seeing
             </h2>
+          </div>
 
-            <p>
-              Across large agency networks and consulting-style engagements, margin conversations tend to focus on:
+          <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
+            Across large agency networks and consulting-style engagements, margin conversations tend to focus on:
+          </p>
+
+          <div className="flex flex-wrap gap-3 mb-8">
+            <span className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300">Pricing discipline</span>
+            <span className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300">Utilization targets</span>
+            <span className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300">Delivery efficiency</span>
+          </div>
+
+          <div className="bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800 p-6 rounded-xl mb-6">
+            <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
+              These matter, but they miss a deeper structural issue: <strong className="text-teal-700 dark:text-teal-400">workforce intensity</strong> — how much senior attention, coordination, and cognitive load an engagement quietly demands over time.
             </p>
-
-            <ul className="space-y-2 my-6">
-              <li className="flex items-start gap-3">
-                <span className="text-gray-400">•</span>
-                <span>Pricing discipline</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-gray-400">•</span>
-                <span>Utilization targets</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-gray-400">•</span>
-                <span>Delivery efficiency</span>
-              </li>
-            </ul>
-
-            <p>
-              These matter, but they miss a deeper structural issue: <strong>workforce intensity</strong> — how much senior attention, coordination, and cognitive load an engagement quietly demands over time.
+            <p className="text-teal-700 dark:text-teal-400 font-semibold">
+              This "shadow labor" is rarely tracked formally. Yet it is often the single biggest driver of margin erosion.
             </p>
+          </div>
 
-            <p>
-              This "shadow labor" is rarely tracked formally.<br />
-              Yet it is often the single biggest driver of margin erosion.
-            </p>
+          <p className="text-lg font-semibold text-gray-900 dark:text-white text-center">
+            MarginMix is an attempt to make this visible before it becomes a problem.
+          </p>
+        </div>
+      </section>
 
-            <p className="font-semibold">
-              MarginMix is an attempt to make this visible before it becomes a problem.
-            </p>
-
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-12 mb-6">
+      {/* What MarginMix Is (and Isn't) */}
+      <section className="py-12 sm:py-16 bg-gray-100 dark:bg-gray-900">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center">
+              <Lightbulb className="h-6 w-6 text-white" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               What MarginMix Is (and Isn't)
             </h2>
+          </div>
 
-            <p>
-              MarginMix is not a productivity tool.<br />
-              It is not a time-tracking system.<br />
-              It is not a dashboard designed to optimize utilization.
-            </p>
+          <div className="grid sm:grid-cols-3 gap-4 mb-8">
+            <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+              <CardContent className="p-4 text-center">
+                <p className="text-red-600 dark:text-red-400 font-medium">Not a productivity tool</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+              <CardContent className="p-4 text-center">
+                <p className="text-red-600 dark:text-red-400 font-medium">Not a time-tracking system</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
+              <CardContent className="p-4 text-center">
+                <p className="text-red-600 dark:text-red-400 font-medium">Not a utilization dashboard</p>
+              </CardContent>
+            </Card>
+          </div>
 
-            <p>
-              Instead, MarginMix is a <strong>decision lens</strong> — designed to help leaders assess whether work is structurally viable based on how it is likely to be staffed, coordinated, and governed.
-            </p>
+          <Card className="bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 mb-6">
+            <CardContent className="p-6">
+              <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
+                Instead, MarginMix is a <strong className="text-emerald-700 dark:text-emerald-400">decision lens</strong> — designed to help leaders assess whether work is structurally viable based on how it is likely to be staffed, coordinated, and governed.
+              </p>
+            </CardContent>
+          </Card>
 
-            <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-lg">
+          <div className="text-center">
+            <p className="text-xl text-emerald-600 dark:text-emerald-400 font-semibold">
               The goal is not to optimize people.<br />
               The goal is to make better economic decisions about work.
             </p>
+          </div>
+        </div>
+      </section>
 
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-12 mb-6">
+      {/* Why Founder-Reviewed */}
+      <section className="py-12 sm:py-16 bg-white dark:bg-gray-800">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-teal-600 rounded-full flex items-center justify-center">
+              <UserCheck className="h-6 w-6 text-white" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               Why This Starts as a Founder-Reviewed Assessment
             </h2>
+          </div>
 
-            <p>
-              At this stage, MarginMix assessments are personally reviewed by me.
-            </p>
+          <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
+            At this stage, MarginMix assessments are <span className="font-semibold text-teal-600 dark:text-teal-400">personally reviewed by me</span>. That choice is intentional.
+          </p>
 
-            <p>
-              That choice is intentional.
-            </p>
+          <p className="text-lg text-gray-700 dark:text-gray-300 mb-8">
+            Before this framework can be encoded into an AI-led system, it needs to be pressure-tested against real organizational context — nuance, politics, delivery realities, and leadership behavior that no automated system can fully capture early on.
+          </p>
 
-            <p>
-              Before this framework can be encoded into an AI-led system, it needs to be pressure-tested against real organizational context — nuance, politics, delivery realities, and leadership behavior that no automated system can fully capture early on.
-            </p>
-
-            <p>This phase is about:</p>
-
-            <ul className="space-y-2 my-6">
-              <li className="flex items-start gap-3">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">•</span>
-                <span>Validating the decision logic</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">•</span>
-                <span>Understanding where judgment matters most</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">•</span>
-                <span>Learning where structure breaks down in practice</span>
-              </li>
-            </ul>
-
-            <p>
-              The system will eventually see the light of the day — once the thinking is sound.
-            </p>
-
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mt-12 mb-6">
-              About Me
-            </h2>
-
-            <div className="flex flex-col sm:flex-row gap-6 items-start">
-              <img 
-                src={founderPhoto} 
-                alt="Siddhartha Dasgupta (Sid)" 
-                className="w-32 h-32 sm:w-40 sm:h-40 rounded-full object-cover border-4 border-emerald-600 flex-shrink-0"
-              />
-              <div className="space-y-4">
-                <p className="text-xl font-semibold text-gray-900 dark:text-white">
-                  Siddhartha Dasgupta (Sid)
-                </p>
-                <p>
-                  I've spent my career across creative, media, corporate marketing and performance-led environments working with global networks including Dentsu, Ogilvy, Grey, Publicis as well as building and running an independent consultancy.
-                </p>
-                <p>
-                  I've led large accounts, managed cross-market teams, sat in commercial and operational conversations, and been accountable for both growth and profitability.
-                </p>
+          <div className="bg-gradient-to-r from-teal-50 to-emerald-50 dark:from-teal-900/20 dark:to-emerald-900/20 p-6 rounded-xl">
+            <p className="font-semibold text-gray-900 dark:text-white mb-4">This phase is about:</p>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                <p className="text-gray-700 dark:text-gray-300">Validating the decision logic</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                <p className="text-gray-700 dark:text-gray-300">Understanding where judgment matters most</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
+                <p className="text-gray-700 dark:text-gray-300">Learning where structure breaks down in practice</p>
               </div>
             </div>
+          </div>
 
-            <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-lg mt-6">
+          <p className="text-lg text-gray-600 dark:text-gray-400 mt-6 text-center italic">
+            The system will eventually see the light of the day — once the thinking is sound.
+          </p>
+        </div>
+      </section>
+
+      {/* About Me */}
+      <section className="py-12 sm:py-16 bg-gradient-to-br from-gray-900 to-emerald-900 text-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center">
+              <Building2 className="h-6 w-6 text-white" />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold">
+              About Me
+            </h2>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-8 items-center sm:items-start">
+            <img 
+              src={founderPhoto} 
+              alt="Siddhartha Dasgupta (Sid)" 
+              className="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl object-cover border-4 border-emerald-400 flex-shrink-0 shadow-xl"
+            />
+            <div className="space-y-4 text-center sm:text-left">
+              <p className="text-2xl font-bold text-emerald-400">
+                Siddhartha Dasgupta (Sid)
+              </p>
+              <p className="text-gray-300 text-lg">
+                I've spent my career across creative, media, corporate marketing and performance-led environments working with global networks including <span className="text-white font-medium">Dentsu, Ogilvy, Grey, Publicis</span> as well as building and running an independent consultancy.
+              </p>
+              <p className="text-gray-300 text-lg">
+                I've led large accounts, managed cross-market teams, sat in commercial and operational conversations, and been accountable for both growth and profitability.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-10 text-center">
+            <p className="text-xl text-emerald-400 font-semibold">
               MarginMix is not an abstract idea.<br />
               It is a synthesis of patterns observed over years inside the system.
             </p>
           </div>
+        </div>
+      </section>
 
-          <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-            <Link href="/assessment">
-              <Button 
-                size="lg" 
-                className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
-              >
-                Run a Margin Risk Assessment
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
-        </article>
-      </main>
+      {/* CTA Section */}
+      <section className="py-12 sm:py-16 bg-emerald-600">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <Link href="/assessment">
+            <Button 
+              size="lg" 
+              className="h-14 sm:h-16 text-lg sm:text-xl px-8 sm:px-12 bg-white hover:bg-gray-100 text-emerald-700 rounded-xl font-semibold shadow-lg"
+            >
+              Run a Margin Risk Assessment
+              <ArrowRight className="ml-2 h-6 w-6" />
+            </Button>
+          </Link>
+        </div>
+      </section>
 
-      <footer className="bg-gray-900 text-white py-8 sm:py-12 mt-8 sm:mt-12">
+      <footer className="bg-gray-900 text-white py-8 sm:py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h3 className="text-xl sm:text-2xl font-bold text-emerald-400 mb-1">MarginMix</h3>
