@@ -334,7 +334,7 @@ export default function Landing() {
               Digital Lexicon, Delaware, DE
             </p>
             <p className="text-gray-400 text-sm">
-              © 2025 Digital Lexicon. All rights reserved.
+              © 2026 Digital Lexicon. All rights reserved.
             </p>
           </div>
         </div>

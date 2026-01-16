@@ -86,7 +86,7 @@ export async function sendAssessmentEmail(assessmentData: {
       <div style="background: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
         <p style="color: #10b981; font-weight: bold; margin: 0;">MarginMix</p>
         <p style="color: #9ca3af; font-size: 12px; margin: 5px 0 0 0;">MarginMix is a Digital Lexicon Corp brand.</p>
-        <p style="color: #6b7280; font-size: 11px; margin: 5px 0 0 0;">© 2025 Digital Lexicon. All rights reserved.</p>
+        <p style="color: #6b7280; font-size: 11px; margin: 5px 0 0 0;">© 2026 Digital Lexicon. All rights reserved.</p>
       </div>
     </body>
     </html>
