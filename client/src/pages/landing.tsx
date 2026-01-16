@@ -150,7 +150,7 @@ export default function Landing() {
                 It is a decision-support system for senior leaders.
               </p>
               <p className="text-center">
-                MarginMix evaluates whether an engagement is economically viable before delivery begins — using a workforce-intensity lens that makes shadow labour visible.
+                MarginMix evaluates whether an engagement is economically viable before delivery begins — using a workforce-intensity lens that makes shadow labor visible.
               </p>
               <p className="text-center text-emerald-600 dark:text-emerald-400 font-semibold text-xl">
                 This is about better decisions, not better task execution.
@@ -199,11 +199,11 @@ export default function Landing() {
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-gray-400">•</span>
-                  <span>Productivity tracking or utilisation management</span>
+                  <span>Productivity tracking or utilization management</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-gray-400">•</span>
-                  <span>Delivery optimisation, task management, or dashboards</span>
+                  <span>Delivery optimization, task management, or dashboards</span>
                 </li>
               </ul>
             </div>
@@ -231,7 +231,7 @@ export default function Landing() {
                 2
               </div>
               <p className="text-gray-700 dark:text-gray-300 text-lg">
-                MarginMix evaluates workforce intensity and shadow labour risk
+                MarginMix evaluates workforce intensity and shadow labor risk
               </p>
             </div>
             <div className="text-center">
