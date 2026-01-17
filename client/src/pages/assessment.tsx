@@ -592,14 +592,14 @@ export default function Assessment() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Q17: Open Signal */}
+                {/* Q18: Open Signal */}
                 <FormField
                   control={form.control}
                   name="openSignal"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        17. Is there anything about this particular client engagement that feels risky or unusual?
+                        18. Is there anything about this particular client engagement that feels risky or unusual?
                       </FormLabel>
                       <FormControl>
                         <Textarea
