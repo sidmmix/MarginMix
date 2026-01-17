@@ -38,6 +38,7 @@ const assessmentSchema = z.object({
   organisationName: z.string().min(1, "Organization name is required"),
   organisationSize: z.string().min(1, "Please select organization size"),
   engagementType: z.string().min(1, "Please select engagement type"),
+  specifyContext: z.string().min(1, "Please select context"),
   engagementDuration: z.string().min(1, "Please select engagement duration"),
   clientVolatility: z.string().min(1, "Please select client volatility"),
   stakeholderComplexity: z.string().min(1, "Please select stakeholder complexity"),
@@ -66,6 +67,7 @@ export default function Assessment() {
       organisationName: "",
       organisationSize: "",
       engagementType: "",
+      specifyContext: "",
       engagementDuration: "",
       clientVolatility: "",
       stakeholderComplexity: "",
@@ -295,13 +297,36 @@ export default function Assessment() {
                   )}
                 />
 
-                {/* Q7: Client Engagement Duration */}
+                {/* Q7: Specify Context */}
+                <FormField
+                  control={form.control}
+                  name="specifyContext"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>7. Specify Context</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select context" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="single-client">Single client</SelectItem>
+                          <SelectItem value="group-of-clients">Group of clients - Org level</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Q8: Client Engagement Duration */}
                 <FormField
                   control={form.control}
                   name="engagementDuration"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>7. Client Engagement Duration</FormLabel>
+                      <FormLabel>8. Client Engagement Duration</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -326,7 +351,7 @@ export default function Assessment() {
                   name="clientVolatility"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>8. Client Volatility</FormLabel>
+                      <FormLabel>9. Client Volatility</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -350,7 +375,7 @@ export default function Assessment() {
                   name="stakeholderComplexity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>9. Stakeholder Complexity</FormLabel>
+                      <FormLabel>10. Stakeholder Complexity</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -384,7 +409,7 @@ export default function Assessment() {
                   name="seniorLeadershipInvolvement"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>10. Planned Senior Leadership Involvement</FormLabel>
+                      <FormLabel>11. Planned Senior Leadership Involvement</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -409,7 +434,7 @@ export default function Assessment() {
                   name="midLevelOversight"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>11. Mid-Level Oversight Intensity</FormLabel>
+                      <FormLabel>12. Mid-Level Oversight Intensity</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -433,7 +458,7 @@ export default function Assessment() {
                   name="executionThinkingMix"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>12. Execution vs Thinking Mix</FormLabel>
+                      <FormLabel>13. Execution vs Thinking Mix</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -467,7 +492,7 @@ export default function Assessment() {
                   name="iterationIntensity"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>13. Expected Iteration Intensity</FormLabel>
+                      <FormLabel>14. Expected Iteration Intensity</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -491,7 +516,7 @@ export default function Assessment() {
                   name="scopeChangeLikelihood"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>14. Likelihood of Scope Change</FormLabel>
+                      <FormLabel>15. Likelihood of Scope Change</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -515,7 +540,7 @@ export default function Assessment() {
                   name="crossFunctionalCoordination"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>15. Cross-Functional Coordination Required</FormLabel>
+                      <FormLabel>16. Cross-Functional Coordination Required</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -539,7 +564,7 @@ export default function Assessment() {
                   name="aiImpactMeasurement"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>16. Are you measuring the Impact of AI in your Client Delivery?</FormLabel>
+                      <FormLabel>17. Are you measuring the Impact of AI in your Client Delivery?</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
