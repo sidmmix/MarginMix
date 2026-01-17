@@ -42,6 +42,9 @@ export default function Landing() {
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
+              <Link href="/founder">
+                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-sm font-medium cursor-pointer hidden sm:inline">Why MarginMix Exists</span>
+              </Link>
               {isAuthenticated && user ? (
                 <div className="flex items-center space-x-2 sm:space-x-3">
                   <div className="hidden sm:flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
@@ -324,9 +327,6 @@ export default function Landing() {
           <div className="text-center">
             <h3 className="text-2xl font-bold text-emerald-400 mb-1">MarginMix</h3>
             <p className="text-sm italic text-gray-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</p>
-            <Link href="/founder">
-              <span className="text-emerald-400 hover:text-emerald-300 underline cursor-pointer text-sm font-medium">Why MarginMix Exists →</span>
-            </Link>
             <p className="text-gray-300 mb-6 mt-4">
               MarginMix is a decision system for margin governance — not a delivery or productivity platform.
             </p>

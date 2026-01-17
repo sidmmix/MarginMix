@@ -117,12 +117,17 @@ export default function Assessment() {
                 <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
               </div>
             </Link>
-            <Link href="/">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Back to Home</span>
-              </Button>
-            </Link>
+            <div className="flex items-center space-x-2 sm:space-x-4">
+              <Link href="/founder">
+                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-sm font-medium cursor-pointer hidden sm:inline">Why MarginMix Exists</span>
+              </Link>
+              <Link href="/">
+                <Button variant="ghost" size="sm">
+                  <ArrowLeft className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Back to Home</span>
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </nav>
