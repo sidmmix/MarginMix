@@ -267,7 +267,7 @@ export default function Founder() {
           </div>
 
           <p className="text-lg text-gray-600 dark:text-gray-400 mt-6 text-center italic">
-            The system will eventually see the light of the day — once the thinking is sound.
+            The system will eventually see the light of the day — once the decision logic is proven in practice.
           </p>
         </div>
       </section>
