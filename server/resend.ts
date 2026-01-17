@@ -25,8 +25,8 @@ export async function sendAssessmentEmail(assessmentData: {
 }) {
   const questions = [
     { label: "Organization Size", value: assessmentData.organisationSize },
-    { label: "Engagement Type", value: assessmentData.engagementType },
     { label: "Specify Context", value: assessmentData.specifyContext },
+    { label: "Engagement Type", value: assessmentData.engagementType },
     { label: "Engagement Duration", value: assessmentData.engagementDuration },
     { label: "Client Volatility", value: assessmentData.clientVolatility },
     { label: "Stakeholder Complexity", value: assessmentData.stakeholderComplexity },

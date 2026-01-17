@@ -273,13 +273,36 @@ export default function Assessment() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Q6: Engagement Type */}
+                {/* Q6: Specify Context */}
+                <FormField
+                  control={form.control}
+                  name="specifyContext"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>6. Specify Context</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select context" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="single-client">Single client</SelectItem>
+                          <SelectItem value="group-of-clients">Group of clients - Org level</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Q7: Engagement Type */}
                 <FormField
                   control={form.control}
                   name="engagementType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>6. Engagement Type</FormLabel>
+                      <FormLabel>7. Engagement Type</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -290,29 +313,6 @@ export default function Assessment() {
                           <SelectItem value="fixed-fee">Fixed fee</SelectItem>
                           <SelectItem value="retainer">Retainer</SelectItem>
                           <SelectItem value="hybrid">Hybrid</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q7: Specify Context */}
-                <FormField
-                  control={form.control}
-                  name="specifyContext"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>7. Specify Context</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select context" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="single-client">Single client</SelectItem>
-                          <SelectItem value="group-of-clients">Group of clients - Org level</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
