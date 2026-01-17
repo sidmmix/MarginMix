@@ -149,7 +149,7 @@ export default function Assessment() {
               senior involvement, and coordination overhead — not delivery performance or individual productivity.
             </p>
             <p>
-              You'll be asked <strong>17 short, judgment-based questions</strong>, all designed as simple 
+              You'll be asked <strong>18 short, judgment-based questions</strong>, all designed as simple 
               dropdown selections. The form takes approximately <strong>5 minutes</strong> to complete.
             </p>
             <p>
