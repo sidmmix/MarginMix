@@ -43,7 +43,7 @@ export default function Landing() {
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
               <Link href="/founder">
-                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-sm font-medium cursor-pointer hidden sm:inline">Why MarginMix Exists</span>
+                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs sm:text-sm font-medium cursor-pointer">Why MarginMix Exists</span>
               </Link>
               {isAuthenticated && user ? (
                 <div className="flex items-center space-x-2 sm:space-x-3">
