@@ -30,6 +30,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
 import { ArrowLeft, Send } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const assessmentSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -57,6 +58,7 @@ type AssessmentFormData = z.infer<typeof assessmentSchema>;
 export default function Assessment() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<AssessmentFormData>({
     resolver: zodResolver(assessmentSchema),
@@ -100,6 +102,19 @@ export default function Assessment() {
       console.error("Failed to submit assessment:", error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const onInvalid = () => {
+    toast({
+      title: "Please complete all required questions",
+      description: "All 17 questions must be answered before submitting. Only the Open Signal question is optional.",
+      variant: "destructive",
+    });
+    // Scroll to the first error
+    const firstError = document.querySelector('[data-invalid="true"]') || document.querySelector('.text-destructive');
+    if (firstError) {
+      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   };
 
@@ -168,7 +183,7 @@ export default function Assessment() {
 
         {/* Assessment Form */}
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-8">
             {/* Section A: Contact & Context */}
             <Card>
               <CardHeader>
