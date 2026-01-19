@@ -153,32 +153,23 @@ export default function Assessment() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
-            <p className="text-lg">Hi There,</p>
-            <p className="font-semibold">Thank you for taking the first step.</p>
+            <p className="text-lg font-semibold">Welcome.</p>
             <p>
-              You're about to provide information for a <strong>Margin Risk Assessment</strong>.
+              You're about to complete a <strong>Margin Risk Assessment</strong> for a specific client engagement decision.
             </p>
             <p className="text-emerald-600 dark:text-emerald-400">
-              MarginMix is currently being built as a decision system for assessing margin risk early — before delivery begins. While the platform is in development, assessments are conducted using a structured review of engagement assumptions, workforce intensity, and senior involvement.
+              MarginMix evaluates margin risk before delivery begins by examining workforce intensity, senior involvement, and coordination overhead — not delivery performance or individual productivity.
             </p>
             <p>
-              This assessment evaluates the economic viability of work by examining workforce intensity, 
-              senior involvement, and coordination overhead — not delivery performance or individual productivity.
+              You'll answer <strong>19 short, judgment-based questions</strong> using simple dropdowns.<br />
+              The assessment takes approximately <strong>5 minutes</strong>.
             </p>
             <p>
-              You'll be asked <strong>19 short, judgment-based questions</strong>, all designed as simple 
-              dropdown selections. The form takes approximately <strong>5 minutes</strong> to complete.
-            </p>
-            <p>
-              Once submitted, a structured Margin Risk Assessment — including a clear margin-risk verdict 
-              and decision guidance — will be prepared and delivered to the email you provide below.
-            </p>
-            <p className="font-bold mt-4">
-              This assessment is designed to be used in the context of a specific client engagement decision — such as a new engagement / renewal / scope change / delivery escalation — not as a general diagnostic.
+              A structured margin-risk verdict and decision guidance will be prepared and delivered to your email.
             </p>
             <p className="text-gray-600 dark:text-gray-400 mt-4 font-bold">
-              No financial data, timesheets or individual performance information is required.<br />
-              All Information is treated Confidentially. MarginMix is GDPR & CCPA compliant.
+              No financial data, timesheets, or individual performance information is required.<br />
+              All information is treated confidentially. MarginMix is GDPR & CCPA compliant.
             </p>
             <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
               Let's begin.
