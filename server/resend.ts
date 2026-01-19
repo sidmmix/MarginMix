@@ -8,6 +8,7 @@ export async function sendAssessmentEmail(assessmentData: {
   roleTitle: string;
   organisationName: string;
   organisationSize: string;
+  decisionEvaluating: string;
   engagementType: string;
   specifyContext: string;
   engagementDuration: string;
@@ -25,6 +26,7 @@ export async function sendAssessmentEmail(assessmentData: {
 }) {
   const questions = [
     { label: "Organization Size", value: assessmentData.organisationSize },
+    { label: "Decision Evaluating", value: assessmentData.decisionEvaluating },
     { label: "Specify Context", value: assessmentData.specifyContext },
     { label: "Engagement Type", value: assessmentData.engagementType },
     { label: "Engagement Duration", value: assessmentData.engagementDuration },

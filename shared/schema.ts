@@ -219,6 +219,7 @@ export const marginAssessments = pgTable("margin_assessments", {
   roleTitle: varchar("role_title", { length: 255 }).notNull(),
   organisationName: varchar("organisation_name", { length: 255 }).notNull(),
   organisationSize: varchar("organisation_size", { length: 50 }).notNull(),
+  decisionEvaluating: varchar("decision_evaluating", { length: 100 }).notNull().default("exploratory"),
   engagementType: varchar("engagement_type", { length: 50 }).notNull(),
   specifyContext: varchar("specify_context", { length: 50 }).notNull().default("single-client"),
   engagementDuration: varchar("engagement_duration", { length: 50 }).notNull(),
