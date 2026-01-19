@@ -29,7 +29,8 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
-import { ArrowLeft, Send } from "lucide-react";
+import { ArrowLeft, Send, User, Building2, Briefcase, Settings, Zap, MessageSquare, CheckCircle2, Clock, Shield } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 
 const assessmentSchema = z.object({
@@ -86,6 +87,20 @@ export default function Assessment() {
     },
   });
 
+  const watchedValues = form.watch();
+  const calculateProgress = () => {
+    const requiredFields = [
+      'fullName', 'workEmail', 'roleTitle', 'organisationName', 'organisationSize',
+      'decisionEvaluating', 'engagementType', 'specifyContext', 'engagementDuration',
+      'clientVolatility', 'stakeholderComplexity', 'seniorLeadershipInvolvement',
+      'midLevelOversight', 'executionThinkingMix', 'iterationIntensity',
+      'scopeChangeLikelihood', 'crossFunctionalCoordination', 'aiImpactMeasurement'
+    ];
+    const filled = requiredFields.filter(field => watchedValues[field as keyof AssessmentFormData]?.trim()).length;
+    return Math.round((filled / requiredFields.length) * 100);
+  };
+  const progress = calculateProgress();
+
   const onSubmit = async (data: AssessmentFormData) => {
     setIsSubmitting(true);
     try {
@@ -121,9 +136,9 @@ export default function Assessment() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-emerald-50/30 to-gray-50 dark:from-gray-900 dark:via-emerald-900/10 dark:to-gray-900">
       {/* Header */}
-      <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+      <nav className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/">
@@ -134,21 +149,34 @@ export default function Assessment() {
                 <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
               </div>
             </Link>
-            <Link href="/">
-              <Button variant="ghost" size="sm">
-                <ArrowLeft className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">Back to Home</span>
-              </Button>
-            </Link>
+            <div className="flex items-center gap-4">
+              <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                <span>{progress}% complete</span>
+              </div>
+              <Link href="/">
+                <Button variant="ghost" size="sm">
+                  <ArrowLeft className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Back to Home</span>
+                </Button>
+              </Link>
+            </div>
+          </div>
+          {/* Progress Bar */}
+          <div className="pb-2">
+            <Progress value={progress} className="h-1.5 bg-gray-200 dark:bg-gray-700" />
           </div>
         </div>
       </nav>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
         {/* Intro Section */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="text-xl sm:text-2xl text-emerald-600 dark:text-emerald-400">
+        <Card className="mb-8 border-emerald-200 dark:border-emerald-800 shadow-lg overflow-hidden">
+          <div className="h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-xl sm:text-2xl text-emerald-600 dark:text-emerald-400 flex items-center gap-3">
+              <div className="p-2 bg-emerald-100 dark:bg-emerald-900/50 rounded-lg">
+                <Shield className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+              </div>
               Margin Risk Assessment
             </CardTitle>
           </CardHeader>
@@ -160,16 +188,32 @@ export default function Assessment() {
             <p className="text-emerald-600 dark:text-emerald-400">
               MarginMix evaluates margin risk before delivery begins by examining workforce intensity, senior involvement, and coordination overhead — not delivery performance or individual productivity.
             </p>
-            <p>
-              You'll answer <strong>19 short, judgment-based questions</strong> using simple dropdowns.<br />
-              The assessment takes approximately <strong>5 minutes</strong>.
-            </p>
+            <div className="flex flex-wrap gap-4 py-2">
+              <div className="flex items-center gap-2 text-sm">
+                <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <span><strong>19</strong> questions</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
+                  <Clock className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <span>~<strong>5</strong> minutes</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
+                  <Shield className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <span>GDPR & CCPA compliant</span>
+              </div>
+            </div>
             <p>
               A structured margin-risk verdict and decision guidance will be prepared and delivered to your email.
             </p>
             <p className="text-gray-600 dark:text-gray-400 mt-4 font-bold">
               No financial data, timesheets, or individual performance information is required.<br />
-              All information is treated confidentially. MarginMix is GDPR & CCPA compliant.
+              All information is treated confidentially.
             </p>
             <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
               Let's begin.
@@ -181,10 +225,12 @@ export default function Assessment() {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-8">
             {/* Section A: Contact & Context */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg text-gray-800 dark:text-gray-200">
-                  A. Contact & Context
+            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-emerald-500">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 font-bold text-sm">A</div>
+                  <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                  Contact & Context
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -303,10 +349,12 @@ export default function Assessment() {
             </Card>
 
             {/* Section B: Client Engagement Context */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg text-gray-800 dark:text-gray-200">
-                  B. Client Engagement Context
+            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-teal-500">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900/50 text-teal-600 dark:text-teal-400 font-bold text-sm">B</div>
+                  <Briefcase className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+                  Client Engagement Context
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -433,10 +481,12 @@ export default function Assessment() {
             </Card>
 
             {/* Section C: Planned Delivery Structure */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg text-gray-800 dark:text-gray-200">
-                  C. Planned Delivery Structure
+            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-cyan-500">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-100 dark:bg-cyan-900/50 text-cyan-600 dark:text-cyan-400 font-bold text-sm">C</div>
+                  <Building2 className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
+                  Planned Delivery Structure
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -516,10 +566,12 @@ export default function Assessment() {
             </Card>
 
             {/* Section D: Delivery Dynamics */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg text-gray-800 dark:text-gray-200">
-                  D. Delivery Dynamics
+            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-sky-500">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 font-bold text-sm">D</div>
+                  <Zap className="h-5 w-5 text-sky-600 dark:text-sky-400" />
+                  Delivery Dynamics
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -622,10 +674,13 @@ export default function Assessment() {
             </Card>
 
             {/* Section E: Open Signal */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg text-gray-800 dark:text-gray-200">
-                  E. Open Signal
+            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-violet-500">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 font-bold text-sm">E</div>
+                  <MessageSquare className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+                  Open Signal
+                  <span className="text-xs font-normal text-gray-500 dark:text-gray-400 ml-1">(Optional)</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -653,22 +708,25 @@ export default function Assessment() {
             </Card>
 
             {/* Submit Button */}
-            <div className="flex justify-center">
+            <div className="flex flex-col items-center gap-4">
               <Button
                 type="submit"
                 size="lg"
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-12"
+                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-12 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   "Submitting..."
                 ) : (
                   <>
-                    Submit
+                    Submit Assessment
                     <Send className="ml-2 h-5 w-5" />
                   </>
                 )}
               </Button>
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                Your margin risk assessment will be delivered to your email
+              </p>
             </div>
           </form>
         </Form>
