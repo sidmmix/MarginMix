@@ -209,7 +209,7 @@ export default function Assessment() {
               </div>
             </div>
             <p>
-              A structured margin-risk verdict and decision guidance will be prepared and delivered to your email.
+              A structured margin-risk verdict and decision guidance will be prepared and delivered to your email within 24 hours.
             </p>
             <p className="text-gray-600 dark:text-gray-400 mt-4 font-bold">
               No financial data, timesheets, or individual performance information is required.<br />
