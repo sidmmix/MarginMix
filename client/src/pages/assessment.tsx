@@ -174,7 +174,7 @@ export default function Assessment() {
               and decision guidance — will be prepared and delivered to the email you provide below.
             </p>
             <p className="font-bold mt-4">
-              This assessment is designed to be used in the context of a specific client engagement decision — such as a new engagement, renewal, scope change, or delivery escalation — not as a general diagnostic.
+              This assessment is designed to be used in the context of a specific client engagement decision — such as a new engagement / renewal / scope change / delivery escalation — not as a general diagnostic.
             </p>
             <p className="text-gray-600 dark:text-gray-400 mt-4 font-bold">
               No financial data, timesheets or individual performance information is required.<br />
