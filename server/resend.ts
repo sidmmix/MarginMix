@@ -11,7 +11,7 @@ export async function sendAssessmentEmail(assessmentData: {
   decisionEvaluating: string;
   engagementType: string;
   specifyContext: string;
-  engagementDuration: string;
+  engagementClassification: string;
   clientVolatility: string;
   stakeholderComplexity: string;
   seniorLeadershipInvolvement: string;
@@ -29,7 +29,7 @@ export async function sendAssessmentEmail(assessmentData: {
     { label: "Decision Evaluating", value: assessmentData.decisionEvaluating },
     { label: "Specify Context", value: assessmentData.specifyContext },
     { label: "Engagement Type", value: assessmentData.engagementType },
-    { label: "Engagement Duration", value: assessmentData.engagementDuration },
+    { label: "Engagement Classification", value: assessmentData.engagementClassification },
     { label: "Client Volatility", value: assessmentData.clientVolatility },
     { label: "Stakeholder Complexity", value: assessmentData.stakeholderComplexity },
     { label: "Senior Leadership Involvement", value: assessmentData.seniorLeadershipInvolvement },

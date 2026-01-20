@@ -222,7 +222,7 @@ export const marginAssessments = pgTable("margin_assessments", {
   decisionEvaluating: varchar("decision_evaluating", { length: 100 }).notNull().default("exploratory"),
   engagementType: varchar("engagement_type", { length: 50 }).notNull(),
   specifyContext: varchar("specify_context", { length: 50 }).notNull().default("single-client"),
-  engagementDuration: varchar("engagement_duration", { length: 50 }).notNull(),
+  engagementClassification: varchar("engagement_classification", { length: 100 }).notNull().default("new"),
   clientVolatility: varchar("client_volatility", { length: 100 }).notNull(),
   stakeholderComplexity: varchar("stakeholder_complexity", { length: 50 }).notNull(),
   seniorLeadershipInvolvement: varchar("senior_leadership_involvement", { length: 50 }).notNull(),

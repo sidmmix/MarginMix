@@ -42,7 +42,7 @@ const assessmentSchema = z.object({
   decisionEvaluating: z.string().min(1, "Please select what decision you are evaluating"),
   engagementType: z.string().min(1, "Please select engagement type"),
   specifyContext: z.string().min(1, "Please select context"),
-  engagementDuration: z.string().min(1, "Please select engagement duration"),
+  engagementClassification: z.string().min(1, "Please select engagement classification"),
   clientVolatility: z.string().min(1, "Please select client volatility"),
   stakeholderComplexity: z.string().min(1, "Please select stakeholder complexity"),
   seniorLeadershipInvolvement: z.string().min(1, "Please select senior leadership involvement"),
@@ -73,7 +73,7 @@ export default function Assessment() {
       decisionEvaluating: "",
       engagementType: "",
       specifyContext: "",
-      engagementDuration: "",
+      engagementClassification: "",
       clientVolatility: "",
       stakeholderComplexity: "",
       seniorLeadershipInvolvement: "",
@@ -91,7 +91,7 @@ export default function Assessment() {
   const calculateProgress = () => {
     const requiredFields = [
       'fullName', 'workEmail', 'roleTitle', 'organisationName', 'organisationSize',
-      'decisionEvaluating', 'engagementType', 'specifyContext', 'engagementDuration',
+      'decisionEvaluating', 'engagementType', 'specifyContext', 'engagementClassification',
       'clientVolatility', 'stakeholderComplexity', 'seniorLeadershipInvolvement',
       'midLevelOversight', 'executionThinkingMix', 'iterationIntensity',
       'scopeChangeLikelihood', 'crossFunctionalCoordination', 'aiImpactMeasurement'
@@ -381,13 +381,39 @@ export default function Assessment() {
                   )}
                 />
 
-                {/* Q7: Engagement Type */}
+                {/* Q8: Engagement Classification */}
+                <FormField
+                  control={form.control}
+                  name="engagementClassification"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>8. How would you classify this engagement today?</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select engagement classification" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="new">New (pre-kickoff / onboarding phase)</SelectItem>
+                          <SelectItem value="ongoing-less-6">Ongoing (in delivery for less than 6 months)</SelectItem>
+                          <SelectItem value="ongoing-6-12">Ongoing (in delivery for 6–12 months)</SelectItem>
+                          <SelectItem value="ongoing-12-plus">Ongoing (in delivery for 12+ months)</SelectItem>
+                          <SelectItem value="renewal-expansion">Renewal / scope expansion of an existing engagement</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Q9: Engagement Type */}
                 <FormField
                   control={form.control}
                   name="engagementType"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>8. Engagement Type</FormLabel>
+                      <FormLabel>9. Engagement Type</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -405,32 +431,7 @@ export default function Assessment() {
                   )}
                 />
 
-                {/* Q8: Client Engagement Duration */}
-                <FormField
-                  control={form.control}
-                  name="engagementDuration"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>9. Client Engagement Duration</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select engagement duration" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="less-than-3-months">Less than 3 months</SelectItem>
-                          <SelectItem value="3-6-months">3–6 months</SelectItem>
-                          <SelectItem value="6-12-months">6–12 months</SelectItem>
-                          <SelectItem value="12+-months">12+ months</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q8: Client Volatility */}
+                {/* Q10: Client Volatility */}
                 <FormField
                   control={form.control}
                   name="clientVolatility"
