@@ -282,7 +282,7 @@ export default function Founder() {
             <div>
               <div className="flex items-center gap-3 mb-8">
                 <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center">
-                  <Building2 className="h-6 w-6 text-white" />
+                  <UserCheck className="h-6 w-6 text-white" />
                 </div>
                 <h2 className="text-2xl sm:text-3xl font-bold">
                   Founder
