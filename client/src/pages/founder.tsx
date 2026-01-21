@@ -293,7 +293,7 @@ export default function Founder() {
                 <img 
                   src={founderPhoto} 
                   alt="Siddhartha Dasgupta (Sid)" 
-                  className="w-40 h-40 rounded-2xl object-cover border-4 border-emerald-400 flex-shrink-0 shadow-xl"
+                  className="w-40 h-40 rounded-full object-cover border-4 border-emerald-400 flex-shrink-0 shadow-xl"
                 />
                 <div className="space-y-4 text-center sm:text-left">
                   <p className="text-2xl font-bold text-emerald-400">
