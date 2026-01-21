@@ -83,7 +83,7 @@ export default function Landing() {
               Most <span className="text-emerald-600 dark:text-emerald-400">Agencies & Consulting firms</span> lose margin throughout the Client's Lifecycle!
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
-              MarginMix helps agency and consulting leaders assess margin risk early — by accounting for hidden senior effort, coordination overhead, and workforce intensity.
+              MarginMix helps agency and consulting leaders assess margin risk — by accounting for hidden senior effort, coordination overhead, and workforce intensity.
             </p>
             <Link href="/assessment">
               <Button 
