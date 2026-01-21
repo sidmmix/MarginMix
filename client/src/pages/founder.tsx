@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, ArrowRight, AlertTriangle, Eye, Target, Lightbulb, UserCheck, Building2 } from "lucide-react";
 import founderPhoto from "@assets/1586921422945_1768559339757.jpeg";
+import advisorPhoto from "@assets/Screenshot_2026-01-21-08-12-37-88_254de13a4bc8758c9908fff1f73e_1768955128744.jpg";
 
 export default function Founder() {
   useEffect(() => {
@@ -272,38 +273,75 @@ export default function Founder() {
         </div>
       </section>
 
-      {/* About Me */}
+      {/* Founder & Key Advisor */}
       <section className="py-12 sm:py-16 bg-gradient-to-br from-gray-900 to-emerald-900 text-white">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-white" />
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Two column layout on desktop, stacked on mobile */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Founder */}
+            <div>
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center">
+                  <Building2 className="h-6 w-6 text-white" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold">
+                  Founder
+                </h2>
+              </div>
+
+              <div className="flex flex-col items-center sm:items-start gap-6">
+                <img 
+                  src={founderPhoto} 
+                  alt="Siddhartha Dasgupta (Sid)" 
+                  className="w-40 h-40 rounded-2xl object-cover border-4 border-emerald-400 flex-shrink-0 shadow-xl"
+                />
+                <div className="space-y-4 text-center sm:text-left">
+                  <p className="text-2xl font-bold text-emerald-400">
+                    Siddhartha Dasgupta (Sid)
+                  </p>
+                  <p className="text-gray-300">
+                    I've spent my career across creative, media, corporate marketing and performance-led environments working with global networks including <span className="text-white font-medium">Dentsu, Ogilvy, Grey, Publicis</span> as well as building and running an independent consultancy.
+                  </p>
+                  <p className="text-gray-300">
+                    I've led large accounts, managed cross-market teams, sat in commercial and operational conversations, and been accountable for both growth and profitability.
+                  </p>
+                </div>
+              </div>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-bold">
-              About Me
-            </h2>
+
+            {/* Key Advisor */}
+            <div>
+              <div className="flex items-center gap-3 mb-8">
+                <div className="w-12 h-12 bg-teal-500 rounded-full flex items-center justify-center">
+                  <UserCheck className="h-6 w-6 text-white" />
+                </div>
+                <h2 className="text-2xl sm:text-3xl font-bold">
+                  Key Advisor
+                </h2>
+              </div>
+
+              <div className="flex flex-col items-center sm:items-start gap-6">
+                <img 
+                  src={advisorPhoto} 
+                  alt="Joy Dasgupta" 
+                  className="w-40 h-40 rounded-full object-cover border-4 border-teal-400 flex-shrink-0 shadow-xl"
+                />
+                <div className="space-y-4 text-center sm:text-left">
+                  <p className="text-2xl font-bold text-teal-400">
+                    Joy Dasgupta
+                  </p>
+                  <p className="text-gray-300">
+                    Joy is a seasoned enterprise operator who has led large-scale business transformation across global teams at <span className="text-white font-medium">HP, AMEX and Genpact</span>. He brings deep firsthand understanding of margin risk in labor-intensive operating models.
+                  </p>
+                  <p className="text-gray-300">
+                    Based in Boston, Joy is the CEO of gyanAI and advises MarginMix on decision system design, operating-model risk, and enterprise adoption.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-8 items-center sm:items-start">
-            <img 
-              src={founderPhoto} 
-              alt="Siddhartha Dasgupta (Sid)" 
-              className="w-40 h-40 sm:w-48 sm:h-48 rounded-2xl object-cover border-4 border-emerald-400 flex-shrink-0 shadow-xl"
-            />
-            <div className="space-y-4 text-center sm:text-left">
-              <p className="text-2xl font-bold text-emerald-400">
-                Siddhartha Dasgupta (Sid)
-              </p>
-              <p className="text-gray-300 text-lg">
-                I've spent my career across creative, media, corporate marketing and performance-led environments working with global networks including <span className="text-white font-medium">Dentsu, Ogilvy, Grey, Publicis</span> as well as building and running an independent consultancy.
-              </p>
-              <p className="text-gray-300 text-lg">
-                I've led large accounts, managed cross-market teams, sat in commercial and operational conversations, and been accountable for both growth and profitability.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-10 text-center">
+          <div className="mt-12 text-center">
             <p className="text-xl text-emerald-400 font-semibold">
               MarginMix is not an abstract idea.<br />
               It is a synthesis of patterns observed over years inside the system.
