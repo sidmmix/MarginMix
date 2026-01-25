@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
-import { ArrowLeft, Send, User, Building2, Briefcase, Settings, Zap, MessageSquare, CheckCircle2, Clock, Shield } from "lucide-react";
+import { ArrowLeft, Send, User, Building2, Briefcase, Settings, Zap, MessageSquare, CheckCircle2, Clock, Shield, Scale } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 
@@ -52,6 +52,10 @@ const assessmentSchema = z.object({
   scopeChangeLikelihood: z.string().min(1, "Please select scope change likelihood"),
   crossFunctionalCoordination: z.string().min(1, "Please select cross-functional coordination"),
   aiImpactMeasurement: z.string().min(1, "Please select AI impact measurement status"),
+  marginalValueSaturation: z.string().min(1, "Please select marginal value saturation"),
+  seniorOversightLoad: z.string().min(1, "Please select senior oversight load"),
+  coordinationDecisionDrag: z.string().min(1, "Please select coordination level"),
+  deliveryConfidence: z.string().min(1, "Please select delivery confidence"),
   openSignal: z.string().optional(),
 });
 
@@ -83,6 +87,10 @@ export default function Assessment() {
       scopeChangeLikelihood: "",
       crossFunctionalCoordination: "",
       aiImpactMeasurement: "",
+      marginalValueSaturation: "",
+      seniorOversightLoad: "",
+      coordinationDecisionDrag: "",
+      deliveryConfidence: "",
       openSignal: "",
     },
   });
@@ -94,7 +102,8 @@ export default function Assessment() {
       'decisionEvaluating', 'engagementType', 'specifyContext', 'engagementClassification',
       'clientVolatility', 'stakeholderComplexity', 'seniorLeadershipInvolvement',
       'midLevelOversight', 'executionThinkingMix', 'iterationIntensity',
-      'scopeChangeLikelihood', 'crossFunctionalCoordination', 'aiImpactMeasurement'
+      'scopeChangeLikelihood', 'crossFunctionalCoordination', 'aiImpactMeasurement',
+      'marginalValueSaturation', 'seniorOversightLoad', 'coordinationDecisionDrag', 'deliveryConfidence'
     ];
     const filled = requiredFields.filter(field => watchedValues[field as keyof AssessmentFormData]?.trim()).length;
     return Math.round((filled / requiredFields.length) * 100);
@@ -674,25 +683,138 @@ export default function Assessment() {
               </CardContent>
             </Card>
 
-            {/* Section E: Open Signal */}
+            {/* Section F: Value, Load, Coordination & Confidence */}
+            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-amber-500">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 font-bold text-sm">F</div>
+                  <Scale className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                  Value, Load, Coordination & Confidence
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Q19: Marginal Value Saturation */}
+                <FormField
+                  control={form.control}
+                  name="marginalValueSaturation"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold">19. Marginal Value Saturation</FormLabel>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">"Compared to similar work, how much incremental value does adding more people create here?"</p>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select an option" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="significant">Significant additional value</SelectItem>
+                          <SelectItem value="some">Some additional value</SelectItem>
+                          <SelectItem value="minimal">Minimal additional value</SelectItem>
+                          <SelectItem value="none">No meaningful additional value</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Q20: Senior Oversight Load */}
+                <FormField
+                  control={form.control}
+                  name="seniorOversightLoad"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold">20. Senior Oversight Load</FormLabel>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">"Compared to similar engagements, how much senior oversight does this require?"</p>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select an option" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="less">Less than usual</SelectItem>
+                          <SelectItem value="about_same">About the same</SelectItem>
+                          <SelectItem value="more">More than usual</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Q21: Coordination & Decision Drag */}
+                <FormField
+                  control={form.control}
+                  name="coordinationDecisionDrag"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold">21. Coordination & Decision Drag</FormLabel>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">"How much coordination is required across teams and stakeholders?"</p>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select an option" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="minimal">Minimal</SelectItem>
+                          <SelectItem value="moderate">Moderate</SelectItem>
+                          <SelectItem value="heavy">Heavy</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Q22: Delivery Confidence */}
+                <FormField
+                  control={form.control}
+                  name="deliveryConfidence"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="font-semibold">22. Delivery Confidence (executive gut-check)</FormLabel>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">"How confident are you in the delivery model for this engagement?"</p>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select an option" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="high">High confidence</SelectItem>
+                          <SelectItem value="some_concerns">Some concerns</SelectItem>
+                          <SelectItem value="low">Low confidence</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+
+            {/* Section G: Open Signal */}
             <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-violet-500">
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 font-bold text-sm">E</div>
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 font-bold text-sm">G</div>
                   <MessageSquare className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                   Open Signal
                   <span className="text-xs font-normal text-gray-500 dark:text-gray-400 ml-1">(Optional)</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {/* Q19: Open Signal */}
+                {/* Q23: Open Signal */}
                 <FormField
                   control={form.control}
                   name="openSignal"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        19. Is there anything about this particular client engagement that feels risky or unusual?
+                        23. Is there anything about this particular client engagement that feels risky or unusual?
                       </FormLabel>
                       <FormControl>
                         <Textarea

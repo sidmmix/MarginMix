@@ -21,6 +21,10 @@ export async function sendAssessmentEmail(assessmentData: {
   scopeChangeLikelihood: string;
   crossFunctionalCoordination: string;
   aiImpactMeasurement: string;
+  marginalValueSaturation: string;
+  seniorOversightLoad: string;
+  coordinationDecisionDrag: string;
+  deliveryConfidence: string;
   openSignal?: string | null;
   submittedAt: Date;
 }) {
@@ -39,6 +43,10 @@ export async function sendAssessmentEmail(assessmentData: {
     { label: "Scope Change Likelihood", value: assessmentData.scopeChangeLikelihood },
     { label: "Cross-Functional Coordination", value: assessmentData.crossFunctionalCoordination },
     { label: "AI Impact Measurement", value: assessmentData.aiImpactMeasurement },
+    { label: "Marginal Value Saturation", value: assessmentData.marginalValueSaturation },
+    { label: "Senior Oversight Load", value: assessmentData.seniorOversightLoad },
+    { label: "Coordination & Decision Drag", value: assessmentData.coordinationDecisionDrag },
+    { label: "Delivery Confidence", value: assessmentData.deliveryConfidence },
   ];
 
   const responseLines = questions
