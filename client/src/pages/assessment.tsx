@@ -683,11 +683,11 @@ export default function Assessment() {
               </CardContent>
             </Card>
 
-            {/* Section F: Value, Load, Coordination & Confidence */}
+            {/* Section E: Value, Load, Coordination & Confidence */}
             <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-amber-500">
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 font-bold text-sm">F</div>
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 font-bold text-sm">E</div>
                   <Scale className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                   Value, Load, Coordination & Confidence
                 </CardTitle>
@@ -796,11 +796,11 @@ export default function Assessment() {
               </CardContent>
             </Card>
 
-            {/* Section G: Open Signal */}
+            {/* Section F: Open Signal */}
             <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-violet-500">
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 font-bold text-sm">G</div>
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 font-bold text-sm">F</div>
                   <MessageSquare className="h-5 w-5 text-violet-600 dark:text-violet-400" />
                   Open Signal
                   <span className="text-xs font-normal text-gray-500 dark:text-gray-400 ml-1">(Optional)</span>
