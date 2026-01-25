@@ -700,7 +700,7 @@ export default function Assessment() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-semibold">19. Marginal Value Saturation</FormLabel>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">"Compared to similar work, how much incremental value does adding more people create here?"</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Compared to similar work, how much incremental value does adding more people create here?</p>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -726,7 +726,7 @@ export default function Assessment() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-semibold">20. Senior Oversight Load</FormLabel>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">"Compared to similar engagements, how much senior oversight does this require?"</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Compared to similar engagements, how much senior oversight does this require?</p>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -751,7 +751,7 @@ export default function Assessment() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-semibold">21. Coordination & Decision Drag</FormLabel>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">"How much coordination is required across teams and stakeholders?"</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">How much coordination is required across teams and stakeholders?</p>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -776,7 +776,7 @@ export default function Assessment() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="font-semibold">22. Delivery Confidence (executive gut-check)</FormLabel>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">"How confident are you in the delivery model for this engagement?"</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">How confident are you in the delivery model for this engagement?</p>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
