@@ -202,7 +202,7 @@ export default function Assessment() {
                 <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <span><strong>19</strong> questions</span>
+                <span><strong>23</strong> questions</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
@@ -848,7 +848,7 @@ export default function Assessment() {
                 )}
               </Button>
               <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                Your margin risk assessment will be delivered to your email
+                Your margin risk assessment & decision memo will be delivered to your email
               </p>
             </div>
           </form>
@@ -863,7 +863,7 @@ export default function Assessment() {
               Assessment Submitted
             </DialogTitle>
             <DialogDescription className="text-center text-lg pt-4">
-              You'll be notified of the assessment in 24 hours via email.
+              You'll be notified of the assessment & decision memo in 24 hours via email.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center pt-4">
