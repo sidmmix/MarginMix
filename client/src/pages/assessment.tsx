@@ -699,7 +699,7 @@ export default function Assessment() {
                   name="marginalValueSaturation"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-semibold">19. Marginal Value Saturation</FormLabel>
+                      <FormLabel className="font-semibold">19. Value Saturation</FormLabel>
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Compared to similar work, how much incremental value does adding more people create here?</p>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
