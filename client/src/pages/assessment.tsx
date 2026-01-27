@@ -190,14 +190,28 @@ export default function Assessment() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
-            <p className="text-lg font-semibold">Welcome.</p>
+            <p className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
+              You're about to assess margin risk before it gets priced into a decision.
+            </p>
             <p>
-              You're about to complete a <strong>Margin Risk Assessment</strong> for a specific client engagement decision.
+              MarginMix helps agency and professional services leaders evaluate whether a client engagement is priced in line with its true delivery complexity — before delivery begins.
             </p>
-            <p className="text-emerald-600 dark:text-emerald-400">
-              MarginMix evaluates margin risk before delivery begins by examining workforce intensity, senior involvement, and coordination overhead — not delivery performance or individual productivity.
+            <p>
+              Instead of relying on timesheets, utilization reports, or historical data that arrives too late to change outcomes, MarginMix focuses on the structural cost drivers that shape pricing and margin from day one:
             </p>
-            <div className="flex flex-wrap gap-4 py-2">
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400 pl-2">
+              <li>Workforce intensity and team shape</li>
+              <li>Senior and leadership involvement required</li>
+              <li>Coordination, governance, and stakeholder load</li>
+              <li>Likelihood of rework, iteration, and decision churn</li>
+            </ul>
+            <p className="text-gray-600 dark:text-gray-400">
+              This assessment does not audit delivery performance or individual productivity.
+            </p>
+            <p className="font-medium">
+              It provides a <span className="text-emerald-600 dark:text-emerald-400 font-semibold">pricing and margin assurance lens</span> — designed for situations where financial data is incomplete, but pricing decisions must still be made.
+            </p>
+            <div className="flex flex-wrap gap-4 py-3 mt-2 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-2 text-sm">
                 <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
                   <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
@@ -214,19 +228,9 @@ export default function Assessment() {
                 <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
                   <Shield className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <span>GDPR & CCPA compliant</span>
+                <span>No financial data required</span>
               </div>
             </div>
-            <p>
-              A structured margin-risk verdict and decision guidance will be prepared and delivered to your email within 24 hours.
-            </p>
-            <p className="text-gray-600 dark:text-gray-400 mt-4 font-bold">
-              No financial data, timesheets, or individual performance information is required.<br />
-              All information is treated confidentially.
-            </p>
-            <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
-              Let's begin.
-            </p>
           </CardContent>
         </Card>
 
