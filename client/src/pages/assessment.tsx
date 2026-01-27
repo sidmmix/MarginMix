@@ -228,9 +228,13 @@ export default function Assessment() {
                 <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
                   <Shield className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <span>No financial data required</span>
+                <span>GDPR & CCPA compliant</span>
               </div>
             </div>
+            <p className="font-bold text-gray-700 dark:text-gray-300 mt-4">
+              No financial data, timesheets, or individual performance information is required.<br />
+              All information is treated confidentially.
+            </p>
           </CardContent>
         </Card>
 
