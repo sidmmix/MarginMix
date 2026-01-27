@@ -166,22 +166,22 @@ export default function Landing() {
                   What MarginMix Is (and Isn't)
                 </h3>
                 <div className="space-y-3 mb-6">
-                  <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                    <XCircle className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                    MarginMix is <span className="font-semibold ml-1">not</span> a productivity tool.
+                  <p className="text-gray-600 dark:text-gray-400">
+                    <XCircle className="h-4 w-4 text-gray-400 inline-block mr-2 align-middle" />
+                    <span>MarginMix is <span className="font-semibold">not</span> a productivity tool.</span>
                   </p>
-                  <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                    <XCircle className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                    It is <span className="font-semibold ml-1">not</span> a time-tracking system.
+                  <p className="text-gray-600 dark:text-gray-400">
+                    <XCircle className="h-4 w-4 text-gray-400 inline-block mr-2 align-middle" />
+                    <span>It is <span className="font-semibold">not</span> a time-tracking system.</span>
                   </p>
-                  <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                    <XCircle className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                    It is <span className="font-semibold ml-1">not</span> a utilization dashboard.
+                  <p className="text-gray-600 dark:text-gray-400">
+                    <XCircle className="h-4 w-4 text-gray-400 inline-block mr-2 align-middle" />
+                    <span>It is <span className="font-semibold">not</span> a utilization dashboard.</span>
                   </p>
                 </div>
-                <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-lg flex items-center gap-2">
-                  <CheckCircle className="h-5 w-5 flex-shrink-0" />
-                  It is a decision lens for pricing and margin assurance.
+                <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-lg">
+                  <CheckCircle className="h-5 w-5 inline-block mr-2 align-middle" />
+                  <span>It is a decision lens for pricing and margin assurance.</span>
                 </p>
               </div>
 
