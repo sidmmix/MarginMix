@@ -10,6 +10,7 @@ import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Assessment from "@/pages/assessment";
 import Founder from "@/pages/founder";
+import WhyChoose from "@/pages/why-choose";
 import { AuthPage } from "@/pages/auth";
 import NotFound from "@/pages/not-found";
 import { Loader2 } from "lucide-react";
@@ -44,6 +45,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/assessment" component={Assessment} />
       <Route path="/founder" component={Founder} />
+      <Route path="/why-choose" component={WhyChoose} />
       <Route path="/auth" component={AuthPage} />
       
       {/* Dashboard - displays brand analysis results */}

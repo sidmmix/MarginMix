@@ -45,6 +45,9 @@ export default function Landing() {
               <Link href="/founder" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
                 <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs sm:text-sm font-medium cursor-pointer">Why MarginMix Exists</span>
               </Link>
+              <Link href="/why-choose" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
+                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs sm:text-sm font-medium cursor-pointer">Why Choose MarginMix</span>
+              </Link>
               {isAuthenticated && user ? (
                 <div className="flex items-center space-x-2 sm:space-x-3">
                   <div className="hidden sm:flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
@@ -80,7 +83,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-              Price work with <span className="text-emerald-600 dark:text-emerald-400">margin confidence</span> — before delivery begins.
+              Price work with <span className="text-emerald-600 dark:text-emerald-400">margin confidence</span> — before delivery begins!
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               MarginMix helps agency and consulting leaders predict margin risk early, using decision logic grounded in staffing complexity, coordination load, and senior effort — not unreliable timesheets.
@@ -135,7 +138,7 @@ export default function Landing() {
               {/* What We Measure */}
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-emerald-500 shadow-sm">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                  What We Measure (Beyond Obvious Metrics)
+                  What We Measure
                 </h3>
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
@@ -350,7 +353,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
-              Assess margin risk before it becomes a problem.
+              Assess Margin risk & Price work appropriately!
             </h2>
             <Link href="/assessment" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
               <Button 

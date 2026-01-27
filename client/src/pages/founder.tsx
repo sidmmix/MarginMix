@@ -26,7 +26,10 @@ export default function Founder() {
             </Link>
             <div className="flex items-center space-x-2 sm:space-x-4">
               <Link href="/founder" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs sm:text-sm font-medium cursor-pointer">Why MarginMix Exists</span>
+                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs sm:text-sm font-medium cursor-pointer border-b-2 border-emerald-600">Why MarginMix Exists</span>
+              </Link>
+              <Link href="/why-choose" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
+                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs sm:text-sm font-medium cursor-pointer">Why Choose MarginMix</span>
               </Link>
               <Link href="/" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
                 <Button variant="ghost" size="sm">
