@@ -105,7 +105,7 @@ export default function WhyChoose() {
                 <div className="p-2 bg-violet-100 dark:bg-violet-900/30 rounded-lg">
                   <Zap className="h-6 w-6 text-violet-600 dark:text-violet-400" />
                 </div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Why MarginMix stays lightweight</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">MarginMix stays lightweight</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-300">
                 No ERP integrations, timesheets, or cost tables required. Designed to be used every time pricing is discussed.
