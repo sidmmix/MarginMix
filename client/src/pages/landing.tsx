@@ -80,10 +80,10 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-              Most <span className="text-emerald-600 dark:text-emerald-400">agencies & consulting teams</span> lock in margin risk before delivery starts!
+              Price work with <span className="text-emerald-600 dark:text-emerald-400">margin confidence</span> — before delivery begins.
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
-              MarginMix helps leaders assess margin risk early — across staffing mix, senior effort, and delivery complexity.
+              MarginMix helps agency and consulting leaders predict margin risk early, using decision logic grounded in staffing complexity, coordination load, and senior effort — not unreliable timesheets.
             </p>
             <Link href="/assessment" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
               <Button 
@@ -103,61 +103,81 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Why margin surprises keep happening */}
+      {/* Why This Matters */}
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-              Why margin surprises keep happening
+              Why This Matters
             </h2>
-            <p className="text-xl text-gray-700 dark:text-gray-300 mb-8 text-center">
-              Margin loss in professional services is rarely caused by poor execution.<br />
-              <span className="font-semibold text-emerald-600 dark:text-emerald-400">It is usually structural.</span>
+            <p className="text-xl text-gray-700 dark:text-gray-300 mb-6 text-center">
+              Most margin risk is locked in at pricing and scoping. Once delivery starts, leaders are often flying blind — relying on gut feel rather than structured insight.
             </p>
-            <div className="space-y-4">
-              <div className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                <AlertTriangle className="h-6 w-6 text-amber-500 flex-shrink-0 mt-1" />
-                <p className="text-gray-700 dark:text-gray-300 text-lg">
-                  Senior involvement increases quietly as complexity grows
-                </p>
-              </div>
-              <div className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                <AlertTriangle className="h-6 w-6 text-amber-500 flex-shrink-0 mt-1" />
-                <p className="text-gray-700 dark:text-gray-300 text-lg">
-                  Coordination, rework, and decision churn are not priced into fees
-                </p>
-              </div>
-              <div className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
-                <AlertTriangle className="h-6 w-6 text-amber-500 flex-shrink-0 mt-1" />
-                <p className="text-gray-700 dark:text-gray-300 text-lg">
-                  Portfolio smoothing hides losses until it's too late
-                </p>
-              </div>
-            </div>
+            <p className="text-xl text-emerald-600 dark:text-emerald-400 font-semibold text-center">
+              MarginMix makes pricing risk visible when it can still be changed.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* What MarginMix actually does */}
+      {/* What MarginMix Does */}
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-              What MarginMix actually does
+              What MarginMix Does
             </h2>
-            <div className="space-y-6 text-lg text-gray-700 dark:text-gray-300">
-              <p className="text-center">
-                MarginMix is <span className="font-semibold">not</span> a productivity tool.
+            <p className="text-xl text-gray-700 dark:text-gray-300 mb-8 text-center">
+              MarginMix acts as a pricing and margin assurance layer. It evaluates whether work is structurally viable based on how it will actually be staffed, governed, and reviewed — not how it looks on paper.
+            </p>
+            
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+              What We Measure (Beyond Obvious Metrics)
+            </h3>
+            <div className="grid md:grid-cols-2 gap-4 mb-8">
+              <div className="flex items-start gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                <span className="text-gray-700 dark:text-gray-300">Senior attention required over time</span>
+              </div>
+              <div className="flex items-start gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                <span className="text-gray-700 dark:text-gray-300">Coordination overhead as stakeholders multiply</span>
+              </div>
+              <div className="flex items-start gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                <span className="text-gray-700 dark:text-gray-300">Likelihood of rework, refinement, and re-explanation</span>
+              </div>
+              <div className="flex items-start gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg">
+                <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                <span className="text-gray-700 dark:text-gray-300">Hidden cognitive and governance load</span>
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+              What MarginMix Is (and Isn't)
+            </h3>
+            <div className="space-y-3 mb-8 max-w-2xl mx-auto">
+              <p className="text-gray-600 dark:text-gray-400 text-center">MarginMix is <span className="font-semibold">not</span> a productivity tool.</p>
+              <p className="text-gray-600 dark:text-gray-400 text-center">It is <span className="font-semibold">not</span> a time-tracking system.</p>
+              <p className="text-gray-600 dark:text-gray-400 text-center">It is <span className="font-semibold">not</span> a utilization dashboard.</p>
+              <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-xl text-center mt-4">
+                It is a decision lens for pricing and margin assurance.
               </p>
-              <p className="text-center text-xl font-medium text-gray-900 dark:text-white">
-                It is a decision-support system for senior leaders.
-              </p>
-              <p className="text-center">
-                MarginMix evaluates whether an engagement is economically viable before delivery begins — using a workforce-intensity lens that makes shadow labor visible.
-              </p>
-              <p className="text-center text-emerald-600 dark:text-emerald-400 font-semibold text-xl">
-                This is about better decisions, not better task execution.
-              </p>
+            </div>
+
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+              Outcome for Leaders
+            </h3>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg">
+                <p className="text-gray-700 dark:text-gray-300 font-medium">Clearer pricing decisions</p>
+              </div>
+              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg">
+                <p className="text-gray-700 dark:text-gray-300 font-medium">Fewer surprises mid-delivery</p>
+              </div>
+              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg">
+                <p className="text-gray-700 dark:text-gray-300 font-medium">More defensible margins — without adding process or friction</p>
+              </div>
             </div>
           </div>
         </div>
@@ -178,7 +198,7 @@ export default function Landing() {
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <Building2 className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-gray-700 dark:text-gray-300">Agencies and consultancies with 200–2,000 employees</span>
+                  <span className="text-gray-700 dark:text-gray-300">Independent and mid-tier agencies and consulting firms in the US and UK</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Users className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
@@ -186,7 +206,7 @@ export default function Landing() {
                 </li>
                 <li className="flex items-start gap-3">
                   <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-gray-700 dark:text-gray-300">Firms where scale has outgrown intuition</span>
+                  <span className="text-gray-700 dark:text-gray-300">Firms where margin decisions are frequent, nuanced, and rarely supported by reliable data</span>
                 </li>
               </ul>
             </div>
