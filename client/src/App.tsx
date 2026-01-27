@@ -18,7 +18,20 @@ function ScrollToTop() {
   const [location] = useLocation();
   
   useEffect(() => {
+    // Disable browser's automatic scroll restoration for cached pages
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    
+    // Scroll to top immediately
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    
+    // Also scroll after a brief delay to handle cached page restoration
+    const timeoutId = setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+    }, 0);
+    
+    return () => clearTimeout(timeoutId);
   }, [location]);
   
   return null;
