@@ -124,59 +124,83 @@ export default function Landing() {
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">
               What MarginMix Does
             </h2>
-            <p className="text-xl text-gray-700 dark:text-gray-300 mb-8 text-center">
+            <p className="text-xl text-gray-700 dark:text-gray-300 mb-12 text-center max-w-3xl mx-auto">
               MarginMix acts as a pricing and margin assurance layer. It evaluates whether work is structurally viable based on how it will actually be staffed, governed, and reviewed — not how it looks on paper.
             </p>
             
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-              What We Measure (Beyond Obvious Metrics)
-            </h3>
-            <div className="grid md:grid-cols-2 gap-4 mb-8">
-              <div className="flex items-start gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg">
-                <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                <span className="text-gray-700 dark:text-gray-300">Senior attention required over time</span>
+            <div className="space-y-10">
+              {/* What We Measure */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-emerald-500 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  What We Measure (Beyond Obvious Metrics)
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300">Senior attention required over time</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300">Coordination overhead as stakeholders multiply</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300">Likelihood of rework, refinement, and re-explanation</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300">Hidden cognitive and governance load</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-start gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg">
-                <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                <span className="text-gray-700 dark:text-gray-300">Coordination overhead as stakeholders multiply</span>
-              </div>
-              <div className="flex items-start gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg">
-                <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                <span className="text-gray-700 dark:text-gray-300">Likelihood of rework, refinement, and re-explanation</span>
-              </div>
-              <div className="flex items-start gap-3 p-4 bg-white dark:bg-gray-800 rounded-lg">
-                <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                <span className="text-gray-700 dark:text-gray-300">Hidden cognitive and governance load</span>
-              </div>
-            </div>
 
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-              What MarginMix Is (and Isn't)
-            </h3>
-            <div className="space-y-3 mb-8 max-w-2xl mx-auto">
-              <p className="text-gray-600 dark:text-gray-400 text-center">MarginMix is <span className="font-semibold">not</span> a productivity tool.</p>
-              <p className="text-gray-600 dark:text-gray-400 text-center">It is <span className="font-semibold">not</span> a time-tracking system.</p>
-              <p className="text-gray-600 dark:text-gray-400 text-center">It is <span className="font-semibold">not</span> a utilization dashboard.</p>
-              <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-xl text-center mt-4">
-                It is a decision lens for pricing and margin assurance.
-              </p>
-            </div>
+              {/* What MarginMix Is (and Isn't) */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-gray-400 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  What MarginMix Is (and Isn't)
+                </h3>
+                <div className="space-y-3 mb-6">
+                  <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                    <XCircle className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                    MarginMix is <span className="font-semibold ml-1">not</span> a productivity tool.
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                    <XCircle className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                    It is <span className="font-semibold ml-1">not</span> a time-tracking system.
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
+                    <XCircle className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                    It is <span className="font-semibold ml-1">not</span> a utilization dashboard.
+                  </p>
+                </div>
+                <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-lg flex items-center gap-2">
+                  <CheckCircle className="h-5 w-5 flex-shrink-0" />
+                  It is a decision lens for pricing and margin assurance.
+                </p>
+              </div>
 
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-              Outcome for Leaders
-            </h3>
-            <div className="grid md:grid-cols-3 gap-4">
-              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg">
-                <p className="text-gray-700 dark:text-gray-300 font-medium">Clearer pricing decisions</p>
-              </div>
-              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg">
-                <p className="text-gray-700 dark:text-gray-300 font-medium">Fewer surprises mid-delivery</p>
-              </div>
-              <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg">
-                <p className="text-gray-700 dark:text-gray-300 font-medium">More defensible margins — without adding process or friction</p>
+              {/* Outcome for Leaders */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-emerald-500 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  Outcome for Leaders
+                </h3>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="flex items-start gap-3">
+                    <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300 font-medium">Clearer pricing decisions</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300 font-medium">Fewer surprises mid-delivery</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300 font-medium">More defensible margins — without adding process or friction</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
