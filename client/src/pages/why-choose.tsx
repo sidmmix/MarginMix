@@ -29,6 +29,12 @@ export default function WhyChoose() {
               <Link href="/why-choose" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
                 <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs sm:text-sm font-medium cursor-pointer border-b-2 border-emerald-600">Why Choose MarginMix</span>
               </Link>
+              <Link href="/" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
+                <Button variant="ghost" size="sm">
+                  <ArrowLeft className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Back to Home</span>
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -54,7 +60,7 @@ export default function WhyChoose() {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">Enterprise systems explain what happened</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-300">
-                Most agencies and professional services firms already run sophisticated systems — Workday, Workfront, ERPs, finance dashboards. They explain what happened. MarginMix exists because the most important margin outcomes are determined earlier — when work is priced, staffed, and committed.
+                ERPs and dashboards report on the past. MarginMix acts earlier — when work is priced, staffed, and committed.
               </p>
             </div>
 
@@ -66,7 +72,7 @@ export default function WhyChoose() {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">Pricing decisions create variance</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-300">
-                Enterprise systems explain variance. Pricing decisions create it. Pricing decisions are made before delivery begins, when scope is fluid, senior involvement is uncertain, coordination overhead is underestimated, and delivery models are evolving. MarginMix operates at this moment — when pricing assumptions can still be challenged.
+                Margin risk is locked in before delivery begins. MarginMix operates at this moment — when pricing assumptions can still be challenged.
               </p>
             </div>
 
@@ -78,7 +84,7 @@ export default function WhyChoose() {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">Why historical data isn't enough</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-300">
-                Timesheets are negotiated artifacts. Senior effort is underreported. Historical averages hide tail risk. When work is most complex, data is least reliable. MarginMix fills the pricing blind spot traditional systems can't address early enough.
+                Timesheets are negotiated. Senior effort is underreported. MarginMix fills the blind spot traditional systems can't address early enough.
               </p>
             </div>
 
@@ -90,7 +96,7 @@ export default function WhyChoose() {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">Standardized pricing risk evaluation</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-300">
-                MarginMix introduces a shared pricing and margin assurance lens to pressure-test pricing assumptions, staffing resilience, senior oversight exposure, and coordination risk — creating discipline without bureaucracy.
+                A shared lens to pressure-test pricing, staffing, and coordination risk — creating discipline without bureaucracy.
               </p>
             </div>
 
@@ -102,7 +108,7 @@ export default function WhyChoose() {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">Why MarginMix stays lightweight</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-300">
-                MarginMix does not require ERP integrations, timesheets, or cost tables. Pricing decisions happen before reliable data exists, and false precision weakens judgment. MarginMix is designed to be used every time pricing is discussed.
+                No ERP integrations, timesheets, or cost tables required. Designed to be used every time pricing is discussed.
               </p>
             </div>
 
@@ -114,7 +120,7 @@ export default function WhyChoose() {
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">Pricing clarity doesn't require perfect data</h3>
               </div>
               <p className="text-gray-600 dark:text-gray-300">
-                MarginMix provides early warning, structured skepticism, and defensible pricing decisions. Repricing or restructuring even one engagement can protect hundreds of thousands in margin. That's why MarginMix is priced as decision insurance.
+                Early warning and defensible decisions. Repricing even one engagement can protect hundreds of thousands in margin.
               </p>
             </div>
           </div>
