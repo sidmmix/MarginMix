@@ -42,7 +42,7 @@ export default function Landing() {
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link href="/founder">
+              <Link href="/founder" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
                 <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs sm:text-sm font-medium cursor-pointer">Why MarginMix Exists</span>
               </Link>
               {isAuthenticated && user ? (
@@ -85,7 +85,7 @@ export default function Landing() {
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               MarginMix helps leaders assess margin risk early — across staffing mix, senior effort, and delivery complexity.
             </p>
-            <Link href="/assessment">
+            <Link href="/assessment" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
               <Button 
                 size="lg" 
                 className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
@@ -308,7 +308,7 @@ export default function Landing() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
               Assess margin risk before it becomes a problem.
             </h2>
-            <Link href="/assessment">
+            <Link href="/assessment" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
               <Button 
                 size="lg" 
                 className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"

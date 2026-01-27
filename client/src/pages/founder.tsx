@@ -16,7 +16,7 @@ export default function Founder() {
       <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href="/">
+            <Link href="/" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
               <div className="flex flex-col cursor-pointer">
                 <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
                   MarginMix
@@ -25,10 +25,10 @@ export default function Founder() {
               </div>
             </Link>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link href="/founder">
+              <Link href="/founder" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
                 <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-xs sm:text-sm font-medium cursor-pointer">Why MarginMix Exists</span>
               </Link>
-              <Link href="/">
+              <Link href="/" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Back to Home</span>
