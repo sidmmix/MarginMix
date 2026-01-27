@@ -119,21 +119,33 @@ export default function WhyChoose() {
             </div>
           </div>
 
+          </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-12 sm:py-20 bg-emerald-600 dark:bg-emerald-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
+              Assess Margin risk & Price work appropriately!
+            </h2>
             <Link href="/assessment" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
               <Button 
                 size="lg" 
-                className="h-14 text-lg px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
+                className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
               >
                 Run a Margin Risk Assessment
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
+            <p className="text-emerald-100 mt-4 text-sm">
+              Early access assessments are reviewed for fit.
+            </p>
           </div>
         </div>
       </section>
 
-      <footer className="bg-gray-900 text-white py-12 mt-16">
+      <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h3 className="text-2xl font-bold text-emerald-400 mb-1">MarginMix</h3>
