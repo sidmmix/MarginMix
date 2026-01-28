@@ -325,11 +325,10 @@ export default function Assessment() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="100-250">100–250</SelectItem>
-                          <SelectItem value="250-500">250–500</SelectItem>
+                          <SelectItem value="200-500">200–500</SelectItem>
                           <SelectItem value="500-1000">500–1,000</SelectItem>
-                          <SelectItem value="1000-5000">1,000–5,000</SelectItem>
-                          <SelectItem value="5000+">5,000+</SelectItem>
+                          <SelectItem value="1000-1500">1,000–1,500</SelectItem>
+                          <SelectItem value="1500-2000">1,500–2,000</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
