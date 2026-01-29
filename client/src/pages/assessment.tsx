@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -29,9 +29,11 @@ import {
 } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
-import { ArrowLeft, Send, User, Building2, Briefcase, Settings, Zap, MessageSquare, CheckCircle2, Clock, Shield, Scale } from "lucide-react";
+import { ArrowLeft, Send, User, Building2, Briefcase, Settings, Zap, MessageSquare, CheckCircle2, Clock, Shield, Scale, Save, Trash2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+
+const STORAGE_KEY = "marginmix_assessment_progress";
 
 const assessmentSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -64,11 +66,12 @@ type AssessmentFormData = z.infer<typeof assessmentSchema>;
 export default function Assessment() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSavedProgress, setHasSavedProgress] = useState(false);
+  const [lastSaved, setLastSaved] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const form = useForm<AssessmentFormData>({
-    resolver: zodResolver(assessmentSchema),
-    defaultValues: {
+  const getDefaultValues = useCallback(() => {
+    return {
       fullName: "",
       workEmail: "",
       roleTitle: "",
@@ -92,10 +95,67 @@ export default function Assessment() {
       coordinationDecisionDrag: "",
       deliveryConfidence: "",
       openSignal: "",
-    },
+    };
+  }, []);
+
+  const form = useForm<AssessmentFormData>({
+    resolver: zodResolver(assessmentSchema),
+    defaultValues: getDefaultValues(),
   });
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const { data, timestamp } = JSON.parse(saved);
+        const hasAnyData = Object.values(data).some(v => v && v !== "");
+        if (hasAnyData) {
+          form.reset(data);
+          setHasSavedProgress(true);
+          setLastSaved(new Date(timestamp).toLocaleString());
+          toast({
+            title: "Progress Restored",
+            description: "Your previous answers have been loaded. Continue where you left off!",
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Error loading saved progress:", e);
+    }
+  }, []);
+
   const watchedValues = form.watch();
+
+  useEffect(() => {
+    const hasAnyData = Object.entries(watchedValues).some(
+      ([key, value]) => value && value !== "" && key !== "openSignal"
+    );
+    if (hasAnyData) {
+      try {
+        const saveData = {
+          data: watchedValues,
+          timestamp: new Date().toISOString(),
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
+        setHasSavedProgress(true);
+        setLastSaved(new Date().toLocaleString());
+      } catch (e) {
+        console.error("Error saving progress:", e);
+      }
+    }
+  }, [watchedValues]);
+
+  const clearSavedProgress = () => {
+    localStorage.removeItem(STORAGE_KEY);
+    form.reset(getDefaultValues());
+    setHasSavedProgress(false);
+    setLastSaved(null);
+    toast({
+      title: "Progress Cleared",
+      description: "Your saved answers have been removed. Starting fresh!",
+    });
+  };
+
   const calculateProgress = () => {
     const requiredFields = [
       'fullName', 'workEmail', 'roleTitle', 'organisationName', 'organisationSize',
@@ -121,6 +181,9 @@ export default function Assessment() {
       });
       
       if (response.ok) {
+        localStorage.removeItem(STORAGE_KEY);
+        setHasSavedProgress(false);
+        setLastSaved(null);
         setShowConfirmation(true);
         form.reset();
       }
@@ -237,6 +300,37 @@ export default function Assessment() {
             </p>
           </CardContent>
         </Card>
+
+        {/* Save Progress Indicator */}
+        {hasSavedProgress && (
+          <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-emerald-100 dark:bg-emerald-800/50 rounded-full">
+                <Save className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                  Progress auto-saved
+                </p>
+                {lastSaved && (
+                  <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                    Last saved: {lastSaved}
+                  </p>
+                )}
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={clearSavedProgress}
+              className="text-gray-600 hover:text-red-600 border-gray-300 hover:border-red-300"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Start Fresh
+            </Button>
+          </div>
+        )}
 
         {/* Assessment Form */}
         <Form {...form}>
