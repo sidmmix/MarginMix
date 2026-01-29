@@ -329,8 +329,10 @@ export function registerRoutes(app: Express): Server {
           roleTitle: validatedData.roleTitle,
           organisationName: validatedData.organisationName,
           organisationSize: validatedData.organisationSize,
+          decisionEvaluating: validatedData.decisionEvaluating,
           engagementType: validatedData.engagementType,
-          engagementDuration: validatedData.engagementDuration,
+          specifyContext: validatedData.specifyContext,
+          engagementClassification: validatedData.engagementClassification,
           clientVolatility: validatedData.clientVolatility,
           stakeholderComplexity: validatedData.stakeholderComplexity,
           seniorLeadershipInvolvement: validatedData.seniorLeadershipInvolvement,
@@ -339,6 +341,11 @@ export function registerRoutes(app: Express): Server {
           iterationIntensity: validatedData.iterationIntensity,
           scopeChangeLikelihood: validatedData.scopeChangeLikelihood,
           crossFunctionalCoordination: validatedData.crossFunctionalCoordination,
+          aiImpactMeasurement: validatedData.aiImpactMeasurement,
+          marginalValueSaturation: validatedData.marginalValueSaturation,
+          seniorOversightLoad: validatedData.seniorOversightLoad,
+          coordinationDecisionDrag: validatedData.coordinationDecisionDrag,
+          deliveryConfidence: validatedData.deliveryConfidence,
           openSignal: validatedData.openSignal,
           submittedAt: new Date()
         });

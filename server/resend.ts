@@ -8,10 +8,10 @@ export async function sendAssessmentEmail(assessmentData: {
   roleTitle: string;
   organisationName: string;
   organisationSize: string;
-  decisionEvaluating: string;
+  decisionEvaluating?: string;
   engagementType: string;
-  specifyContext: string;
-  engagementClassification: string;
+  specifyContext?: string;
+  engagementClassification?: string;
   clientVolatility: string;
   stakeholderComplexity: string;
   seniorLeadershipInvolvement: string;
@@ -20,33 +20,33 @@ export async function sendAssessmentEmail(assessmentData: {
   iterationIntensity: string;
   scopeChangeLikelihood: string;
   crossFunctionalCoordination: string;
-  aiImpactMeasurement: string;
-  marginalValueSaturation: string;
-  seniorOversightLoad: string;
-  coordinationDecisionDrag: string;
-  deliveryConfidence: string;
+  aiImpactMeasurement?: string;
+  marginalValueSaturation?: string;
+  seniorOversightLoad?: string;
+  coordinationDecisionDrag?: string;
+  deliveryConfidence?: string;
   openSignal?: string | null;
   submittedAt: Date;
 }) {
   const questions = [
-    { label: "Organization Size", value: assessmentData.organisationSize },
-    { label: "Decision Evaluating", value: assessmentData.decisionEvaluating },
-    { label: "Specify Context", value: assessmentData.specifyContext },
-    { label: "Engagement Type", value: assessmentData.engagementType },
-    { label: "Engagement Classification", value: assessmentData.engagementClassification },
-    { label: "Client Volatility", value: assessmentData.clientVolatility },
-    { label: "Stakeholder Complexity", value: assessmentData.stakeholderComplexity },
-    { label: "Senior Leadership Involvement", value: assessmentData.seniorLeadershipInvolvement },
-    { label: "Mid-Level Oversight", value: assessmentData.midLevelOversight },
-    { label: "Execution/Thinking Mix", value: assessmentData.executionThinkingMix },
-    { label: "Iteration Intensity", value: assessmentData.iterationIntensity },
-    { label: "Scope Change Likelihood", value: assessmentData.scopeChangeLikelihood },
-    { label: "Cross-Functional Coordination", value: assessmentData.crossFunctionalCoordination },
-    { label: "AI Impact Measurement", value: assessmentData.aiImpactMeasurement },
-    { label: "Marginal Value Saturation", value: assessmentData.marginalValueSaturation },
-    { label: "Senior Oversight Load", value: assessmentData.seniorOversightLoad },
-    { label: "Coordination & Decision Drag", value: assessmentData.coordinationDecisionDrag },
-    { label: "Delivery Confidence", value: assessmentData.deliveryConfidence },
+    { label: "Organization Size", value: assessmentData.organisationSize || "Not specified" },
+    { label: "Decision Evaluating", value: assessmentData.decisionEvaluating || "Not specified" },
+    { label: "Specify Context", value: assessmentData.specifyContext || "Not specified" },
+    { label: "Engagement Type", value: assessmentData.engagementType || "Not specified" },
+    { label: "Engagement Classification", value: assessmentData.engagementClassification || "Not specified" },
+    { label: "Client Volatility", value: assessmentData.clientVolatility || "Not specified" },
+    { label: "Stakeholder Complexity", value: assessmentData.stakeholderComplexity || "Not specified" },
+    { label: "Senior Leadership Involvement", value: assessmentData.seniorLeadershipInvolvement || "Not specified" },
+    { label: "Mid-Level Oversight", value: assessmentData.midLevelOversight || "Not specified" },
+    { label: "Execution/Thinking Mix", value: assessmentData.executionThinkingMix || "Not specified" },
+    { label: "Iteration Intensity", value: assessmentData.iterationIntensity || "Not specified" },
+    { label: "Scope Change Likelihood", value: assessmentData.scopeChangeLikelihood || "Not specified" },
+    { label: "Cross-Functional Coordination", value: assessmentData.crossFunctionalCoordination || "Not specified" },
+    { label: "AI Impact Measurement", value: assessmentData.aiImpactMeasurement || "Not specified" },
+    { label: "Marginal Value Saturation", value: assessmentData.marginalValueSaturation || "Not specified" },
+    { label: "Senior Oversight Load", value: assessmentData.seniorOversightLoad || "Not specified" },
+    { label: "Coordination & Decision Drag", value: assessmentData.coordinationDecisionDrag || "Not specified" },
+    { label: "Delivery Confidence", value: assessmentData.deliveryConfidence || "Not specified" },
   ];
 
   const responseLines = questions
