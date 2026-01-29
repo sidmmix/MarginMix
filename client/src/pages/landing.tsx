@@ -91,6 +91,9 @@ export default function Landing() {
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               MarginMix helps agency and consulting leaders predict margin risk early, using decision logic grounded in staffing complexity, coordination load, and senior effort — not unreliable timesheets.
             </p>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
+              Applicable to all delivery models - Time & Materials / Fixed Price / Outcome based
+            </p>
             <Link href="/assessment" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
               <Button 
                 size="lg" 
