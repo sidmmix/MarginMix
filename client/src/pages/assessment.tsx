@@ -301,36 +301,61 @@ export default function Assessment() {
           </CardContent>
         </Card>
 
-        {/* Save Progress Indicator */}
-        {hasSavedProgress && (
-          <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-100 dark:bg-emerald-800/50 rounded-full">
-                <Save className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
-                  Progress auto-saved
-                </p>
-                {lastSaved && (
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400">
-                    Last saved: {lastSaved}
-                  </p>
-                )}
-              </div>
+        {/* Save Progress Section */}
+        <div className="mb-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-emerald-100 dark:bg-emerald-800/50 rounded-full">
+              <Save className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             </div>
+            <div>
+              <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                {hasSavedProgress ? "Progress saved" : "Your progress will be saved automatically"}
+              </p>
+              {lastSaved && (
+                <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                  Last saved: {lastSaved}
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
             <Button
               type="button"
-              variant="outline"
+              variant="default"
               size="sm"
-              onClick={clearSavedProgress}
-              className="text-gray-600 hover:text-red-600 border-gray-300 hover:border-red-300"
+              onClick={() => {
+                const currentValues = form.getValues();
+                const saveData = {
+                  data: currentValues,
+                  timestamp: new Date().toISOString(),
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
+                setHasSavedProgress(true);
+                setLastSaved(new Date().toLocaleString());
+                toast({
+                  title: "Progress Saved",
+                  description: "Your answers have been saved. You can close this page and return later.",
+                });
+              }}
+              className="bg-emerald-600 hover:bg-emerald-700"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Start Fresh
+              <Save className="h-4 w-4 mr-2" />
+              Save Progress
             </Button>
+            {hasSavedProgress && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={clearSavedProgress}
+                className="text-gray-600 hover:text-red-600 border-gray-300 hover:border-red-300"
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Start Fresh
+              </Button>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Assessment Form */}
         <Form {...form}>
