@@ -209,7 +209,7 @@ export default function Assessment() {
               This assessment does not audit delivery performance or individual productivity.
             </p>
             <p className="font-medium">
-              It provides a <span className="text-emerald-600 dark:text-emerald-400 font-semibold">pricing and margin assurance lens</span> — designed for situations where financial data is incomplete, but pricing decisions must still be made.
+              It provides a <span className="text-emerald-600 dark:text-emerald-400 font-semibold">pricing and margin assurance lens</span> — designed for situations where data is incomplete, but pricing decisions must still be made.
             </p>
             <div className="flex flex-wrap gap-4 py-3 mt-2 border-t border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-2 text-sm">
