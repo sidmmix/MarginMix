@@ -226,7 +226,6 @@ export default function Assessment() {
                 <span className="text-xs sm:text-sm">{progress}%</span>
                 <Button
                   type="button"
-                  variant="outline"
                   size="sm"
                   onClick={() => {
                     const currentValues = form.getValues();
@@ -242,7 +241,7 @@ export default function Assessment() {
                       description: "Your answers have been saved.",
                     });
                   }}
-                  className="h-7 px-2 sm:px-3 text-xs border-emerald-300 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/30"
+                  className="h-7 px-2 sm:px-3 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
                   <Save className="h-3 w-3 sm:mr-1" />
                   <span className="hidden sm:inline">Save</span>
