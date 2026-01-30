@@ -14,6 +14,7 @@ import {
 } from "@shared/schema";
 import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
 import { sendAssessmentEmail } from "./resend";
+import { executeDecisionEngine, DecisionObject } from "./decision-engine";
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -321,34 +322,39 @@ export function registerRoutes(app: Express): Server {
       const validatedData = insertMarginAssessmentSchema.parse(req.body);
       const assessment = await storage.createMarginAssessment(validatedData);
       
-      // Send email notification with assessment details
+      // Execute the deterministic decision engine
+      const decisionObject = executeDecisionEngine({
+        fullName: validatedData.fullName,
+        workEmail: validatedData.workEmail,
+        roleTitle: validatedData.roleTitle,
+        organisationName: validatedData.organisationName,
+        organisationSize: validatedData.organisationSize,
+        engagementType: validatedData.engagementType,
+        engagementClassification: validatedData.engagementClassification || "new",
+        clientVolatility: validatedData.clientVolatility,
+        stakeholderComplexity: validatedData.stakeholderComplexity,
+        seniorLeadershipInvolvement: validatedData.seniorLeadershipInvolvement,
+        midLevelOversight: validatedData.midLevelOversight,
+        executionThinkingMix: validatedData.executionThinkingMix,
+        iterationIntensity: validatedData.iterationIntensity,
+        scopeChangeLikelihood: validatedData.scopeChangeLikelihood,
+        crossFunctionalCoordination: validatedData.crossFunctionalCoordination,
+        aiImpactMeasurement: validatedData.aiImpactMeasurement || "not_applicable",
+        marginalValueSaturation: validatedData.marginalValueSaturation || "significant",
+        seniorOversightLoad: validatedData.seniorOversightLoad || "about_same",
+        coordinationDecisionDrag: validatedData.coordinationDecisionDrag || "moderate",
+        deliveryConfidence: validatedData.deliveryConfidence || "high"
+      });
+      
+      console.log(`Decision Engine executed for ${validatedData.organisationName}:`, {
+        verdict: decisionObject.marginRiskVerdict,
+        riskBand: decisionObject.riskBand,
+        compositeScore: decisionObject.compositeRiskScore
+      });
+      
+      // Send email notification with decision object
       try {
-        await sendAssessmentEmail({
-          fullName: validatedData.fullName,
-          workEmail: validatedData.workEmail,
-          roleTitle: validatedData.roleTitle,
-          organisationName: validatedData.organisationName,
-          organisationSize: validatedData.organisationSize,
-          decisionEvaluating: validatedData.decisionEvaluating,
-          engagementType: validatedData.engagementType,
-          specifyContext: validatedData.specifyContext,
-          engagementClassification: validatedData.engagementClassification,
-          clientVolatility: validatedData.clientVolatility,
-          stakeholderComplexity: validatedData.stakeholderComplexity,
-          seniorLeadershipInvolvement: validatedData.seniorLeadershipInvolvement,
-          midLevelOversight: validatedData.midLevelOversight,
-          executionThinkingMix: validatedData.executionThinkingMix,
-          iterationIntensity: validatedData.iterationIntensity,
-          scopeChangeLikelihood: validatedData.scopeChangeLikelihood,
-          crossFunctionalCoordination: validatedData.crossFunctionalCoordination,
-          aiImpactMeasurement: validatedData.aiImpactMeasurement,
-          marginalValueSaturation: validatedData.marginalValueSaturation,
-          seniorOversightLoad: validatedData.seniorOversightLoad,
-          coordinationDecisionDrag: validatedData.coordinationDecisionDrag,
-          deliveryConfidence: validatedData.deliveryConfidence,
-          openSignal: validatedData.openSignal,
-          submittedAt: new Date()
-        });
+        await sendAssessmentEmail(decisionObject, validatedData.openSignal || null);
         console.log(`Assessment email sent for: ${validatedData.organisationName}`);
       } catch (emailError: any) {
         console.error("Failed to send assessment email:", emailError.message);
@@ -357,7 +363,8 @@ export function registerRoutes(app: Express): Server {
       res.status(201).json({ 
         success: true, 
         message: "Assessment submitted successfully",
-        assessmentId: assessment.id 
+        assessmentId: assessment.id,
+        decisionObject
       });
     } catch (error: any) {
       console.error("Assessment submission error:", error);

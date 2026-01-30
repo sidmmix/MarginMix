@@ -38,7 +38,7 @@ export interface DecisionObject {
   readonly saturationDetails: SaturationFlags;
   readonly aiImpactClassification: AIImpactClassification;
   readonly riskSource: RiskSource;
-  readonly dominantDrivers: string[];
+  readonly dominantDrivers: readonly string[];
   readonly correctability: Correctability;
   readonly effortBand: string;
   readonly effortPercentages: {

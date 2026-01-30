@@ -121,5 +121,5 @@ export function executeDecisionEngine(input: AssessmentInput): DecisionObject {
   return decisionObject;
 }
 
-export { DecisionObject } from "./decisionObject";
-export { BucketScores } from "./buckets";
+export type { DecisionObject } from "./decisionObject";
+export type { BucketScores } from "./buckets";
