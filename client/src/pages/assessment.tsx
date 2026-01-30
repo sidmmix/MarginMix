@@ -1004,7 +1004,7 @@ export default function Assessment() {
               Assessment Submitted
             </DialogTitle>
             <DialogDescription className="text-center text-lg pt-4">
-              You'll be notified of the assessment & decision memo in 24 hours via email.
+              Thank you for submitting the responses. The Decision Memo & Assessment have been automatically downloaded on this device and an email copy has been sent to you!
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center pt-4">
