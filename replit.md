@@ -6,6 +6,7 @@ Margin Mix is a full-stack web application that serves as an Intelligent Financi
 
 ## Recent Changes
 
+- **Deterministic Decision Engine (January 30, 2026)**: Implemented a layered, deterministic decision engine that computes margin risk from assessment inputs without AI interpretation. GPT is now used only for narrative generation, not score calculation. The engine includes: scoring.ts (enum→numeric mapping), buckets.ts (WI, SI, CO, VSI, CE computation), rules.ts (context multipliers & saturation detection), verdict.ts (margin risk classification), and decisionObject.ts (immutable canonical output).
 - **Brand Rebrand to Margin Mix (December 26, 2025)**: Complete rebrand from YourBrief to Margin Mix with new value proposition: "The Financial Reasoning Engine for Media Agencies - Stopping Margin Leak!" Updated all branding, colors (blue → emerald/teal), messaging, and feature descriptions across the entire application.
 - **DNA_Scraper Capability (December 26, 2025)**: Added Playwright-based web scraper that analyzes websites and generates Brand Briefs with brand_name, industry_category, top_3_usps, and complexity_score using GPT-4o-mini.
 - **11-Question Comprehensive Brief System with Platform CPM/Impressions (October 21, 2025)**: Expanded questionnaire to 11 strategic open-ended questions covering Geo, Demo, Industry, Budget, Timeline, KPIs, Creative, Competitive, Platforms, Affinity, and InMarket segments.
@@ -59,6 +60,37 @@ Product Focus: Financial reasoning engine for media planning margins and media m
 - **Session Security**: Enhanced session management with CSRF protection and secure cookies
 - **Rate Limiting**: Brute force protection with IP-based attempt tracking
 - **Security Headers**: Comprehensive security headers including XSS, CSRF, and clickjacking protection
+
+### Deterministic Decision Engine (server/decision-engine/)
+A layered, constrained decision system for margin risk assessment:
+
+**Layer 1 - scoring.ts**: Enum → Numeric Mapping
+- Maps all dropdown options to 0-100 scores
+- Pure deterministic mapping, no business logic
+
+**Layer 2 - buckets.ts**: Bucket Score Computation
+- WI (Workforce Intensity): Client volatility, iteration intensity, scope change, execution mix
+- SI (Senior Involvement): Senior leadership, mid-level oversight, senior oversight load
+- CO (Coordination Overhead): Stakeholder complexity, cross-functional, decision drag
+- VSI (Value Saturation Index): Marginal value saturation
+- CE (Commercial Elasticity): Delivery confidence (inverted)
+
+**Layer 3 - rules.ts**: Context Multipliers & Pattern Detection
+- Engagement multipliers: New (1.0), Renewal (1.15), Expansion (1.2), Escalation (1.3), Strategic (1.25)
+- Saturation detection: Value saturation, optics-driven staffing, upward cost shift
+- AI impact classification: Accretive, Neutral, Fragile, Dilutive
+- Risk source attribution: Structural, Behavioral, Technology-Amplified, Mixed
+
+**Layer 4 - verdict.ts**: Margin Risk Classification
+- Risk bands: Low, Moderate, High, Very High
+- Verdicts: Structurally Viable, Conditionally Viable, Structurally Fragile, Economically Non-Viable
+- Effort distribution: Senior/Mid/Junior percentages
+- Dominant driver identification
+
+**Layer 5 - decisionObject.ts**: Immutable System-of-Record
+- Canonical output object with readonly properties
+- Contains all computed values for rendering
+- GPT uses this for narrative generation only (no recalculation)
 
 ### AI-Powered Financial Reasoning
 - **Workforce Intensity Matrix**: World's first framework correlating workforce effort with media planning margins

@@ -92,27 +92,42 @@ function computeCompositeScore(buckets: BucketScores): number {
   return Math.round(score * 10) / 10;
 }
 
-export function buildDecisionObject(params: BuildDecisionObjectParams): DecisionObject {
-  const decisionObject: DecisionObject = Object.freeze({
-    id: generateDecisionId(),
-    engagementContext: Object.freeze({ ...params.engagementContext }),
-    marginRiskVerdict: params.marginRiskVerdict,
-    riskBand: params.riskBand,
-    bucketScores: Object.freeze({ ...params.bucketScores }),
-    bucketBands: Object.freeze({ ...params.bucketBands }),
-    valueSaturationFlag: params.saturationFlags.valueSaturationPresent,
-    saturationDetails: Object.freeze({ ...params.saturationFlags }),
-    aiImpactClassification: params.aiImpactClassification,
-    riskSource: params.riskSource,
-    dominantDrivers: Object.freeze([...params.dominantDrivers]) as readonly string[],
-    correctability: params.correctability,
-    effortBand: params.effortBand,
-    effortPercentages: Object.freeze({ ...params.effortPercentages }),
-    compositeRiskScore: computeCompositeScore(params.bucketScores),
-    createdAt: new Date().toISOString()
+function deepFreeze<T>(obj: T): T {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+  
+  Object.getOwnPropertyNames(obj).forEach(name => {
+    const value = (obj as any)[name];
+    if (value && typeof value === 'object') {
+      deepFreeze(value);
+    }
   });
   
-  return decisionObject;
+  return Object.freeze(obj);
+}
+
+export function buildDecisionObject(params: BuildDecisionObjectParams): DecisionObject {
+  const decisionObject = {
+    id: generateDecisionId(),
+    engagementContext: { ...params.engagementContext },
+    marginRiskVerdict: params.marginRiskVerdict,
+    riskBand: params.riskBand,
+    bucketScores: { ...params.bucketScores },
+    bucketBands: { ...params.bucketBands },
+    valueSaturationFlag: params.saturationFlags.valueSaturationPresent,
+    saturationDetails: { ...params.saturationFlags },
+    aiImpactClassification: params.aiImpactClassification,
+    riskSource: params.riskSource,
+    dominantDrivers: [...params.dominantDrivers],
+    correctability: params.correctability,
+    effortBand: params.effortBand,
+    effortPercentages: { ...params.effortPercentages },
+    compositeRiskScore: computeCompositeScore(params.bucketScores),
+    createdAt: new Date().toISOString()
+  };
+  
+  return deepFreeze(decisionObject) as DecisionObject;
 }
 
 export function serializeDecisionObject(decision: DecisionObject): string {
@@ -121,5 +136,5 @@ export function serializeDecisionObject(decision: DecisionObject): string {
 
 export function parseDecisionObject(json: string): DecisionObject {
   const parsed = JSON.parse(json);
-  return Object.freeze(parsed) as DecisionObject;
+  return deepFreeze(parsed) as DecisionObject;
 }
