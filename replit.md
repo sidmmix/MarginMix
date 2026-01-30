@@ -6,6 +6,7 @@ Margin Mix is a full-stack web application that serves as an Intelligent Financi
 
 ## Recent Changes
 
+- **PDF Generation & GPT-4.1 Narratives (January 30, 2026)**: Added dual PDF output system (Decision Memo + Assessment Output). PDFs auto-download on submission and are sent via email as attachments. GPT-4.1 generates narrative explanations only - it cannot recalculate scores, change bands, or override verdicts. Fallback narrative provided if GPT fails. Files: narrative-generator.ts, pdf-renderer.ts.
 - **Deterministic Decision Engine (January 30, 2026)**: Implemented a layered, deterministic decision engine that computes margin risk from assessment inputs without AI interpretation. GPT is now used only for narrative generation, not score calculation. The engine includes: scoring.ts (enum→numeric mapping), buckets.ts (WI, SI, CO, VSI, CE computation), rules.ts (context multipliers & saturation detection), verdict.ts (margin risk classification), and decisionObject.ts (immutable canonical output).
 - **Brand Rebrand to Margin Mix (December 26, 2025)**: Complete rebrand from YourBrief to Margin Mix with new value proposition: "The Financial Reasoning Engine for Media Agencies - Stopping Margin Leak!" Updated all branding, colors (blue → emerald/teal), messaging, and feature descriptions across the entire application.
 - **DNA_Scraper Capability (December 26, 2025)**: Added Playwright-based web scraper that analyzes websites and generates Brand Briefs with brand_name, industry_category, top_3_usps, and complexity_score using GPT-4o-mini.
