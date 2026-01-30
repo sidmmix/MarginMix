@@ -13,8 +13,10 @@ import {
   insertMarginAssessmentSchema
 } from "@shared/schema";
 import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
-import { sendAssessmentEmail } from "./resend";
+import { sendAssessmentEmail, PDFAttachment } from "./resend";
 import { executeDecisionEngine, DecisionObject } from "./decision-engine";
+import { generateNarrative } from "./narrative-generator";
+import { renderDecisionMemoPDF, renderAssessmentOutputPDF, generatePDFFilename } from "./pdf-renderer";
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -352,19 +354,103 @@ export function registerRoutes(app: Express): Server {
         compositeScore: decisionObject.compositeRiskScore
       });
       
-      // Send email notification with decision object
+      const openSignal = validatedData.openSignal || null;
+      
+      // Generate narrative using GPT-4.1 (narrative only, no score recalculation)
+      let narrative;
       try {
-        await sendAssessmentEmail(decisionObject, validatedData.openSignal || null);
-        console.log(`Assessment email sent for: ${validatedData.organisationName}`);
+        narrative = await generateNarrative(decisionObject, openSignal);
+        console.log(`Narrative generated for: ${validatedData.organisationName}`);
+      } catch (narrativeError: any) {
+        console.error("Failed to generate narrative:", narrativeError.message);
+        // Use fallback narrative if GPT fails
+        narrative = {
+          decisionMemo: {
+            executiveSummary: `This engagement has been classified as ${decisionObject.marginRiskVerdict} with a ${decisionObject.riskBand} risk band based on the assessment inputs.`,
+            keyInsight: `Primary margin risk drivers include: ${decisionObject.dominantDrivers.join(", ")}.`,
+            riskAssessment: {
+              structural: decisionObject.riskBand,
+              behavioral: decisionObject.riskBand,
+              overall: decisionObject.riskBand
+            },
+            decisionGuidance: [
+              "Monitor senior involvement levels closely",
+              "Establish clear scope boundaries",
+              "Track coordination overhead regularly"
+            ],
+            recommendation: `Proceed with appropriate governance controls for a ${decisionObject.riskBand.toLowerCase()} risk engagement.`
+          },
+          assessmentOutput: {
+            criticalSignalAnalysis: openSignal || "No additional context provided.",
+            riskDrivers: {
+              structural: { level: "🟡", description: "Structural load is within expected parameters." },
+              behavioral: { level: "🟡", description: "Behavioral patterns require monitoring." },
+              governance: { level: "🟡", description: "Governance framework should be reviewed periodically." }
+            },
+            effortBandRationale: {
+              senior: "Senior involvement should be capped to preserve margins.",
+              midLevel: "Mid-level should absorb majority of delivery volatility.",
+              junior: "Junior layer handles execution velocity."
+            },
+            earlyWarningIndicators: [
+              "Senior involvement exceeds target band",
+              "Scope changes without formal approval",
+              "Client escalations increase frequency"
+            ]
+          }
+        };
+      }
+      
+      // Generate PDFs
+      let decisionMemoPdf: Buffer;
+      let assessmentOutputPdf: Buffer;
+      
+      try {
+        [decisionMemoPdf, assessmentOutputPdf] = await Promise.all([
+          renderDecisionMemoPDF(decisionObject, narrative.decisionMemo),
+          renderAssessmentOutputPDF(decisionObject, narrative.assessmentOutput, openSignal)
+        ]);
+        console.log(`PDFs generated for: ${validatedData.organisationName}`);
+      } catch (pdfError: any) {
+        console.error("Failed to generate PDFs:", pdfError.message);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to generate PDF reports"
+        });
+      }
+      
+      const decisionMemoFilename = generatePDFFilename("decision_memo", validatedData.fullName, validatedData.organisationName);
+      const assessmentOutputFilename = generatePDFFilename("assessment_output", validatedData.fullName, validatedData.organisationName);
+      
+      // Send email with PDF attachments
+      const pdfAttachments: PDFAttachment[] = [
+        { filename: decisionMemoFilename, content: decisionMemoPdf },
+        { filename: assessmentOutputFilename, content: assessmentOutputPdf }
+      ];
+      
+      try {
+        await sendAssessmentEmail(decisionObject, openSignal, pdfAttachments);
+        console.log(`Assessment email sent with PDFs for: ${validatedData.organisationName}`);
       } catch (emailError: any) {
         console.error("Failed to send assessment email:", emailError.message);
       }
       
+      // Return PDFs as base64 for frontend download
       res.status(201).json({ 
         success: true, 
         message: "Assessment submitted successfully",
         assessmentId: assessment.id,
-        decisionObject
+        decisionObject,
+        pdfs: {
+          decisionMemo: {
+            filename: decisionMemoFilename,
+            data: decisionMemoPdf.toString('base64')
+          },
+          assessmentOutput: {
+            filename: assessmentOutputFilename,
+            data: assessmentOutputPdf.toString('base64')
+          }
+        }
       });
     } catch (error: any) {
       console.error("Assessment submission error:", error);

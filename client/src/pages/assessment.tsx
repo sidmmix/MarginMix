@@ -170,10 +170,18 @@ export default function Assessment() {
   };
   const progress = calculateProgress();
 
+  const downloadPDF = (filename: string, base64Data: string) => {
+    const link = document.createElement('a');
+    link.href = `data:application/pdf;base64,${base64Data}`;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const onSubmit = async (data: AssessmentFormData) => {
     setIsSubmitting(true);
     try {
-      // Submit the assessment data
       const response = await fetch("/api/assessments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -181,14 +189,43 @@ export default function Assessment() {
       });
       
       if (response.ok) {
+        const result = await response.json();
+        
+        // Auto-download the PDFs
+        if (result.pdfs) {
+          setTimeout(() => {
+            downloadPDF(result.pdfs.decisionMemo.filename, result.pdfs.decisionMemo.data);
+          }, 100);
+          setTimeout(() => {
+            downloadPDF(result.pdfs.assessmentOutput.filename, result.pdfs.assessmentOutput.data);
+          }, 500);
+        }
+        
         localStorage.removeItem(STORAGE_KEY);
         setHasSavedProgress(false);
         setLastSaved(null);
         setShowConfirmation(true);
         form.reset();
+        
+        toast({
+          title: "Assessment Complete",
+          description: "Your PDFs are downloading and email has been sent.",
+        });
+      } else {
+        const error = await response.json();
+        toast({
+          title: "Submission Failed",
+          description: error.message || "Please try again.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
       console.error("Failed to submit assessment:", error);
+      toast({
+        title: "Submission Failed",
+        description: "An error occurred. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }

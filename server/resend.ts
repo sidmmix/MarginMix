@@ -39,9 +39,15 @@ function formatBucketLabel(key: string): string {
   return labels[key] || key;
 }
 
+export interface PDFAttachment {
+  filename: string;
+  content: Buffer;
+}
+
 export async function sendAssessmentEmail(
   decision: DecisionObject,
-  openSignal: string | null
+  openSignal: string | null,
+  attachments?: PDFAttachment[]
 ) {
   const verdictColors = getVerdictColor(decision.marginRiskVerdict);
   const riskBandColor = getRiskBandColor(decision.riskBand);
@@ -220,11 +226,17 @@ export async function sendAssessmentEmail(
     </html>
   `;
 
+  const emailAttachments = attachments?.map(att => ({
+    filename: att.filename,
+    content: att.content
+  }));
+
   const result = await resend.emails.send({
     from: 'Sid <sid@marginmix.ai>',
     to: ['sid@marginmix.ai', decision.engagementContext.workEmail],
     subject: `Margin Risk Assessment: ${decision.marginRiskVerdict} - ${decision.engagementContext.organisationName}`,
-    html: htmlContent
+    html: htmlContent,
+    attachments: emailAttachments
   });
 
   return result;
