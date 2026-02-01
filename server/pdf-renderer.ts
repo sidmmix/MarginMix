@@ -1,6 +1,6 @@
 import PDFDocument from "pdfkit";
 import { DecisionObject } from "./decision-engine";
-import { NarrativeOutput, mapBucketBandToLevel } from "./narrative-generator";
+import { NarrativeOutput } from "./narrative-generator";
 
 const COLORS = {
   primary: "#059669",
@@ -25,6 +25,15 @@ function getRiskColor(band: string): string {
   }
 }
 
+function getDimensionColor(level: string): string {
+  switch (level.toLowerCase()) {
+    case "low": return COLORS.riskLow;
+    case "medium": return COLORS.riskModerate;
+    case "high": return COLORS.riskHigh;
+    default: return COLORS.riskModerate;
+  }
+}
+
 export async function renderDecisionMemoPDF(
   decision: DecisionObject,
   narrative: NarrativeOutput["decisionMemo"]
@@ -37,54 +46,59 @@ export async function renderDecisionMemoPDF(
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    doc.fontSize(24).fillColor(COLORS.primary).text("Margin Risk Decision Memo", { align: "center" });
-    doc.moveDown(1.5);
+    doc.fontSize(24).fillColor(COLORS.primary).text("MarginMix – Decision Memo", { align: "center" });
+    doc.moveDown(2);
 
-    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Contact Information");
+    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Decision Context");
     doc.moveDown(0.5);
-    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
-    doc.text(`Name: ${decision.engagementContext.fullName}`);
-    doc.text(`Email: ${decision.engagementContext.workEmail}`);
-    doc.text(`Organization: ${decision.engagementContext.organisationName}`);
-    doc.text(`Role: ${decision.engagementContext.roleTitle}`);
+    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray).text(narrative.decisionContext, { lineGap: 4 });
     doc.moveDown(1.5);
 
     doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
     doc.moveDown(1);
 
-    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Executive Summary");
+    const riskColor = getRiskColor(decision.riskBand);
+    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Margin Risk Verdict");
     doc.moveDown(0.5);
-    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray).text(narrative.executiveSummary, { lineGap: 4 });
+    doc.rect(50, doc.y, 495, 40).fillAndStroke(riskColor, riskColor);
+    doc.fontSize(14).fillColor(COLORS.white).font("Helvetica-Bold").text(
+      decision.marginRiskVerdict,
+      60,
+      doc.y - 35,
+      { align: "center", width: 475 }
+    );
+    doc.y += 15;
+    doc.moveDown(1);
+    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray).text(narrative.marginRiskVerdict, { lineGap: 4 });
     doc.moveDown(1.5);
 
-    doc.fontSize(12).fillColor(COLORS.secondary).font("Helvetica-Bold").text("Key Insight");
-    doc.moveDown(0.3);
-    doc.font("Helvetica-Oblique").fontSize(11).fillColor(COLORS.dark).text(narrative.keyInsight, { lineGap: 4 });
-    doc.moveDown(1.5);
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
+    doc.moveDown(1);
 
-    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Risk Assessment");
-    doc.moveDown(0.5);
-    doc.font("Helvetica").fontSize(11);
-    doc.fillColor(COLORS.gray).text("• Structural Risk: ", { continued: true });
-    doc.fillColor(getRiskColor(narrative.riskAssessment.structural)).text(narrative.riskAssessment.structural);
-    doc.fillColor(COLORS.gray).text("• Behavioral Risk: ", { continued: true });
-    doc.fillColor(getRiskColor(narrative.riskAssessment.behavioral)).text(narrative.riskAssessment.behavioral);
-    doc.fillColor(COLORS.gray).text("• Overall Margin Risk: ", { continued: true });
-    doc.fillColor(getRiskColor(narrative.riskAssessment.overall)).text(narrative.riskAssessment.overall);
-    doc.moveDown(0.5);
-    doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text("Margin erosion is likely to occur gradually through:");
-    doc.fontSize(10).text("• Increased senior involvement");
-    doc.text("• Untracked coordination effort");
-    doc.text("• Informal scope absorption");
-    doc.moveDown(1.5);
-
-    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Decision Guidance");
+    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Primary Drivers of Risk");
     doc.moveDown(0.5);
     doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
-    doc.text("Proceed with the engagement, subject to the following controls:");
-    doc.moveDown(0.3);
-    narrative.decisionGuidance.forEach((guidance, index) => {
-      doc.text(`${index + 1}. ${guidance}`, { lineGap: 3 });
+    narrative.primaryDriversOfRisk.forEach((driver) => {
+      doc.text(`• ${driver}`, { lineGap: 3 });
+    });
+    doc.moveDown(1.5);
+
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
+    doc.moveDown(1);
+
+    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Pricing & Governance Implications");
+    doc.moveDown(0.5);
+    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray).text(narrative.pricingGovernanceImplications, { lineGap: 4 });
+    doc.moveDown(1.5);
+
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
+    doc.moveDown(1);
+
+    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("What Would Need to Change");
+    doc.moveDown(0.5);
+    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
+    narrative.whatWouldNeedToChange.forEach((change, index) => {
+      doc.text(`${index + 1}. ${change}`, { lineGap: 3 });
     });
     doc.moveDown(1.5);
 
@@ -118,98 +132,102 @@ export async function renderAssessmentOutputPDF(
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
 
-    doc.fontSize(24).fillColor(COLORS.primary).text("Margin Risk Assessment Output", { align: "center" });
-    doc.moveDown(1.5);
+    doc.fontSize(22).fillColor(COLORS.primary).text("MarginMix – Margin Risk Assessment Output", { align: "center" });
+    doc.moveDown(2);
 
-    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Contact Information");
+    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Executive Snapshot");
     doc.moveDown(0.5);
-    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
-    doc.text(`Name: ${decision.engagementContext.fullName}`);
-    doc.text(`Email: ${decision.engagementContext.workEmail}`);
-    doc.text(`Organization: ${decision.engagementContext.organisationName}`);
-    doc.text(`Role: ${decision.engagementContext.roleTitle}`);
-    doc.moveDown(1.5);
-
-    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Engagement Context");
-    doc.moveDown(0.5);
-    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
-    doc.text(`• Org size: ${decision.engagementContext.organisationSize}`);
-    doc.text(`• Engagement type: ${decision.engagementContext.type}`);
-    doc.text(`• Classification: ${decision.engagementContext.classification}`);
-    doc.moveDown(1.5);
-
-    if (openSignal) {
-      doc.fontSize(12).fillColor(COLORS.secondary).font("Helvetica-Bold").text("Critical Open Signal");
-      doc.moveDown(0.3);
-      doc.font("Helvetica-Oblique").fontSize(11).fillColor(COLORS.dark).text(`"${openSignal}"`, { lineGap: 4 });
-      doc.moveDown(0.5);
-      doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(narrative.criticalSignalAnalysis, { lineGap: 3 });
-      doc.moveDown(1.5);
-    }
-
-    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Risk Drivers");
-    doc.moveDown(0.5);
-    
-    const drivers = [
-      { name: "Structural Load", ...narrative.riskDrivers.structural },
-      { name: "Behavioral Load", ...narrative.riskDrivers.behavioral },
-      { name: "Governance Fragility", ...narrative.riskDrivers.governance }
-    ];
-    
-    drivers.forEach((driver, index) => {
-      doc.fontSize(12).fillColor(COLORS.dark).font("Helvetica-Bold").text(`${index + 1}. ${driver.name} — ${driver.level}`);
-      doc.moveDown(0.3);
-      doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(driver.description, { lineGap: 3 });
-      doc.moveDown(1);
-    });
-
     const riskColor = getRiskColor(decision.riskBand);
-    doc.rect(50, doc.y, 495, 50).fillAndStroke(riskColor, riskColor);
-    doc.fontSize(16).fillColor(COLORS.white).font("Helvetica-Bold").text(
-      `${decision.riskBand.toUpperCase()} MARGIN RISK`,
+    doc.rect(50, doc.y, 495, 35).fillAndStroke(riskColor, riskColor);
+    doc.fontSize(12).fillColor(COLORS.white).font("Helvetica-Bold").text(
+      `${decision.riskBand.toUpperCase()} RISK – ${decision.marginRiskVerdict}`,
       60,
-      doc.y - 45,
+      doc.y - 30,
       { align: "center", width: 475 }
     );
-    doc.fontSize(10).fillColor(COLORS.white).font("Helvetica").text(
-      decision.marginRiskVerdict,
-      60,
-      doc.y - 25,
-      { align: "center", width: 475 }
-    );
-    doc.y += 20;
+    doc.y += 10;
+    doc.moveDown(1);
+    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray).text(narrative.executiveSnapshot, { lineGap: 4 });
     doc.moveDown(1.5);
 
-    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Effort Band Recommendations");
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
+    doc.moveDown(1);
+
+    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Risk Dimension Summary");
     doc.moveDown(0.5);
-    doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text("These bands are control limits, not guidelines.");
-    doc.moveDown(0.5);
 
-    doc.fontSize(12).fillColor(COLORS.dark).font("Helvetica-Bold").text("Senior Leadership");
-    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
-    doc.text(`• Target band: ${decision.effortPercentages.senior}`);
-    doc.text(`• Rationale: ${narrative.effortBandRationale.senior}`);
-    doc.moveDown(0.8);
+    const dimensions = [
+      { name: "Workforce Intensity", ...narrative.riskDimensionSummary.workforceIntensity },
+      { name: "Coordination Entropy", ...narrative.riskDimensionSummary.coordinationEntropy },
+      { name: "Commercial Exposure", ...narrative.riskDimensionSummary.commercialExposure },
+      { name: "Volatility Control", ...narrative.riskDimensionSummary.volatilityControl }
+    ];
 
-    doc.fontSize(12).fillColor(COLORS.dark).font("Helvetica-Bold").text("Mid-Level (Account / Program Owners)");
-    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
-    doc.text(`• Target band: ${decision.effortPercentages.mid}`);
-    doc.text(`• Rationale: ${narrative.effortBandRationale.midLevel}`);
-    doc.moveDown(0.8);
-
-    doc.fontSize(12).fillColor(COLORS.dark).font("Helvetica-Bold").text("Junior / Execution Layer");
-    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
-    doc.text(`• Target band: ${decision.effortPercentages.junior}`);
-    doc.text(`• Rationale: ${narrative.effortBandRationale.junior}`);
-    doc.moveDown(1.5);
-
-    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Early Warning Indicators");
-    doc.moveDown(0.5);
-    doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text("Trigger review if any one of the following occurs:");
-    doc.moveDown(0.3);
-    narrative.earlyWarningIndicators.forEach((indicator) => {
-      doc.text(`• ${indicator}`, { lineGap: 3 });
+    dimensions.forEach((dim) => {
+      const dimColor = getDimensionColor(dim.level);
+      doc.fontSize(11).fillColor(COLORS.dark).font("Helvetica-Bold").text(`${dim.name}: `, { continued: true });
+      doc.fillColor(dimColor).text(dim.level);
+      doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(dim.description, { lineGap: 2 });
+      doc.moveDown(0.6);
     });
+    doc.moveDown(1);
+
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
+    doc.moveDown(1);
+
+    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Effort Bands & Allocation");
+    doc.moveDown(0.5);
+
+    const effortBands = [
+      { name: "Senior Leadership", ...narrative.effortBandsAllocation.senior },
+      { name: "Mid-Level (Account / Program)", ...narrative.effortBandsAllocation.midLevel },
+      { name: "Execution Layer", ...narrative.effortBandsAllocation.execution }
+    ];
+
+    effortBands.forEach((band) => {
+      doc.fontSize(11).fillColor(COLORS.dark).font("Helvetica-Bold").text(`${band.name}: `, { continued: true });
+      doc.fillColor(COLORS.secondary).text(band.percentage);
+      doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(band.rationale, { lineGap: 2 });
+      doc.moveDown(0.6);
+    });
+    doc.moveDown(1);
+
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
+    doc.moveDown(1);
+
+    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Structural Risk Signals");
+    doc.moveDown(0.5);
+    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
+    narrative.structuralRiskSignals.forEach((signal) => {
+      doc.text(`• ${signal}`, { lineGap: 3 });
+    });
+    doc.moveDown(1.5);
+
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
+    doc.moveDown(1);
+
+    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Override Conditions");
+    doc.moveDown(0.5);
+    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray).text(narrative.overrideConditions, { lineGap: 4 });
+    doc.moveDown(1.5);
+
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
+    doc.moveDown(1);
+
+    doc.fontSize(12).fillColor(COLORS.secondary).font("Helvetica-Bold").text("What This Assessment Measures");
+    doc.moveDown(0.3);
+    doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(
+      "Structural margin risk before commitment. This analysis evaluates workforce intensity, coordination complexity, and commercial exposure to predict margin erosion risk.",
+      { lineGap: 3 }
+    );
+    doc.moveDown(1);
+
+    doc.fontSize(12).fillColor(COLORS.secondary).font("Helvetica-Bold").text("What This Assessment Does Not Measure");
+    doc.moveDown(0.3);
+    doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(
+      "Delivery performance, timesheet accuracy, or post-engagement execution quality. This is a pre-commitment structural assessment only.",
+      { lineGap: 3 }
+    );
 
     doc.moveDown(2);
     doc.fontSize(8).fillColor(COLORS.gray).text(
@@ -232,7 +250,7 @@ export function generatePDFFilename(
   const timestamp = Date.now();
   
   if (type === "decision_memo") {
-    return `MMIX_Margin_Risk_Decision_Memo_${name}_${org}_${timestamp}.pdf`;
+    return `MMIX_Decision_Memo_${name}_${org}_${timestamp}.pdf`;
   }
-  return `MMIX_Margin_Risk_Assessment_Output_${name}_${org}_${timestamp}.pdf`;
+  return `MMIX_Assessment_Output_${name}_${org}_${timestamp}.pdf`;
 }
