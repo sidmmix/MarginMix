@@ -107,7 +107,7 @@ export default function Landing() {
             <p className="mt-6 text-xl font-bold text-gray-900 dark:text-white">
               MarginMix is a decision infrastructure for{" "}
               <span className="text-emerald-600 dark:text-emerald-400">pricing risk</span>,{" "}
-              <span className="text-red-600 dark:text-red-400">not a productivity tool</span>!
+              <span className="text-red-600 dark:text-red-400">not a productivity tool!</span>
             </p>
           </div>
         </div>
