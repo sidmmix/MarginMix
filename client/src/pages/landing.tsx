@@ -86,7 +86,7 @@ export default function Landing() {
               Price work with <span className="text-emerald-600 dark:text-emerald-400">margin confidence</span> — before delivery begins!
             </h1>
             <p className="text-xl md:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-6">
-              Assess Margin Risk. Price right. Save up to $500K!
+              Assess Margin Risk. Price right. Dont lose Money!
             </p>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               MarginMix helps agency and consulting leaders predict margin risk early, using decision logic grounded in staffing complexity, coordination load, and senior effort — not unreliable timesheets.
@@ -231,7 +231,7 @@ export default function Landing() {
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <Building2 className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-gray-700 dark:text-gray-300">Independent and mid-tier agencies and consulting firms in the US and UK</span>
+                  <span className="text-gray-700 dark:text-gray-300">Independent and mid-tier agencies and consulting firms in high income countries</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Users className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
