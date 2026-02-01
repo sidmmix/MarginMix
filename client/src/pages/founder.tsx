@@ -232,50 +232,6 @@ export default function Founder() {
         </div>
       </section>
 
-      {/* Why Founder-Reviewed */}
-      <section className="py-12 sm:py-16 bg-white dark:bg-gray-800">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-teal-600 rounded-full flex items-center justify-center">
-              <UserCheck className="h-6 w-6 text-white" />
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-              Why This Starts as a Founder-Reviewed Assessment
-            </h2>
-          </div>
-
-          <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-            At this stage, MarginMix assessments are <span className="font-semibold text-teal-600 dark:text-teal-400">personally reviewed by me</span>. That choice is intentional.
-          </p>
-
-          <p className="text-lg text-gray-700 dark:text-gray-300 mb-8">
-            Before this framework can be encoded into an AI-led system, it needs to be pressure-tested against real organizational context — nuance, politics, delivery realities, and leadership behavior that no automated system can fully capture early on.
-          </p>
-
-          <div className="bg-gradient-to-r from-teal-50 to-emerald-50 dark:from-teal-900/20 dark:to-emerald-900/20 p-6 rounded-xl">
-            <p className="font-semibold text-gray-900 dark:text-white mb-4">This phase is about:</p>
-            <div className="space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                <p className="text-gray-700 dark:text-gray-300">Validating the decision logic</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                <p className="text-gray-700 dark:text-gray-300">Understanding where judgment matters most</p>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                <p className="text-gray-700 dark:text-gray-300">Learning where structure breaks down in practice</p>
-              </div>
-            </div>
-          </div>
-
-          <p className="text-lg text-gray-600 dark:text-gray-400 mt-6 text-center italic">
-            The system will eventually see the light of the day — once the decision logic is proven in practice.
-          </p>
-        </div>
-      </section>
-
       {/* Founder & Key Advisor */}
       <section className="py-12 sm:py-16 bg-gradient-to-br from-gray-900 to-emerald-900 text-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
