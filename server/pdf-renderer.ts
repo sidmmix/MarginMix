@@ -1,6 +1,8 @@
 import PDFDocument from "pdfkit";
 import { DecisionObject } from "./decision-engine";
 import { NarrativeOutput } from "./narrative-generator";
+import path from "path";
+import fs from "fs";
 
 const COLORS = {
   primary: "#059669",
@@ -14,6 +16,8 @@ const COLORS = {
   riskHigh: "#f97316",
   riskVeryHigh: "#ef4444"
 };
+
+const LOGO_PATH = path.join(process.cwd(), "server", "assets", "marginmix-logo.png");
 
 function getRiskColor(band: string): string {
   switch (band.toLowerCase()) {
@@ -34,6 +38,17 @@ function getDimensionColor(level: string): string {
   }
 }
 
+function addLogoToPage(doc: PDFKit.PDFDocument): void {
+  const logoExists = fs.existsSync(LOGO_PATH);
+  if (logoExists) {
+    const pageWidth = doc.page.width;
+    const logoWidth = 100;
+    const logoX = pageWidth - 50 - logoWidth;
+    const logoY = 20;
+    doc.image(LOGO_PATH, logoX, logoY, { width: logoWidth });
+  }
+}
+
 export async function renderDecisionMemoPDF(
   decision: DecisionObject,
   narrative: NarrativeOutput["decisionMemo"]
@@ -45,6 +60,14 @@ export async function renderDecisionMemoPDF(
     doc.on("data", (chunk) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
+
+    doc.on("pageAdded", () => {
+      addLogoToPage(doc);
+    });
+
+    addLogoToPage(doc);
+
+    doc.moveDown(3);
 
     doc.fontSize(24).fillColor(COLORS.primary).text("MarginMix – Decision Memo", { align: "center" });
     doc.moveDown(2);
@@ -131,6 +154,14 @@ export async function renderAssessmentOutputPDF(
     doc.on("data", (chunk) => chunks.push(chunk));
     doc.on("end", () => resolve(Buffer.concat(chunks)));
     doc.on("error", reject);
+
+    doc.on("pageAdded", () => {
+      addLogoToPage(doc);
+    });
+
+    addLogoToPage(doc);
+
+    doc.moveDown(3);
 
     doc.fontSize(22).fillColor(COLORS.primary).text("MarginMix – Margin Risk Assessment Output", { align: "center" });
     doc.moveDown(2);
