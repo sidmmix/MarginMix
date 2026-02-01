@@ -83,16 +83,16 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
-              Price work with <span className="text-emerald-600 dark:text-emerald-400">margin confidence</span> — before delivery begins!
+              Price work with <span className="text-emerald-600 dark:text-emerald-400">margin confidence</span> — at every decision point.
             </h1>
             <p className="text-xl md:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-6">
-              Assess Margin Risk. Price right. Dont lose Money!
+              Assess margin risk. Price with clarity. Protect profitability.
             </p>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
-              MarginMix helps agency and consulting leaders predict margin risk early, using decision logic grounded in staffing complexity, coordination load, and senior effort — not unreliable timesheets.
+              MarginMix is a decision companion for agency and consulting leaders facing real pricing moments — new deals, renewals, scope changes, and repricing discussions. It helps you surface hidden margin risk by making implicit judgment explicit — across staffing complexity, coordination load, iteration intensity, and senior involvement.
             </p>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Applicable to all delivery models - Time & Materials / Fixed Price / Outcome based
+              Works across all commercial models: Time & Materials · Fixed Price · Outcome-based · Hybrid engagements
             </p>
             <Link href="/assessment" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
               <Button 
