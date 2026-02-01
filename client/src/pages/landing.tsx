@@ -88,8 +88,11 @@ export default function Landing() {
             <p className="text-xl md:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-6">
               Assess margin risk. Price with clarity. Protect profitability.
             </p>
+            <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-4 max-w-4xl mx-auto leading-relaxed">
+              MarginMix is a decision companion for agency and consulting leaders facing real pricing moments — new deals, renewals, scope changes, and repricing discussions.
+            </p>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
-              MarginMix is a decision companion for agency and consulting leaders facing real pricing moments — new deals, renewals, scope changes, and repricing discussions. It helps you surface hidden margin risk by making implicit judgment explicit — across staffing complexity, coordination load, iteration intensity, and senior involvement.
+              It helps you surface hidden margin risk by making implicit judgment explicit — across staffing complexity, coordination load, iteration intensity, and senior involvement.
             </p>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Works across all commercial models: Time & Materials · Fixed Price · Outcome-based · Hybrid engagements
