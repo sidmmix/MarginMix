@@ -119,6 +119,13 @@ function generateDecisionId(): string {
   return `DEC-${timestamp}-${random}`.toUpperCase();
 }
 
+/**
+ * levelToScore - Display-only numeric representation
+ * 
+ * IMPORTANT: These scores are used ONLY for PDF/UI rendering.
+ * They are NOT used in verdict logic, which is purely rule-based.
+ * The decision engine uses Level/Confidence types exclusively.
+ */
 function levelToScore(level: Level): number {
   switch (level) {
     case "low": return 25;
@@ -300,6 +307,8 @@ export function executeDecisionEngine(input: AssessmentInput): DecisionObject {
                      engineOutput.dimensions.commercialExposure === "high"
   };
 
+  // NOTE: compositeScore is for DISPLAY/RENDERING ONLY
+  // It is NOT used in verdict determination, which is purely rule-based
   const compositeScore = (bucketScores.WI * 0.3 + bucketScores.SI * 0.25 + 
                           bucketScores.CO * 0.25 + bucketScores.VSI * 0.2);
 

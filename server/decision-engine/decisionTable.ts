@@ -22,20 +22,24 @@ import { Dimensions, Verdict, VerdictResult } from "./types";
 export function decideVerdict(d: Dimensions): VerdictResult {
   const triggeredBy: string[] = [];
 
-  if (d.workforceIntensity === "high" && d.coordinationEntropy === "high") {
-    triggeredBy.push("STRUCTURAL_OVERLOAD");
-    return {
-      verdict: "Structurally Fragile",
-      reason: "Structural load exceeds safe operating assumptions. High workforce intensity combined with high coordination entropy creates unsustainable margin pressure.",
-      triggeredBy
-    };
-  }
-
+  // OVERRIDE 1 (HIGHEST PRIORITY): Negative confidence always wins
+  // Spec: "Negative Confidence Signal → Do Not Proceed Without Repricing"
   if (d.confidenceSignal === "negative") {
     triggeredBy.push("LOW_CONFIDENCE");
     return {
       verdict: "Do Not Proceed Without Repricing",
       reason: "Pricing or delivery confidence is insufficient to proceed safely. Engagement requires repricing or structural changes before commitment.",
+      triggeredBy
+    };
+  }
+
+  // OVERRIDE 2: Structural overload
+  // Spec: "High Workforce Intensity + High Coordination Entropy → Structurally Fragile"
+  if (d.workforceIntensity === "high" && d.coordinationEntropy === "high") {
+    triggeredBy.push("STRUCTURAL_OVERLOAD");
+    return {
+      verdict: "Structurally Fragile",
+      reason: "Structural load exceeds safe operating assumptions. High workforce intensity combined with high coordination entropy creates unsustainable margin pressure.",
       triggeredBy
     };
   }
