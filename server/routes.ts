@@ -331,6 +331,8 @@ export function registerRoutes(app: Express): Server {
         roleTitle: validatedData.roleTitle,
         organisationName: validatedData.organisationName,
         organisationSize: validatedData.organisationSize,
+        decisionType: validatedData.decisionEvaluating || "exploratory",
+        specifyContext: validatedData.specifyContext || "single-client",
         engagementType: validatedData.engagementType,
         engagementClassification: validatedData.engagementClassification || "new",
         clientVolatility: validatedData.clientVolatility,
@@ -345,7 +347,8 @@ export function registerRoutes(app: Express): Server {
         marginalValueSaturation: validatedData.marginalValueSaturation || "significant",
         seniorOversightLoad: validatedData.seniorOversightLoad || "about_same",
         coordinationDecisionDrag: validatedData.coordinationDecisionDrag || "moderate",
-        deliveryConfidence: validatedData.deliveryConfidence || "high"
+        deliveryConfidence: validatedData.deliveryConfidence || "high",
+        openSignal: validatedData.openSignal ?? undefined
       });
       
       console.log(`Decision Engine executed for ${validatedData.organisationName}:`, {

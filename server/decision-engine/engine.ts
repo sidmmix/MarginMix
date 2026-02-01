@@ -57,5 +57,5 @@ export function runMarginMix(input: AssessmentInput): FullEngineOutput {
   };
 }
 
-export { AssessmentInput } from "./questionMapper";
-export { Signals, Dimensions, Verdict, EngineOutput, EffortAllocation, ContradictionFlag } from "./types";
+export type { AssessmentInput } from "./questionMapper";
+export type { Signals, Dimensions, Verdict, EngineOutput, EffortAllocation, ContradictionFlag } from "./types";
