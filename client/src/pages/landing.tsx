@@ -85,9 +85,6 @@ export default function Landing() {
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
               MarginMix helps you Decide the most <span className="text-emerald-600 dark:text-emerald-400">Profitable Resource Mix for Your Project/Campaign</span> - Clarity delivered at Speed!
             </h1>
-            <p className="text-xl md:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-6">
-              Assess margin risk. Price with clarity. Protect profitability.
-            </p>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-4 max-w-4xl mx-auto leading-relaxed">
               MarginMix is a decision companion for agency and consulting leaders facing real pricing moments — new deals, renewals, scope changes, and repricing discussions.
             </p>
