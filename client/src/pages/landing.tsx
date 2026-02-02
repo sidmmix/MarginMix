@@ -86,7 +86,7 @@ export default function Landing() {
               MarginMix helps you Decide the most <span className="text-emerald-600 dark:text-emerald-400">Profitable Resource Mix for Your Project/Campaign</span> - Clarity delivered at Speed!
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-4 max-w-4xl mx-auto leading-relaxed">
-              MarginMix is a decision companion for agency and consulting leaders facing real pricing moments — new deals, renewals, scope changes, and repricing discussions.
+              MarginMix is a decision companion for agency and consulting leaders facing real pricing moments regularly — ongoing projects/campaigns - new briefs, new accounts, renewals, scope changes, and repricing discussions.
             </p>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               It helps you surface hidden margin risk by making implicit judgment explicit — across staffing complexity, coordination load, iteration intensity, and senior involvement.
