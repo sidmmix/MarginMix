@@ -83,7 +83,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
-              Price work with <span className="text-emerald-600 dark:text-emerald-400">margin confidence</span> — at every decision point.
+              MarginMix helps you Decide the most <span className="text-emerald-600 dark:text-emerald-400">Profitable Resource Mix for Your Project/Campaign</span> - Clarity delivered at Speed!
             </h1>
             <p className="text-xl md:text-2xl font-bold text-emerald-600 dark:text-emerald-400 mb-6">
               Assess margin risk. Price with clarity. Protect profitability.
