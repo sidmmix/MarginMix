@@ -127,7 +127,7 @@ export default function Landing() {
               Most margin risk is locked in at pricing and scoping. Once delivery starts, leaders are often flying blind — relying on gut feel rather than structured insight.
             </p>
             <p className="text-xl text-emerald-600 dark:text-emerald-400 font-semibold text-center">
-              MarginMix accounts helps price work accurately - an imperative for the billable hours intensive service industry.  
+              MarginMix helps price work accurately - an imperative for the billable hours intensive service industry.  
             </p>
           </div>
         </div>
