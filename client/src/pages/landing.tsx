@@ -82,14 +82,14 @@ export default function Landing() {
       <section className="relative overflow-hidden pt-16 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
-              MarginMix helps you Decide the most <span className="text-emerald-600 dark:text-emerald-400">Profitable Resource Mix for Your Project/Campaign</span> - Clarity delivered at Speed!
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 leading-tight">
+              Decide the right resource mix for every campaign/project.
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-4 max-w-4xl mx-auto leading-relaxed">
-              MarginMix is a decision companion for agency and consulting leaders facing real pricing moments regularly — ongoing projects/campaigns - new briefs, new accounts, renewals, scope changes, and repricing discussions.
+              MarginMix is a decision system that shows how staffing complexity, coordination load, and senior effort impact margin — before you commit.
             </p>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
-              It helps you surface hidden margin risk by making implicit judgment explicit — across staffing complexity, coordination load, iteration intensity, and senior involvement.
+              Use it for new briefs, new contracts, renewals, scope changes, or repricing discussions.
             </p>
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Works across all commercial models: Time & Materials · Fixed Price · Outcome-based · Hybrid engagements
