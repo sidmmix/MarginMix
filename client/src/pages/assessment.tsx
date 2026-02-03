@@ -69,6 +69,7 @@ export default function Assessment() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSavedProgress, setHasSavedProgress] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
+  const [consentChecked, setConsentChecked] = useState(false);
   const { toast } = useToast();
 
   const getDefaultValues = useCallback(() => {
@@ -972,13 +973,27 @@ export default function Assessment() {
               </CardContent>
             </Card>
 
+            {/* GDPR/CCPA Consent */}
+            <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <input
+                type="checkbox"
+                id="consent"
+                checked={consentChecked}
+                onChange={(e) => setConsentChecked(e.target.checked)}
+                className="mt-1 h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+              />
+              <label htmlFor="consent" className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+                I consent to MarginMix processing my professional and company information to deliver this assessment and related communications, in accordance with GDPR and CCPA.
+              </label>
+            </div>
+
             {/* Submit Button */}
             <div className="flex flex-col items-center gap-4">
               <Button
                 type="submit"
                 size="lg"
                 className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-12 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !consentChecked}
               >
                 {isSubmitting ? (
                   "Submitting..."
