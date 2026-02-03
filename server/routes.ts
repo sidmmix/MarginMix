@@ -514,8 +514,8 @@ export function registerRoutes(app: Express): Server {
       
       // Send follow-up feedback request email with delay to avoid rate limiting
       try {
-        // Wait 2 seconds before sending the second email to avoid Resend rate limits
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Wait 10 seconds before sending the second email to avoid Resend rate limits
+        await new Promise(resolve => setTimeout(resolve, 10000));
         await sendFeedbackRequestEmail(validatedData.fullName, validatedData.workEmail, assessment.id);
         console.log(`Feedback request email sent to: ${validatedData.workEmail}`);
       } catch (feedbackEmailError: any) {
