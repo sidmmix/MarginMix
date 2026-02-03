@@ -32,6 +32,7 @@ import { Link } from "wouter";
 import { ArrowLeft, Send, User, Building2, Briefcase, Settings, Zap, MessageSquare, CheckCircle2, Clock, Shield, Scale, Save, Trash2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { Footer } from "@/components/footer";
 
 const STORAGE_KEY = "marginmix_assessment_progress";
 
@@ -996,6 +997,25 @@ export default function Assessment() {
         </Form>
       </div>
 
+      {/* Generating Dialog - Shows while submitting */}
+      <Dialog open={isSubmitting} onOpenChange={() => {}}>
+        <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle className="text-center text-emerald-600 dark:text-emerald-400">
+              Generating Your Assessment
+            </DialogTitle>
+            <DialogDescription className="text-center text-lg pt-4">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+                <p className="text-gray-600 dark:text-gray-300">
+                  You may close this window and exit. The Decision Memo and Assessment results will be generated shortly and sent to your email!
+                </p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
       {/* Confirmation Dialog */}
       <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
         <DialogContent className="sm:max-w-md">
@@ -1017,27 +1037,7 @@ export default function Assessment() {
         </DialogContent>
       </Dialog>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8 sm:py-12 mt-8 sm:mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h3 className="text-xl sm:text-2xl font-bold text-emerald-400 mb-1">MarginMix</h3>
-            <p className="text-xs sm:text-sm italic text-gray-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</p>
-            <p className="text-gray-300 mb-6 text-sm sm:text-base">
-              MarginMix is a decision system for margin governance — not a delivery or productivity platform.
-            </p>
-            <p className="text-gray-400 text-sm mb-2">
-              MarginMix is a Digital Lexicon Corp brand.
-            </p>
-            <p className="text-gray-400 text-sm mb-2">
-              Digital Lexicon, Delaware, DE
-            </p>
-            <p className="text-gray-400 text-sm">
-              © 2026 Digital Lexicon. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

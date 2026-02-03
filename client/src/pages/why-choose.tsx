@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft, Shield, Gauge, Target, Lightbulb, Scale, Zap } from "lucide-react";
 import { Link } from "wouter";
+import { Footer } from "@/components/footer";
 
 export default function WhyChoose() {
   return (
@@ -151,26 +152,7 @@ export default function WhyChoose() {
         </div>
       </section>
 
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-emerald-400 mb-1">MarginMix</h3>
-            <p className="text-sm italic text-gray-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</p>
-            <p className="text-gray-300 mb-6 mt-4">
-              MarginMix is a decision system for margin governance — not a delivery or productivity platform.
-            </p>
-            <p className="text-gray-400 text-sm mb-2">
-              MarginMix is a Digital Lexicon Corp brand.
-            </p>
-            <p className="text-gray-400 text-sm mb-2">
-              Digital Lexicon, Delaware, DE
-            </p>
-            <p className="text-gray-400 text-sm">
-              © 2026 Digital Lexicon. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
