@@ -1005,7 +1005,7 @@ export default function Assessment() {
                 )}
               </Button>
               <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                Your margin risk assessment & decision memo will be delivered to your email
+                Your margin risk assessment & decision memo will be delivered to your email & a copy of the files will be auto downloaded on this device.
               </p>
             </div>
           </form>
