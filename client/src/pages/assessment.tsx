@@ -1002,13 +1002,16 @@ export default function Assessment() {
         <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle className="text-center text-emerald-600 dark:text-emerald-400">
-              Generating Your Assessment
+              Your Margin Assessment is being prepared.
             </DialogTitle>
             <DialogDescription className="text-center text-lg pt-4">
               <div className="flex flex-col items-center space-y-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
                 <p className="text-gray-600 dark:text-gray-300">
-                  You may close this window and exit. The Decision Memo and Assessment results will be generated shortly and sent to your email!
+                  You can safely leave this page.
+                </p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  Your assessment and decision memo will be auto downloaded on this device and sent to you via email as well.
                 </p>
               </div>
             </DialogDescription>
