@@ -13,7 +13,7 @@ import {
   insertMarginAssessmentSchema
 } from "@shared/schema";
 import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
-import { sendAssessmentEmail, PDFAttachment } from "./resend";
+import { sendAssessmentEmail, sendFeedbackRequestEmail, sendFeedbackNotificationEmail, PDFAttachment } from "./resend";
 import { executeDecisionEngine, DecisionObject } from "./decision-engine";
 import { generateNarrative } from "./narrative-generator";
 import { renderDecisionMemoPDF, renderAssessmentOutputPDF, generatePDFFilename } from "./pdf-renderer";
@@ -318,6 +318,80 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Feedback response endpoint - handles Yes/No clicks from feedback email
+  app.get("/api/feedback", async (req, res) => {
+    try {
+      const { response, name, email } = req.query;
+      
+      if (!response || !name || !email) {
+        return res.status(400).send(`
+          <!DOCTYPE html>
+          <html>
+          <head><title>Invalid Request</title></head>
+          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+            <h1 style="color: #dc2626;">Invalid Request</h1>
+            <p>Missing required parameters.</p>
+          </body>
+          </html>
+        `);
+      }
+      
+      const feedbackResponse = response === 'yes' ? 'yes' : 'no';
+      const fullName = decodeURIComponent(name as string);
+      const userEmail = decodeURIComponent(email as string);
+      
+      // Send notification email to Sid
+      try {
+        await sendFeedbackNotificationEmail(fullName, userEmail, feedbackResponse);
+        console.log(`Feedback notification sent: ${feedbackResponse} from ${fullName} (${userEmail})`);
+      } catch (notifyError: any) {
+        console.error("Failed to send feedback notification:", notifyError.message);
+      }
+      
+      // Return a thank you page
+      const responseMessage = feedbackResponse === 'yes' 
+        ? "Thank you for your interest! We'll be in touch soon with more details."
+        : "Thank you for your feedback. We appreciate your honesty!";
+      
+      res.send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>Thank You - MarginMix</title>
+          <meta charset="utf-8">
+        </head>
+        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f9fafb;">
+          <div style="max-width: 500px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); padding: 20px; border-radius: 8px; margin-bottom: 30px;">
+              <h1 style="color: white; margin: 0; font-size: 28px;">MarginMix</h1>
+              <p style="color: #d1fae5; margin: 5px 0 0 0; font-style: italic;">Margin Risk Clarity</p>
+            </div>
+            <h2 style="color: #059669; margin-bottom: 20px;">Thank You!</h2>
+            <p style="color: #374151; font-size: 16px; line-height: 1.6;">${responseMessage}</p>
+            <p style="color: #6b7280; margin-top: 30px; font-size: 14px;">
+              Regards,<br>
+              <strong>Siddhartha</strong><br>
+              Founder, MarginMix
+            </p>
+          </div>
+        </body>
+        </html>
+      `);
+    } catch (error: any) {
+      console.error("Feedback endpoint error:", error);
+      res.status(500).send(`
+        <!DOCTYPE html>
+        <html>
+        <head><title>Error</title></head>
+        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
+          <h1 style="color: #dc2626;">Something went wrong</h1>
+          <p>Please try again later.</p>
+        </body>
+        </html>
+      `);
+    }
+  });
+
   // Margin Risk Assessment endpoint
   app.post("/api/assessments", async (req, res) => {
     try {
@@ -436,6 +510,14 @@ export function registerRoutes(app: Express): Server {
         console.log(`Assessment email sent with PDFs for: ${validatedData.organisationName}`);
       } catch (emailError: any) {
         console.error("Failed to send assessment email:", emailError.message);
+      }
+      
+      // Send follow-up feedback request email
+      try {
+        await sendFeedbackRequestEmail(validatedData.fullName, validatedData.workEmail, assessment.id);
+        console.log(`Feedback request email sent to: ${validatedData.workEmail}`);
+      } catch (feedbackEmailError: any) {
+        console.error("Failed to send feedback request email:", feedbackEmailError.message);
       }
       
       // Return PDFs as base64 for frontend download

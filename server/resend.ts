@@ -3,6 +3,12 @@ import { DecisionObject } from './decision-engine';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
+const APP_URL = process.env.REPLIT_DEV_DOMAIN 
+  ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
+  : process.env.REPLIT_DOMAINS 
+    ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`
+    : 'https://marginmix.ai';
+
 function getVerdictColor(verdict: string): { bg: string; text: string; border: string } {
   switch (verdict) {
     case "Structurally Viable":
@@ -237,6 +243,125 @@ export async function sendAssessmentEmail(
     subject: `Margin Risk Assessment: ${decision.marginRiskVerdict} - ${decision.engagementContext.organisationName}`,
     html: htmlContent,
     attachments: emailAttachments
+  });
+
+  return result;
+}
+
+export async function sendFeedbackRequestEmail(
+  fullName: string,
+  email: string,
+  assessmentId: number
+) {
+  const feedbackToken = Buffer.from(`${assessmentId}:${email}:${Date.now()}`).toString('base64');
+  
+  const yesUrl = `${APP_URL}/api/feedback?response=yes&token=${encodeURIComponent(feedbackToken)}&name=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}`;
+  const noUrl = `${APP_URL}/api/feedback?response=no&token=${encodeURIComponent(feedbackToken)}&name=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}`;
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>Quick Check on your MarginMix experience</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+        <h1 style="color: white; margin: 0; font-size: 28px;">MarginMix</h1>
+        <p style="color: #d1fae5; margin: 5px 0 0 0; font-style: italic; font-family: Georgia, serif;">Margin Risk Clarity</p>
+      </div>
+      
+      <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-top: none;">
+        <p style="font-size: 16px; color: #374151;">Dear ${fullName},</p>
+        
+        <p style="font-size: 16px; color: #374151; margin-top: 20px;">
+          Thank you for using MarginMix. Would you be open to paying a small fee for future usage?
+        </p>
+        
+        <div style="margin: 30px 0; text-align: center;">
+          <a href="${yesUrl}" style="display: inline-block; background: #059669; color: white; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; margin-right: 20px;">Yes</a>
+          <a href="${noUrl}" style="display: inline-block; background: #dc2626; color: white; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">No</a>
+        </div>
+        
+        <p style="font-size: 16px; color: #374151; margin-top: 30px;">Regards,</p>
+        <p style="font-size: 16px; color: #374151; font-weight: 600; margin: 5px 0;">Siddhartha</p>
+        <p style="font-size: 14px; color: #059669; margin: 0;">Founder, MarginMix</p>
+      </div>
+      
+      <div style="background: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
+        <p style="color: #10b981; font-weight: bold; margin: 0;">MarginMix</p>
+        <p style="color: #6b7280; font-size: 11px; margin: 5px 0 0 0;">© 2026 Digital Lexicon. All rights reserved.</p>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const result = await resend.emails.send({
+    from: 'Sid <sid@marginmix.ai>',
+    to: [email],
+    subject: 'Quick Check on your MarginMix experience',
+    html: htmlContent
+  });
+
+  return result;
+}
+
+export async function sendFeedbackNotificationEmail(
+  fullName: string,
+  email: string,
+  response: 'yes' | 'no'
+) {
+  const responseText = response === 'yes' 
+    ? '✅ YES - Open to paying for future usage' 
+    : '❌ NO - Not open to paying for future usage';
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>MarginMix Feedback Response</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+        <h1 style="color: white; margin: 0; font-size: 24px;">Feedback Response Received</h1>
+      </div>
+      
+      <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; border-top: none;">
+        <h2 style="color: #374151; margin-top: 0;">User Feedback Details</h2>
+        
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: 600; width: 30%;">Name:</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${fullName}</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Email:</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb;">${email}</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Response:</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-size: 18px;">${responseText}</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px; font-weight: 600;">Timestamp:</td>
+            <td style="padding: 12px;">${new Date().toLocaleString()}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <div style="background: #1f2937; padding: 15px; text-align: center; border-radius: 0 0 8px 8px;">
+        <p style="color: #10b981; font-weight: bold; margin: 0; font-size: 14px;">MarginMix Feedback System</p>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const result = await resend.emails.send({
+    from: 'MarginMix Feedback <sid@marginmix.ai>',
+    to: ['sid@marginmix.ai'],
+    subject: `Feedback Response: ${response.toUpperCase()} from ${fullName}`,
+    html: htmlContent
   });
 
   return result;
