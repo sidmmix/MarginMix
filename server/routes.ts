@@ -318,10 +318,13 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
+  // Track processed feedback to prevent duplicates
+  const processedFeedback = new Set<string>();
+
   // Feedback response endpoint - handles Yes/No clicks from feedback email
   app.get("/api/feedback", async (req, res) => {
     try {
-      const { response, name, email } = req.query;
+      const { response, name, email, token } = req.query;
       
       if (!response || !name || !email) {
         return res.status(400).send(`
@@ -340,12 +343,22 @@ export function registerRoutes(app: Express): Server {
       const fullName = decodeURIComponent(name as string);
       const userEmail = decodeURIComponent(email as string);
       
-      // Send notification email to Sid
-      try {
-        await sendFeedbackNotificationEmail(fullName, userEmail, feedbackResponse);
-        console.log(`Feedback notification sent: ${feedbackResponse} from ${fullName} (${userEmail})`);
-      } catch (notifyError: any) {
-        console.error("Failed to send feedback notification:", notifyError.message);
+      // Create unique key to prevent duplicate processing
+      const feedbackKey = `${userEmail}:${token || Date.now()}`;
+      
+      // Only send notification if not already processed
+      if (!processedFeedback.has(feedbackKey)) {
+        processedFeedback.add(feedbackKey);
+        
+        // Send notification email to Sid
+        try {
+          await sendFeedbackNotificationEmail(fullName, userEmail, feedbackResponse);
+          console.log(`Feedback notification sent: ${feedbackResponse} from ${fullName} (${userEmail})`);
+        } catch (notifyError: any) {
+          console.error("Failed to send feedback notification:", notifyError.message);
+        }
+      } else {
+        console.log(`Duplicate feedback ignored for: ${userEmail}`);
       }
       
       // Return a thank you page
