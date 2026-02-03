@@ -512,8 +512,10 @@ export function registerRoutes(app: Express): Server {
         console.error("Failed to send assessment email:", emailError.message);
       }
       
-      // Send follow-up feedback request email
+      // Send follow-up feedback request email with delay to avoid rate limiting
       try {
+        // Wait 2 seconds before sending the second email to avoid Resend rate limits
+        await new Promise(resolve => setTimeout(resolve, 2000));
         await sendFeedbackRequestEmail(validatedData.fullName, validatedData.workEmail, assessment.id);
         console.log(`Feedback request email sent to: ${validatedData.workEmail}`);
       } catch (feedbackEmailError: any) {
