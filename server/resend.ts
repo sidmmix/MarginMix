@@ -3,11 +3,25 @@ import { DecisionObject } from './decision-engine';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const APP_URL = process.env.REPLIT_DEV_DOMAIN 
-  ? `https://${process.env.REPLIT_DEV_DOMAIN}` 
-  : process.env.REPLIT_DOMAINS 
-    ? `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`
-    : 'https://marginmix.ai';
+// Determine the correct app URL based on environment
+function getAppUrl(): string {
+  // Production deployment URL
+  if (process.env.REPLIT_DEPLOYMENT === '1' && process.env.REPLIT_DOMAINS) {
+    return `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`;
+  }
+  // Development environment
+  if (process.env.REPLIT_DEV_DOMAIN) {
+    return `https://${process.env.REPLIT_DEV_DOMAIN}`;
+  }
+  // Fallback to production domains
+  if (process.env.REPLIT_DOMAINS) {
+    return `https://${process.env.REPLIT_DOMAINS.split(',')[0]}`;
+  }
+  // Last resort fallback
+  return 'https://marginmix.replit.app';
+}
+
+const APP_URL = getAppUrl();
 
 function getVerdictColor(verdict: string): { bg: string; text: string; border: string } {
   switch (verdict) {
