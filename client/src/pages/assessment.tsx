@@ -1008,7 +1008,7 @@ export default function Assessment() {
               <div className="flex flex-col items-center space-y-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
                 <p className="text-gray-600 dark:text-gray-300">
-                  You can safely leave this page.
+                  Give us a minute.
                 </p>
                 <p className="text-gray-600 dark:text-gray-300">
                   Your assessment and decision memo will be auto downloaded on this device and sent to you via email as well.

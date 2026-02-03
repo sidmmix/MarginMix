@@ -125,8 +125,8 @@ export async function renderDecisionMemoPDF(
     });
     doc.moveDown(1.5);
 
-    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
-    doc.moveDown(1);
+    // Force Recommendation section to start on page 2
+    doc.addPage();
 
     doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Recommendation");
     doc.moveDown(0.5);

@@ -237,7 +237,7 @@ export async function sendAssessmentEmail(
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: white; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
                     <tr>
                       <td style="padding: 20px;">
-                        <h3 style="color: #374151; margin: 0 0 10px 0; border-bottom: 2px solid #059669; padding-bottom: 10px;">Risk Bucket Scores</h3>
+                        <h3 style="color: #374151; margin: 0 0 10px 0; border-bottom: 2px solid #059669; padding-bottom: 10px;">Risk Bucket Scores <span style="font-weight: normal; font-size: 13px; color: #6b7280;">(0 to 100)</span></h3>
                         <table class="bucket-table" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse: collapse;">
                           <thead>
                             <tr style="background: #f9fafb;">
