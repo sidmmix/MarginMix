@@ -394,6 +394,28 @@ export default function Assessment() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
+  const saveProgress = () => {
+    try {
+      const values = form.getValues();
+      const saveData = {
+        data: values,
+        timestamp: new Date().toISOString(),
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
+      toast({
+        title: "Progress saved",
+        description: "Your assessment progress has been saved. You can resume anytime.",
+      });
+    } catch (e) {
+      console.error("Error saving progress:", e);
+      toast({
+        title: "Save failed",
+        description: "Could not save your progress. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const totalQuestions = questions.length;
   const isIntro = currentQuestion === -1;
   const isReviewScreen = currentQuestion === totalQuestions;
