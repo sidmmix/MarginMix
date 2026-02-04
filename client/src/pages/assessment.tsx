@@ -951,18 +951,18 @@ export default function Assessment() {
       <div className="absolute inset-0 z-30">
         <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
           <div className="max-w-2xl mx-auto text-center text-white">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4">Margin Risk Assessment</h1>
-            <p className="text-lg sm:text-xl md:text-2xl text-emerald-100 mb-6 sm:mb-8 italic" style={{ fontFamily: 'Georgia, serif' }}>
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-4">Margin Risk Assessment</h1>
+            <p className="text-base sm:text-xl md:text-2xl text-emerald-100 mb-4 sm:mb-8 italic" style={{ fontFamily: 'Georgia, serif' }}>
               Margin Risk Clarity
             </p>
             
-            <p className="text-base sm:text-lg text-emerald-50 mb-8 sm:mb-10 leading-relaxed max-w-xl mx-auto px-2">
+            <p className="text-sm sm:text-base md:text-lg text-emerald-50 mb-6 sm:mb-10 leading-relaxed max-w-xl mx-auto px-2">
               You're about to assess margin risk before it gets priced into a decision.
               This assessment helps leaders evaluate whether a client engagement 
               is priced in line with its true delivery complexity.
             </p>
             
-            <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-8 sm:mb-12 text-emerald-100 text-sm sm:text-base">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-6 mb-6 sm:mb-12 text-emerald-100 text-xs sm:text-base">
               <div className="flex items-center gap-2 bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
                 <Check className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>23 questions</span>
@@ -980,10 +980,10 @@ export default function Assessment() {
             <Button
               onClick={handleNext}
               size="lg"
-              className="bg-white text-emerald-700 hover:bg-emerald-50 px-8 sm:px-12 py-5 sm:py-7 text-lg sm:text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
+              className="bg-white text-emerald-700 hover:bg-emerald-50 px-6 sm:px-12 py-4 sm:py-7 text-base sm:text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
             >
               Start Assessment
-              <ArrowDown className="ml-2 sm:ml-3 h-5 w-5 sm:h-6 sm:w-6" />
+              <ArrowDown className="ml-2 sm:ml-3 h-4 w-4 sm:h-6 sm:w-6" />
             </Button>
             
             <p className="mt-8 sm:mt-10 text-xs sm:text-sm text-emerald-200/80 px-4">
