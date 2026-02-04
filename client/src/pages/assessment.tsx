@@ -585,6 +585,62 @@ export default function Assessment() {
     }
   }, [currentQuestion, isIntro, isReviewScreen, isTransitioning, isSubmitting, totalQuestions]);
 
+  // Touch swipe for mobile navigation
+  useEffect(() => {
+    let touchStartY = 0;
+    let touchEndY = 0;
+    const minSwipeDistance = 50;
+    
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+    
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (isTransitioning || isSubmitting || isReviewScreen) return;
+      
+      touchEndY = e.changedTouches[0].clientY;
+      const swipeDistance = touchStartY - touchEndY;
+      
+      if (Math.abs(swipeDistance) > minSwipeDistance) {
+        if (swipeDistance > 0) {
+          // Swipe up - go to next question (forward)
+          if (!isCurrentQuestionAnswered()) {
+            toast({
+              title: "Please answer before proceeding.",
+              variant: "destructive",
+            });
+            return;
+          }
+          
+          if (isIntro) {
+            scrollToQuestion(0);
+          } else if (currentQuestion < totalQuestions - 1) {
+            scrollToQuestion(currentQuestion + 1);
+          } else if (currentQuestion === totalQuestions - 1) {
+            if (areMandatoryQuestionsAnswered()) {
+              scrollToQuestion(currentQuestion + 1);
+            }
+          }
+        } else {
+          // Swipe down - go to previous question (backward)
+          if (currentQuestion > -1) {
+            scrollToQuestion(currentQuestion - 1);
+          }
+        }
+      }
+    };
+    
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('touchstart', handleTouchStart, { passive: true });
+      container.addEventListener('touchend', handleTouchEnd, { passive: true });
+      return () => {
+        container.removeEventListener('touchstart', handleTouchStart);
+        container.removeEventListener('touchend', handleTouchEnd);
+      };
+    }
+  }, [currentQuestion, isIntro, isReviewScreen, isTransitioning, isSubmitting, totalQuestions]);
+
   const downloadPDF = (filename: string, base64Data: string) => {
     const link = document.createElement('a');
     link.href = `data:application/pdf;base64,${base64Data}`;
@@ -753,7 +809,7 @@ export default function Assessment() {
       >
         <div className={`min-h-screen bg-gradient-to-br ${gradient} flex flex-col`}>
           {/* Question content */}
-          <div className="flex-1 flex items-center justify-center px-6 py-20">
+          <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-16 sm:py-20">
             <div 
               className={`w-full max-w-2xl transition-all duration-500 ${
                 isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -761,28 +817,28 @@ export default function Assessment() {
               style={{ transitionDelay: isActive ? "150ms" : "0ms" }}
             >
               {/* Section & Question number */}
-              <div className="mb-6">
-                <span className="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-sm font-medium mb-3">
+              <div className="mb-4 sm:mb-6">
+                <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm font-medium mb-2 sm:mb-3">
                   {question.section}
                 </span>
-                <div className="text-white/70 text-lg font-medium">
+                <div className="text-white/70 text-sm sm:text-lg font-medium">
                   Question {question.number} of {totalQuestions}
                 </div>
               </div>
 
               {/* Question title */}
-              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-3 sm:mb-4">
                 {question.title}
               </h2>
               
               {question.subtitle && (
-                <p className="text-xl text-white/80 mb-8">
+                <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
                   {question.subtitle}
                 </p>
               )}
 
               {/* Input area */}
-              <div className="mt-8" onKeyDown={handleKeyDown}>
+              <div className="mt-6 sm:mt-8" onKeyDown={handleKeyDown}>
                 <Form {...form}>
                   {question.type === "text" || question.type === "email" ? (
                     <FormField
@@ -797,7 +853,7 @@ export default function Assessment() {
                               placeholder={question.placeholder}
                               autoFocus
                               key={`input-${question.id}-${isActive}`}
-                              className="text-xl py-6 px-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/50 focus:border-white focus:bg-white/20 rounded-xl"
+                              className="text-base sm:text-xl py-4 sm:py-6 px-4 sm:px-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/50 focus:border-white focus:bg-white/20 rounded-xl"
                             />
                           </FormControl>
                           <FormMessage className="text-white/90 mt-2" />
@@ -816,7 +872,7 @@ export default function Assessment() {
                               placeholder={question.placeholder}
                               autoFocus
                               key={`textarea-${question.id}-${isActive}`}
-                              className="text-lg py-4 px-6 min-h-[150px] bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/50 focus:border-white focus:bg-white/20 rounded-xl"
+                              className="text-base sm:text-lg py-3 sm:py-4 px-4 sm:px-6 min-h-[120px] sm:min-h-[150px] bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/50 focus:border-white focus:bg-white/20 rounded-xl"
                             />
                           </FormControl>
                           <FormMessage className="text-white/90 mt-2" />
@@ -824,30 +880,30 @@ export default function Assessment() {
                       )}
                     />
                   ) : (
-                    <div className="space-y-3">
+                    <div className="space-y-2 sm:space-y-3">
                       {question.options?.map((option, index) => (
                         <button
                           key={option.value}
                           type="button"
                           onClick={() => handleOptionSelect(option.value)}
-                          className={`w-full text-left px-6 py-5 rounded-xl border-2 transition-all duration-300 flex items-center gap-4 group ${
+                          className={`w-full text-left px-4 sm:px-6 py-3 sm:py-5 rounded-xl border-2 transition-all duration-300 flex items-center gap-3 sm:gap-4 group ${
                             currentValue === option.value
                               ? "bg-white text-gray-900 border-white shadow-lg scale-[1.02]"
                               : "bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 hover:border-white/50"
                           }`}
                         >
-                          <span className={`flex items-center justify-center w-10 h-10 rounded-lg text-sm font-bold transition-colors ${
+                          <span className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-xs sm:text-sm font-bold transition-colors ${
                             currentValue === option.value
                               ? "bg-emerald-500 text-white"
                               : "bg-white/20 text-white group-hover:bg-white/30"
                           }`}>
                             {String.fromCharCode(65 + index)}
                           </span>
-                          <span className="text-lg font-medium flex-1">
+                          <span className="text-sm sm:text-lg font-medium flex-1">
                             {option.label}
                           </span>
                           {currentValue === option.value && (
-                            <Check className="h-6 w-6 text-emerald-500" />
+                            <Check className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
                           )}
                         </button>
                       ))}
@@ -859,9 +915,10 @@ export default function Assessment() {
               {/* Continue hint for text inputs */}
               {(question.type === "text" || question.type === "email") && (
                 <div className="mt-6 flex items-center gap-2 text-white/60 text-sm">
-                  <span>Press</span>
-                  <kbd className="px-2 py-1 bg-white/20 rounded text-xs font-mono">Enter ↵</kbd>
-                  <span>to continue</span>
+                  <span className="hidden sm:inline">Press</span>
+                  <kbd className="hidden sm:inline px-2 py-1 bg-white/20 rounded text-xs font-mono">Enter ↵</kbd>
+                  <span className="hidden sm:inline">or use buttons to continue</span>
+                  <span className="sm:hidden">Swipe up or tap Continue</span>
                 </div>
               )}
             </div>
@@ -876,30 +933,30 @@ export default function Assessment() {
     
     return (
       <div className="absolute inset-0 z-30">
-        <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-6 py-12">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
           <div className="max-w-2xl mx-auto text-center text-white">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4">Margin Risk Assessment</h1>
-            <p className="text-xl sm:text-2xl text-emerald-100 mb-8 italic" style={{ fontFamily: 'Georgia, serif' }}>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4">Margin Risk Assessment</h1>
+            <p className="text-lg sm:text-xl md:text-2xl text-emerald-100 mb-6 sm:mb-8 italic" style={{ fontFamily: 'Georgia, serif' }}>
               Margin Risk Clarity
             </p>
             
-            <p className="text-lg text-emerald-50 mb-10 leading-relaxed max-w-xl mx-auto">
+            <p className="text-base sm:text-lg text-emerald-50 mb-8 sm:mb-10 leading-relaxed max-w-xl mx-auto px-2">
               You're about to assess margin risk before it gets priced into a decision.
               This assessment helps agency leaders evaluate whether a client engagement 
               is priced in line with its true delivery complexity.
             </p>
             
-            <div className="flex flex-wrap justify-center gap-6 mb-12 text-emerald-100">
-              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-                <Check className="h-5 w-5" />
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-6 mb-8 sm:mb-12 text-emerald-100 text-sm sm:text-base">
+              <div className="flex items-center gap-2 bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
+                <Check className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>23 questions</span>
               </div>
-              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-                <Check className="h-5 w-5" />
+              <div className="flex items-center gap-2 bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
+                <Check className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>~5 minutes</span>
               </div>
-              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-                <Check className="h-5 w-5" />
+              <div className="flex items-center gap-2 bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
+                <Check className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>GDPR & CCPA compliant</span>
               </div>
             </div>
@@ -907,19 +964,19 @@ export default function Assessment() {
             <Button
               onClick={handleNext}
               size="lg"
-              className="bg-white text-emerald-700 hover:bg-emerald-50 px-12 py-7 text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
+              className="bg-white text-emerald-700 hover:bg-emerald-50 px-8 sm:px-12 py-5 sm:py-7 text-lg sm:text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
             >
               Start Assessment
-              <ArrowDown className="ml-3 h-6 w-6" />
+              <ArrowDown className="ml-2 sm:ml-3 h-5 w-5 sm:h-6 sm:w-6" />
             </Button>
             
-            <p className="mt-10 text-sm text-emerald-200/80">
+            <p className="mt-8 sm:mt-10 text-xs sm:text-sm text-emerald-200/80 px-4">
               No financial data, timesheets, or individual performance information is required.
             </p>
           </div>
           
-          <div className="absolute bottom-8 animate-bounce">
-            <ChevronDown className="h-8 w-8 text-emerald-200/60" />
+          <div className="absolute bottom-4 sm:bottom-8 animate-bounce">
+            <ChevronDown className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-200/60" />
           </div>
         </div>
       </div>
@@ -1019,37 +1076,37 @@ export default function Assessment() {
 
       {/* Fixed header with progress - rendered after content to be on top */}
       <div className="fixed top-0 left-0 right-0 z-[100] bg-black/40 backdrop-blur-md" style={{ pointerEvents: 'auto' }}>
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
           <Link href="/">
-            <Button variant="ghost" className="text-white hover:text-emerald-200 hover:bg-white/10 px-3 py-2">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              <span className="font-bold">MarginMix</span>
+            <Button variant="ghost" className="text-white hover:text-emerald-200 hover:bg-white/10 px-2 sm:px-3 py-1.5 sm:py-2">
+              <ArrowLeft className="h-4 w-4 sm:mr-2" />
+              <span className="font-bold hidden sm:inline">MarginMix</span>
             </Button>
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {!isIntro && (
               <>
-                <span className="text-sm text-white/80 font-medium">
-                  {isReviewScreen ? "Review" : `${currentQuestion + 1} of ${totalQuestions}`}
+                <span className="text-xs sm:text-sm text-white/80 font-medium">
+                  {isReviewScreen ? "Review" : `${currentQuestion + 1}/${totalQuestions}`}
                 </span>
-                <div className="w-24 sm:w-32">
+                <div className="w-16 sm:w-24 md:w-32">
                   <Progress value={calculateProgress()} className="h-1.5 bg-white/20" />
                 </div>
                 <Button 
                   variant="ghost" 
                   onClick={saveProgress}
-                  className="text-white hover:text-emerald-200 hover:bg-white/10 px-3 py-2"
+                  className="text-white hover:text-emerald-200 hover:bg-white/10 px-2 sm:px-3 py-1.5 sm:py-2"
                 >
-                  <Save className="mr-2 h-4 w-4" />
-                  Save
+                  <Save className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Save</span>
                 </Button>
                 <Link href="/">
                   <Button 
                     variant="ghost" 
-                    className="text-white hover:text-emerald-200 hover:bg-white/10 px-3 py-2"
+                    className="text-white hover:text-emerald-200 hover:bg-white/10 px-2 sm:px-3 py-1.5 sm:py-2"
                   >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Home
+                    <ArrowLeft className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Home</span>
                   </Button>
                 </Link>
               </>
@@ -1060,22 +1117,23 @@ export default function Assessment() {
 
       {/* Navigation buttons - rendered after content to be on top */}
       {!isIntro && !isReviewScreen && (
-        <div className="fixed bottom-8 left-0 right-0 z-[100] flex justify-center gap-4 px-6" style={{ pointerEvents: 'auto' }}>
+        <div className="fixed bottom-4 sm:bottom-8 left-0 right-0 z-[100] flex justify-center gap-3 sm:gap-4 px-4 sm:px-6" style={{ pointerEvents: 'auto' }}>
           <Button
             variant="ghost"
             onClick={handleBack}
             disabled={currentQuestion <= 0}
-            className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20"
+            className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
           >
-            <ArrowUp className="mr-2 h-4 w-4" />
-            Back
+            <ArrowUp className="mr-1 sm:mr-2 h-4 w-4" />
+            <span className="hidden sm:inline">Back</span>
+            <span className="sm:hidden">Back</span>
           </Button>
           <Button
             onClick={handleNext}
-            className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg"
+            className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
           >
             {currentQuestion === totalQuestions - 1 ? "Review" : "Continue"}
-            <ArrowDown className="ml-2 h-4 w-4" />
+            <ArrowDown className="ml-1 sm:ml-2 h-4 w-4" />
           </Button>
         </div>
       )}
