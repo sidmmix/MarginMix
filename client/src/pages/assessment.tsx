@@ -507,6 +507,20 @@ export default function Assessment() {
     }
   }, [currentQuestion]);
 
+  // Check if all mandatory questions (1-22) are answered
+  const areMandatoryQuestionsAnswered = () => {
+    const values = form.getValues();
+    // Questions 0-21 (indices) are mandatory, question 22 (index) / Q23 is optional
+    for (let i = 0; i < totalQuestions - 1; i++) {
+      const question = questions[i];
+      const value = values[question.id as keyof typeof values];
+      if (!value || value === "") {
+        return false;
+      }
+    }
+    return true;
+  };
+
   // Wheel event for scroll-based navigation
   useEffect(() => {
     let lastScrollTime = 0;
@@ -521,15 +535,21 @@ export default function Assessment() {
       if (isReviewScreen) return;
       
       if (e.deltaY > 50) {
-        // Scroll down - go to next question
+        // Scroll down - go to next question (forward)
         lastScrollTime = now;
         if (isIntro) {
           scrollToQuestion(0);
-        } else if (currentQuestion < totalQuestions) {
+        } else if (currentQuestion < totalQuestions - 1) {
+          // Can always scroll forward through questions 1-22
           scrollToQuestion(currentQuestion + 1);
+        } else if (currentQuestion === totalQuestions - 1) {
+          // On last question (Q23), only allow scroll to review if Q1-Q22 are answered
+          if (areMandatoryQuestionsAnswered()) {
+            scrollToQuestion(currentQuestion + 1);
+          }
         }
       } else if (e.deltaY < -50) {
-        // Scroll up - go to previous question
+        // Scroll up - go to previous question (backward)
         lastScrollTime = now;
         if (currentQuestion > -1) {
           scrollToQuestion(currentQuestion - 1);
@@ -619,6 +639,14 @@ export default function Assessment() {
       return;
     }
     
+    // On last question (Q23), only allow going to review if Q1-Q22 are answered
+    if (currentQuestion === totalQuestions - 1) {
+      if (areMandatoryQuestionsAnswered()) {
+        scrollToQuestion(currentQuestion + 1);
+      }
+      return;
+    }
+    
     if (currentQuestion < totalQuestions) {
       scrollToQuestion(currentQuestion + 1);
     }
@@ -642,6 +670,10 @@ export default function Assessment() {
       const isLastQuestion = currentQuestion === totalQuestions - 1;
       // Allow Enter on non-textarea questions, or on the last question (optional) to go to review
       if (question.type !== "textarea" || isLastQuestion) {
+        // On last question, only allow going to review if Q1-Q22 are answered
+        if (isLastQuestion && !areMandatoryQuestionsAnswered()) {
+          return;
+        }
         e.preventDefault();
         handleNext();
       }
