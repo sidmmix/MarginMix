@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -10,16 +10,8 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -27,9 +19,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "wouter";
-import { ArrowLeft, Send, User, Building2, Briefcase, Settings, Zap, MessageSquare, CheckCircle2, Clock, Shield, Scale, Save, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUp, Send, Check, ChevronDown } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Footer } from "@/components/footer";
@@ -64,13 +55,354 @@ const assessmentSchema = z.object({
 
 type AssessmentFormData = z.infer<typeof assessmentSchema>;
 
+interface Question {
+  id: keyof AssessmentFormData;
+  number: number;
+  title: string;
+  subtitle?: string;
+  type: "text" | "email" | "select" | "textarea";
+  placeholder?: string;
+  options?: { value: string; label: string }[];
+  required: boolean;
+  section: string;
+  sectionColor: string;
+}
+
+const questions: Question[] = [
+  // Section A: Contact & Context
+  {
+    id: "fullName",
+    number: 1,
+    title: "What's your full name?",
+    type: "text",
+    placeholder: "Enter your full name",
+    required: true,
+    section: "Contact & Context",
+    sectionColor: "emerald"
+  },
+  {
+    id: "workEmail",
+    number: 2,
+    title: "What's your work email?",
+    type: "email",
+    placeholder: "Enter your work email",
+    required: true,
+    section: "Contact & Context",
+    sectionColor: "emerald"
+  },
+  {
+    id: "roleTitle",
+    number: 3,
+    title: "What's your role or title?",
+    type: "text",
+    placeholder: "Enter your role or title",
+    required: true,
+    section: "Contact & Context",
+    sectionColor: "emerald"
+  },
+  {
+    id: "organisationName",
+    number: 4,
+    title: "What's your organization name?",
+    type: "text",
+    placeholder: "Enter your organization name",
+    required: true,
+    section: "Contact & Context",
+    sectionColor: "emerald"
+  },
+  {
+    id: "organisationSize",
+    number: 5,
+    title: "What's your organization size?",
+    type: "select",
+    options: [
+      { value: "200-500", label: "200–500" },
+      { value: "500-1000", label: "500–1,000" },
+      { value: "1000-1500", label: "1,000–1,500" },
+      { value: "1500-2000", label: "1,500–2,000" }
+    ],
+    required: true,
+    section: "Contact & Context",
+    sectionColor: "emerald"
+  },
+  {
+    id: "decisionEvaluating",
+    number: 6,
+    title: "What decision are you evaluating with this assessment?",
+    type: "select",
+    options: [
+      { value: "new-client-win", label: "New client win / pitch acceptance" },
+      { value: "renewal-extension", label: "Renewal / contract extension" },
+      { value: "scope-expansion", label: "Scope expansion without repricing" },
+      { value: "escalation", label: "Escalation on a live account" },
+      { value: "strategic-exception", label: "Strategic / leadership-driven exception" },
+      { value: "exploratory", label: "Exploratory / no active decision" }
+    ],
+    required: true,
+    section: "Contact & Context",
+    sectionColor: "emerald"
+  },
+  // Section B: Client Engagement Context
+  {
+    id: "specifyContext",
+    number: 7,
+    title: "Specify Context",
+    type: "select",
+    options: [
+      { value: "single-client", label: "Single client" },
+      { value: "group-of-clients", label: "Group of clients - Org level" }
+    ],
+    required: true,
+    section: "Client Engagement Context",
+    sectionColor: "teal"
+  },
+  {
+    id: "engagementClassification",
+    number: 8,
+    title: "How would you classify this engagement today?",
+    type: "select",
+    options: [
+      { value: "new", label: "New (pre-kickoff / onboarding phase)" },
+      { value: "ongoing-less-6", label: "Ongoing (in delivery for less than 6 months)" },
+      { value: "ongoing-6-12", label: "Ongoing (in delivery for 6–12 months)" },
+      { value: "ongoing-12-plus", label: "Ongoing (in delivery for 12+ months)" },
+      { value: "renewal-expansion", label: "Renewal / scope expansion of an existing engagement" }
+    ],
+    required: true,
+    section: "Client Engagement Context",
+    sectionColor: "teal"
+  },
+  {
+    id: "engagementType",
+    number: 9,
+    title: "What's the engagement type?",
+    type: "select",
+    options: [
+      { value: "fixed-fee", label: "Fixed fee" },
+      { value: "retainer", label: "Retainer" },
+      { value: "hybrid", label: "Hybrid" }
+    ],
+    required: true,
+    section: "Client Engagement Context",
+    sectionColor: "teal"
+  },
+  {
+    id: "clientVolatility",
+    number: 10,
+    title: "How would you rate client volatility?",
+    type: "select",
+    options: [
+      { value: "low", label: "Low (stable stakeholders, clear expectations)" },
+      { value: "medium", label: "Medium" },
+      { value: "high", label: "High (frequent changes, multiple decision-makers)" }
+    ],
+    required: true,
+    section: "Client Engagement Context",
+    sectionColor: "teal"
+  },
+  {
+    id: "stakeholderComplexity",
+    number: 11,
+    title: "What's the stakeholder complexity level?",
+    type: "select",
+    options: [
+      { value: "low", label: "Low" },
+      { value: "medium", label: "Medium" },
+      { value: "high", label: "High" }
+    ],
+    required: true,
+    section: "Client Engagement Context",
+    sectionColor: "teal"
+  },
+  // Section C: Planned Delivery Structure
+  {
+    id: "seniorLeadershipInvolvement",
+    number: 12,
+    title: "What's the planned senior leadership involvement?",
+    type: "select",
+    options: [
+      { value: "minimal", label: "Minimal (oversight only)" },
+      { value: "periodic", label: "Periodic (key moments)" },
+      { value: "frequent", label: "Frequent (ongoing)" },
+      { value: "continuous", label: "Continuous (embedded)" }
+    ],
+    required: true,
+    section: "Planned Delivery Structure",
+    sectionColor: "cyan"
+  },
+  {
+    id: "midLevelOversight",
+    number: 13,
+    title: "What's the mid-level oversight intensity?",
+    type: "select",
+    options: [
+      { value: "low", label: "Low" },
+      { value: "medium", label: "Medium" },
+      { value: "high", label: "High" }
+    ],
+    required: true,
+    section: "Planned Delivery Structure",
+    sectionColor: "cyan"
+  },
+  {
+    id: "executionThinkingMix",
+    number: 14,
+    title: "What's the execution vs thinking mix?",
+    type: "select",
+    options: [
+      { value: "execution-heavy", label: "Execution-heavy" },
+      { value: "balanced", label: "Balanced" },
+      { value: "thinking-heavy", label: "Thinking-heavy" }
+    ],
+    required: true,
+    section: "Planned Delivery Structure",
+    sectionColor: "cyan"
+  },
+  // Section D: Delivery Dynamics
+  {
+    id: "iterationIntensity",
+    number: 15,
+    title: "What's the expected iteration intensity?",
+    type: "select",
+    options: [
+      { value: "low", label: "Low" },
+      { value: "medium", label: "Medium" },
+      { value: "high", label: "High" }
+    ],
+    required: true,
+    section: "Delivery Dynamics",
+    sectionColor: "sky"
+  },
+  {
+    id: "scopeChangeLikelihood",
+    number: 16,
+    title: "What's the likelihood of scope change?",
+    type: "select",
+    options: [
+      { value: "low", label: "Low" },
+      { value: "medium", label: "Medium" },
+      { value: "high", label: "High" }
+    ],
+    required: true,
+    section: "Delivery Dynamics",
+    sectionColor: "sky"
+  },
+  {
+    id: "crossFunctionalCoordination",
+    number: 17,
+    title: "How much cross-functional coordination is required?",
+    type: "select",
+    options: [
+      { value: "low", label: "Low" },
+      { value: "medium", label: "Medium" },
+      { value: "high", label: "High" }
+    ],
+    required: true,
+    section: "Delivery Dynamics",
+    sectionColor: "sky"
+  },
+  {
+    id: "aiImpactMeasurement",
+    number: 18,
+    title: "Are you measuring the impact of AI in your client delivery?",
+    type: "select",
+    options: [
+      { value: "yes", label: "Yes" },
+      { value: "no", label: "No" },
+      { value: "not_applicable", label: "Not Applicable" }
+    ],
+    required: true,
+    section: "Delivery Dynamics",
+    sectionColor: "sky"
+  },
+  // Section E: Value, Load, Coordination & Confidence
+  {
+    id: "marginalValueSaturation",
+    number: 19,
+    title: "Value Saturation",
+    subtitle: "Compared to similar work, how much incremental value does adding more people create here?",
+    type: "select",
+    options: [
+      { value: "significant", label: "Significant additional value" },
+      { value: "some", label: "Some additional value" },
+      { value: "minimal", label: "Minimal additional value" },
+      { value: "none", label: "No meaningful additional value" }
+    ],
+    required: true,
+    section: "Value, Load & Confidence",
+    sectionColor: "amber"
+  },
+  {
+    id: "seniorOversightLoad",
+    number: 20,
+    title: "Senior Oversight Load",
+    subtitle: "Compared to similar engagements, how much senior oversight does this require?",
+    type: "select",
+    options: [
+      { value: "less", label: "Less than usual" },
+      { value: "about_same", label: "About the same" },
+      { value: "more", label: "More than usual" }
+    ],
+    required: true,
+    section: "Value, Load & Confidence",
+    sectionColor: "amber"
+  },
+  {
+    id: "coordinationDecisionDrag",
+    number: 21,
+    title: "Coordination & Decision Drag",
+    subtitle: "How much coordination is required across teams and stakeholders?",
+    type: "select",
+    options: [
+      { value: "minimal", label: "Minimal" },
+      { value: "moderate", label: "Moderate" },
+      { value: "heavy", label: "Heavy" }
+    ],
+    required: true,
+    section: "Value, Load & Confidence",
+    sectionColor: "amber"
+  },
+  {
+    id: "deliveryConfidence",
+    number: 22,
+    title: "Delivery Confidence",
+    subtitle: "How confident are you in the delivery model for this engagement? (executive gut-check)",
+    type: "select",
+    options: [
+      { value: "high", label: "High confidence" },
+      { value: "some_concerns", label: "Some concerns" },
+      { value: "low", label: "Low confidence" }
+    ],
+    required: true,
+    section: "Value, Load & Confidence",
+    sectionColor: "amber"
+  },
+  // Section F: Open Signal
+  {
+    id: "openSignal",
+    number: 23,
+    title: "Is there anything about this client engagement that feels risky or unusual?",
+    subtitle: "This is optional - share any concerns or observations",
+    type: "textarea",
+    placeholder: "Share any concerns or observations...",
+    required: false,
+    section: "Open Signal",
+    sectionColor: "violet"
+  }
+];
+
 export default function Assessment() {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasSavedProgress, setHasSavedProgress] = useState(false);
-  const [lastSaved, setLastSaved] = useState<string | null>(null);
   const [consentChecked, setConsentChecked] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
+  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const { toast } = useToast();
+
+  const totalQuestions = questions.length;
+  const isLastQuestion = currentQuestion === totalQuestions - 1;
+  const isReviewScreen = currentQuestion === totalQuestions;
 
   const getDefaultValues = useCallback(() => {
     return {
@@ -109,15 +441,14 @@ export default function Assessment() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
-        const { data, timestamp } = JSON.parse(saved);
+        const { data } = JSON.parse(saved);
         const hasAnyData = Object.values(data).some(v => v && v !== "");
         if (hasAnyData) {
           form.reset(data);
-          setHasSavedProgress(true);
-          setLastSaved(new Date(timestamp).toLocaleString());
+          setShowIntro(false);
           toast({
             title: "Progress Restored",
-            description: "Your previous answers have been loaded. Continue where you left off!",
+            description: "Your previous answers have been loaded.",
           });
         }
       }
@@ -139,38 +470,34 @@ export default function Assessment() {
           timestamp: new Date().toISOString(),
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
-        setHasSavedProgress(true);
-        setLastSaved(new Date().toLocaleString());
       } catch (e) {
         console.error("Error saving progress:", e);
       }
     }
   }, [watchedValues]);
 
-  const clearSavedProgress = () => {
-    localStorage.removeItem(STORAGE_KEY);
-    form.reset(getDefaultValues());
-    setHasSavedProgress(false);
-    setLastSaved(null);
-    toast({
-      title: "Progress Cleared",
-      description: "Your saved answers have been removed. Starting fresh!",
-    });
-  };
+  useEffect(() => {
+    if (!showIntro && !isReviewScreen && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 300);
+    }
+  }, [currentQuestion, showIntro, isReviewScreen]);
 
-  const calculateProgress = () => {
-    const requiredFields = [
-      'fullName', 'workEmail', 'roleTitle', 'organisationName', 'organisationSize',
-      'decisionEvaluating', 'engagementType', 'specifyContext', 'engagementClassification',
-      'clientVolatility', 'stakeholderComplexity', 'seniorLeadershipInvolvement',
-      'midLevelOversight', 'executionThinkingMix', 'iterationIntensity',
-      'scopeChangeLikelihood', 'crossFunctionalCoordination', 'aiImpactMeasurement',
-      'marginalValueSaturation', 'seniorOversightLoad', 'coordinationDecisionDrag', 'deliveryConfidence'
-    ];
-    const filled = requiredFields.filter(field => watchedValues[field as keyof AssessmentFormData]?.trim()).length;
-    return Math.round((filled / requiredFields.length) * 100);
-  };
-  const progress = calculateProgress();
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (showIntro || isReviewScreen || isSubmitting) return;
+      
+      if (e.key === "Enter" && !e.shiftKey) {
+        const question = questions[currentQuestion];
+        if (question.type !== "textarea") {
+          e.preventDefault();
+          handleNext();
+        }
+      }
+    };
+    
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [currentQuestion, showIntro, isReviewScreen, isSubmitting, watchedValues]);
 
   const downloadPDF = (filename: string, base64Data: string) => {
     const link = document.createElement('a');
@@ -193,7 +520,6 @@ export default function Assessment() {
       if (response.ok) {
         const result = await response.json();
         
-        // Auto-download the PDFs
         if (result.pdfs) {
           setTimeout(() => {
             downloadPDF(result.pdfs.decisionMemo.filename, result.pdfs.decisionMemo.data);
@@ -204,8 +530,6 @@ export default function Assessment() {
         }
         
         localStorage.removeItem(STORAGE_KEY);
-        setHasSavedProgress(false);
-        setLastSaved(null);
         setShowConfirmation(true);
         form.reset();
         
@@ -233,786 +557,391 @@ export default function Assessment() {
     }
   };
 
-  const onInvalid = () => {
-    toast({
-      title: "Please complete all required questions",
-      description: "All 18 questions must be answered before submitting. Only the Open Signal question is optional.",
-      variant: "destructive",
-    });
-    // Scroll to the first error
-    const firstError = document.querySelector('[data-invalid="true"]') || document.querySelector('.text-destructive');
-    if (firstError) {
-      firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  const handleNext = () => {
+    if (currentQuestion < totalQuestions) {
+      const question = questions[currentQuestion];
+      const value = watchedValues[question.id];
+      
+      if (question.required && (!value || value.trim() === "")) {
+        toast({
+          title: "Required Field",
+          description: "Please answer this question before continuing.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      if (question.type === "email" && value) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          toast({
+            title: "Invalid Email",
+            description: "Please enter a valid email address.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+      
+      setCurrentQuestion(currentQuestion + 1);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-emerald-50/30 to-gray-50 dark:from-gray-900 dark:via-emerald-900/10 dark:to-gray-900">
-      {/* Header */}
-      <nav className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/">
-              <div className="flex flex-col cursor-pointer">
-                <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                  MarginMix
-                </span>
-                <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
-              </div>
-            </Link>
-            <div className="flex items-center gap-2 sm:gap-4">
-              <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <span className="text-xs sm:text-sm">{progress}%</span>
-                <Button
-                  type="button"
-                  size="sm"
-                  onClick={() => {
-                    const currentValues = form.getValues();
-                    const saveData = {
-                      data: currentValues,
-                      timestamp: new Date().toISOString(),
-                    };
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
-                    setHasSavedProgress(true);
-                    setLastSaved(new Date().toLocaleString());
-                    toast({
-                      title: "Progress Saved",
-                      description: "Your answers have been saved.",
-                    });
-                  }}
-                  className="h-7 px-2 sm:px-3 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
-                >
-                  <Save className="h-3 w-3 sm:mr-1" />
-                  <span className="hidden sm:inline">Save</span>
-                </Button>
-                {hasSavedProgress && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={clearSavedProgress}
-                    className="h-7 px-2 text-xs text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400"
-                    title="Start Fresh"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                )}
-              </div>
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="h-7 px-2 sm:px-3">
-                  <ArrowLeft className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Back</span>
-                </Button>
-              </Link>
-            </div>
+  const handleBack = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+    }
+  };
+
+  const handleOptionSelect = (value: string) => {
+    const question = questions[currentQuestion];
+    form.setValue(question.id, value);
+    setTimeout(() => handleNext(), 300);
+  };
+
+  const calculateProgress = () => {
+    if (showIntro) return 0;
+    return Math.round(((currentQuestion + 1) / (totalQuestions + 1)) * 100);
+  };
+
+  const getSectionColor = (color: string) => {
+    const colors: Record<string, { bg: string; text: string; border: string }> = {
+      emerald: { bg: "bg-emerald-500", text: "text-emerald-500", border: "border-emerald-500" },
+      teal: { bg: "bg-teal-500", text: "text-teal-500", border: "border-teal-500" },
+      cyan: { bg: "bg-cyan-500", text: "text-cyan-500", border: "border-cyan-500" },
+      sky: { bg: "bg-sky-500", text: "text-sky-500", border: "border-sky-500" },
+      amber: { bg: "bg-amber-500", text: "text-amber-500", border: "border-amber-500" },
+      violet: { bg: "bg-violet-500", text: "text-violet-500", border: "border-violet-500" },
+    };
+    return colors[color] || colors.emerald;
+  };
+
+  const renderIntroScreen = () => (
+    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700">
+      <div className="max-w-2xl mx-auto text-center text-white">
+        <h1 className="text-4xl sm:text-5xl font-bold mb-4">Margin Risk Assessment</h1>
+        <p className="text-xl sm:text-2xl text-emerald-100 mb-8 italic" style={{ fontFamily: 'Georgia, serif' }}>
+          Margin Risk Clarity
+        </p>
+        
+        <p className="text-lg text-emerald-50 mb-8 leading-relaxed">
+          You're about to assess margin risk before it gets priced into a decision.
+          This assessment helps agency and professional services leaders evaluate whether 
+          a client engagement is priced in line with its true delivery complexity.
+        </p>
+        
+        <div className="flex flex-wrap justify-center gap-6 mb-10 text-emerald-100">
+          <div className="flex items-center gap-2">
+            <Check className="h-5 w-5" />
+            <span>23 questions</span>
           </div>
-          {/* Progress Bar */}
-          <div className="pb-2">
-            <Progress value={progress} className="h-1.5 bg-gray-200 dark:bg-gray-700" />
+          <div className="flex items-center gap-2">
+            <Check className="h-5 w-5" />
+            <span>~5 minutes</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Check className="h-5 w-5" />
+            <span>GDPR & CCPA compliant</span>
           </div>
         </div>
-      </nav>
+        
+        <Button
+          onClick={() => setShowIntro(false)}
+          size="lg"
+          className="bg-white text-emerald-700 hover:bg-emerald-50 px-12 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300"
+        >
+          Start Assessment
+          <ArrowRight className="ml-2 h-5 w-5" />
+        </Button>
+        
+        <p className="mt-8 text-sm text-emerald-200">
+          No financial data, timesheets, or individual performance information is required.
+        </p>
+      </div>
+      
+      <div className="absolute bottom-8 animate-bounce">
+        <ChevronDown className="h-8 w-8 text-emerald-200" />
+      </div>
+    </div>
+  );
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
-        {/* Intro Section */}
-        <Card className="mb-8 border-emerald-200 dark:border-emerald-800 shadow-lg overflow-hidden">
-          <div className="h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600" />
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xl sm:text-2xl text-emerald-600 dark:text-emerald-400 flex items-center gap-3">
-              <div className="p-2 bg-emerald-100 dark:bg-emerald-900/50 rounded-lg">
-                <Shield className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+  const renderQuestionCard = () => {
+    const question = questions[currentQuestion];
+    const colors = getSectionColor(question.sectionColor);
+    const currentValue = watchedValues[question.id] || "";
+    
+    return (
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        {/* Header with progress */}
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <Link href="/">
+              <div className="flex flex-col cursor-pointer">
+                <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">MarginMix</span>
               </div>
-              Margin Risk Assessment
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
-            <p className="text-lg font-semibold text-emerald-600 dark:text-emerald-400">
-              You're about to assess margin risk before it gets priced into a decision.
-            </p>
-            <p>
-              MarginMix helps agency and professional services leaders evaluate whether a client engagement is priced in line with its true delivery complexity — before delivery begins.
-            </p>
-            <p>
-              Instead of relying on timesheets, utilization reports, or historical data that arrives too late to change outcomes, MarginMix focuses on the structural cost drivers that shape pricing and margin from day one:
-            </p>
-            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400 pl-2">
-              <li>Workforce intensity and team shape</li>
-              <li>Senior and leadership involvement required</li>
-              <li>Coordination, governance, and stakeholder load</li>
-              <li>Likelihood of rework, iteration, and decision churn</li>
-            </ul>
-            <p className="text-gray-600 dark:text-gray-400">
-              This assessment does not audit delivery performance or individual productivity.
-            </p>
-            <p className="font-medium">
-              It provides a <span className="text-emerald-600 dark:text-emerald-400 font-semibold">pricing and margin assurance lens</span> — designed for situations where data is incomplete, but pricing decisions must still be made.
-            </p>
-            <div className="flex flex-wrap gap-4 py-3 mt-2 border-t border-gray-200 dark:border-gray-700">
-              <div className="flex items-center gap-2 text-sm">
-                <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <span><strong>23</strong> questions</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
-                  <Clock className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <span>~<strong>5</strong> minutes</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm">
-                <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/50 rounded-full">
-                  <Shield className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <span>GDPR & CCPA compliant</span>
+            </Link>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                {currentQuestion + 1} of {totalQuestions}
+              </span>
+              <div className="w-32 sm:w-48">
+                <Progress value={calculateProgress()} className="h-2" />
               </div>
             </div>
-            <p className="font-bold text-gray-700 dark:text-gray-300 mt-4">
-              No financial data, timesheets, or individual performance information is required.<br />
-              All information is treated confidentially.
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Assessment Form */}
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-8">
-            {/* Section A: Contact & Context */}
-            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-emerald-500">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 font-bold text-sm">A</div>
-                  <User className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                  Contact & Context
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Q1: Full Name */}
-                <FormField
-                  control={form.control}
-                  name="fullName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>1. Full Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your full name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q2: Work Email */}
-                <FormField
-                  control={form.control}
-                  name="workEmail"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>2. Work Email</FormLabel>
-                      <FormControl>
-                        <Input type="email" placeholder="Enter your work email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q3: Role / Title */}
-                <FormField
-                  control={form.control}
-                  name="roleTitle"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>3. Role / Title</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your role or title" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q4: Organization Name */}
-                <FormField
-                  control={form.control}
-                  name="organisationName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>4. Organization Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter your organization name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q5: Organization Size - Dropdown */}
-                <FormField
-                  control={form.control}
-                  name="organisationSize"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>5. Organization Size</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select organization size" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="200-500">200–500</SelectItem>
-                          <SelectItem value="500-1000">500–1,000</SelectItem>
-                          <SelectItem value="1000-1500">1,000–1,500</SelectItem>
-                          <SelectItem value="1500-2000">1,500–2,000</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {/* Q6: Decision Evaluating */}
-                <FormField
-                  control={form.control}
-                  name="decisionEvaluating"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>6. What decision are you evaluating with this assessment?</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select decision type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="new-client-win">New client win / pitch acceptance</SelectItem>
-                          <SelectItem value="renewal-extension">Renewal / contract extension</SelectItem>
-                          <SelectItem value="scope-expansion">Scope expansion without repricing</SelectItem>
-                          <SelectItem value="escalation">Escalation on a live account</SelectItem>
-                          <SelectItem value="strategic-exception">Strategic / leadership-driven exception</SelectItem>
-                          <SelectItem value="exploratory">Exploratory / no active decision</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Section B: Client Engagement Context */}
-            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-teal-500">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900/50 text-teal-600 dark:text-teal-400 font-bold text-sm">B</div>
-                  <Briefcase className="h-5 w-5 text-teal-600 dark:text-teal-400" />
-                  Client Engagement Context
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Q7: Specify Context */}
-                <FormField
-                  control={form.control}
-                  name="specifyContext"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>7. Specify Context</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select context" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="single-client">Single client</SelectItem>
-                          <SelectItem value="group-of-clients">Group of clients - Org level</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q8: Engagement Classification */}
-                <FormField
-                  control={form.control}
-                  name="engagementClassification"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>8. How would you classify this engagement today?</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select engagement classification" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="new">New (pre-kickoff / onboarding phase)</SelectItem>
-                          <SelectItem value="ongoing-less-6">Ongoing (in delivery for less than 6 months)</SelectItem>
-                          <SelectItem value="ongoing-6-12">Ongoing (in delivery for 6–12 months)</SelectItem>
-                          <SelectItem value="ongoing-12-plus">Ongoing (in delivery for 12+ months)</SelectItem>
-                          <SelectItem value="renewal-expansion">Renewal / scope expansion of an existing engagement</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q9: Engagement Type */}
-                <FormField
-                  control={form.control}
-                  name="engagementType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>9. Engagement Type</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select engagement type" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="fixed-fee">Fixed fee</SelectItem>
-                          <SelectItem value="retainer">Retainer</SelectItem>
-                          <SelectItem value="hybrid">Hybrid</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q10: Client Volatility */}
-                <FormField
-                  control={form.control}
-                  name="clientVolatility"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>10. Client Volatility</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select client volatility" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="low">Low (stable stakeholders, clear expectations)</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High (frequent changes, multiple decision-makers)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q9: Stakeholder Complexity */}
-                <FormField
-                  control={form.control}
-                  name="stakeholderComplexity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>11. Stakeholder Complexity</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select stakeholder complexity" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Section C: Planned Delivery Structure */}
-            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-cyan-500">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-cyan-100 dark:bg-cyan-900/50 text-cyan-600 dark:text-cyan-400 font-bold text-sm">C</div>
-                  <Building2 className="h-5 w-5 text-cyan-600 dark:text-cyan-400" />
-                  Planned Delivery Structure
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Q10: Senior Leadership Involvement */}
-                <FormField
-                  control={form.control}
-                  name="seniorLeadershipInvolvement"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>12. Planned Senior Leadership Involvement</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select senior leadership involvement" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="minimal">Minimal (oversight only)</SelectItem>
-                          <SelectItem value="periodic">Periodic (key moments)</SelectItem>
-                          <SelectItem value="frequent">Frequent (ongoing)</SelectItem>
-                          <SelectItem value="continuous">Continuous (embedded)</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q11: Mid-Level Oversight Intensity */}
-                <FormField
-                  control={form.control}
-                  name="midLevelOversight"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>13. Mid-Level Oversight Intensity</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select mid-level oversight intensity" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q12: Execution vs Thinking Mix */}
-                <FormField
-                  control={form.control}
-                  name="executionThinkingMix"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>14. Execution vs Thinking Mix</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select execution vs thinking mix" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="execution-heavy">Execution-heavy</SelectItem>
-                          <SelectItem value="balanced">Balanced</SelectItem>
-                          <SelectItem value="thinking-heavy">Thinking-heavy</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Section D: Delivery Dynamics */}
-            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-sky-500">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-400 font-bold text-sm">D</div>
-                  <Zap className="h-5 w-5 text-sky-600 dark:text-sky-400" />
-                  Delivery Dynamics
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Q13: Expected Iteration Intensity */}
-                <FormField
-                  control={form.control}
-                  name="iterationIntensity"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>15. Expected Iteration Intensity</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select iteration intensity" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q14: Likelihood of Scope Change */}
-                <FormField
-                  control={form.control}
-                  name="scopeChangeLikelihood"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>16. Likelihood of Scope Change</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select scope change likelihood" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q15: Cross-Functional Coordination */}
-                <FormField
-                  control={form.control}
-                  name="crossFunctionalCoordination"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>17. Cross-Functional Coordination Required</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select cross-functional coordination" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q16: AI Impact Measurement */}
-                <FormField
-                  control={form.control}
-                  name="aiImpactMeasurement"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>18. Are you measuring the Impact of AI in your Client Delivery?</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an option" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="yes">Yes</SelectItem>
-                          <SelectItem value="no">No</SelectItem>
-                          <SelectItem value="not_applicable">Not Applicable</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Section E: Value, Load, Coordination & Confidence */}
-            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-amber-500">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 font-bold text-sm">E</div>
-                  <Scale className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                  Value, Load, Coordination & Confidence
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Q19: Marginal Value Saturation */}
-                <FormField
-                  control={form.control}
-                  name="marginalValueSaturation"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-semibold">19. Value Saturation</FormLabel>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Compared to similar work, how much incremental value does adding more people create here?</p>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an option" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="significant">Significant additional value</SelectItem>
-                          <SelectItem value="some">Some additional value</SelectItem>
-                          <SelectItem value="minimal">Minimal additional value</SelectItem>
-                          <SelectItem value="none">No meaningful additional value</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q20: Senior Oversight Load */}
-                <FormField
-                  control={form.control}
-                  name="seniorOversightLoad"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-semibold">20. Senior Oversight Load</FormLabel>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Compared to similar engagements, how much senior oversight does this require?</p>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an option" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="less">Less than usual</SelectItem>
-                          <SelectItem value="about_same">About the same</SelectItem>
-                          <SelectItem value="more">More than usual</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q21: Coordination & Decision Drag */}
-                <FormField
-                  control={form.control}
-                  name="coordinationDecisionDrag"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-semibold">21. Coordination & Decision Drag</FormLabel>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">How much coordination is required across teams and stakeholders?</p>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an option" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="minimal">Minimal</SelectItem>
-                          <SelectItem value="moderate">Moderate</SelectItem>
-                          <SelectItem value="heavy">Heavy</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Q22: Delivery Confidence */}
-                <FormField
-                  control={form.control}
-                  name="deliveryConfidence"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-semibold">22. Delivery Confidence (executive gut-check)</FormLabel>
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">How confident are you in the delivery model for this engagement?</p>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select an option" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="high">High confidence</SelectItem>
-                          <SelectItem value="some_concerns">Some concerns</SelectItem>
-                          <SelectItem value="low">Low confidence</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            {/* Section F: Open Signal */}
-            <Card className="shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-l-violet-500">
-              <CardHeader className="pb-4">
-                <CardTitle className="text-lg text-gray-800 dark:text-gray-200 flex items-center gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 font-bold text-sm">F</div>
-                  <MessageSquare className="h-5 w-5 text-violet-600 dark:text-violet-400" />
-                  Open Signal
-                  <span className="text-xs font-normal text-gray-500 dark:text-gray-400 ml-1">(Optional)</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {/* Q23: Open Signal */}
-                <FormField
-                  control={form.control}
-                  name="openSignal"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        23. Is there anything about this particular client engagement that feels risky or unusual?
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder="Optional: Share any concerns or observations..."
-                          className="min-h-[100px]"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
-
-            {/* GDPR/CCPA Consent */}
-            <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
-              <input
-                type="checkbox"
-                id="consent"
-                checked={consentChecked}
-                onChange={(e) => setConsentChecked(e.target.checked)}
-                className="mt-1 h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
-              />
-              <label htmlFor="consent" className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
-                I consent to MarginMix processing my professional and company information to deliver this assessment and related communications, in accordance with GDPR and CCPA.
-              </label>
+          </div>
+        </div>
+        
+        {/* Main content */}
+        <div className="flex-1 flex items-center justify-center px-6 pt-20 pb-32">
+          <div className="w-full max-w-2xl">
+            {/* Section indicator */}
+            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium mb-6 ${colors.bg} text-white`}>
+              {question.section}
             </div>
-
-            {/* Submit Button */}
-            <div className="flex flex-col items-center gap-4">
-              <Button
-                type="submit"
-                size="lg"
-                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-12 py-6 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                disabled={isSubmitting || !consentChecked}
-              >
-                {isSubmitting ? (
-                  "Submitting..."
+            
+            {/* Question number and title */}
+            <div className="mb-8">
+              <span className={`text-lg font-medium ${colors.text} mb-2 block`}>
+                Question {question.number}
+              </span>
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
+                {question.title}
+              </h2>
+              {question.subtitle && (
+                <p className="mt-3 text-lg text-gray-600 dark:text-gray-400">
+                  {question.subtitle}
+                </p>
+              )}
+            </div>
+            
+            {/* Input/Options */}
+            <Form {...form}>
+              <div className="space-y-4">
+                {question.type === "text" || question.type === "email" ? (
+                  <FormField
+                    control={form.control}
+                    name={question.id}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            {...field}
+                            ref={inputRef as React.RefObject<HTMLInputElement>}
+                            type={question.type}
+                            placeholder={question.placeholder}
+                            className="text-xl py-6 px-4 border-2 border-gray-300 dark:border-gray-600 focus:border-emerald-500 dark:focus:border-emerald-400 rounded-lg"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                ) : question.type === "textarea" ? (
+                  <FormField
+                    control={form.control}
+                    name={question.id}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+                            placeholder={question.placeholder}
+                            className="text-lg py-4 px-4 min-h-[150px] border-2 border-gray-300 dark:border-gray-600 focus:border-emerald-500 dark:focus:border-emerald-400 rounded-lg"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 ) : (
-                  <>
-                    Submit Assessment
-                    <Send className="ml-2 h-5 w-5" />
-                  </>
+                  <div className="space-y-3">
+                    {question.options?.map((option, index) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => handleOptionSelect(option.value)}
+                        className={`w-full text-left px-6 py-4 rounded-lg border-2 transition-all duration-200 flex items-center gap-4 group hover:shadow-md ${
+                          currentValue === option.value
+                            ? `${colors.border} ${colors.bg} bg-opacity-10 dark:bg-opacity-20`
+                            : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                        }`}
+                      >
+                        <span className={`flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold transition-colors ${
+                          currentValue === option.value
+                            ? `${colors.bg} text-white`
+                            : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 group-hover:bg-gray-300 dark:group-hover:bg-gray-600"
+                        }`}>
+                          {String.fromCharCode(65 + index)}
+                        </span>
+                        <span className={`text-lg font-medium ${
+                          currentValue === option.value
+                            ? "text-gray-900 dark:text-white"
+                            : "text-gray-700 dark:text-gray-300"
+                        }`}>
+                          {option.label}
+                        </span>
+                        {currentValue === option.value && (
+                          <Check className={`ml-auto h-5 w-5 ${colors.text}`} />
+                        )}
+                      </button>
+                    ))}
+                  </div>
                 )}
-              </Button>
-              <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-                Your margin risk assessment & decision memo will be delivered to your email & copy of the files will be auto downloaded on this device within minutes of submission.
-              </p>
+              </div>
+            </Form>
+          </div>
+        </div>
+        
+        {/* Bottom navigation */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 py-4 px-6">
+          <div className="max-w-2xl mx-auto flex items-center justify-between">
+            <Button
+              variant="ghost"
+              onClick={handleBack}
+              disabled={currentQuestion === 0}
+              className="text-gray-600 dark:text-gray-400"
+            >
+              <ArrowUp className="mr-2 h-4 w-4" />
+              Back
+            </Button>
+            
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+              <span>Press</span>
+              <kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs font-mono">Enter ↵</kbd>
+              <span>to continue</span>
             </div>
+            
+            <Button
+              onClick={handleNext}
+              className={`${colors.bg} hover:opacity-90 text-white`}
+            >
+              {isLastQuestion ? "Review" : "Next"}
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderReviewScreen = () => (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      {/* Header */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+          <Link href="/">
+            <div className="flex flex-col cursor-pointer">
+              <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">MarginMix</span>
+            </div>
+          </Link>
+          <span className="text-sm text-gray-500 dark:text-gray-400">Review & Submit</span>
+        </div>
+      </div>
+      
+      <div className="max-w-2xl mx-auto px-6 pt-24 pb-32">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Review Your Answers</h2>
+        <p className="text-gray-600 dark:text-gray-400 mb-8">Click any answer to edit it.</p>
+        
+        <div className="space-y-4 mb-8">
+          {questions.map((question, index) => {
+            const value = watchedValues[question.id];
+            const colors = getSectionColor(question.sectionColor);
+            const displayValue = question.options?.find(o => o.value === value)?.label || value || "Not answered";
+            
+            return (
+              <button
+                key={question.id}
+                onClick={() => setCurrentQuestion(index)}
+                className="w-full text-left p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm transition-all bg-white dark:bg-gray-800"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <span className={`text-sm font-medium ${colors.text}`}>
+                      Q{question.number}. {question.title}
+                    </span>
+                    <p className="mt-1 text-gray-900 dark:text-white font-medium">
+                      {displayValue}
+                    </p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0 mt-1" />
+                </div>
+              </button>
+            );
+          })}
+        </div>
+        
+        {/* GDPR Consent */}
+        <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
+          <input
+            type="checkbox"
+            id="consent"
+            checked={consentChecked}
+            onChange={(e) => setConsentChecked(e.target.checked)}
+            className="mt-1 h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
+          />
+          <label htmlFor="consent" className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
+            I consent to MarginMix processing my professional and company information to deliver this assessment and related communications, in accordance with GDPR and CCPA.
+          </label>
+        </div>
+        
+        {/* Submit button */}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white py-6 text-lg shadow-lg"
+              disabled={isSubmitting || !consentChecked}
+            >
+              {isSubmitting ? (
+                "Submitting..."
+              ) : (
+                <>
+                  Submit Assessment
+                  <Send className="ml-2 h-5 w-5" />
+                </>
+              )}
+            </Button>
           </form>
         </Form>
+        
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-4">
+          Your margin risk assessment & decision memo will be delivered to your email & a copy of the files will be auto downloaded on this device.
+        </p>
       </div>
+      
+      {/* Back button */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 py-4 px-6">
+        <div className="max-w-2xl mx-auto">
+          <Button
+            variant="ghost"
+            onClick={() => setCurrentQuestion(totalQuestions - 1)}
+            className="text-gray-600 dark:text-gray-400"
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to questions
+          </Button>
+        </div>
+      </div>
+      
+      <Footer />
+    </div>
+  );
 
-      {/* Generating Dialog - Shows while submitting */}
+  if (showIntro) {
+    return renderIntroScreen();
+  }
+
+  if (isReviewScreen) {
+    return renderReviewScreen();
+  }
+
+  return (
+    <>
+      {renderQuestionCard()}
+      
+      {/* Generating Dialog */}
       <Dialog open={isSubmitting} onOpenChange={() => {}}>
         <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
           <DialogHeader>
@@ -1054,8 +983,6 @@ export default function Assessment() {
           </div>
         </DialogContent>
       </Dialog>
-
-      <Footer />
-    </div>
+    </>
   );
 }
