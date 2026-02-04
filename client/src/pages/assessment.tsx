@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Link } from "wouter";
-import { ArrowLeft, ArrowRight, ArrowUp, Send, Check, ChevronDown } from "lucide-react";
+import { ArrowDown, ArrowUp, Send, Check, ChevronDown } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Footer } from "@/components/footer";
@@ -69,7 +69,6 @@ interface Question {
 }
 
 const questions: Question[] = [
-  // Section A: Contact & Context
   {
     id: "fullName",
     number: 1,
@@ -142,7 +141,6 @@ const questions: Question[] = [
     section: "Contact & Context",
     sectionColor: "emerald"
   },
-  // Section B: Client Engagement Context
   {
     id: "specifyContext",
     number: 7,
@@ -214,7 +212,6 @@ const questions: Question[] = [
     section: "Client Engagement Context",
     sectionColor: "teal"
   },
-  // Section C: Planned Delivery Structure
   {
     id: "seniorLeadershipInvolvement",
     number: 12,
@@ -258,7 +255,6 @@ const questions: Question[] = [
     section: "Planned Delivery Structure",
     sectionColor: "cyan"
   },
-  // Section D: Delivery Dynamics
   {
     id: "iterationIntensity",
     number: 15,
@@ -315,7 +311,6 @@ const questions: Question[] = [
     section: "Delivery Dynamics",
     sectionColor: "sky"
   },
-  // Section E: Value, Load, Coordination & Confidence
   {
     id: "marginalValueSaturation",
     number: 19,
@@ -377,7 +372,6 @@ const questions: Question[] = [
     section: "Value, Load & Confidence",
     sectionColor: "amber"
   },
-  // Section F: Open Signal
   {
     id: "openSignal",
     number: 23,
@@ -392,16 +386,16 @@ const questions: Question[] = [
 ];
 
 export default function Assessment() {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [currentQuestion, setCurrentQuestion] = useState(-1); // -1 = intro
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
-  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   const totalQuestions = questions.length;
-  const isLastQuestion = currentQuestion === totalQuestions - 1;
+  const isIntro = currentQuestion === -1;
   const isReviewScreen = currentQuestion === totalQuestions;
 
   const getDefaultValues = useCallback(() => {
@@ -445,7 +439,6 @@ export default function Assessment() {
         const hasAnyData = Object.values(data).some(v => v && v !== "");
         if (hasAnyData) {
           form.reset(data);
-          setShowIntro(false);
           toast({
             title: "Progress Restored",
             description: "Your previous answers have been loaded.",
@@ -475,29 +468,6 @@ export default function Assessment() {
       }
     }
   }, [watchedValues]);
-
-  useEffect(() => {
-    if (!showIntro && !isReviewScreen && inputRef.current) {
-      setTimeout(() => inputRef.current?.focus(), 300);
-    }
-  }, [currentQuestion, showIntro, isReviewScreen]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (showIntro || isReviewScreen || isSubmitting) return;
-      
-      if (e.key === "Enter" && !e.shiftKey) {
-        const question = questions[currentQuestion];
-        if (question.type !== "textarea") {
-          e.preventDefault();
-          handleNext();
-        }
-      }
-    };
-    
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentQuestion, showIntro, isReviewScreen, isSubmitting, watchedValues]);
 
   const downloadPDF = (filename: string, base64Data: string) => {
     const link = document.createElement('a');
@@ -557,7 +527,19 @@ export default function Assessment() {
     }
   };
 
+  const scrollToQuestion = (index: number) => {
+    if (isTransitioning) return;
+    setIsTransitioning(true);
+    setCurrentQuestion(index);
+    setTimeout(() => setIsTransitioning(false), 500);
+  };
+
   const handleNext = () => {
+    if (isIntro) {
+      scrollToQuestion(0);
+      return;
+    }
+    
     if (currentQuestion < totalQuestions) {
       const question = questions[currentQuestion];
       const value = watchedValues[question.id];
@@ -571,390 +553,393 @@ export default function Assessment() {
         return;
       }
       
-      if (question.type === "email" && value) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(value)) {
-          toast({
-            title: "Invalid Email",
-            description: "Please enter a valid email address.",
-            variant: "destructive",
-          });
-          return;
-        }
-      }
-      
-      setCurrentQuestion(currentQuestion + 1);
+      scrollToQuestion(currentQuestion + 1);
     }
   };
 
   const handleBack = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
+    if (currentQuestion > -1) {
+      scrollToQuestion(currentQuestion - 1);
     }
   };
 
   const handleOptionSelect = (value: string) => {
     const question = questions[currentQuestion];
     form.setValue(question.id, value);
-    setTimeout(() => handleNext(), 300);
+    setTimeout(() => handleNext(), 400);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey && currentQuestion >= 0 && currentQuestion < totalQuestions) {
+      const question = questions[currentQuestion];
+      if (question.type !== "textarea") {
+        e.preventDefault();
+        handleNext();
+      }
+    }
   };
 
   const calculateProgress = () => {
-    if (showIntro) return 0;
+    if (isIntro) return 0;
     return Math.round(((currentQuestion + 1) / (totalQuestions + 1)) * 100);
   };
 
-  const getSectionColor = (color: string) => {
-    const colors: Record<string, { bg: string; text: string; border: string }> = {
-      emerald: { bg: "bg-emerald-500", text: "text-emerald-500", border: "border-emerald-500" },
-      teal: { bg: "bg-teal-500", text: "text-teal-500", border: "border-teal-500" },
-      cyan: { bg: "bg-cyan-500", text: "text-cyan-500", border: "border-cyan-500" },
-      sky: { bg: "bg-sky-500", text: "text-sky-500", border: "border-sky-500" },
-      amber: { bg: "bg-amber-500", text: "text-amber-500", border: "border-amber-500" },
-      violet: { bg: "bg-violet-500", text: "text-violet-500", border: "border-violet-500" },
+  const getSectionGradient = (color: string) => {
+    const gradients: Record<string, string> = {
+      emerald: "from-emerald-600 via-emerald-500 to-teal-500",
+      teal: "from-teal-600 via-teal-500 to-cyan-500",
+      cyan: "from-cyan-600 via-cyan-500 to-sky-500",
+      sky: "from-sky-600 via-sky-500 to-blue-500",
+      amber: "from-amber-600 via-amber-500 to-orange-500",
+      violet: "from-violet-600 via-violet-500 to-purple-500",
     };
-    return colors[color] || colors.emerald;
+    return gradients[color] || gradients.emerald;
   };
 
-  const renderIntroScreen = () => (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700">
-      <div className="max-w-2xl mx-auto text-center text-white">
-        <h1 className="text-4xl sm:text-5xl font-bold mb-4">Margin Risk Assessment</h1>
-        <p className="text-xl sm:text-2xl text-emerald-100 mb-8 italic" style={{ fontFamily: 'Georgia, serif' }}>
-          Margin Risk Clarity
-        </p>
-        
-        <p className="text-lg text-emerald-50 mb-8 leading-relaxed">
-          You're about to assess margin risk before it gets priced into a decision.
-          This assessment helps agency and professional services leaders evaluate whether 
-          a client engagement is priced in line with its true delivery complexity.
-        </p>
-        
-        <div className="flex flex-wrap justify-center gap-6 mb-10 text-emerald-100">
-          <div className="flex items-center gap-2">
-            <Check className="h-5 w-5" />
-            <span>23 questions</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Check className="h-5 w-5" />
-            <span>~5 minutes</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Check className="h-5 w-5" />
-            <span>GDPR & CCPA compliant</span>
-          </div>
-        </div>
-        
-        <Button
-          onClick={() => setShowIntro(false)}
-          size="lg"
-          className="bg-white text-emerald-700 hover:bg-emerald-50 px-12 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300"
-        >
-          Start Assessment
-          <ArrowRight className="ml-2 h-5 w-5" />
-        </Button>
-        
-        <p className="mt-8 text-sm text-emerald-200">
-          No financial data, timesheets, or individual performance information is required.
-        </p>
-      </div>
-      
-      <div className="absolute bottom-8 animate-bounce">
-        <ChevronDown className="h-8 w-8 text-emerald-200" />
-      </div>
-    </div>
-  );
-
-  const renderQuestionCard = () => {
-    const question = questions[currentQuestion];
-    const colors = getSectionColor(question.sectionColor);
+  const renderCard = (questionIndex: number) => {
+    const question = questions[questionIndex];
+    const isActive = currentQuestion === questionIndex;
+    const isPast = currentQuestion > questionIndex;
+    const isFuture = currentQuestion < questionIndex;
+    const gradient = getSectionGradient(question.sectionColor);
     const currentValue = watchedValues[question.id] || "";
-    
+
     return (
-      <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        {/* Header with progress */}
-        <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
-          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-            <Link href="/">
-              <div className="flex flex-col cursor-pointer">
-                <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">MarginMix</span>
+      <div
+        key={question.id}
+        className={`absolute inset-0 transition-all duration-500 ease-out transform-gpu ${
+          isActive 
+            ? "opacity-100 translate-y-0 scale-100 z-20" 
+            : isPast 
+              ? "opacity-0 -translate-y-full scale-95 z-10" 
+              : "opacity-0 translate-y-full scale-95 z-10"
+        }`}
+        style={{
+          perspective: "1000px",
+          transformStyle: "preserve-3d",
+        }}
+      >
+        <div className={`min-h-screen bg-gradient-to-br ${gradient} flex flex-col`}>
+          {/* Question content */}
+          <div className="flex-1 flex items-center justify-center px-6 py-20">
+            <div 
+              className={`w-full max-w-2xl transition-all duration-500 ${
+                isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              }`}
+              style={{ transitionDelay: isActive ? "150ms" : "0ms" }}
+            >
+              {/* Section & Question number */}
+              <div className="mb-6">
+                <span className="inline-block px-4 py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-sm font-medium mb-3">
+                  {question.section}
+                </span>
+                <div className="text-white/70 text-lg font-medium">
+                  Question {question.number} of {totalQuestions}
+                </div>
               </div>
-            </Link>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                {currentQuestion + 1} of {totalQuestions}
-              </span>
-              <div className="w-32 sm:w-48">
-                <Progress value={calculateProgress()} className="h-2" />
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Main content */}
-        <div className="flex-1 flex items-center justify-center px-6 pt-20 pb-32">
-          <div className="w-full max-w-2xl">
-            {/* Section indicator */}
-            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium mb-6 ${colors.bg} text-white`}>
-              {question.section}
-            </div>
-            
-            {/* Question number and title */}
-            <div className="mb-8">
-              <span className={`text-lg font-medium ${colors.text} mb-2 block`}>
-                Question {question.number}
-              </span>
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
+
+              {/* Question title */}
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
                 {question.title}
               </h2>
+              
               {question.subtitle && (
-                <p className="mt-3 text-lg text-gray-600 dark:text-gray-400">
+                <p className="text-xl text-white/80 mb-8">
                   {question.subtitle}
                 </p>
               )}
-            </div>
-            
-            {/* Input/Options */}
-            <Form {...form}>
-              <div className="space-y-4">
-                {question.type === "text" || question.type === "email" ? (
-                  <FormField
-                    control={form.control}
-                    name={question.id}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Input
-                            {...field}
-                            ref={inputRef as React.RefObject<HTMLInputElement>}
-                            type={question.type}
-                            placeholder={question.placeholder}
-                            className="text-xl py-6 px-4 border-2 border-gray-300 dark:border-gray-600 focus:border-emerald-500 dark:focus:border-emerald-400 rounded-lg"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ) : question.type === "textarea" ? (
-                  <FormField
-                    control={form.control}
-                    name={question.id}
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormControl>
-                          <Textarea
-                            {...field}
-                            ref={inputRef as React.RefObject<HTMLTextAreaElement>}
-                            placeholder={question.placeholder}
-                            className="text-lg py-4 px-4 min-h-[150px] border-2 border-gray-300 dark:border-gray-600 focus:border-emerald-500 dark:focus:border-emerald-400 rounded-lg"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ) : (
-                  <div className="space-y-3">
-                    {question.options?.map((option, index) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => handleOptionSelect(option.value)}
-                        className={`w-full text-left px-6 py-4 rounded-lg border-2 transition-all duration-200 flex items-center gap-4 group hover:shadow-md ${
-                          currentValue === option.value
-                            ? `${colors.border} ${colors.bg} bg-opacity-10 dark:bg-opacity-20`
-                            : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
-                        }`}
-                      >
-                        <span className={`flex items-center justify-center w-8 h-8 rounded-lg text-sm font-bold transition-colors ${
-                          currentValue === option.value
-                            ? `${colors.bg} text-white`
-                            : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 group-hover:bg-gray-300 dark:group-hover:bg-gray-600"
-                        }`}>
-                          {String.fromCharCode(65 + index)}
-                        </span>
-                        <span className={`text-lg font-medium ${
-                          currentValue === option.value
-                            ? "text-gray-900 dark:text-white"
-                            : "text-gray-700 dark:text-gray-300"
-                        }`}>
-                          {option.label}
-                        </span>
-                        {currentValue === option.value && (
-                          <Check className={`ml-auto h-5 w-5 ${colors.text}`} />
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                )}
+
+              {/* Input area */}
+              <div className="mt-8" onKeyDown={handleKeyDown}>
+                <Form {...form}>
+                  {question.type === "text" || question.type === "email" ? (
+                    <FormField
+                      control={form.control}
+                      name={question.id}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type={question.type}
+                              placeholder={question.placeholder}
+                              autoFocus={isActive}
+                              className="text-xl py-6 px-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/50 focus:border-white focus:bg-white/20 rounded-xl"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-white/90 mt-2" />
+                        </FormItem>
+                      )}
+                    />
+                  ) : question.type === "textarea" ? (
+                    <FormField
+                      control={form.control}
+                      name={question.id}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              placeholder={question.placeholder}
+                              autoFocus={isActive}
+                              className="text-lg py-4 px-6 min-h-[150px] bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/50 focus:border-white focus:bg-white/20 rounded-xl"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-white/90 mt-2" />
+                        </FormItem>
+                      )}
+                    />
+                  ) : (
+                    <div className="space-y-3">
+                      {question.options?.map((option, index) => (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => handleOptionSelect(option.value)}
+                          className={`w-full text-left px-6 py-5 rounded-xl border-2 transition-all duration-300 flex items-center gap-4 group ${
+                            currentValue === option.value
+                              ? "bg-white text-gray-900 border-white shadow-lg scale-[1.02]"
+                              : "bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 hover:border-white/50"
+                          }`}
+                        >
+                          <span className={`flex items-center justify-center w-10 h-10 rounded-lg text-sm font-bold transition-colors ${
+                            currentValue === option.value
+                              ? "bg-emerald-500 text-white"
+                              : "bg-white/20 text-white group-hover:bg-white/30"
+                          }`}>
+                            {String.fromCharCode(65 + index)}
+                          </span>
+                          <span className="text-lg font-medium flex-1">
+                            {option.label}
+                          </span>
+                          {currentValue === option.value && (
+                            <Check className="h-6 w-6 text-emerald-500" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </Form>
               </div>
-            </Form>
-          </div>
-        </div>
-        
-        {/* Bottom navigation */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 py-4 px-6">
-          <div className="max-w-2xl mx-auto flex items-center justify-between">
-            <Button
-              variant="ghost"
-              onClick={handleBack}
-              disabled={currentQuestion === 0}
-              className="text-gray-600 dark:text-gray-400"
-            >
-              <ArrowUp className="mr-2 h-4 w-4" />
-              Back
-            </Button>
-            
-            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-              <span>Press</span>
-              <kbd className="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded text-xs font-mono">Enter ↵</kbd>
-              <span>to continue</span>
+
+              {/* Continue hint for text inputs */}
+              {(question.type === "text" || question.type === "email") && (
+                <div className="mt-6 flex items-center gap-2 text-white/60 text-sm">
+                  <span>Press</span>
+                  <kbd className="px-2 py-1 bg-white/20 rounded text-xs font-mono">Enter ↵</kbd>
+                  <span>to continue</span>
+                </div>
+              )}
             </div>
-            
-            <Button
-              onClick={handleNext}
-              className={`${colors.bg} hover:opacity-90 text-white`}
-            >
-              {isLastQuestion ? "Review" : "Next"}
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
           </div>
         </div>
       </div>
     );
   };
 
-  const renderReviewScreen = () => (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/">
-            <div className="flex flex-col cursor-pointer">
-              <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400">MarginMix</span>
+  const renderIntro = () => (
+    <div
+      className={`absolute inset-0 transition-all duration-500 ease-out ${
+        isIntro 
+          ? "opacity-100 translate-y-0 z-20" 
+          : "opacity-0 -translate-y-full z-10"
+      }`}
+    >
+      <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-6 py-12">
+        <div className="max-w-2xl mx-auto text-center text-white">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4">Margin Risk Assessment</h1>
+          <p className="text-xl sm:text-2xl text-emerald-100 mb-8 italic" style={{ fontFamily: 'Georgia, serif' }}>
+            Margin Risk Clarity
+          </p>
+          
+          <p className="text-lg text-emerald-50 mb-10 leading-relaxed max-w-xl mx-auto">
+            You're about to assess margin risk before it gets priced into a decision.
+            This assessment helps agency leaders evaluate whether a client engagement 
+            is priced in line with its true delivery complexity.
+          </p>
+          
+          <div className="flex flex-wrap justify-center gap-6 mb-12 text-emerald-100">
+            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
+              <Check className="h-5 w-5" />
+              <span>23 questions</span>
             </div>
-          </Link>
-          <span className="text-sm text-gray-500 dark:text-gray-400">Review & Submit</span>
-        </div>
-      </div>
-      
-      <div className="max-w-2xl mx-auto px-6 pt-24 pb-32">
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Review Your Answers</h2>
-        <p className="text-gray-600 dark:text-gray-400 mb-8">Click any answer to edit it.</p>
-        
-        <div className="space-y-4 mb-8">
-          {questions.map((question, index) => {
-            const value = watchedValues[question.id];
-            const colors = getSectionColor(question.sectionColor);
-            const displayValue = question.options?.find(o => o.value === value)?.label || value || "Not answered";
-            
-            return (
-              <button
-                key={question.id}
-                onClick={() => setCurrentQuestion(index)}
-                className="w-full text-left p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-sm transition-all bg-white dark:bg-gray-800"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <span className={`text-sm font-medium ${colors.text}`}>
-                      Q{question.number}. {question.title}
-                    </span>
-                    <p className="mt-1 text-gray-900 dark:text-white font-medium">
-                      {displayValue}
-                    </p>
-                  </div>
-                  <ArrowRight className="h-4 w-4 text-gray-400 flex-shrink-0 mt-1" />
-                </div>
-              </button>
-            );
-          })}
-        </div>
-        
-        {/* GDPR Consent */}
-        <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 mb-6">
-          <input
-            type="checkbox"
-            id="consent"
-            checked={consentChecked}
-            onChange={(e) => setConsentChecked(e.target.checked)}
-            className="mt-1 h-4 w-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
-          />
-          <label htmlFor="consent" className="text-sm text-gray-600 dark:text-gray-300 cursor-pointer">
-            I consent to MarginMix processing my professional and company information to deliver this assessment and related communications, in accordance with GDPR and CCPA.
-          </label>
-        </div>
-        
-        {/* Submit button */}
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white py-6 text-lg shadow-lg"
-              disabled={isSubmitting || !consentChecked}
-            >
-              {isSubmitting ? (
-                "Submitting..."
-              ) : (
-                <>
-                  Submit Assessment
-                  <Send className="ml-2 h-5 w-5" />
-                </>
-              )}
-            </Button>
-          </form>
-        </Form>
-        
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-4">
-          Your margin risk assessment & decision memo will be delivered to your email & a copy of the files will be auto downloaded on this device.
-        </p>
-      </div>
-      
-      {/* Back button */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm border-t border-gray-200 dark:border-gray-700 py-4 px-6">
-        <div className="max-w-2xl mx-auto">
+            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
+              <Check className="h-5 w-5" />
+              <span>~5 minutes</span>
+            </div>
+            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
+              <Check className="h-5 w-5" />
+              <span>GDPR & CCPA compliant</span>
+            </div>
+          </div>
+          
           <Button
-            variant="ghost"
-            onClick={() => setCurrentQuestion(totalQuestions - 1)}
-            className="text-gray-600 dark:text-gray-400"
+            onClick={handleNext}
+            size="lg"
+            className="bg-white text-emerald-700 hover:bg-emerald-50 px-12 py-7 text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to questions
+            Start Assessment
+            <ArrowDown className="ml-3 h-6 w-6" />
           </Button>
+          
+          <p className="mt-10 text-sm text-emerald-200/80">
+            No financial data, timesheets, or individual performance information is required.
+          </p>
+        </div>
+        
+        <div className="absolute bottom-8 animate-bounce">
+          <ChevronDown className="h-8 w-8 text-emerald-200/60" />
         </div>
       </div>
-      
-      <Footer />
     </div>
   );
 
-  if (showIntro) {
-    return renderIntroScreen();
-  }
-
-  if (isReviewScreen) {
-    return renderReviewScreen();
-  }
+  const renderReview = () => (
+    <div
+      className={`absolute inset-0 transition-all duration-500 ease-out overflow-y-auto ${
+        isReviewScreen 
+          ? "opacity-100 translate-y-0 z-20" 
+          : "opacity-0 translate-y-full z-10"
+      }`}
+    >
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-20 px-6">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">Review Your Answers</h2>
+          <p className="text-gray-400 mb-8">Click any answer to edit it.</p>
+          
+          <div className="space-y-3 mb-8">
+            {questions.map((question, index) => {
+              const value = watchedValues[question.id];
+              const displayValue = question.options?.find(o => o.value === value)?.label || value || "Not answered";
+              const gradient = getSectionGradient(question.sectionColor);
+              
+              return (
+                <button
+                  key={question.id}
+                  onClick={() => scrollToQuestion(index)}
+                  className="w-full text-left p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <span className="text-sm text-gray-500">
+                        Q{question.number}. {question.title}
+                      </span>
+                      <p className={`mt-1 font-medium bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
+                        {displayValue}
+                      </p>
+                    </div>
+                    <ArrowUp className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors flex-shrink-0 mt-1" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* GDPR Consent */}
+          <div className="flex items-start gap-3 p-5 bg-white/5 rounded-xl border border-white/10 mb-6">
+            <input
+              type="checkbox"
+              id="consent"
+              checked={consentChecked}
+              onChange={(e) => setConsentChecked(e.target.checked)}
+              className="mt-1 h-5 w-5 text-emerald-500 border-gray-600 rounded focus:ring-emerald-500 bg-transparent"
+            />
+            <label htmlFor="consent" className="text-sm text-gray-300 cursor-pointer leading-relaxed">
+              I consent to MarginMix processing my professional and company information to deliver this assessment and related communications, in accordance with GDPR and CCPA.
+            </label>
+          </div>
+          
+          {/* Submit button */}
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <Button
+                type="submit"
+                size="lg"
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-7 text-lg shadow-lg rounded-xl"
+                disabled={isSubmitting || !consentChecked}
+              >
+                {isSubmitting ? (
+                  "Submitting..."
+                ) : (
+                  <>
+                    Submit Assessment
+                    <Send className="ml-2 h-5 w-5" />
+                  </>
+                )}
+              </Button>
+            </form>
+          </Form>
+          
+          <p className="text-sm text-gray-500 text-center mt-4">
+            Your margin risk assessment & decision memo will be delivered to your email & a copy of the files will be auto downloaded on this device.
+          </p>
+        </div>
+        
+        <Footer />
+      </div>
+    </div>
+  );
 
   return (
-    <>
-      {renderQuestionCard()}
-      
+    <div ref={containerRef} className="relative h-screen overflow-hidden">
+      {/* Fixed header with progress */}
+      {!isIntro && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-sm">
+          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <Link href="/">
+              <span className="text-xl font-bold text-white cursor-pointer">MarginMix</span>
+            </Link>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-white/70">
+                {isReviewScreen ? "Review" : `${currentQuestion + 1} of ${totalQuestions}`}
+              </span>
+              <div className="w-24 sm:w-32">
+                <Progress value={calculateProgress()} className="h-1.5 bg-white/20" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Navigation buttons */}
+      {!isIntro && !isReviewScreen && (
+        <div className="fixed bottom-8 left-0 right-0 z-50 flex justify-center gap-4 px-6">
+          <Button
+            variant="ghost"
+            onClick={handleBack}
+            disabled={currentQuestion <= 0}
+            className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20"
+          >
+            <ArrowUp className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+          <Button
+            onClick={handleNext}
+            className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg"
+          >
+            {currentQuestion === totalQuestions - 1 ? "Review" : "Continue"}
+            <ArrowDown className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
+      {/* Render all screens */}
+      {renderIntro()}
+      {questions.map((_, index) => renderCard(index))}
+      {renderReview()}
+
       {/* Generating Dialog */}
       <Dialog open={isSubmitting} onOpenChange={() => {}}>
         <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
           <DialogHeader>
-            <DialogTitle className="text-center text-emerald-600 dark:text-emerald-400">
+            <DialogTitle className="text-center text-emerald-600">
               Your Margin Assessment is being prepared.
             </DialogTitle>
             <DialogDescription className="text-center text-lg pt-4">
               <div className="flex flex-col items-center space-y-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Give us a minute.
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
+                <p className="text-gray-600">Give us a minute.</p>
+                <p className="text-gray-600">
                   Your assessment and decision memo will be auto downloaded on this device and sent to you via email as well.
                 </p>
               </div>
@@ -967,7 +952,7 @@ export default function Assessment() {
       <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-center text-emerald-600 dark:text-emerald-400">
+            <DialogTitle className="text-center text-emerald-600">
               Assessment Submitted
             </DialogTitle>
             <DialogDescription className="text-center text-lg pt-4">
@@ -983,6 +968,6 @@ export default function Assessment() {
           </div>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   );
 }
