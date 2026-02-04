@@ -561,18 +561,6 @@ export default function Assessment() {
     }
     
     if (currentQuestion < totalQuestions) {
-      const question = questions[currentQuestion];
-      const value = watchedValues[question.id];
-      
-      if (question.required && (!value || value.trim() === "")) {
-        toast({
-          title: "Required Field",
-          description: "Please answer this question before continuing.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
       scrollToQuestion(currentQuestion + 1);
     }
   };
