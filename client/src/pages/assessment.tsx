@@ -619,25 +619,18 @@ export default function Assessment() {
   const renderCard = (questionIndex: number) => {
     const question = questions[questionIndex];
     const isActive = currentQuestion === questionIndex;
-    const isPast = currentQuestion > questionIndex;
-    const isFuture = currentQuestion < questionIndex;
+    
+    // Only render cards that are nearby for performance
+    const distance = Math.abs(questionIndex - currentQuestion);
+    if (distance > 1 && !isIntro && !isReviewScreen) return null;
+    
     const gradient = getSectionGradient(question.sectionColor);
     const currentValue = watchedValues[question.id] || "";
 
     return (
       <div
         key={question.id}
-        className={`absolute inset-0 transition-all duration-500 ease-out transform-gpu ${
-          isActive 
-            ? "opacity-100 translate-y-0 scale-100 z-20" 
-            : isPast 
-              ? "opacity-0 -translate-y-full scale-95 z-10" 
-              : "opacity-0 translate-y-full scale-95 z-10"
-        }`}
-        style={{
-          perspective: "1000px",
-          transformStyle: "preserve-3d",
-        }}
+        className={`absolute inset-0 z-20 ${isActive ? "" : "pointer-events-none opacity-0"}`}
       >
         <div className={`min-h-screen bg-gradient-to-br ${gradient} flex flex-col`}>
           {/* Question content */}
