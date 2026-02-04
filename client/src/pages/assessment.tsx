@@ -491,11 +491,20 @@ export default function Assessment() {
     }
   }, [watchedValues]);
 
-  // Scroll to top on page load for mobile
+  // Scroll to top and reset view on page load for mobile
   useEffect(() => {
+    // Reset scroll position
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
+    
+    // Also scroll the container if it exists
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0;
+    }
+    
+    // Ensure we start at intro (currentQuestion = -1)
+    setCurrentQuestion(-1);
   }, []);
 
   // Auto-focus input fields after transition
