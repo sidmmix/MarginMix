@@ -507,6 +507,43 @@ export default function Assessment() {
     }
   }, [currentQuestion]);
 
+  // Wheel event for scroll-based navigation
+  useEffect(() => {
+    let lastScrollTime = 0;
+    const scrollThrottle = 800; // Prevent rapid scrolling
+    
+    const handleWheel = (e: WheelEvent) => {
+      const now = Date.now();
+      if (now - lastScrollTime < scrollThrottle) return;
+      if (isTransitioning || isSubmitting) return;
+      
+      // Don't intercept scroll inside review screen's scrollable content
+      if (isReviewScreen) return;
+      
+      if (e.deltaY > 50) {
+        // Scroll down - go to next question
+        lastScrollTime = now;
+        if (isIntro) {
+          scrollToQuestion(0);
+        } else if (currentQuestion < totalQuestions) {
+          scrollToQuestion(currentQuestion + 1);
+        }
+      } else if (e.deltaY < -50) {
+        // Scroll up - go to previous question
+        lastScrollTime = now;
+        if (currentQuestion > -1) {
+          scrollToQuestion(currentQuestion - 1);
+        }
+      }
+    };
+    
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: true });
+      return () => container.removeEventListener('wheel', handleWheel);
+    }
+  }, [currentQuestion, isIntro, isReviewScreen, isTransitioning, isSubmitting, totalQuestions]);
+
   const downloadPDF = (filename: string, base64Data: string) => {
     const link = document.createElement('a');
     link.href = `data:application/pdf;base64,${base64Data}`;
@@ -602,7 +639,9 @@ export default function Assessment() {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey && currentQuestion >= 0 && currentQuestion < totalQuestions) {
       const question = questions[currentQuestion];
-      if (question.type !== "textarea") {
+      const isLastQuestion = currentQuestion === totalQuestions - 1;
+      // Allow Enter on non-textarea questions, or on the last question (optional) to go to review
+      if (question.type !== "textarea" || isLastQuestion) {
         e.preventDefault();
         handleNext();
       }
