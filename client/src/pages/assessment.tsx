@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Link } from "wouter";
-import { ArrowDown, ArrowUp, ArrowLeft, Send, Check, ChevronDown, Save } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowLeft, Send, Check, ChevronDown, Save, Home } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Footer } from "@/components/footer";
@@ -1105,7 +1105,7 @@ export default function Assessment() {
                     variant="ghost" 
                     className="text-white hover:text-emerald-200 hover:bg-white/10 px-2 sm:px-3 py-1.5 sm:py-2"
                   >
-                    <ArrowLeft className="h-4 w-4 sm:mr-2" />
+                    <Home className="h-4 w-4 sm:mr-2" />
                     <span className="hidden sm:inline">Home</span>
                   </Button>
                 </Link>
