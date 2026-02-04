@@ -491,20 +491,48 @@ export default function Assessment() {
     }
   }, [watchedValues]);
 
-  // Scroll to top and reset view on page load for mobile
+  // Scroll to top and reset view on page load for mobile (including AMP and all mobile browsers)
   useEffect(() => {
-    // Reset scroll position
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+    const scrollToTop = () => {
+      // Method 1: Standard scrollTo
+      window.scrollTo(0, 0);
+      
+      // Method 2: scrollTo with options (modern browsers)
+      try {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      } catch (e) {
+        // Fallback for older browsers
+      }
+      
+      // Method 3: Direct property assignment (iOS Safari, older browsers)
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      
+      // Method 4: Scroll container if it exists
+      if (containerRef.current) {
+        containerRef.current.scrollTop = 0;
+      }
+      
+      // Method 5: Find and scroll any scrollable parent
+      const scrollableParent = document.querySelector('[data-scroll-container]');
+      if (scrollableParent) {
+        scrollableParent.scrollTop = 0;
+      }
+    };
     
-    // Also scroll the container if it exists
-    if (containerRef.current) {
-      containerRef.current.scrollTop = 0;
-    }
+    // Execute immediately
+    scrollToTop();
+    
+    // Execute after a frame (helps with some mobile browsers)
+    requestAnimationFrame(scrollToTop);
+    
+    // Execute after a short delay (helps with AMP and slow-loading environments)
+    const timer = setTimeout(scrollToTop, 100);
     
     // Ensure we start at intro (currentQuestion = -1)
     setCurrentQuestion(-1);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   // Auto-focus input fields after transition
