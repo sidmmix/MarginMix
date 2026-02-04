@@ -469,6 +469,22 @@ export default function Assessment() {
     }
   }, [watchedValues]);
 
+  // Auto-focus input fields after transition
+  useEffect(() => {
+    if (currentQuestion >= 0 && currentQuestion < totalQuestions) {
+      const question = questions[currentQuestion];
+      if (question.type === "text" || question.type === "email" || question.type === "textarea") {
+        const timer = setTimeout(() => {
+          const input = document.querySelector(`input[name="${question.id}"], textarea[name="${question.id}"]`) as HTMLElement;
+          if (input) {
+            input.focus();
+          }
+        }, 300);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [currentQuestion]);
+
   const downloadPDF = (filename: string, base64Data: string) => {
     const link = document.createElement('a');
     link.href = `data:application/pdf;base64,${base64Data}`;
@@ -663,7 +679,8 @@ export default function Assessment() {
                               {...field}
                               type={question.type}
                               placeholder={question.placeholder}
-                              autoFocus={isActive}
+                              autoFocus
+                              key={`input-${question.id}-${isActive}`}
                               className="text-xl py-6 px-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/50 focus:border-white focus:bg-white/20 rounded-xl"
                             />
                           </FormControl>
@@ -681,7 +698,8 @@ export default function Assessment() {
                             <Textarea
                               {...field}
                               placeholder={question.placeholder}
-                              autoFocus={isActive}
+                              autoFocus
+                              key={`textarea-${question.id}-${isActive}`}
                               className="text-lg py-4 px-6 min-h-[150px] bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/50 focus:border-white focus:bg-white/20 rounded-xl"
                             />
                           </FormControl>
