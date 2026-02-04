@@ -515,7 +515,11 @@ export default function Assessment() {
           }, 500);
         }
         
-        localStorage.removeItem(STORAGE_KEY);
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {
+          console.error("Error clearing saved progress:", e);
+        }
         setShowConfirmation(true);
         form.reset();
         
@@ -899,7 +903,7 @@ export default function Assessment() {
   );
 
   return (
-    <div ref={containerRef} className="relative h-screen overflow-hidden">
+    <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
       {/* Fixed header with progress */}
       {!isIntro && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-sm">
