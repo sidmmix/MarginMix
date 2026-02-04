@@ -942,7 +942,7 @@ export default function Assessment() {
             
             <p className="text-base sm:text-lg text-emerald-50 mb-8 sm:mb-10 leading-relaxed max-w-xl mx-auto px-2">
               You're about to assess margin risk before it gets priced into a decision.
-              This assessment helps agency leaders evaluate whether a client engagement 
+              This assessment helps leaders evaluate whether a client engagement 
               is priced in line with its true delivery complexity.
             </p>
             
