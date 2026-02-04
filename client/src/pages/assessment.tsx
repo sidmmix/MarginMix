@@ -491,6 +491,13 @@ export default function Assessment() {
     }
   }, [watchedValues]);
 
+  // Scroll to top on page load for mobile
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, []);
+
   // Auto-focus input fields after transition
   useEffect(() => {
     if (currentQuestion >= 0 && currentQuestion < totalQuestions) {
