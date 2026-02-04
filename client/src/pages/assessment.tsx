@@ -548,7 +548,14 @@ export default function Assessment() {
       if (e.deltaY > 50) {
         // Scroll down - go to next question (forward)
         // Must answer current question before advancing (except Q23 which is optional)
-        if (!isCurrentQuestionAnswered()) return;
+        if (!isCurrentQuestionAnswered()) {
+          lastScrollTime = now;
+          toast({
+            title: "Please answer before proceeding.",
+            variant: "destructive",
+          });
+          return;
+        }
         
         lastScrollTime = now;
         if (isIntro) {
@@ -655,6 +662,10 @@ export default function Assessment() {
     
     // Must answer current question before advancing (except Q23 which is optional)
     if (!isCurrentQuestionAnswered()) {
+      toast({
+        title: "Please answer before proceeding.",
+        variant: "destructive",
+      });
       return;
     }
     
@@ -691,6 +702,10 @@ export default function Assessment() {
       if (question.type !== "textarea" || isLastQuestion) {
         // Must answer current question before advancing
         if (!isCurrentQuestionAnswered()) {
+          toast({
+            title: "Please answer before proceeding.",
+            variant: "destructive",
+          });
           return;
         }
         // On last question, only allow going to review if Q1-Q22 are answered
