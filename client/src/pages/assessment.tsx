@@ -881,28 +881,30 @@ export default function Assessment() {
 
   return (
     <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
-      {/* Fixed header with progress */}
-      {!isIntro && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-black/20 backdrop-blur-sm">
-          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-            <Link href="/">
-              <span className="text-xl font-bold text-white cursor-pointer">MarginMix</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-white/70">
-                {isReviewScreen ? "Review" : `${currentQuestion + 1} of ${totalQuestions}`}
-              </span>
-              <div className="w-24 sm:w-32">
-                <Progress value={calculateProgress()} className="h-1.5 bg-white/20" />
-              </div>
-            </div>
+      {/* Fixed header with progress - always visible */}
+      <div className="fixed top-0 left-0 right-0 z-[100] bg-black/20 backdrop-blur-sm">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+          <Link href="/">
+            <span className="text-xl font-bold text-white cursor-pointer">MarginMix</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            {!isIntro && (
+              <>
+                <span className="text-sm text-white/70">
+                  {isReviewScreen ? "Review" : `${currentQuestion + 1} of ${totalQuestions}`}
+                </span>
+                <div className="w-24 sm:w-32">
+                  <Progress value={calculateProgress()} className="h-1.5 bg-white/20" />
+                </div>
+              </>
+            )}
           </div>
         </div>
-      )}
+      </div>
 
       {/* Navigation buttons */}
       {!isIntro && !isReviewScreen && (
-        <div className="fixed bottom-8 left-0 right-0 z-50 flex justify-center gap-4 px-6">
+        <div className="fixed bottom-8 left-0 right-0 z-[100] flex justify-center gap-4 px-6">
           <Button
             variant="ghost"
             onClick={handleBack}
