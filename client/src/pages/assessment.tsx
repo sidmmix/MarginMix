@@ -881,11 +881,16 @@ export default function Assessment() {
 
   return (
     <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
-      {/* Fixed header with progress - always visible */}
-      <div className="fixed top-0 left-0 right-0 z-[100] bg-black/20 backdrop-blur-sm">
+      {/* Render all screens first */}
+      {renderIntro()}
+      {questions.map((_, index) => renderCard(index))}
+      {renderReview()}
+
+      {/* Fixed header with progress - rendered after content to be on top */}
+      <div className="fixed top-0 left-0 right-0 z-[100] bg-black/30 backdrop-blur-md" style={{ pointerEvents: 'auto' }}>
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/">
-            <span className="text-xl font-bold text-white cursor-pointer">MarginMix</span>
+            <span className="text-xl font-bold text-white cursor-pointer hover:text-emerald-200 transition-colors">MarginMix</span>
           </Link>
           <div className="flex items-center gap-4">
             {!isIntro && (
@@ -902,9 +907,9 @@ export default function Assessment() {
         </div>
       </div>
 
-      {/* Navigation buttons */}
+      {/* Navigation buttons - rendered after content to be on top */}
       {!isIntro && !isReviewScreen && (
-        <div className="fixed bottom-8 left-0 right-0 z-[100] flex justify-center gap-4 px-6">
+        <div className="fixed bottom-8 left-0 right-0 z-[100] flex justify-center gap-4 px-6" style={{ pointerEvents: 'auto' }}>
           <Button
             variant="ghost"
             onClick={handleBack}
@@ -923,11 +928,6 @@ export default function Assessment() {
           </Button>
         </div>
       )}
-
-      {/* Render all screens */}
-      {renderIntro()}
-      {questions.map((_, index) => renderCard(index))}
-      {renderReview()}
 
       {/* Generating Dialog */}
       <Dialog open={isSubmitting} onOpenChange={() => {}}>
