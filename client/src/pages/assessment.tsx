@@ -941,15 +941,9 @@ export default function Assessment() {
         </div>
       )}
 
-      {/* Render only nearby screens for performance */}
+      {/* Render all screens */}
       {renderIntro()}
-      {questions.map((_, index) => {
-        // Only render current, previous, and next cards for performance
-        const shouldRender = Math.abs(index - currentQuestion) <= 1 || 
-                            (isIntro && index === 0) || 
-                            (isReviewScreen && index === totalQuestions - 1);
-        return shouldRender ? renderCard(index) : null;
-      })}
+      {questions.map((_, index) => renderCard(index))}
       {renderReview()}
 
       {/* Generating Dialog */}
