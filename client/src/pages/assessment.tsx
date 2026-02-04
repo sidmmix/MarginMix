@@ -521,6 +521,17 @@ export default function Assessment() {
     return true;
   };
 
+  // Check if current question is answered
+  const isCurrentQuestionAnswered = () => {
+    if (currentQuestion < 0 || currentQuestion >= totalQuestions) return true;
+    const question = questions[currentQuestion];
+    // Q23 (last question) is optional
+    if (currentQuestion === totalQuestions - 1) return true;
+    const values = form.getValues();
+    const value = values[question.id as keyof typeof values];
+    return value && value !== "";
+  };
+
   // Wheel event for scroll-based navigation
   useEffect(() => {
     let lastScrollTime = 0;
@@ -536,11 +547,14 @@ export default function Assessment() {
       
       if (e.deltaY > 50) {
         // Scroll down - go to next question (forward)
+        // Must answer current question before advancing (except Q23 which is optional)
+        if (!isCurrentQuestionAnswered()) return;
+        
         lastScrollTime = now;
         if (isIntro) {
           scrollToQuestion(0);
         } else if (currentQuestion < totalQuestions - 1) {
-          // Can always scroll forward through questions 1-22
+          // Can scroll forward if current question is answered
           scrollToQuestion(currentQuestion + 1);
         } else if (currentQuestion === totalQuestions - 1) {
           // On last question (Q23), only allow scroll to review if Q1-Q22 are answered
@@ -639,6 +653,11 @@ export default function Assessment() {
       return;
     }
     
+    // Must answer current question before advancing (except Q23 which is optional)
+    if (!isCurrentQuestionAnswered()) {
+      return;
+    }
+    
     // On last question (Q23), only allow going to review if Q1-Q22 are answered
     if (currentQuestion === totalQuestions - 1) {
       if (areMandatoryQuestionsAnswered()) {
@@ -670,6 +689,10 @@ export default function Assessment() {
       const isLastQuestion = currentQuestion === totalQuestions - 1;
       // Allow Enter on non-textarea questions, or on the last question (optional) to go to review
       if (question.type !== "textarea" || isLastQuestion) {
+        // Must answer current question before advancing
+        if (!isCurrentQuestionAnswered()) {
+          return;
+        }
         // On last question, only allow going to review if Q1-Q22 are answered
         if (isLastQuestion && !areMandatoryQuestionsAnswered()) {
           return;
