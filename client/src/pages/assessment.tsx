@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Link } from "wouter";
-import { ArrowDown, ArrowUp, Send, Check, ChevronDown } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowLeft, Send, Check, ChevronDown, Save } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Footer } from "@/components/footer";
@@ -887,20 +887,31 @@ export default function Assessment() {
       {renderReview()}
 
       {/* Fixed header with progress - rendered after content to be on top */}
-      <div className="fixed top-0 left-0 right-0 z-[100] bg-black/30 backdrop-blur-md" style={{ pointerEvents: 'auto' }}>
+      <div className="fixed top-0 left-0 right-0 z-[100] bg-black/40 backdrop-blur-md" style={{ pointerEvents: 'auto' }}>
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link href="/">
-            <span className="text-xl font-bold text-white cursor-pointer hover:text-emerald-200 transition-colors">MarginMix</span>
+            <Button variant="ghost" className="text-white hover:text-emerald-200 hover:bg-white/10 px-3 py-2">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              <span className="font-bold">MarginMix</span>
+            </Button>
           </Link>
           <div className="flex items-center gap-4">
             {!isIntro && (
               <>
-                <span className="text-sm text-white/70">
+                <span className="text-sm text-white/80 font-medium">
                   {isReviewScreen ? "Review" : `${currentQuestion + 1} of ${totalQuestions}`}
                 </span>
                 <div className="w-24 sm:w-32">
                   <Progress value={calculateProgress()} className="h-1.5 bg-white/20" />
                 </div>
+                <Button 
+                  variant="ghost" 
+                  onClick={saveProgress}
+                  className="text-white hover:text-emerald-200 hover:bg-white/10 px-3 py-2"
+                >
+                  <Save className="mr-2 h-4 w-4" />
+                  Save
+                </Button>
               </>
             )}
           </div>
