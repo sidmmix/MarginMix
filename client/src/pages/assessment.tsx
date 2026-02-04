@@ -536,10 +536,16 @@ export default function Assessment() {
   }, []);
 
   // Auto-focus input fields after transition
+  // Q1-Q4 (indices 0-3): text/email inputs - auto-focus enabled
+  // Q5-Q22 (indices 4-21): multiple choice options - NO auto-focus (prevents keyboard on mobile)
+  // Q23 (index 22): textarea - auto-focus enabled
   useEffect(() => {
     if (currentQuestion >= 0 && currentQuestion < totalQuestions) {
       const question = questions[currentQuestion];
-      if (question.type === "text" || question.type === "email" || question.type === "textarea") {
+      // Only auto-focus for Q1-Q4 (indices 0-3) and Q23 (index 22)
+      const shouldAutoFocus = currentQuestion <= 3 || currentQuestion === totalQuestions - 1;
+      
+      if (shouldAutoFocus && (question.type === "text" || question.type === "email" || question.type === "textarea")) {
         const timer = setTimeout(() => {
           const input = document.querySelector(`input[name="${question.id}"], textarea[name="${question.id}"]`) as HTMLElement;
           if (input) {
@@ -895,7 +901,6 @@ export default function Assessment() {
                               {...field}
                               type={question.type}
                               placeholder={question.placeholder}
-                              autoFocus
                               key={`input-${question.id}-${isActive}`}
                               className="text-base sm:text-xl py-4 sm:py-6 px-4 sm:px-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/50 focus:border-white focus:bg-white/20 rounded-xl"
                             />
@@ -914,7 +919,6 @@ export default function Assessment() {
                             <Textarea
                               {...field}
                               placeholder={question.placeholder}
-                              autoFocus
                               key={`textarea-${question.id}-${isActive}`}
                               className="text-base sm:text-lg py-3 sm:py-4 px-4 sm:px-6 min-h-[120px] sm:min-h-[150px] bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/50 focus:border-white focus:bg-white/20 rounded-xl"
                             />
@@ -1161,24 +1165,34 @@ export default function Assessment() {
 
       {/* Navigation buttons - rendered after content to be on top */}
       {!isIntro && !isReviewScreen && (
-        <div className="fixed bottom-4 sm:bottom-8 left-0 right-0 z-[100] flex justify-center gap-3 sm:gap-4 px-4 sm:px-6" style={{ pointerEvents: 'auto' }}>
-          <Button
-            variant="ghost"
-            onClick={handleBack}
-            disabled={currentQuestion <= 0}
-            className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
-          >
-            <ArrowUp className="mr-1 sm:mr-2 h-4 w-4" />
-            <span className="hidden sm:inline">Back</span>
-            <span className="sm:hidden">Back</span>
-          </Button>
-          <Button
-            onClick={handleNext}
-            className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
-          >
-            {currentQuestion === totalQuestions - 1 ? "Review" : "Continue"}
-            <ArrowDown className="ml-1 sm:ml-2 h-4 w-4" />
-          </Button>
+        <div className="fixed bottom-4 sm:bottom-8 left-0 right-0 z-[100] flex flex-col items-center gap-2 px-4 sm:px-6" style={{ pointerEvents: 'auto' }}>
+          {/* Swipe hint for mobile - show on first few questions */}
+          {currentQuestion >= 0 && currentQuestion <= 2 && (
+            <div className="sm:hidden flex items-center gap-2 text-white/60 text-xs mb-1 animate-pulse">
+              <ChevronDown className="h-3 w-3 rotate-180" />
+              <span>Swipe up to continue</span>
+              <ChevronDown className="h-3 w-3 rotate-180" />
+            </div>
+          )}
+          <div className="flex justify-center gap-3 sm:gap-4">
+            <Button
+              variant="ghost"
+              onClick={handleBack}
+              disabled={currentQuestion <= 0}
+              className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+            >
+              <ArrowUp className="mr-1 sm:mr-2 h-4 w-4" />
+              <span className="hidden sm:inline">Back</span>
+              <span className="sm:hidden">Back</span>
+            </Button>
+            <Button
+              onClick={handleNext}
+              className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+            >
+              {currentQuestion === totalQuestions - 1 ? "Review" : "Continue"}
+              <ArrowDown className="ml-1 sm:ml-2 h-4 w-4" />
+            </Button>
+          </div>
         </div>
       )}
 
