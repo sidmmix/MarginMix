@@ -934,6 +934,15 @@ export default function Assessment() {
                   <Save className="mr-2 h-4 w-4" />
                   Save
                 </Button>
+                <Link href="/">
+                  <Button 
+                    variant="ghost" 
+                    className="text-white hover:text-emerald-200 hover:bg-white/10 px-3 py-2"
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Home
+                  </Button>
+                </Link>
               </>
             )}
           </div>
