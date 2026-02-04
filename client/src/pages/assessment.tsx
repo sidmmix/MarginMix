@@ -759,148 +759,144 @@ export default function Assessment() {
     );
   };
 
-  const renderIntro = () => (
-    <div
-      className={`absolute inset-0 transition-all duration-500 ease-out ${
-        isIntro 
-          ? "opacity-100 translate-y-0 z-20" 
-          : "opacity-0 -translate-y-full z-10"
-      }`}
-    >
-      <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-6 py-12">
-        <div className="max-w-2xl mx-auto text-center text-white">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4">Margin Risk Assessment</h1>
-          <p className="text-xl sm:text-2xl text-emerald-100 mb-8 italic" style={{ fontFamily: 'Georgia, serif' }}>
-            Margin Risk Clarity
-          </p>
-          
-          <p className="text-lg text-emerald-50 mb-10 leading-relaxed max-w-xl mx-auto">
-            You're about to assess margin risk before it gets priced into a decision.
-            This assessment helps agency leaders evaluate whether a client engagement 
-            is priced in line with its true delivery complexity.
-          </p>
-          
-          <div className="flex flex-wrap justify-center gap-6 mb-12 text-emerald-100">
-            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-              <Check className="h-5 w-5" />
-              <span>23 questions</span>
+  const renderIntro = () => {
+    if (!isIntro) return null;
+    
+    return (
+      <div className="absolute inset-0 z-30">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-6 py-12">
+          <div className="max-w-2xl mx-auto text-center text-white">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4">Margin Risk Assessment</h1>
+            <p className="text-xl sm:text-2xl text-emerald-100 mb-8 italic" style={{ fontFamily: 'Georgia, serif' }}>
+              Margin Risk Clarity
+            </p>
+            
+            <p className="text-lg text-emerald-50 mb-10 leading-relaxed max-w-xl mx-auto">
+              You're about to assess margin risk before it gets priced into a decision.
+              This assessment helps agency leaders evaluate whether a client engagement 
+              is priced in line with its true delivery complexity.
+            </p>
+            
+            <div className="flex flex-wrap justify-center gap-6 mb-12 text-emerald-100">
+              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
+                <Check className="h-5 w-5" />
+                <span>23 questions</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
+                <Check className="h-5 w-5" />
+                <span>~5 minutes</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
+                <Check className="h-5 w-5" />
+                <span>GDPR & CCPA compliant</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-              <Check className="h-5 w-5" />
-              <span>~5 minutes</span>
-            </div>
-            <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-              <Check className="h-5 w-5" />
-              <span>GDPR & CCPA compliant</span>
-            </div>
+            
+            <Button
+              onClick={handleNext}
+              size="lg"
+              className="bg-white text-emerald-700 hover:bg-emerald-50 px-12 py-7 text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
+            >
+              Start Assessment
+              <ArrowDown className="ml-3 h-6 w-6" />
+            </Button>
+            
+            <p className="mt-10 text-sm text-emerald-200/80">
+              No financial data, timesheets, or individual performance information is required.
+            </p>
           </div>
           
-          <Button
-            onClick={handleNext}
-            size="lg"
-            className="bg-white text-emerald-700 hover:bg-emerald-50 px-12 py-7 text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
-          >
-            Start Assessment
-            <ArrowDown className="ml-3 h-6 w-6" />
-          </Button>
-          
-          <p className="mt-10 text-sm text-emerald-200/80">
-            No financial data, timesheets, or individual performance information is required.
-          </p>
-        </div>
-        
-        <div className="absolute bottom-8 animate-bounce">
-          <ChevronDown className="h-8 w-8 text-emerald-200/60" />
+          <div className="absolute bottom-8 animate-bounce">
+            <ChevronDown className="h-8 w-8 text-emerald-200/60" />
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
-  const renderReview = () => (
-    <div
-      className={`absolute inset-0 transition-all duration-500 ease-out overflow-y-auto ${
-        isReviewScreen 
-          ? "opacity-100 translate-y-0 z-20" 
-          : "opacity-0 translate-y-full z-10"
-      }`}
-    >
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-20 px-6">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">Review Your Answers</h2>
-          <p className="text-gray-400 mb-8">Click any answer to edit it.</p>
-          
-          <div className="space-y-3 mb-8">
-            {questions.map((question, index) => {
-              const value = watchedValues[question.id];
-              const displayValue = question.options?.find(o => o.value === value)?.label || value || "Not answered";
-              const gradient = getSectionGradient(question.sectionColor);
-              
-              return (
-                <button
-                  key={question.id}
-                  onClick={() => scrollToQuestion(index)}
-                  className="w-full text-left p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <span className="text-sm text-gray-500">
-                        Q{question.number}. {question.title}
-                      </span>
-                      <p className={`mt-1 font-medium bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
-                        {displayValue}
-                      </p>
+  const renderReview = () => {
+    if (!isReviewScreen) return null;
+    
+    return (
+      <div className="absolute inset-0 z-30 overflow-y-auto">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-20 px-6">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">Review Your Answers</h2>
+            <p className="text-gray-400 mb-8">Click any answer to edit it.</p>
+            
+            <div className="space-y-3 mb-8">
+              {questions.map((question, index) => {
+                const value = watchedValues[question.id];
+                const displayValue = question.options?.find(o => o.value === value)?.label || value || "Not answered";
+                const gradient = getSectionGradient(question.sectionColor);
+                
+                return (
+                  <button
+                    key={question.id}
+                    onClick={() => scrollToQuestion(index)}
+                    className="w-full text-left p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 transition-all group"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <span className="text-sm text-gray-500">
+                          Q{question.number}. {question.title}
+                        </span>
+                        <p className={`mt-1 font-medium bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
+                          {displayValue}
+                        </p>
+                      </div>
+                      <ArrowUp className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors flex-shrink-0 mt-1" />
                     </div>
-                    <ArrowUp className="h-4 w-4 text-gray-600 group-hover:text-white transition-colors flex-shrink-0 mt-1" />
-                  </div>
-                </button>
-              );
-            })}
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* GDPR Consent */}
+            <div className="flex items-start gap-3 p-5 bg-white/5 rounded-xl border border-white/10 mb-6">
+              <input
+                type="checkbox"
+                id="consent"
+                checked={consentChecked}
+                onChange={(e) => setConsentChecked(e.target.checked)}
+                className="mt-1 h-5 w-5 text-emerald-500 border-gray-600 rounded focus:ring-emerald-500 bg-transparent"
+              />
+              <label htmlFor="consent" className="text-sm text-gray-300 cursor-pointer leading-relaxed">
+                I consent to MarginMix processing my professional and company information to deliver this assessment and related communications, in accordance with GDPR and CCPA.
+              </label>
+            </div>
+            
+            {/* Submit button */}
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)}>
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-7 text-lg shadow-lg rounded-xl"
+                  disabled={isSubmitting || !consentChecked}
+                >
+                  {isSubmitting ? (
+                    "Submitting..."
+                  ) : (
+                    <>
+                      Submit Assessment
+                      <Send className="ml-2 h-5 w-5" />
+                    </>
+                  )}
+                </Button>
+              </form>
+            </Form>
+            
+            <p className="text-sm text-gray-500 text-center mt-4">
+              Your margin risk assessment & decision memo will be delivered to your email & a copy of the files will be auto downloaded on this device.
+            </p>
           </div>
           
-          {/* GDPR Consent */}
-          <div className="flex items-start gap-3 p-5 bg-white/5 rounded-xl border border-white/10 mb-6">
-            <input
-              type="checkbox"
-              id="consent"
-              checked={consentChecked}
-              onChange={(e) => setConsentChecked(e.target.checked)}
-              className="mt-1 h-5 w-5 text-emerald-500 border-gray-600 rounded focus:ring-emerald-500 bg-transparent"
-            />
-            <label htmlFor="consent" className="text-sm text-gray-300 cursor-pointer leading-relaxed">
-              I consent to MarginMix processing my professional and company information to deliver this assessment and related communications, in accordance with GDPR and CCPA.
-            </label>
-          </div>
-          
-          {/* Submit button */}
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-7 text-lg shadow-lg rounded-xl"
-                disabled={isSubmitting || !consentChecked}
-              >
-                {isSubmitting ? (
-                  "Submitting..."
-                ) : (
-                  <>
-                    Submit Assessment
-                    <Send className="ml-2 h-5 w-5" />
-                  </>
-                )}
-              </Button>
-            </form>
-          </Form>
-          
-          <p className="text-sm text-gray-500 text-center mt-4">
-            Your margin risk assessment & decision memo will be delivered to your email & a copy of the files will be auto downloaded on this device.
-          </p>
+          <Footer />
         </div>
-        
-        <Footer />
       </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
