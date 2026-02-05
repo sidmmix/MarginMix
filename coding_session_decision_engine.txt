@@ -1,0 +1,246 @@
+================================================================================
+MARGIN MIX - DECISION ENGINE & AI NARRATIVES CODING SESSION
+January 28 - February 2, 2026
+================================================================================
+
+SUMMARY OF CHANGES
+------------------
+This session implemented the deterministic decision engine for margin risk 
+assessment and added GPT-4.1 for narrative generation in PDF outputs.
+
+================================================================================
+KEY COMMITS (DECISION ENGINE & AI)
+================================================================================
+
+--------------------------------------------------------------------------------
+COMMIT: 0de908c
+DATE: 2026-02-01
+MESSAGE: Implement core decision engine logic for risk assessment
+FILES ADDED:
+  - server/decision-engine/contradictionDetector.ts
+  - server/decision-engine/decisionTable.ts
+  - server/decision-engine/dimensionMapper.ts
+  - server/decision-engine/effortAllocator.ts
+  - server/decision-engine/engine.ts
+  - server/decision-engine/questionMapper.ts
+  - server/decision-engine/types.ts
+
+--------------------------------------------------------------------------------
+COMMIT: 174fb30
+DATE: 2026-02-01
+MESSAGE: Update decision engine to incorporate new decision context fields
+FILES MODIFIED:
+  - server/decision-engine/engine.ts
+  - server/decision-engine/index.ts
+  - server/routes.ts
+
+--------------------------------------------------------------------------------
+COMMIT: a860916
+DATE: 2026-02-01
+MESSAGE: Adjust decision engine to prioritize low confidence overrides
+FILES MODIFIED:
+  - server/decision-engine/decisionTable.ts
+  - server/decision-engine/index.ts
+
+--------------------------------------------------------------------------------
+COMMIT: 8104578
+DATE: 2026-02-01
+MESSAGE: Update decision engine to use pure rule-based logic for margin risk assessment
+FILES MODIFIED:
+  - replit.md
+
+--------------------------------------------------------------------------------
+COMMIT: 570d260
+DATE: 2026-02-01
+MESSAGE: Update decision memo and assessment output generation logic
+FILES MODIFIED:
+  - server/narrative-generator.ts
+  - server/pdf-renderer.ts
+
+--------------------------------------------------------------------------------
+COMMIT: 83d0665
+DATE: 2026-02-01
+MESSAGE: Update PDF templates to include pricing and risk information
+
+--------------------------------------------------------------------------------
+COMMIT: ee1b803
+DATE: 2026-02-01
+MESSAGE: Add logo to all generated PDF documents
+FILES ADDED:
+  - server/assets/marginmix-logo.png
+FILES MODIFIED:
+  - server/pdf-renderer.ts
+
+--------------------------------------------------------------------------------
+COMMIT: 25907f5
+DATE: 2026-01-30
+MESSAGE: Add ability to download assessment PDFs and send them via email
+FILES ADDED:
+  - server/narrative-generator.ts
+  - server/pdf-renderer.ts
+FILES MODIFIED:
+  - client/src/pages/assessment.tsx
+  - server/resend.ts
+  - server/routes.ts
+
+--------------------------------------------------------------------------------
+COMMIT: 17e204e
+DATE: 2026-01-30
+MESSAGE: Add a deterministic decision engine for margin risk assessment
+FILES MODIFIED:
+  - server/decision-engine/decisionObject.ts
+
+--------------------------------------------------------------------------------
+COMMIT: 7168ad9
+DATE: 2026-01-30
+MESSAGE: Integrate deterministic decision engine and update email notifications
+FILES MODIFIED:
+  - server/decision-engine/decisionObject.ts
+  - server/decision-engine/index.ts
+  - server/resend.ts
+  - server/routes.ts
+
+--------------------------------------------------------------------------------
+COMMIT: a4668bb
+DATE: 2026-01-30
+MESSAGE: Implement deterministic decision engine for margin risk assessment
+FILES ADDED:
+  - Decision engine core files
+
+================================================================================
+DECISION ENGINE ARCHITECTURE (7-Layer System)
+================================================================================
+
+Layer 1 - types.ts: Canonical Type Definitions
+  - Level: "low" | "medium" | "high"
+  - Confidence: "positive" | "neutral" | "negative"
+  - Verdict: 5 possible outcomes (Structurally Safe → Do Not Proceed Without Repricing)
+  - Signals: 15 atomic indicators derived from assessment questions
+
+Layer 2 - questionMapper.ts: Question → Signal Extraction
+  - Maps Q6-Q23 responses to atomic signals (Q1-Q5 are context only)
+  - Pure mapping functions, no scoring
+
+Layer 3 - dimensionMapper.ts: Signal → Dimension Promotion
+  - If-then rules ONLY (no numeric calculations)
+  - Dimensions: workforceIntensity, coordinationEntropy, commercialExposure, 
+    volatilityControl, confidenceSignal, measurementMaturity
+
+Layer 4 - decisionTable.ts: Verdict Logic with Strict Precedence
+  - OVERRIDES (highest priority): 
+    - Low Confidence → Do Not Proceed
+    - Structural Overload → Fragile
+  - PRIMARY: 
+    - High Commercial → Price Sensitive
+    - High Workforce → Execution Heavy
+  - DEFAULT: Structurally Safe
+
+Layer 5 - effortAllocator.ts: Verdict → Effort Allocation
+  - Derived AFTER verdict is determined (never influences verdict)
+  - Senior/Mid/Junior percentages based on verdict
+
+Layer 6 - contradictionDetector.ts: Soft Flags
+  - Detects inconsistent inputs:
+    - Confidence mismatch
+    - Effort mismatch
+    - Scope contradiction
+
+Layer 7 - engine.ts: Orchestrator
+  - Runs all layers in sequence
+  - Returns canonical {signals, dimensions, verdict, flags, effortAllocation}
+
+================================================================================
+AI NARRATIVE GENERATION (GPT-4.1)
+================================================================================
+
+File: server/narrative-generator.ts
+
+Purpose:
+  - GPT-4.1 generates NARRATIVE EXPLANATIONS ONLY
+  - It CANNOT recalculate scores, change bands, or override verdicts
+  - Fallback narrative provided if GPT fails
+
+Narratives Generated:
+  1. Decision Memo narrative - explains the verdict in business terms
+  2. Assessment Output narrative - detailed breakdown of risk dimensions
+  
+Key Principle:
+  - All verdict logic is deterministic (no AI in decision making)
+  - AI only explains/narrates the pre-determined results
+
+================================================================================
+PDF GENERATION SYSTEM
+================================================================================
+
+File: server/pdf-renderer.ts
+
+Two PDF Documents Generated:
+1. Decision Memo
+   - Decision Context (with pricing structure)
+   - Margin Risk Verdict
+   - Primary Drivers of Risk
+   - Pricing & Governance Implications
+   - What Would Need to Change
+   - Recommendation
+
+2. Assessment Output
+   - Executive Snapshot
+   - Risk Dimension Summary (WI/CE/Commercial/Volatility)
+   - Effort Bands & Allocation
+   - Structural Risk Signals
+   - Override Conditions
+   - What This Assessment Measures/Does Not Measure
+
+Delivery:
+  - PDFs auto-download on submission
+  - Sent via email to sid@marginmix.ai and respondent as attachments
+  - Followed by feedback request email
+
+================================================================================
+KEY DESIGN PRINCIPLES
+================================================================================
+
+1. PURE RULE-BASED DECISION ENGINE
+   - NO scoring math in verdict logic
+   - NO machine learning
+   - NO AI inference for decisions
+   - Numeric scores retained for PDF DISPLAY ONLY
+
+2. AI FOR NARRATIVES ONLY
+   - GPT-4.1 explains results
+   - Cannot modify or override verdicts
+   - Graceful fallback if API fails
+
+3. IMMUTABLE DECISION OBJECT
+   - Canonical output with readonly properties
+   - Contains all computed values for rendering
+   - System of record for the assessment
+
+================================================================================
+FILES CREATED/MODIFIED
+================================================================================
+
+NEW FILES:
+  server/decision-engine/
+    ├── types.ts
+    ├── questionMapper.ts
+    ├── dimensionMapper.ts
+    ├── decisionTable.ts
+    ├── effortAllocator.ts
+    ├── contradictionDetector.ts
+    ├── engine.ts
+    ├── decisionObject.ts
+    └── index.ts
+  server/narrative-generator.ts
+  server/pdf-renderer.ts
+  server/assets/marginmix-logo.png
+
+MODIFIED FILES:
+  server/routes.ts - Added PDF generation and email endpoints
+  server/resend.ts - Added PDF attachment support
+  client/src/pages/assessment.tsx - Added PDF download triggers
+  replit.md - Documented architecture
+
+================================================================================
+END OF EXPORT
+================================================================================
