@@ -45,7 +45,12 @@ export function Header({ variant = "transparent" }: HeaderProps) {
   const isActive = (href: string) => location === href;
 
   const openCalendly = () => {
-    (window as any).Calendly?.initPopupWidget({url: 'https://calendly.com/sid-marginmix/30min'});
+    const calendlyUrl = 'https://calendly.com/sid-marginmix/30min';
+    if ((window as any).Calendly?.initPopupWidget) {
+      (window as any).Calendly.initPopupWidget({url: calendlyUrl});
+    } else {
+      window.open(calendlyUrl, '_blank');
+    }
   };
 
   const bgClass = variant === "solid" 

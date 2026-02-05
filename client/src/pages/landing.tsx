@@ -37,7 +37,7 @@ export default function Landing() {
               size="lg" 
               className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
               data-testid="button-cta-hero"
-              onClick={() => (window as any).Calendly?.initPopupWidget({url: 'https://calendly.com/sid-marginmix/30min'})}
+              onClick={() => { const url = 'https://calendly.com/sid-marginmix/30min'; if ((window as any).Calendly?.initPopupWidget) { (window as any).Calendly.initPopupWidget({url}); } else { window.open(url, '_blank'); } }}
             >
               Book Demo
               <ArrowRight className="ml-2 h-5 w-5" />
@@ -304,7 +304,7 @@ export default function Landing() {
               size="lg" 
               className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
               data-testid="button-cta-footer"
-              onClick={() => (window as any).Calendly?.initPopupWidget({url: 'https://calendly.com/sid-marginmix/30min'})}
+              onClick={() => { const url = 'https://calendly.com/sid-marginmix/30min'; if ((window as any).Calendly?.initPopupWidget) { (window as any).Calendly.initPopupWidget({url}); } else { window.open(url, '_blank'); } }}
             >
               Book Demo
               <ArrowRight className="ml-2 h-5 w-5" />

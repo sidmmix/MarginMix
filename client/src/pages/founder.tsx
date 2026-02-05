@@ -295,7 +295,7 @@ export default function Founder() {
           <Button 
             size="default" 
             className="h-12 text-base px-6 bg-white hover:bg-gray-100 text-emerald-700 rounded-xl font-semibold shadow-lg"
-            onClick={() => (window as any).Calendly?.initPopupWidget({url: 'https://calendly.com/sid-marginmix/30min'})}
+            onClick={() => { const url = 'https://calendly.com/sid-marginmix/30min'; if ((window as any).Calendly?.initPopupWidget) { (window as any).Calendly.initPopupWidget({url}); } else { window.open(url, '_blank'); } }}
           >
             Book Demo
             <ArrowRight className="ml-2 h-5 w-5" />
