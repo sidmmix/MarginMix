@@ -1,29 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, User, LogOut, AlertTriangle, CheckCircle, XCircle, Users, Building2, Briefcase, Target } from "lucide-react";
+import { ArrowRight, AlertTriangle, CheckCircle, XCircle, Users, Building2, Briefcase, Target } from "lucide-react";
 import { Link } from "wouter";
-import { useAuth } from "@/hooks/useAuth";
-import { useToast } from "@/hooks/use-toast";
+import { Header } from "@/components/header";
 
 export default function Landing() {
-  const { user, isAuthenticated, logout, isLoggingOut } = useAuth();
-  const { toast } = useToast();
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      toast({
-        title: "Logged out successfully",
-        description: "You have been logged out of your account.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to log out. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-100 dark:from-gray-900 dark:via-gray-800 dark:to-emerald-900 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -32,51 +12,7 @@ export default function Landing() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-emerald-100/20 to-teal-100/20 dark:from-emerald-800/10 dark:to-teal-800/10 rounded-full blur-3xl"></div>
       </div>
 
-      <nav className="border-b bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <div className="flex-shrink-0 flex flex-col">
-                <h1 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">MarginMix</h1>
-                <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link href="/founder" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-[10px] sm:text-sm font-medium cursor-pointer whitespace-nowrap">Why Exists</span>
-              </Link>
-              <Link href="/why-choose" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-[10px] sm:text-sm font-medium cursor-pointer whitespace-nowrap">Why Choose</span>
-              </Link>
-              {isAuthenticated && user ? (
-                <div className="flex items-center space-x-2 sm:space-x-3">
-                  <div className="hidden sm:flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
-                    <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-gray-900 dark:text-white" data-testid="text-username">
-                        {(user as any).firstName} {(user as any).lastName}
-                      </span>
-                      <span className="text-xs text-gray-600 dark:text-gray-400" data-testid="text-email">
-                        {(user as any).email}
-                      </span>
-                    </div>
-                  </div>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    onClick={handleLogout}
-                    disabled={isLoggingOut}
-                    data-testid="button-logout"
-                  >
-                    <LogOut className="h-4 w-4 sm:mr-1" />
-                    <span className="hidden sm:inline">{isLoggingOut ? "Logging out..." : "Logout"}</span>
-                  </Button>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-16 pb-20">

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft, Shield, Gauge, Target, Lightbulb, Scale, Zap } from "lucide-react";
-import { Link } from "wouter";
+import { ArrowRight, Shield, Gauge, Target, Lightbulb, Scale, Zap } from "lucide-react";
 import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 
 export default function WhyChoose() {
   return (
@@ -12,34 +12,7 @@ export default function WhyChoose() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-emerald-100/20 to-teal-100/20 dark:from-emerald-800/10 dark:to-teal-800/10 rounded-full blur-3xl"></div>
       </div>
 
-      <nav className="border-b bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <div className="flex-shrink-0 flex flex-col cursor-pointer">
-                  <h1 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">MarginMix</h1>
-                  <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
-                </div>
-              </Link>
-            </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link href="/founder" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-[10px] sm:text-sm font-medium cursor-pointer whitespace-nowrap">Why Exists</span>
-              </Link>
-              <Link href="/why-choose" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-[10px] sm:text-sm font-medium cursor-pointer whitespace-nowrap border-b-2 border-emerald-600">Why Choose</span>
-              </Link>
-              <Link href="/" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Back to Home</span>
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       <section className="relative py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

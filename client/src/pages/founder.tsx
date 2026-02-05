@@ -1,11 +1,11 @@
 import { useEffect } from "react";
-import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight, AlertTriangle, Eye, Target, Lightbulb, UserCheck, Building2 } from "lucide-react";
+import { ArrowRight, AlertTriangle, Eye, Target, Lightbulb, UserCheck, Building2 } from "lucide-react";
 import founderPhoto from "@assets/1586921422945_1768559339757.jpeg";
 import advisorPhoto from "@assets/Screenshot_2026-01-21-08-12-37-88_254de13a4bc8758c9908fff1f73e_1768955128744.jpg";
 import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 
 export default function Founder() {
   useEffect(() => {
@@ -14,34 +14,7 @@ export default function Founder() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link href="/" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-              <div className="flex flex-col cursor-pointer">
-                <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                  MarginMix
-                </span>
-                <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
-              </div>
-            </Link>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link href="/founder" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-[10px] sm:text-sm font-medium cursor-pointer whitespace-nowrap border-b-2 border-emerald-600">Why Exists</span>
-              </Link>
-              <Link href="/why-choose" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-[10px] sm:text-sm font-medium cursor-pointer whitespace-nowrap">Why Choose</span>
-              </Link>
-              <Link href="/" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Back to Home</span>
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Header variant="solid" />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white py-12 sm:py-20">
