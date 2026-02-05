@@ -44,12 +44,16 @@ export function Header({ variant = "transparent" }: HeaderProps) {
 
   const isActive = (href: string) => location === href;
 
+  const openCalendly = () => {
+    (window as any).Calendly?.initPopupWidget({url: 'https://calendly.com/sid-marginmix/30min'});
+  };
+
   const bgClass = variant === "solid" 
     ? "bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700"
     : "border-b bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 dark:border-gray-800";
 
   return (
-    <nav className={bgClass}>
+    <nav className={`${bgClass} sticky top-0 z-50`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
@@ -70,6 +74,13 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 </span>
               </Link>
             ))}
+            <Button 
+              size="sm" 
+              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
+              onClick={openCalendly}
+            >
+              Book Demo
+            </Button>
             {isAuthenticated && user && (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
@@ -98,7 +109,14 @@ export function Header({ variant = "transparent" }: HeaderProps) {
           </div>
 
           {/* Mobile Hamburger Button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center space-x-2">
+            <Button 
+              size="sm" 
+              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs px-3"
+              onClick={openCalendly}
+            >
+              Book Demo
+            </Button>
             <Button
               variant="ghost"
               size="sm"
