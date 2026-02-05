@@ -16,6 +16,9 @@ export default function Founder() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Header variant="solid" />
 
+      {/* Spacer for fixed header */}
+      <div className="h-16"></div>
+
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white py-12 sm:py-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
