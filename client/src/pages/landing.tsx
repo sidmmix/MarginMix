@@ -94,16 +94,15 @@ export default function Landing() {
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               Works across all commercial models: Time & Materials · Fixed Price · Outcome-based · Hybrid engagements
             </p>
-            <Link href="/assessment" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-              <Button 
-                size="lg" 
-                className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
-                data-testid="button-cta-hero"
-              >
-                Run a Margin Risk Assessment
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
+              data-testid="button-cta-hero"
+              onClick={() => (window as any).Calendly?.initPopupWidget({url: 'https://calendly.com/sid-marginmix/30min'})}
+            >
+              Book Demo
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
             <p className="mt-6 text-xl font-bold text-gray-900 dark:text-white">
               MarginMix is a decision infrastructure for{" "}
               <span className="text-emerald-600 dark:text-emerald-400">pricing risk</span>,{" "}
@@ -362,16 +361,15 @@ export default function Landing() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
               Assess Margin risk & Price work appropriately!
             </h2>
-            <Link href="/assessment" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-              <Button 
-                size="lg" 
-                className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
-                data-testid="button-cta-footer"
-              >
-                Run a Margin Risk Assessment
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
+              data-testid="button-cta-footer"
+              onClick={() => (window as any).Calendly?.initPopupWidget({url: 'https://calendly.com/sid-marginmix/30min'})}
+            >
+              Book Demo
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
             <p className="text-emerald-100 mt-4 text-sm">
               Early access assessments are reviewed for fit.
             </p>

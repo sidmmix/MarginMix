@@ -316,15 +316,14 @@ export default function Founder() {
       {/* CTA Section */}
       <section className="py-12 sm:py-16 bg-emerald-600">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <Link href="/assessment">
-            <Button 
-              size="default" 
-              className="h-12 text-base px-6 bg-white hover:bg-gray-100 text-emerald-700 rounded-xl font-semibold shadow-lg"
-            >
-              Run a Margin Risk Assessment
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </Link>
+          <Button 
+            size="default" 
+            className="h-12 text-base px-6 bg-white hover:bg-gray-100 text-emerald-700 rounded-xl font-semibold shadow-lg"
+            onClick={() => (window as any).Calendly?.initPopupWidget({url: 'https://calendly.com/sid-marginmix/30min'})}
+          >
+            Book Demo
+            <ArrowRight className="ml-2 h-5 w-5" />
+          </Button>
         </div>
       </section>
 
