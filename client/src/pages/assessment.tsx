@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Link, useSearch } from "wouter";
-import { ArrowDown, ArrowUp, ArrowLeft, Send, Check, ChevronDown, Save, Home, Shield, ShieldCheck, ShieldAlert, AlertTriangle, TrendingUp, BarChart3, Users, Zap, Target, AlertCircle, Info, Download, ChevronRight } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowLeft, Send, Check, ChevronDown, Save, Home, Shield, ShieldCheck, ShieldAlert, AlertTriangle, TrendingUp, BarChart3, Users, Zap, Target, AlertCircle, Info, Download, ChevronRight, Mail, Building2, Briefcase } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Footer } from "@/components/footer";
@@ -482,6 +482,7 @@ export default function Assessment() {
   const [decisionResult, setDecisionResult] = useState<any>(null);
   const [showDecisionPage, setShowDecisionPage] = useState(false);
   const [storedPdfData, setStoredPdfData] = useState<any>(null);
+  const [submittedUserInfo, setSubmittedUserInfo] = useState<{fullName: string; workEmail: string; roleTitle: string; organisationName: string; organisationSize: string} | null>(null);
   const [consentChecked, setConsentChecked] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -842,6 +843,13 @@ export default function Assessment() {
         }
         
         setDecisionResult(result.decisionObject);
+        setSubmittedUserInfo({
+          fullName: data.fullName,
+          workEmail: data.workEmail,
+          roleTitle: data.roleTitle,
+          organisationName: data.organisationName,
+          organisationSize: data.organisationSize,
+        });
         setShowDecisionPage(true);
         setIsSubmitting(false);
         
@@ -1331,6 +1339,63 @@ export default function Assessment() {
                 </div>
               </div>
             </div>
+
+            {/* Assessment Context */}
+            {submittedUserInfo && (
+              <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                  <Users className="h-5 w-5 text-emerald-400" />
+                  Assessment Context
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                      <Users className="h-4 w-4 text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Name</p>
+                      <p className="text-sm text-white font-medium">{submittedUserInfo.fullName}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                      <Mail className="h-4 w-4 text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Email</p>
+                      <p className="text-sm text-white font-medium">{submittedUserInfo.workEmail}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                      <Briefcase className="h-4 w-4 text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Role / Title</p>
+                      <p className="text-sm text-white font-medium">{submittedUserInfo.roleTitle}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                      <Building2 className="h-4 w-4 text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Organisation</p>
+                      <p className="text-sm text-white font-medium">{submittedUserInfo.organisationName}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 sm:col-span-2">
+                    <div className="h-8 w-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                      <BarChart3 className="h-4 w-4 text-emerald-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Organisation Size</p>
+                      <p className="text-sm text-white font-medium">{submittedUserInfo.organisationSize} employees</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Section 2 - Risk Dimension Summary */}
             <div className="mb-6">
