@@ -1588,8 +1588,7 @@ export default function Assessment() {
               )}
               <Link href="/" className="flex-1">
                 <Button
-                  variant="outline"
-                  className="w-full border-white/20 text-white hover:bg-white/10 py-6 text-base rounded-xl"
+                  className="w-full border border-white/20 bg-transparent text-white hover:bg-white/10 py-6 text-base rounded-xl"
                 >
                   <Home className="mr-2 h-5 w-5" />
                   Return to Home
