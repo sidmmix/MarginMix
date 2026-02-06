@@ -1652,45 +1652,48 @@ export default function Assessment() {
             )}
           </div>
         </div>
-        {!isIntro && !isReviewScreen && !showDecisionPage && currentQuestion >= 0 && (
-          <div className="border-t border-white/10 bg-black/20">
-            <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2 flex items-center gap-1 sm:gap-1.5 justify-center flex-wrap">
-              {activeQuestions.map((q, idx) => {
-                const value = watchedValues[q.id] || "";
-                const isAnswered = value !== "";
-                const isCurrent = currentQuestion === idx;
-                const isNeutral = neutralFields.includes(q.id);
-                const riskMapping = questionRiskMapping[q.id];
-                const risk = riskMapping && value ? riskMapping[value] : null;
-                
-                let cellColor = "bg-white/20 border-white/10";
-                if (isAnswered) {
-                  if (isNeutral || !risk) {
-                    cellColor = "bg-white/50 border-white/30";
-                  } else if (risk === "low") {
-                    cellColor = "bg-emerald-500 border-emerald-400";
-                  } else if (risk === "medium") {
-                    cellColor = "bg-amber-400 border-amber-300";
-                  } else {
-                    cellColor = "bg-red-500 border-red-400";
-                  }
-                }
-                
-                return (
-                  <button
-                    key={q.id}
-                    onClick={() => scrollToQuestion(idx)}
-                    className={`flex-shrink-0 w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm border transition-all duration-300 ${cellColor} ${
-                      isCurrent ? "ring-2 ring-white scale-125 shadow-lg shadow-white/20" : ""
-                    } ${!isAnswered && !isCurrent ? "opacity-50" : "opacity-100"}`}
-                    title={`Q${q.number}: ${q.title}`}
-                  />
-                );
-              })}
-            </div>
-          </div>
-        )}
+        
       </div>
+
+      {/* Vertical heatmap - fixed on right side */}
+      {!isIntro && !isReviewScreen && !showDecisionPage && currentQuestion >= 0 && (
+        <div className="fixed right-2 sm:right-4 top-1/2 -translate-y-1/2 z-[100] flex flex-col items-center gap-[3px] sm:gap-1 bg-black/30 backdrop-blur-sm rounded-full py-3 sm:py-4 px-1.5 sm:px-2 border border-white/10" style={{ pointerEvents: 'auto' }}>
+          {activeQuestions.map((q, idx) => {
+            const value = watchedValues[q.id] || "";
+            const isAnswered = value !== "";
+            const isCurrent = currentQuestion === idx;
+            const isNeutral = neutralFields.includes(q.id);
+            const riskMapping = questionRiskMapping[q.id];
+            const risk = riskMapping && value ? riskMapping[value] : null;
+
+            let cellColor = "bg-white/15 border-white/10";
+            if (isAnswered) {
+              if (isNeutral || !risk) {
+                cellColor = "bg-white/50 border-white/30";
+              } else if (risk === "low") {
+                cellColor = "bg-emerald-500 border-emerald-400";
+              } else if (risk === "medium") {
+                cellColor = "bg-amber-400 border-amber-300";
+              } else {
+                cellColor = "bg-red-500 border-red-400";
+              }
+            }
+
+            return (
+              <button
+                key={q.id}
+                onClick={() => scrollToQuestion(idx)}
+                className={`flex-shrink-0 rounded-full border transition-all duration-300 ${cellColor} ${
+                  isCurrent
+                    ? "w-3.5 h-3.5 sm:w-4 sm:h-4 ring-2 ring-white shadow-lg shadow-white/30"
+                    : "w-2.5 h-2.5 sm:w-3 sm:h-3"
+                } ${!isAnswered && !isCurrent ? "opacity-40" : "opacity-100"}`}
+                title={`Q${q.number}: ${q.title}`}
+              />
+            );
+          })}
+        </div>
+      )}
 
       {/* Navigation buttons - rendered after content to be on top */}
       {!isIntro && !isReviewScreen && !showDecisionPage && (
