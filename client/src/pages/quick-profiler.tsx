@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
-import { ArrowRight, ArrowDown, ArrowUp, Zap, AlertTriangle, ShieldCheck, ShieldAlert, Shield, ChevronRight } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { ArrowRight, ArrowDown, ArrowUp, ArrowLeft, Zap, AlertTriangle, ShieldCheck, ShieldAlert, Shield, ChevronRight, ChevronDown, Check, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Header } from "@/components/header";
-import { Footer } from "@/components/footer";
 
 const PROFILER_STORAGE_KEY = "marginmix_profiler_answers";
 
@@ -14,6 +13,8 @@ interface ProfilerQuestion {
   number: number;
   title: string;
   subtitle?: string;
+  section: string;
+  sectionColor: string;
   options: { value: string; label: string }[];
   riskMapping: Record<string, "low" | "medium" | "high">;
 }
@@ -24,6 +25,8 @@ const profilerQuestions: ProfilerQuestion[] = [
     fieldKey: "decisionEvaluating",
     number: 1,
     title: "What decision are you evaluating with this assessment?",
+    section: "Context",
+    sectionColor: "emerald",
     options: [
       { value: "new-client-win", label: "New client win / pitch acceptance" },
       { value: "renewal-extension", label: "Renewal / contract extension" },
@@ -46,6 +49,8 @@ const profilerQuestions: ProfilerQuestion[] = [
     fieldKey: "engagementClassification",
     number: 2,
     title: "How would you classify this engagement today?",
+    section: "Context",
+    sectionColor: "emerald",
     options: [
       { value: "new", label: "New (pre-kickoff / onboarding phase)" },
       { value: "ongoing-less-6", label: "Ongoing (in delivery for less than 6 months)" },
@@ -66,6 +71,8 @@ const profilerQuestions: ProfilerQuestion[] = [
     fieldKey: "clientVolatility",
     number: 3,
     title: "How would you rate client volatility?",
+    section: "Workforce Intensity",
+    sectionColor: "teal",
     options: [
       { value: "low", label: "Low (stable stakeholders, clear expectations)" },
       { value: "medium", label: "Medium" },
@@ -82,6 +89,8 @@ const profilerQuestions: ProfilerQuestion[] = [
     fieldKey: "seniorLeadershipInvolvement",
     number: 4,
     title: "What's the planned senior leadership involvement?",
+    section: "Workforce Intensity",
+    sectionColor: "teal",
     options: [
       { value: "minimal", label: "Minimal (oversight only)" },
       { value: "periodic", label: "Periodic (key moments)" },
@@ -100,6 +109,8 @@ const profilerQuestions: ProfilerQuestion[] = [
     fieldKey: "executionThinkingMix",
     number: 5,
     title: "What's the execution vs thinking mix?",
+    section: "Effort & Delivery",
+    sectionColor: "cyan",
     options: [
       { value: "execution-heavy", label: "Execution-heavy" },
       { value: "balanced", label: "Balanced" },
@@ -117,6 +128,8 @@ const profilerQuestions: ProfilerQuestion[] = [
     number: 6,
     title: "Delivery Confidence",
     subtitle: "How confident are you in the delivery model for this engagement? (executive gut-check)",
+    section: "Confidence Signal",
+    sectionColor: "amber",
     options: [
       { value: "high", label: "High confidence" },
       { value: "some_concerns", label: "Some concerns" },
@@ -185,7 +198,6 @@ function deriveDimensions(signals: ReturnType<typeof deriveSignals>): QuickDimen
     signals.seniorDependency === "medium" ? "medium" : "low";
 
   const coordinationEntropy: Level = "low" as Level;
-
   const commercialExposure: Level = "low" as Level;
 
   const volatilityControl: Level =
@@ -272,6 +284,13 @@ function getHeatmapGlow(risk: "low" | "medium" | "high"): string {
   return "shadow-emerald-500/40";
 }
 
+const sectionGradients: Record<string, string> = {
+  emerald: "from-emerald-600 via-emerald-500 to-teal-500",
+  teal: "from-teal-600 via-teal-500 to-cyan-500",
+  cyan: "from-cyan-600 via-cyan-500 to-sky-500",
+  amber: "from-amber-600 via-amber-500 to-orange-500",
+};
+
 export default function QuickProfiler() {
   const [currentQuestion, setCurrentQuestion] = useState(-1);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -293,7 +312,7 @@ export default function QuickProfiler() {
       setShowResult(true);
     }
     setCurrentQuestion(index);
-    setTimeout(() => setIsTransitioning(false), 400);
+    setTimeout(() => setIsTransitioning(false), 500);
   };
 
   const handleOptionSelect = (questionId: string, value: string) => {
@@ -306,7 +325,39 @@ export default function QuickProfiler() {
         setShowResult(true);
         scrollToQuestion(totalQuestions);
       }
-    }, 300);
+    }, 350);
+  };
+
+  const handleNext = () => {
+    if (isIntro) {
+      scrollToQuestion(0);
+      return;
+    }
+    if (currentQuestion >= 0 && currentQuestion < totalQuestions) {
+      if (!answers[profilerQuestions[currentQuestion].id]) {
+        toast({ title: "Please answer before proceeding.", variant: "destructive" });
+        return;
+      }
+      if (currentQuestion < totalQuestions - 1) {
+        scrollToQuestion(currentQuestion + 1);
+      } else {
+        setShowResult(true);
+        scrollToQuestion(totalQuestions);
+      }
+    }
+  };
+
+  const handleBack = () => {
+    if (showResult) {
+      setShowResult(false);
+      scrollToQuestion(totalQuestions - 1);
+      return;
+    }
+    if (currentQuestion > 0) {
+      scrollToQuestion(currentQuestion - 1);
+    } else if (currentQuestion === 0) {
+      scrollToQuestion(-1);
+    }
   };
 
   const handleGoToFullAssessment = () => {
@@ -319,6 +370,42 @@ export default function QuickProfiler() {
     localStorage.setItem(PROFILER_STORAGE_KEY, JSON.stringify(profilerData));
     setLocation("/assessment?from=profiler");
   };
+
+  const isCurrentQuestionAnswered = () => {
+    if (currentQuestion < 0 || currentQuestion >= totalQuestions) return true;
+    return !!answers[profilerQuestions[currentQuestion].id];
+  };
+
+  useEffect(() => {
+    let lastScrollTime = 0;
+    const scrollThrottle = 800;
+
+    const handleWheel = (e: WheelEvent) => {
+      const now = Date.now();
+      if (now - lastScrollTime < scrollThrottle) return;
+      if (isTransitioning) return;
+      if (showResult) return;
+
+      if (e.deltaY > 50) {
+        if (!isCurrentQuestionAnswered()) {
+          lastScrollTime = now;
+          toast({ title: "Please answer before proceeding.", variant: "destructive" });
+          return;
+        }
+        lastScrollTime = now;
+        handleNext();
+      } else if (e.deltaY < -50) {
+        lastScrollTime = now;
+        handleBack();
+      }
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: true });
+      return () => container.removeEventListener('wheel', handleWheel);
+    }
+  }, [currentQuestion, isIntro, isTransitioning, showResult, answers, totalQuestions]);
 
   useEffect(() => {
     let touchStartY = 0;
@@ -335,60 +422,49 @@ export default function QuickProfiler() {
 
       if (Math.abs(swipeDistance) > minSwipeDistance) {
         if (swipeDistance > 0) {
-          if (isIntro) {
-            scrollToQuestion(0);
-          } else if (currentQuestion < totalQuestions - 1) {
-            if (!answers[profilerQuestions[currentQuestion].id]) {
-              toast({ title: "Please answer before proceeding.", variant: "destructive" });
-              return;
-            }
-            scrollToQuestion(currentQuestion + 1);
-          }
-        } else {
-          if (currentQuestion > -1) {
-            scrollToQuestion(currentQuestion - 1);
-          }
-        }
-      }
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      if (isTransitioning || showResult) return;
-      if (e.deltaY > 50) {
-        if (isIntro) {
-          scrollToQuestion(0);
-        } else if (currentQuestion < totalQuestions - 1) {
-          if (!answers[profilerQuestions[currentQuestion].id]) {
+          if (!isCurrentQuestionAnswered()) {
             toast({ title: "Please answer before proceeding.", variant: "destructive" });
             return;
           }
-          scrollToQuestion(currentQuestion + 1);
-        }
-      } else if (e.deltaY < -50) {
-        if (currentQuestion > -1) {
-          scrollToQuestion(currentQuestion - 1);
+          handleNext();
+        } else {
+          handleBack();
         }
       }
     };
 
     const container = containerRef.current;
     if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: true });
       container.addEventListener('touchstart', handleTouchStart, { passive: true });
-      container.addEventListener('touchend', handleTouchEnd);
+      container.addEventListener('touchend', handleTouchEnd, { passive: true });
       return () => {
-        container.removeEventListener('wheel', handleWheel);
         container.removeEventListener('touchstart', handleTouchStart);
         container.removeEventListener('touchend', handleTouchEnd);
       };
     }
   }, [currentQuestion, isIntro, isTransitioning, showResult, answers, totalQuestions]);
 
-  const progressPercentage = showResult ? 100 : Math.max(0, (currentQuestion / totalQuestions) * 100);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (showResult) return;
+        handleNext();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentQuestion, isIntro, showResult, answers]);
+
+  const calculateProgress = () => {
+    if (showResult) return 100;
+    if (isIntro) return 0;
+    return Math.round(((currentQuestion + 1) / (totalQuestions + 1)) * 100);
+  };
 
   const renderHeatmap = () => {
     return (
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex items-center gap-1 sm:gap-1.5">
         {profilerQuestions.map((q, idx) => {
           const answer = answers[q.id];
           const riskLevel = answer ? q.riskMapping[answer] : null;
@@ -396,17 +472,16 @@ export default function QuickProfiler() {
           const isAnswered = !!answer;
 
           return (
-            <div key={q.id} className="flex flex-col items-center gap-1">
-              <div
-                className={`
-                  w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-xs font-bold transition-all duration-500
-                  ${isAnswered && riskLevel ? `${getHeatmapColor(riskLevel)} text-white shadow-lg ${getHeatmapGlow(riskLevel)}` : ''}
-                  ${!isAnswered && isActive ? 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 ring-2 ring-emerald-500 animate-pulse' : ''}
-                  ${!isAnswered && !isActive ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600' : ''}
-                `}
-              >
-                {q.number}
-              </div>
+            <div
+              key={q.id}
+              className={`
+                w-6 h-6 sm:w-8 sm:h-8 rounded-md flex items-center justify-center text-[10px] sm:text-xs font-bold transition-all duration-500
+                ${isAnswered && riskLevel ? `${getHeatmapColor(riskLevel)} text-white shadow-md ${getHeatmapGlow(riskLevel)}` : ''}
+                ${!isAnswered && isActive ? 'bg-white/30 text-white/80 ring-2 ring-white/60 animate-pulse' : ''}
+                ${!isAnswered && !isActive ? 'bg-white/10 text-white/40' : ''}
+              `}
+            >
+              {q.number}
             </div>
           );
         })}
@@ -414,205 +489,304 @@ export default function QuickProfiler() {
     );
   };
 
-  const renderRiskIndicator = () => {
+  const renderRiskBadge = () => {
     if (risk.level === "none") return null;
     const RiskIcon = risk.icon;
     return (
-      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${risk.bgColor} ${risk.borderColor} transition-all duration-500`}>
-        <RiskIcon className={`h-4 w-4 ${risk.color}`} />
-        <span className={`text-xs sm:text-sm font-semibold ${risk.color}`}>{risk.label}</span>
+      <div className="flex items-center gap-1.5 px-2 sm:px-3 py-1 rounded-full bg-white/15 backdrop-blur-sm border border-white/20">
+        <RiskIcon className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
+        <span className="text-[10px] sm:text-xs font-semibold text-white">{risk.label}</span>
+      </div>
+    );
+  };
+
+  const renderIntro = () => {
+    if (!isIntro || showResult) return null;
+
+    return (
+      <div className="absolute inset-0 z-30">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+          <div className="max-w-2xl mx-auto text-center text-white">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/15 backdrop-blur-sm rounded-full mb-6">
+              <Zap className="h-5 w-5 text-white" />
+              <span className="text-sm font-semibold text-white">1 Minute Risk Check</span>
+            </div>
+
+            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-4">
+              Quick Margin Risk Profiler
+            </h1>
+            <p className="text-base sm:text-xl md:text-2xl text-emerald-100 mb-4 sm:mb-8 italic" style={{ fontFamily: 'Georgia, serif' }}>
+              Margin Risk Clarity
+            </p>
+
+            <p className="text-sm sm:text-base md:text-lg text-emerald-50 mb-6 sm:mb-10 leading-relaxed max-w-xl mx-auto px-2">
+              Answer 6 rapid-fire questions. Watch your risk heatmap build in real time.
+              Get an instant margin risk indication before committing to the full assessment.
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-6 mb-6 sm:mb-12 text-emerald-100 text-xs sm:text-base">
+              <div className="flex items-center gap-2 bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
+                <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span>6 questions</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
+                <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span>~60 seconds</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
+                <Check className="h-4 w-4 sm:h-5 sm:w-5" />
+                <span>Instant risk indication</span>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => scrollToQuestion(0)}
+              size="lg"
+              className="bg-white text-emerald-700 hover:bg-emerald-50 px-6 sm:px-12 py-4 sm:py-7 text-base sm:text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
+            >
+              Start Risk Check
+              <ArrowDown className="ml-2 sm:ml-3 h-4 w-4 sm:h-6 sm:w-6" />
+            </Button>
+
+            <p className="mt-8 sm:mt-10 text-xs sm:text-sm text-emerald-200/80 px-4">
+              No financial data or timesheets required.
+            </p>
+          </div>
+
+          <div className="absolute bottom-4 sm:bottom-8 animate-bounce">
+            <ChevronDown className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-200/60" />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderCard = (questionIndex: number) => {
+    const question = profilerQuestions[questionIndex];
+    const isActive = currentQuestion === questionIndex && !showResult;
+
+    const distance = Math.abs(questionIndex - currentQuestion);
+    if (distance > 1 && !isIntro && !showResult) return null;
+
+    const gradient = sectionGradients[question.sectionColor] || sectionGradients.emerald;
+    const currentValue = answers[question.id] || "";
+
+    return (
+      <div
+        key={question.id}
+        className={`absolute inset-0 z-20 ${isActive ? "" : "pointer-events-none opacity-0"}`}
+      >
+        <div className={`min-h-screen bg-gradient-to-br ${gradient} flex flex-col`}>
+          <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-16 sm:py-20">
+            <div
+              className={`w-full max-w-2xl transition-all duration-500 ${
+                isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              }`}
+              style={{ transitionDelay: isActive ? "150ms" : "0ms" }}
+            >
+              <div className="mb-4 sm:mb-6">
+                <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm font-medium mb-2 sm:mb-3">
+                  {question.section}
+                </span>
+                <div className="text-white/70 text-sm sm:text-lg font-medium">
+                  Question {question.number} of {totalQuestions}
+                </div>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-3 sm:mb-4">
+                {question.title}
+              </h2>
+
+              {question.subtitle && (
+                <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
+                  {question.subtitle}
+                </p>
+              )}
+
+              <div className="mt-6 sm:mt-8">
+                <div className="space-y-2 sm:space-y-3">
+                  {question.options.map((option, index) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() => handleOptionSelect(question.id, option.value)}
+                      className={`w-full text-left px-4 sm:px-6 py-3 sm:py-5 rounded-xl border-2 transition-all duration-300 flex items-center gap-3 sm:gap-4 group ${
+                        currentValue === option.value
+                          ? "bg-white text-gray-900 border-white shadow-lg scale-[1.02]"
+                          : "bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 hover:border-white/50"
+                      }`}
+                    >
+                      <span className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-xs sm:text-sm font-bold transition-colors ${
+                        currentValue === option.value
+                          ? "bg-emerald-500 text-white"
+                          : "bg-white/20 text-white group-hover:bg-white/30"
+                      }`}>
+                        {String.fromCharCode(65 + index)}
+                      </span>
+                      <span className="text-sm sm:text-lg font-medium flex-1">
+                        {option.label}
+                      </span>
+                      {currentValue === option.value && (
+                        <Check className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderResult = () => {
+    if (!showResult) return null;
+
+    const RiskIcon = risk.icon;
+
+    return (
+      <div className="absolute inset-0 z-30 overflow-y-auto">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-20 px-4 sm:px-6">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
+              <RiskIcon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
+              <span className="text-base sm:text-lg font-bold text-white">Margin Risk Profile</span>
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3">
+              {risk.label}
+            </h2>
+
+            <p className="text-gray-400 mb-8 max-w-lg mx-auto text-sm sm:text-base">
+              {risk.level === "critical" && "Your delivery confidence is critically low. This engagement requires repricing or structural changes before commitment."}
+              {risk.level === "high" && "Multiple high-risk signals detected. Structural overload likely — senior involvement and volatility create unsustainable margin pressure."}
+              {risk.level === "elevated" && "Elevated risk indicators present. Execution demands will dominate effort and may erode margins without careful management."}
+              {risk.level === "moderate" && "Some risk signals present. Pricing assumptions may need protection to preserve margins."}
+              {risk.level === "low" && "No high-risk conditions triggered. Engagement appears viable under stated assumptions."}
+            </p>
+
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 mb-8 max-w-md sm:max-w-xl mx-auto">
+              {profilerQuestions.map((q) => {
+                const answer = answers[q.id];
+                const riskLevel = answer ? q.riskMapping[answer] : null;
+                return (
+                  <div key={q.id} className="flex flex-col items-center gap-1">
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center text-sm font-bold shadow-lg ${riskLevel ? `${getHeatmapColor(riskLevel)} text-white ${getHeatmapGlow(riskLevel)}` : 'bg-white/10 text-white/40'}`}>
+                      Q{q.number}
+                    </div>
+                    <span className="text-xs text-gray-500">
+                      {riskLevel === "high" ? "High" : riskLevel === "medium" ? "Med" : "Low"}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="p-4 sm:p-6 rounded-2xl bg-white/5 border border-white/10 mb-8 text-left">
+              <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
+                {risk.level === "critical" || risk.level === "high"
+                  ? "This quick profile indicates significant margin risk. A full assessment will provide detailed dimension analysis, effort allocation recommendations, and a Decision Memo."
+                  : risk.level === "elevated" || risk.level === "moderate"
+                  ? "Some risk signals are present. A full assessment will break down each risk dimension and provide actionable recommendations to protect your margins."
+                  : "Your initial profile looks positive. A full assessment will validate this across all risk dimensions and provide a comprehensive Decision Memo."}
+              </p>
+            </div>
+
+            <Button
+              size="lg"
+              className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-6 sm:py-7 px-8 sm:px-10 text-base sm:text-lg shadow-lg rounded-xl"
+              onClick={handleGoToFullAssessment}
+            >
+              Get Full Margin Risk Decision Clarity
+              <ChevronRight className="ml-2 h-5 w-5" />
+            </Button>
+
+            <p className="text-xs text-gray-500 mt-4">
+              Your answers carry forward — the full assessment will skip these questions.
+            </p>
+          </div>
+        </div>
       </div>
     );
   };
 
   return (
-    <div ref={containerRef} className="fixed inset-0 overflow-hidden bg-white dark:bg-gray-950">
-      <Header variant="solid" />
+    <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
+      {renderIntro()}
+      {profilerQuestions.map((_, index) => renderCard(index))}
+      {renderResult()}
 
-      <div className="fixed top-16 left-0 right-0 z-40 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 px-4 py-2">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-center justify-between mb-2">
-            {renderHeatmap()}
-          </div>
-          <div className="flex items-center justify-between">
-            <div className="flex-1 bg-gray-200 dark:bg-gray-800 rounded-full h-1.5 mr-3">
-              <div
-                className={`h-1.5 rounded-full transition-all duration-700 ease-out ${
-                  risk.level === "critical" || risk.level === "high" ? "bg-red-500" :
-                  risk.level === "elevated" ? "bg-orange-500" :
-                  risk.level === "moderate" ? "bg-amber-500" :
-                  risk.level === "low" ? "bg-emerald-500" : "bg-gray-400"
-                }`}
-                style={{ width: `${progressPercentage}%` }}
-              />
-            </div>
-            {renderRiskIndicator()}
+      <div className="fixed top-0 left-0 right-0 z-[100] bg-black/40 backdrop-blur-md" style={{ pointerEvents: 'auto' }}>
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
+          <Link href="/">
+            <Button variant="ghost" className="text-white hover:text-emerald-200 hover:bg-white/10 px-2 sm:px-3 py-1.5 sm:py-2">
+              <ArrowLeft className="h-4 w-4 sm:mr-2" />
+              <span className="font-bold hidden sm:inline">MarginMix</span>
+            </Button>
+          </Link>
+          <div className="flex items-center gap-2 sm:gap-4">
+            {!isIntro && (
+              <>
+                {renderHeatmap()}
+                <div className="hidden sm:block">
+                  {renderRiskBadge()}
+                </div>
+                <span className="text-xs sm:text-sm text-white/80 font-medium">
+                  {showResult ? "Result" : `${currentQuestion + 1}/${totalQuestions}`}
+                </span>
+                <div className="w-12 sm:w-20 md:w-24">
+                  <Progress value={calculateProgress()} className="h-1.5 bg-white/20" />
+                </div>
+                <Link href="/">
+                  <Button
+                    variant="ghost"
+                    className="text-white hover:text-emerald-200 hover:bg-white/10 px-2 sm:px-3 py-1.5 sm:py-2"
+                  >
+                    <Home className="h-4 w-4 sm:mr-2" />
+                    <span className="hidden sm:inline">Home</span>
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
 
-      <div className="h-full pt-32 sm:pt-36">
-        {isIntro && !showResult && (
-          <div className="h-full flex items-center justify-center px-4 animate-in fade-in duration-500">
-            <div className="text-center max-w-2xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 dark:bg-emerald-900/30 rounded-full mb-6">
-                <Zap className="h-5 w-5 text-emerald-600" />
-                <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-400">60-Second Risk Check</span>
-              </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
-                Quick Margin Risk Profiler
-              </h1>
-              <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400 mb-3 max-w-xl mx-auto">
-                Answer 6 rapid-fire questions. Watch your risk heatmap build in real time.
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-500 mb-8 max-w-lg mx-auto">
-                Get an instant margin risk indication before committing to the full assessment.
-              </p>
-              <Button
-                size="lg"
-                className="h-14 text-lg px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
-                onClick={() => scrollToQuestion(0)}
-              >
-                Start Risk Check
-                <ArrowDown className="ml-2 h-5 w-5" />
-              </Button>
+      {!isIntro && !showResult && (
+        <div className="fixed bottom-4 sm:bottom-8 left-0 right-0 z-[100] flex flex-col items-center gap-2 px-4 sm:px-6" style={{ pointerEvents: 'auto' }}>
+          {currentQuestion >= 0 && currentQuestion <= 1 && (
+            <div className="sm:hidden flex items-center gap-2 text-white/60 text-xs mb-1 animate-pulse">
+              <ChevronDown className="h-3 w-3 rotate-180" />
+              <span>Swipe up to continue</span>
+              <ChevronDown className="h-3 w-3 rotate-180" />
+            </div>
+          )}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="sm:hidden">
+              {renderRiskBadge()}
             </div>
           </div>
-        )}
-
-        {!isIntro && !showResult && currentQuestion >= 0 && currentQuestion < totalQuestions && (
-          <div className="h-full flex items-center justify-center px-4 animate-in fade-in slide-in-from-bottom-4 duration-400">
-            <div className="w-full max-w-2xl mx-auto">
-              <div className="mb-2">
-                <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
-                  Question {profilerQuestions[currentQuestion].number} of {totalQuestions}
-                </span>
-              </div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
-                {profilerQuestions[currentQuestion].title}
-              </h2>
-              {profilerQuestions[currentQuestion].subtitle && (
-                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-6">
-                  {profilerQuestions[currentQuestion].subtitle}
-                </p>
-              )}
-              {!profilerQuestions[currentQuestion].subtitle && <div className="mb-6" />}
-              <div className="space-y-3">
-                {profilerQuestions[currentQuestion].options.map((option, idx) => {
-                  const isSelected = answers[profilerQuestions[currentQuestion].id] === option.value;
-                  const letter = String.fromCharCode(65 + idx);
-                  return (
-                    <button
-                      key={option.value}
-                      type="button"
-                      onClick={() => handleOptionSelect(profilerQuestions[currentQuestion].id, option.value)}
-                      className={`w-full text-left p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-3 sm:gap-4 group
-                        ${isSelected
-                          ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 dark:border-emerald-400"
-                          : "border-gray-200 dark:border-gray-700 hover:border-emerald-300 dark:hover:border-emerald-600 hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                        }`}
-                    >
-                      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center text-sm font-bold flex-shrink-0 transition-colors
-                        ${isSelected
-                          ? "bg-emerald-500 text-white"
-                          : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 group-hover:bg-emerald-100 dark:group-hover:bg-emerald-900/30 group-hover:text-emerald-600"
-                        }`}>
-                        {letter}
-                      </div>
-                      <span className={`text-sm sm:text-base font-medium ${isSelected ? "text-emerald-700 dark:text-emerald-300" : "text-gray-700 dark:text-gray-300"}`}>
-                        {option.label}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="flex justify-between items-center mt-8">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => scrollToQuestion(currentQuestion - 1)}
-                  className="text-gray-500"
-                >
-                  <ArrowUp className="h-4 w-4 mr-1" /> Back
-                </Button>
-                {answers[profilerQuestions[currentQuestion].id] && currentQuestion < totalQuestions - 1 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => scrollToQuestion(currentQuestion + 1)}
-                    className="text-emerald-600"
-                  >
-                    Next <ArrowDown className="h-4 w-4 ml-1" />
-                  </Button>
-                )}
-              </div>
-            </div>
+          <div className="flex justify-center gap-3 sm:gap-4">
+            <Button
+              variant="ghost"
+              onClick={handleBack}
+              disabled={currentQuestion <= 0}
+              className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+            >
+              <ArrowUp className="mr-1 sm:mr-2 h-4 w-4" />
+              Back
+            </Button>
+            <Button
+              onClick={handleNext}
+              className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+            >
+              {currentQuestion === totalQuestions - 1 ? "See Result" : "Continue"}
+              <ArrowDown className="ml-1 sm:ml-2 h-4 w-4" />
+            </Button>
           </div>
-        )}
-
-        {showResult && (
-          <div className="h-full flex items-center justify-center px-4 animate-in fade-in zoom-in-95 duration-700 overflow-y-auto">
-            <div className="w-full max-w-2xl mx-auto text-center py-8">
-              <div className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full border-2 mb-6 ${risk.bgColor} ${risk.borderColor}`}>
-                <risk.icon className={`h-6 w-6 ${risk.color}`} />
-                <span className={`text-lg font-bold ${risk.color}`}>Margin Risk Profile</span>
-              </div>
-
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                {risk.label}
-              </h2>
-
-              <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-lg mx-auto text-sm sm:text-base">
-                {risk.level === "critical" && "Your delivery confidence is critically low. This engagement requires repricing or structural changes before commitment."}
-                {risk.level === "high" && "Multiple high-risk signals detected. Structural overload likely — senior involvement and volatility create unsustainable margin pressure."}
-                {risk.level === "elevated" && "Elevated risk indicators present. Execution demands will dominate effort and may erode margins without careful management."}
-                {risk.level === "moderate" && "Some risk signals present. Pricing assumptions may need protection to preserve margins."}
-                {risk.level === "low" && "No high-risk conditions triggered. Engagement appears viable under stated assumptions."}
-              </p>
-
-              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 mb-8 max-w-md sm:max-w-xl mx-auto">
-                {profilerQuestions.map((q) => {
-                  const answer = answers[q.id];
-                  const riskLevel = answer ? q.riskMapping[answer] : null;
-                  return (
-                    <div key={q.id} className="flex flex-col items-center gap-1">
-                      <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center text-sm font-bold shadow-lg ${riskLevel ? `${getHeatmapColor(riskLevel)} text-white ${getHeatmapGlow(riskLevel)}` : 'bg-gray-200 text-gray-400'}`}>
-                        Q{q.number}
-                      </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {riskLevel === "high" ? "High" : riskLevel === "medium" ? "Med" : "Low"}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className={`p-4 sm:p-6 rounded-2xl border-2 mb-8 ${risk.bgColor} ${risk.borderColor}`}>
-                <p className={`text-sm sm:text-base font-medium ${risk.color}`}>
-                  {risk.level === "critical" || risk.level === "high"
-                    ? "This quick profile indicates significant margin risk. A full assessment will provide detailed dimension analysis, effort allocation recommendations, and a Decision Memo."
-                    : risk.level === "elevated" || risk.level === "moderate"
-                    ? "Some risk signals are present. A full assessment will break down each risk dimension and provide actionable recommendations to protect your margins."
-                    : "Your initial profile looks positive. A full assessment will validate this across all 17 risk dimensions and provide a comprehensive Decision Memo."}
-                </p>
-              </div>
-
-              <Button
-                size="lg"
-                className="h-14 text-base sm:text-lg px-6 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-lg shadow-emerald-600/20"
-                onClick={handleGoToFullAssessment}
-              >
-                Get Full Margin Risk Decision Clarity
-                <ChevronRight className="ml-2 h-5 w-5" />
-              </Button>
-
-              <p className="text-xs text-gray-400 dark:text-gray-600 mt-4">
-                Your answers carry forward — the full assessment will skip these 6 questions.
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
