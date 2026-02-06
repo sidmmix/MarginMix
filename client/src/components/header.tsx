@@ -45,15 +45,6 @@ export function Header({ variant = "transparent" }: HeaderProps) {
 
   const isActive = (href: string) => location === href;
 
-  const openCalendly = () => {
-    const calendlyUrl = 'https://calendly.com/sid-marginmix/30min';
-    if ((window as any).Calendly?.initPopupWidget) {
-      (window as any).Calendly.initPopupWidget({url: calendlyUrl});
-    } else {
-      window.open(calendlyUrl, '_blank');
-    }
-  };
-
   const bgClass = variant === "solid" 
     ? "bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700"
     : "border-b bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 dark:border-gray-800";
@@ -80,13 +71,14 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 </span>
               </Link>
             ))}
-            <Button 
-              size="sm" 
-              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
-              onClick={openCalendly}
-            >
-              Book Demo
-            </Button>
+            <Link href="/quick-profiler" onClick={scrollToTop}>
+              <Button 
+                size="sm" 
+                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
+              >
+                1 Minute Risk Profile Scan
+              </Button>
+            </Link>
             {isAuthenticated && user && (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
@@ -116,13 +108,14 @@ export function Header({ variant = "transparent" }: HeaderProps) {
 
           {/* Mobile Hamburger Button */}
           <div className="md:hidden flex items-center space-x-2">
-            <Button 
-              size="sm" 
-              className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs px-3"
-              onClick={openCalendly}
-            >
-              Book Demo
-            </Button>
+            <Link href="/quick-profiler" onClick={scrollToTop}>
+              <Button 
+                size="sm" 
+                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs px-3"
+              >
+                1 Min Risk Scan
+              </Button>
+            </Link>
             <Button
               variant="ghost"
               size="sm"
