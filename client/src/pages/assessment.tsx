@@ -30,6 +30,7 @@ const PROFILER_STORAGE_KEY = "marginmix_profiler_answers";
 
 const PROFILER_FIELD_KEYS = [
   "decisionEvaluating",
+  "specifyContext",
   "engagementClassification",
   "clientVolatility",
   "seniorLeadershipInvolvement",
