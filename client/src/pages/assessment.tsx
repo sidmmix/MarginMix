@@ -1344,7 +1344,7 @@ export default function Assessment() {
               <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
                 <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">
                   <Users className="h-5 w-5 text-emerald-400" />
-                  Assessment Context
+                  Basic Details
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
