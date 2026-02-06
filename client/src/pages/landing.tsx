@@ -24,13 +24,13 @@ export default function Landing() {
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 leading-tight">
               Predict Margin Risk prior to Delivery Commitment!
             </h1>
-            <p className="text-lg md:text-2xl text-gray-700 dark:text-gray-300 mb-4 mx-auto leading-relaxed whitespace-nowrap">
+            <p className="text-sm sm:text-base md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap">
               MarginMix is a deterministic pricing and margin decision engine for the services economy.
             </p>
-            <p className="text-lg md:text-2xl text-gray-700 dark:text-gray-300 mb-8 mx-auto leading-relaxed whitespace-nowrap">
+            <p className="text-sm sm:text-base md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 mx-auto leading-relaxed sm:whitespace-nowrap">
               Use it for new briefs, new contracts, renewals, scope changes, or repricing discussions.
             </p>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 px-2 sm:px-0">
               Works across all commercial models: Time & Materials · Fixed Price · Outcome-based · Hybrid engagements
             </p>
             <Button 
@@ -42,7 +42,7 @@ export default function Landing() {
               1 Minute Risk Profile Scan
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <p className="mt-6 text-xl font-bold text-gray-900 dark:text-white">
+            <p className="mt-5 sm:mt-6 text-base sm:text-xl font-bold text-gray-900 dark:text-white px-2 sm:px-0">
               MarginMix is a decision infrastructure for{" "}
               <span className="text-emerald-600 dark:text-emerald-400">pricing risk</span>,{" "}
               <span className="text-red-600 dark:text-red-400">not a productivity tool!</span>
