@@ -51,19 +51,60 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Why This Matters */}
+      {/* Pre vs Post MarginMix */}
       <section className="py-20 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 text-center">
-              Why This Matters
-            </h2>
-            <p className="text-base md:text-xl text-gray-700 dark:text-gray-300 mb-6 text-center">
-              Most margin risk is locked in at pricing and scoping. Once delivery starts, leaders are often flying blind — relying on gut feel rather than structured insight.
-            </p>
-            <p className="text-base md:text-xl text-emerald-600 dark:text-emerald-400 font-semibold text-center">
-              MarginMix helps price work accurately - an imperative for the billable hours intensive service industry.  
-            </p>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-8">
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">Pre MarginMix</h3>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
+                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Pricing decisions rely on heuristics and experience</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
+                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Delivery complexity is discussed, not quantified</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
+                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Senior involvement is assumed</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
+                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Iteration risk emerges after work begins</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
+                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Margin outcomes are discovered late</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-8">
+              <h3 className="text-xl md:text-2xl font-bold text-emerald-700 dark:text-emerald-400 mb-6">Post MarginMix</h3>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Pricing decisions are supported by structured signals</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Delivery complexity is made explicit upfront</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Senior and coordination effort are visible early</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Iteration risk is flagged before commitment</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Margin risk is known at the decision point</span>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>
