@@ -23,19 +23,99 @@ function getAppUrl(): string {
 
 const APP_URL = getAppUrl();
 
-function getVerdictColor(verdict: string): { bg: string; text: string; border: string } {
+function getVerdictColor(verdict: string): { bg: string; text: string; border: string; gradientFrom: string; gradientTo: string } {
   switch (verdict) {
-    case "Structurally Viable":
-      return { bg: "#d1fae5", text: "#065f46", border: "#10b981" };
-    case "Conditionally Viable":
-      return { bg: "#fef3c7", text: "#92400e", border: "#f59e0b" };
+    case "Structurally Safe":
+      return { bg: "#064e3b", text: "#6ee7b7", border: "#10b981", gradientFrom: "#064e3b", gradientTo: "#065f46" };
+    case "Execution Heavy":
+      return { bg: "#78350f", text: "#fcd34d", border: "#f59e0b", gradientFrom: "#78350f", gradientTo: "#92400e" };
+    case "Price Sensitive":
+      return { bg: "#7c2d12", text: "#fdba74", border: "#f97316", gradientFrom: "#7c2d12", gradientTo: "#9a3412" };
     case "Structurally Fragile":
-      return { bg: "#fed7aa", text: "#9a3412", border: "#f97316" };
-    case "Economically Non-Viable":
-      return { bg: "#fee2e2", text: "#991b1b", border: "#ef4444" };
+      return { bg: "#7f1d1d", text: "#fca5a5", border: "#ef4444", gradientFrom: "#7f1d1d", gradientTo: "#991b1b" };
+    case "Do Not Proceed Without Repricing":
+      return { bg: "#7f1d1d", text: "#fca5a5", border: "#dc2626", gradientFrom: "#7f1d1d", gradientTo: "#991b1b" };
     default:
-      return { bg: "#f3f4f6", text: "#374151", border: "#9ca3af" };
+      return { bg: "#1f2937", text: "#d1d5db", border: "#6b7280", gradientFrom: "#1f2937", gradientTo: "#374151" };
   }
+}
+
+function getDimensionLabel(level: string): string {
+  switch (level) {
+    case "high": return "High";
+    case "medium": return "Medium";
+    case "low": return "Low";
+    case "positive": return "Positive";
+    case "neutral": return "Neutral";
+    case "negative": return "Negative";
+    default: return level;
+  }
+}
+
+function getDimensionColor(level: string): { bg: string; text: string; border: string } {
+  switch (level) {
+    case "high":
+    case "negative":
+      return { bg: "#7f1d1d", text: "#fca5a5", border: "#991b1b" };
+    case "medium":
+    case "neutral":
+      return { bg: "#78350f", text: "#fcd34d", border: "#92400e" };
+    case "low":
+    case "positive":
+      return { bg: "#064e3b", text: "#6ee7b7", border: "#065f46" };
+    default:
+      return { bg: "#1f2937", text: "#d1d5db", border: "#374151" };
+  }
+}
+
+function getVerdictRecommendations(verdict: string): string[] {
+  switch (verdict) {
+    case "Do Not Proceed Without Repricing":
+      return [
+        "Halt engagement until pricing reflects true delivery complexity",
+        "Conduct a structural redesign of the delivery model",
+        "Re-evaluate senior involvement requirements and cost implications",
+        "Negotiate scope boundaries before any commitment",
+        "Establish mandatory repricing triggers for scope changes",
+      ];
+    case "Structurally Fragile":
+      return [
+        "Reduce coordination load across teams and stakeholders",
+        "Implement governance checkpoints at key delivery milestones",
+        "Cap senior involvement to sustainable levels",
+        "Establish clear escalation protocols to prevent ad-hoc demands",
+        "Monitor workforce intensity metrics weekly",
+      ];
+    case "Execution Heavy":
+      return [
+        "Set clear effort caps for senior and mid-level resources",
+        "Limit senior leadership involvement to strategic checkpoints only",
+        "Automate repetitive execution tasks where possible",
+        "Track iteration cycles to prevent scope creep through overwork",
+      ];
+    case "Price Sensitive":
+      return [
+        "Protect scope boundaries with formal change request processes",
+        "Build pricing safeguards for out-of-scope work",
+        "Review commercial terms for flexibility provisions",
+        "Monitor scope elasticity indicators monthly",
+      ];
+    case "Structurally Safe":
+      return [
+        "Proceed with standard governance and monitoring",
+        "Maintain current delivery model and resource allocation",
+        "Schedule periodic reviews to catch emerging risk signals",
+        "Document successful patterns for future engagements",
+      ];
+    default:
+      return ["Review engagement parameters and consult with leadership."];
+  }
+}
+
+function getBarColor(score: number): string {
+  if (score >= 60) return "#ef4444";
+  if (score >= 35) return "#f59e0b";
+  return "#10b981";
 }
 
 function getRiskBandColor(band: string): string {
@@ -71,53 +151,120 @@ export async function sendAssessmentEmail(
 ) {
   const verdictColors = getVerdictColor(decision.marginRiskVerdict);
   const riskBandColor = getRiskBandColor(decision.riskBand);
+  const compositeBarColor = getBarColor(decision.compositeRiskScore);
+  const recommendations = getVerdictRecommendations(decision.marginRiskVerdict);
 
-  const bucketRows = Object.entries(decision.bucketScores)
-    .map(([key, score]) => {
-      const band = decision.bucketBands[key as keyof typeof decision.bucketBands];
-      const bandColor = getRiskBandColor(band);
-      return `
-        <tr>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: 500;">${formatBucketLabel(key)}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">${score}</td>
-          <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; text-align: center;">
-            <span style="background: ${bandColor}20; color: ${bandColor}; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;">${band}</span>
-          </td>
-        </tr>
-      `;
-    })
-    .join('');
+  const dimensionCards = [
+    { name: "Workforce Intensity", level: decision.dimensions?.workforceIntensity },
+    { name: "Coordination Entropy", level: decision.dimensions?.coordinationEntropy },
+    { name: "Commercial Exposure", level: decision.dimensions?.commercialExposure },
+    { name: "Volatility Control", level: decision.dimensions?.volatilityControl },
+    { name: "Confidence Signal", level: decision.dimensions?.confidenceSignal },
+    { name: "Measurement Maturity", level: decision.dimensions?.measurementMaturity },
+  ];
 
-  const dominantDriversList = decision.dominantDrivers
-    .map(driver => `<li style="margin-bottom: 6px;">${driver}</li>`)
-    .join('');
+  const dimensionCardsHtml = dimensionCards.map(dim => {
+    const colors = getDimensionColor(dim.level || "low");
+    return `
+      <td width="33.33%" style="padding: 4px; vertical-align: top;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: ${colors.bg}; border: 1px solid ${colors.border}; border-radius: 8px;">
+          <tr><td style="padding: 12px;">
+            <p style="color: #9ca3af; margin: 0 0 4px 0; font-size: 11px;">${dim.name}</p>
+            <p style="color: ${colors.text}; margin: 0; font-weight: 600; font-size: 13px;">${getDimensionLabel(dim.level || "low")}</p>
+          </td></tr>
+        </table>
+      </td>`;
+  });
 
-  const saturationWarnings = [];
-  if (decision.saturationDetails.valueSaturationPresent) {
-    saturationWarnings.push("Value Saturation Present");
-  }
-  if (decision.saturationDetails.opticsDrivenStaffing) {
-    saturationWarnings.push("Optics-Driven Staffing Detected");
-  }
-  if (decision.saturationDetails.upwardCostShift) {
-    saturationWarnings.push("Upward Cost Shift Detected");
-  }
+  const bucketRows = (["WI", "SI", "CO", "VSI", "CE"] as const).map(key => {
+    const score = decision.bucketScores[key] ?? 0;
+    const band = decision.bucketBands[key] ?? "";
+    const barColor = getBarColor(score);
+    return `
+      <tr>
+        <td colspan="3" style="padding: 10px 0 2px 0;">
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+              <td style="color: #d1d5db; font-size: 13px;">${formatBucketLabel(key)}</td>
+              <td style="text-align: right; color: #6b7280; font-size: 12px;">${band} &nbsp;
+                <span style="color: white; font-weight: 700; font-family: monospace;">${score}</span>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3" style="padding: 0 0 8px 0;">
+          <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+            <div style="width: ${score}%; height: 8px; background: ${barColor}; border-radius: 4px;"></div>
+          </div>
+        </td>
+      </tr>`;
+  }).join('');
 
-  const saturationSection = saturationWarnings.length > 0 ? `
-    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin-top: 20px;">
-      <h4 style="color: #991b1b; margin: 0 0 10px 0; font-size: 14px;">⚠️ Saturation Warnings</h4>
-      <ul style="margin: 0; padding-left: 20px; color: #7f1d1d;">
-        ${saturationWarnings.map(w => `<li>${w}</li>`).join('')}
-      </ul>
-    </div>
+  const saturationFlags = [
+    { label: "Value Saturation Present", value: decision.saturationDetails?.valueSaturationPresent },
+    { label: "Optics-Driven Staffing", value: decision.saturationDetails?.opticsDrivenStaffing },
+    { label: "Upward Cost Shift", value: decision.saturationDetails?.upwardCostShift },
+  ];
+
+  const saturationFlagsHtml = saturationFlags.map(flag => `
+    <tr>
+      <td style="padding: 8px 12px; border-radius: 6px; background: rgba(255,255,255,0.03);">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+          <tr>
+            <td width="12" style="vertical-align: middle;">
+              <div style="width: 8px; height: 8px; border-radius: 50%; background: ${flag.value ? '#ef4444' : '#10b981'};"></div>
+            </td>
+            <td style="padding-left: 8px; color: #d1d5db; font-size: 13px;">${flag.label}</td>
+            <td style="text-align: right; font-size: 12px; font-weight: 600; color: ${flag.value ? '#fca5a5' : '#6ee7b7'};">${flag.value ? 'Yes' : 'No'}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr><td style="height: 4px;"></td></tr>
+  `).join('');
+
+  const contradictionFlagsHtml = (decision.contradictionFlags && decision.contradictionFlags.length > 0) ? `
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
+      <tr>
+        <td style="padding: 16px 20px;">
+          <h3 style="color: white; margin: 0 0 12px 0; font-size: 16px;">⚠️ Contradiction Flags</h3>
+          ${decision.contradictionFlags.map(flag => {
+            const isWarning = flag.severity === "warning";
+            const flagBg = isWarning ? "rgba(245,158,11,0.1)" : "rgba(59,130,246,0.1)";
+            const flagBorder = isWarning ? "rgba(245,158,11,0.2)" : "rgba(59,130,246,0.2)";
+            const flagColor = isWarning ? "#fcd34d" : "#93c5fd";
+            const flagLabel = isWarning ? "Warning" : "Info";
+            return `
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: ${flagBg}; border: 1px solid ${flagBorder}; border-radius: 8px; margin-bottom: 6px;">
+                <tr>
+                  <td style="padding: 10px 12px;">
+                    <p style="color: #e5e7eb; margin: 0 0 2px 0; font-size: 13px;">${flag.description}</p>
+                    <p style="color: ${flagColor}; margin: 0; font-size: 11px; font-weight: 600;">${flagLabel}</p>
+                  </td>
+                </tr>
+              </table>`;
+          }).join('')}
+        </td>
+      </tr>
+    </table>
   ` : '';
 
-  const openSignalSection = openSignal ? `
-    <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid #e5e7eb;">
-      <h3 style="color: #374151; margin-top: 0; border-bottom: 2px solid #059669; padding-bottom: 10px;">Additional Context</h3>
-      <p style="color: #4b5563; margin: 0;">${openSignal}</p>
-    </div>
-  ` : '';
+  const recommendationsHtml = recommendations.map((rec, i) => `
+    <tr>
+      <td style="padding: 4px 0;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.03); border-radius: 8px;">
+          <tr>
+            <td width="28" style="padding: 10px 0 10px 12px; vertical-align: top;">
+              <div style="width: 20px; height: 20px; border-radius: 50%; background: rgba(16,185,129,0.2); color: #6ee7b7; font-size: 11px; font-weight: 700; text-align: center; line-height: 20px;">${i + 1}</div>
+            </td>
+            <td style="padding: 10px 12px 10px 8px; color: #d1d5db; font-size: 13px;">${rec}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  `).join('');
 
   const htmlContent = `
     <!DOCTYPE html>
@@ -131,22 +278,21 @@ export async function sendAssessmentEmail(
           .main-container { padding: 10px !important; }
           .content-padding { padding: 15px !important; }
           .header-padding { padding: 20px !important; }
-          .classification-table td { display: block !important; width: 100% !important; box-sizing: border-box !important; }
-          .effort-table td { padding: 10px 5px !important; }
-          .bucket-table th, .bucket-table td { padding: 8px 4px !important; font-size: 13px !important; }
+          .dim-row td { display: block !important; width: 100% !important; box-sizing: border-box !important; padding: 3px 0 !important; }
+          .signal-row td { display: block !important; width: 100% !important; box-sizing: border-box !important; padding: 3px 0 !important; }
           h2 { font-size: 22px !important; }
           h3 { font-size: 16px !important; }
         }
       </style>
     </head>
-    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f3f4f6;">
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #d1d5db; margin: 0; padding: 0; background-color: #111827;">
       <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 0 auto;">
         <tr>
           <td class="main-container" style="padding: 20px;">
             <!-- Header -->
             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
               <tr>
-                <td class="header-padding" style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
+                <td class="header-padding" style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
                   <h1 style="color: white; margin: 0; font-size: 28px;">MarginMix</h1>
                   <p style="color: #d1fae5; margin: 5px 0 0 0; font-style: italic; font-family: Georgia, serif;">Margin Risk Clarity</p>
                 </td>
@@ -154,124 +300,29 @@ export async function sendAssessmentEmail(
             </table>
             
             <!-- Main Content -->
-            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: #f9fafb; border: 1px solid #e5e7eb; border-top: none;">
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: #1f2937; border: 1px solid rgba(255,255,255,0.1); border-top: none;">
               <tr>
-                <td class="content-padding" style="padding: 30px;">
-                  <!-- Decision ID & Timestamp -->
-                  <p style="text-align: right; color: #6b7280; font-size: 12px; margin: 0 0 20px 0;">
-                    Decision ID: ${decision.id}<br>
-                    Generated: ${new Date(decision.createdAt).toLocaleString()}
-                  </p>
+                <td class="content-padding" style="padding: 24px;">
 
-                  <!-- Contact Information -->
-                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: white; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
+                  <!-- Section 1 - Verdict Banner -->
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: ${verdictColors.gradientFrom}; border: 1px solid ${verdictColors.border}; border-radius: 12px; margin-bottom: 16px;">
                     <tr>
-                      <td style="padding: 20px;">
-                        <h3 style="color: #374151; margin: 0 0 10px 0; border-bottom: 2px solid #059669; padding-bottom: 10px;">Engagement Context</h3>
-                        <p style="margin: 8px 0; word-wrap: break-word;"><strong>Name:</strong> ${decision.engagementContext.fullName}</p>
-                        <p style="margin: 8px 0; word-wrap: break-word;"><strong>Email:</strong> ${decision.engagementContext.workEmail}</p>
-                        <p style="margin: 8px 0; word-wrap: break-word;"><strong>Organization:</strong> ${decision.engagementContext.organisationName}</p>
-                        <p style="margin: 8px 0; word-wrap: break-word;"><strong>Role:</strong> ${decision.engagementContext.roleTitle}</p>
-                        <p style="margin: 8px 0;"><strong>Organization Size:</strong> ${decision.engagementContext.organisationSize}</p>
-                        <p style="margin: 8px 0;"><strong>Engagement Type:</strong> ${decision.engagementContext.type}</p>
-                        <p style="margin: 8px 0;"><strong>Classification:</strong> ${decision.engagementContext.classification}</p>
-                      </td>
-                    </tr>
-                  </table>
-
-                  <!-- Margin Risk Verdict -->
-                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: ${verdictColors.bg}; border: 2px solid ${verdictColors.border}; border-radius: 12px; margin-bottom: 20px;">
-                    <tr>
-                      <td style="padding: 24px; text-align: center;">
-                        <p style="color: #6b7280; margin: 0 0 8px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">Margin Risk Verdict</p>
-                        <h2 style="color: ${verdictColors.text}; margin: 0; font-size: 24px;">${decision.marginRiskVerdict}</h2>
-                        <p style="margin: 16px 0 0 0;">
-                          <span style="background: ${riskBandColor}; color: white; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; display: inline-block;">${decision.riskBand} Risk</span>
+                      <td style="padding: 20px 24px;">
+                        <h2 style="color: ${verdictColors.text}; margin: 0 0 6px 0; font-size: 24px;">${decision.marginRiskVerdict}</h2>
+                        <p style="margin: 0 0 12px 0;">
+                          <span style="background: ${riskBandColor}20; color: ${riskBandColor}; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid ${riskBandColor}; display: inline-block;">${decision.riskBand} Risk</span>
                         </p>
-                        <p style="color: #6b7280; margin: 16px 0 0 0; font-size: 14px;">Composite Score: <strong>${decision.compositeRiskScore}/100</strong></p>
-                      </td>
-                    </tr>
-                  </table>
-
-                  <!-- Key Classifications - Stacked for mobile -->
-                  <table role="presentation" class="classification-table" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 20px;">
-                    <tr>
-                      <td width="50%" style="padding: 0 5px 10px 0; vertical-align: top;">
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
-                          <tr><td style="padding: 16px; text-align: center;">
-                            <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 12px; text-transform: uppercase;">AI Impact</p>
-                            <p style="color: #374151; margin: 0; font-weight: 600; font-size: 14px;">${decision.aiImpactClassification}</p>
-                          </td></tr>
-                        </table>
-                      </td>
-                      <td width="50%" style="padding: 0 0 10px 5px; vertical-align: top;">
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
-                          <tr><td style="padding: 16px; text-align: center;">
-                            <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 12px; text-transform: uppercase;">Risk Source</p>
-                            <p style="color: #374151; margin: 0; font-weight: 600; font-size: 14px;">${decision.riskSource}</p>
-                          </td></tr>
-                        </table>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td width="50%" style="padding: 0 5px 0 0; vertical-align: top;">
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
-                          <tr><td style="padding: 16px; text-align: center;">
-                            <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 12px; text-transform: uppercase;">Effort Band</p>
-                            <p style="color: #374151; margin: 0; font-weight: 600; font-size: 14px;">${decision.effortBand}</p>
-                          </td></tr>
-                        </table>
-                      </td>
-                      <td width="50%" style="padding: 0 0 0 5px; vertical-align: top;">
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: white; border-radius: 8px; border: 1px solid #e5e7eb;">
-                          <tr><td style="padding: 16px; text-align: center;">
-                            <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 12px; text-transform: uppercase;">Correctability</p>
-                            <p style="color: #374151; margin: 0; font-weight: 600; font-size: 14px;">${decision.correctability}</p>
-                          </td></tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-
-                  <!-- Bucket Scores Table -->
-                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: white; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
-                    <tr>
-                      <td style="padding: 20px;">
-                        <h3 style="color: #374151; margin: 0 0 10px 0; border-bottom: 2px solid #059669; padding-bottom: 10px;">Risk Bucket Scores <span style="font-weight: normal; font-size: 13px; color: #6b7280;">(0 to 100)</span></h3>
-                        <table class="bucket-table" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse: collapse;">
-                          <thead>
-                            <tr style="background: #f9fafb;">
-                              <th style="padding: 10px 8px; text-align: left; border-bottom: 2px solid #e5e7eb; font-size: 13px;">Bucket</th>
-                              <th style="padding: 10px 8px; text-align: center; border-bottom: 2px solid #e5e7eb; font-size: 13px;">Score</th>
-                              <th style="padding: 10px 8px; text-align: center; border-bottom: 2px solid #e5e7eb; font-size: 13px;">Band</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            ${bucketRows}
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-
-                  <!-- Effort Distribution -->
-                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: white; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
-                    <tr>
-                      <td style="padding: 20px;">
-                        <h3 style="color: #374151; margin: 0 0 15px 0; border-bottom: 2px solid #059669; padding-bottom: 10px;">Effort Distribution</h3>
-                        <table class="effort-table" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                        <p style="color: #d1d5db; margin: 0 0 16px 0; font-size: 14px; line-height: 1.5;">${decision.verdictReason}</p>
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                           <tr>
-                            <td width="33.33%" style="text-align: center; padding: 10px;">
-                              <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 12px;">Senior</p>
-                              <p style="color: #059669; margin: 0; font-size: 22px; font-weight: 700;">${decision.effortPercentages.senior}</p>
-                            </td>
-                            <td width="33.33%" style="text-align: center; padding: 10px;">
-                              <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 12px;">Mid-Level</p>
-                              <p style="color: #0d9488; margin: 0; font-size: 22px; font-weight: 700;">${decision.effortPercentages.mid}</p>
-                            </td>
-                            <td width="33.33%" style="text-align: center; padding: 10px;">
-                              <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 12px;">Junior</p>
-                              <p style="color: #14b8a6; margin: 0; font-size: 22px; font-weight: 700;">${decision.effortPercentages.junior}</p>
+                            <td style="color: #9ca3af; font-size: 12px;">Composite Risk Score</td>
+                            <td style="text-align: right; color: white; font-weight: 700; font-family: monospace; font-size: 12px;">${decision.compositeRiskScore}/100</td>
+                          </tr>
+                          <tr>
+                            <td colspan="2" style="padding-top: 4px;">
+                              <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden;">
+                                <div style="width: ${decision.compositeRiskScore}%; height: 10px; background: ${compositeBarColor}; border-radius: 5px;"></div>
+                              </div>
                             </td>
                           </tr>
                         </table>
@@ -279,32 +330,183 @@ export async function sendAssessmentEmail(
                     </tr>
                   </table>
 
-                  <!-- Dominant Drivers -->
-                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: white; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e5e7eb;">
+                  <!-- Section 2 - Basic Details -->
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
                     <tr>
-                      <td style="padding: 20px;">
-                        <h3 style="color: #374151; margin: 0 0 10px 0; border-bottom: 2px solid #059669; padding-bottom: 10px;">Dominant Risk Drivers</h3>
-                        <ul style="margin: 0; padding-left: 20px; color: #4b5563;">
-                          ${dominantDriversList}
-                        </ul>
+                      <td style="padding: 16px 20px;">
+                        <h3 style="color: white; margin: 0 0 12px 0; font-size: 16px;">👤 Basic Details</h3>
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                          <tr>
+                            <td width="50%" style="padding: 6px 8px 6px 0; vertical-align: top;">
+                              <p style="color: #6b7280; margin: 0; font-size: 11px;">Name</p>
+                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500; word-wrap: break-word;">${decision.engagementContext.fullName}</p>
+                            </td>
+                            <td width="50%" style="padding: 6px 0 6px 8px; vertical-align: top;">
+                              <p style="color: #6b7280; margin: 0; font-size: 11px;">Email</p>
+                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500; word-wrap: break-word;">${decision.engagementContext.workEmail}</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td width="50%" style="padding: 6px 8px 6px 0; vertical-align: top;">
+                              <p style="color: #6b7280; margin: 0; font-size: 11px;">Role / Title</p>
+                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500; word-wrap: break-word;">${decision.engagementContext.roleTitle}</p>
+                            </td>
+                            <td width="50%" style="padding: 6px 0 6px 8px; vertical-align: top;">
+                              <p style="color: #6b7280; margin: 0; font-size: 11px;">Organisation</p>
+                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500; word-wrap: break-word;">${decision.engagementContext.organisationName}</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="2" style="padding: 6px 0;">
+                              <p style="color: #6b7280; margin: 0; font-size: 11px;">Organisation Size</p>
+                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500;">${decision.engagementContext.organisationSize} employees</p>
+                            </td>
+                          </tr>
+                        </table>
                       </td>
                     </tr>
                   </table>
 
-                  ${saturationSection}
-                  ${openSignalSection}
-
-                  <!-- Value Saturation Flag -->
-                  ${decision.valueSaturationFlag ? `
-                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 8px; margin-top: 20px;">
+                  <!-- Section 3 - Risk Dimensions -->
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-bottom: 16px;">
                     <tr>
-                      <td style="padding: 16px; text-align: center;">
-                        <p style="color: #92400e; margin: 0; font-weight: 600;">⚠️ Value Saturation Flag Active</p>
-                        <p style="color: #a16207; margin: 8px 0 0 0; font-size: 14px;">This engagement shows signs of diminishing marginal value relative to effort invested.</p>
+                      <td>
+                        <h3 style="color: white; margin: 0 0 10px 0; font-size: 16px;">🎯 Risk Dimensions</h3>
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                          <tr class="dim-row">${dimensionCardsHtml[0]}${dimensionCardsHtml[1]}${dimensionCardsHtml[2]}</tr>
+                          <tr class="dim-row">${dimensionCardsHtml[3]}${dimensionCardsHtml[4]}${dimensionCardsHtml[5]}</tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Section 4 - Bucket Scores -->
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
+                    <tr>
+                      <td style="padding: 16px 20px;">
+                        <h3 style="color: white; margin: 0 0 12px 0; font-size: 16px;">📊 Bucket Scores</h3>
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                          ${bucketRows}
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Section 5 - Effort Allocation -->
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
+                    <tr>
+                      <td style="padding: 16px 20px;">
+                        <h3 style="color: white; margin: 0 0 4px 0; font-size: 16px;">👥 Effort Allocation</h3>
+                        <p style="margin: 0 0 12px 0;"><span style="background: rgba(255,255,255,0.1); color: #d1d5db; padding: 2px 8px; border-radius: 4px; font-size: 12px;">${decision.effortBand}</span></p>
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                          ${[
+                            { label: "Senior", value: decision.effortPercentages.senior, alloc: decision.effortAllocation?.senior },
+                            { label: "Mid-Level", value: decision.effortPercentages.mid, alloc: decision.effortAllocation?.mid },
+                            { label: "Junior / Execution", value: decision.effortPercentages.junior, alloc: decision.effortAllocation?.execution },
+                          ].map(item => `
+                            <tr>
+                              <td style="padding: 4px 0 1px 0;">
+                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                                  <tr>
+                                    <td style="color: #d1d5db; font-size: 13px;">${item.label}</td>
+                                    <td style="text-align: right; color: white; font-weight: 700; font-family: monospace; font-size: 13px;">${item.value}</td>
+                                  </tr>
+                                </table>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding: 0 0 ${item.alloc != null ? '0' : '8'}px 0;">
+                                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                                  <div style="width: ${item.value || '0%'}; height: 8px; background: #06b6d4; border-radius: 4px;"></div>
+                                </div>
+                              </td>
+                            </tr>
+                            ${item.alloc != null ? `<tr><td style="padding: 0 0 8px 0; color: #6b7280; font-size: 11px;">Allocation: ${item.alloc}%</td></tr>` : ''}
+                          `).join('')}
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Section 6 - Primary Risk Drivers -->
+                  ${decision.dominantDrivers && decision.dominantDrivers.length > 0 ? `
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
+                    <tr>
+                      <td style="padding: 16px 20px;">
+                        <h3 style="color: white; margin: 0 0 12px 0; font-size: 16px;">⚡ Primary Risk Drivers</h3>
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                          ${decision.dominantDrivers.map(driver => `
+                            <tr>
+                              <td style="padding: 3px 0;">
+                                <span style="display: inline-block; background: rgba(245,158,11,0.2); color: #fcd34d; padding: 4px 12px; border-radius: 16px; font-size: 13px; font-weight: 500; border: 1px solid rgba(245,158,11,0.3);">▸ ${driver}</span>
+                              </td>
+                            </tr>
+                          `).join('')}
+                        </table>
                       </td>
                     </tr>
                   </table>
                   ` : ''}
+
+                  <!-- Section 7 - Structural Risk Signals -->
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
+                    <tr>
+                      <td style="padding: 16px 20px;">
+                        <h3 style="color: white; margin: 0 0 12px 0; font-size: 16px;">🛡️ Structural Risk Signals</h3>
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                          ${saturationFlagsHtml}
+                        </table>
+                        <table role="presentation" class="signal-row" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin-top: 8px;">
+                          <tr>
+                            <td width="33.33%" style="padding: 4px; vertical-align: top;">
+                              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.03); border-radius: 8px;">
+                                <tr><td style="padding: 10px;">
+                                  <p style="color: #6b7280; margin: 0 0 2px 0; font-size: 11px;">AI Impact</p>
+                                  <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${decision.aiImpactClassification}</p>
+                                </td></tr>
+                              </table>
+                            </td>
+                            <td width="33.33%" style="padding: 4px; vertical-align: top;">
+                              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.03); border-radius: 8px;">
+                                <tr><td style="padding: 10px;">
+                                  <p style="color: #6b7280; margin: 0 0 2px 0; font-size: 11px;">Risk Source</p>
+                                  <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${decision.riskSource}</p>
+                                </td></tr>
+                              </table>
+                            </td>
+                            <td width="33.33%" style="padding: 4px; vertical-align: top;">
+                              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.03); border-radius: 8px;">
+                                <tr><td style="padding: 10px;">
+                                  <p style="color: #6b7280; margin: 0 0 2px 0; font-size: 11px;">Correctability</p>
+                                  <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${decision.correctability}</p>
+                                </td></tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Section 8 - Contradiction Flags -->
+                  ${contradictionFlagsHtml}
+
+                  <!-- Section 9 - Actionable Recommendations -->
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
+                    <tr>
+                      <td style="padding: 16px 20px;">
+                        <h3 style="color: white; margin: 0 0 12px 0; font-size: 16px;">✅ Actionable Recommendations</h3>
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                          ${recommendationsHtml}
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+
+                  <!-- Decision ID & Timestamp -->
+                  <p style="text-align: center; color: #6b7280; font-size: 11px; margin: 16px 0 0 0;">
+                    Decision ID: ${decision.id} · Generated: ${new Date(decision.createdAt).toLocaleString()}
+                  </p>
                 </td>
               </tr>
             </table>
@@ -312,7 +514,7 @@ export async function sendAssessmentEmail(
             <!-- Footer -->
             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
               <tr>
-                <td style="background: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
+                <td style="background: #111827; padding: 20px; text-align: center; border-radius: 0 0 12px 12px; border: 1px solid rgba(255,255,255,0.1); border-top: none;">
                   <p style="color: #10b981; font-weight: bold; margin: 0;">MarginMix</p>
                   <p style="color: #9ca3af; font-size: 12px; margin: 5px 0 0 0;">Deterministic Decision Engine v1.0</p>
                   <p style="color: #6b7280; font-size: 11px; margin: 5px 0 0 0;">© 2026 Digital Lexicon. All rights reserved.</p>
