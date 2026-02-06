@@ -475,7 +475,7 @@ export default function QuickProfiler() {
             <div
               key={q.id}
               className={`
-                w-6 h-6 sm:w-8 sm:h-8 rounded-md flex items-center justify-center text-[10px] sm:text-xs font-bold transition-all duration-500
+                w-5 h-5 sm:w-8 sm:h-8 rounded-md flex items-center justify-center text-[9px] sm:text-xs font-bold transition-all duration-500
                 ${isAnswered && riskLevel ? `${getHeatmapColor(riskLevel)} text-white shadow-md ${getHeatmapGlow(riskLevel)}` : ''}
                 ${!isAnswered && isActive ? 'bg-white/30 text-white/80 ring-2 ring-white/60 animate-pulse' : ''}
                 ${!isAnswered && !isActive ? 'bg-white/10 text-white/40' : ''}

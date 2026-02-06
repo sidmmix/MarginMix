@@ -716,8 +716,7 @@ export default function Assessment() {
       if (now - lastScrollTime < scrollThrottle) return;
       if (isTransitioning || isSubmitting) return;
       
-      // Don't intercept scroll inside review screen's scrollable content
-      if (isReviewScreen) return;
+      if (isReviewScreen || showDecisionPage) return;
       
       if (e.deltaY > 50) {
         // Scroll down - go to next question (forward)
@@ -757,7 +756,7 @@ export default function Assessment() {
       container.addEventListener('wheel', handleWheel, { passive: true });
       return () => container.removeEventListener('wheel', handleWheel);
     }
-  }, [currentQuestion, isIntro, isReviewScreen, isTransitioning, isSubmitting, totalQuestions]);
+  }, [currentQuestion, isIntro, isReviewScreen, isTransitioning, isSubmitting, totalQuestions, showDecisionPage]);
 
   // Touch swipe for mobile navigation
   useEffect(() => {
@@ -770,7 +769,7 @@ export default function Assessment() {
     };
     
     const handleTouchEnd = (e: TouchEvent) => {
-      if (isTransitioning || isSubmitting || isReviewScreen) return;
+      if (isTransitioning || isSubmitting || isReviewScreen || showDecisionPage) return;
       
       touchEndY = e.changedTouches[0].clientY;
       const swipeDistance = touchStartY - touchEndY;
@@ -813,7 +812,7 @@ export default function Assessment() {
         container.removeEventListener('touchend', handleTouchEnd);
       };
     }
-  }, [currentQuestion, isIntro, isReviewScreen, isTransitioning, isSubmitting, totalQuestions]);
+  }, [currentQuestion, isIntro, isReviewScreen, isTransitioning, isSubmitting, totalQuestions, showDecisionPage]);
 
   const downloadPDF = (filename: string, base64Data: string) => {
     const link = document.createElement('a');
@@ -985,7 +984,7 @@ export default function Assessment() {
       >
         <div className={`min-h-screen bg-gradient-to-br ${gradient} flex flex-col`}>
           {/* Question content */}
-          <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-16 sm:py-20">
+          <div className="flex-1 flex items-center justify-center pl-4 pr-8 sm:px-6 py-16 sm:py-20">
             <div 
               className={`w-full max-w-2xl transition-all duration-500 ${
                 isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -1657,7 +1656,7 @@ export default function Assessment() {
 
       {/* Vertical heatmap - fixed on right side */}
       {!isIntro && !isReviewScreen && !showDecisionPage && currentQuestion >= 0 && (
-        <div className="fixed right-2 sm:right-4 top-1/2 -translate-y-1/2 z-[100] flex flex-col items-center gap-[3px] sm:gap-1 bg-black/30 backdrop-blur-sm rounded-full py-3 sm:py-4 px-1.5 sm:px-2 border border-white/10" style={{ pointerEvents: 'auto' }}>
+        <div className="fixed right-1.5 sm:right-4 top-1/2 -translate-y-1/2 z-[90] flex flex-col items-center gap-[2px] sm:gap-1 bg-black/30 backdrop-blur-sm rounded-full py-2 sm:py-4 px-1 sm:px-2 border border-white/10 max-h-[60vh] sm:max-h-[70vh] overflow-y-auto scrollbar-hide" style={{ pointerEvents: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {activeQuestions.map((q, idx) => {
             const value = watchedValues[q.id] || "";
             const isAnswered = value !== "";
@@ -1685,8 +1684,8 @@ export default function Assessment() {
                 onClick={() => scrollToQuestion(idx)}
                 className={`flex-shrink-0 rounded-full border transition-all duration-300 ${cellColor} ${
                   isCurrent
-                    ? "w-3.5 h-3.5 sm:w-4 sm:h-4 ring-2 ring-white shadow-lg shadow-white/30"
-                    : "w-2.5 h-2.5 sm:w-3 sm:h-3"
+                    ? "w-3 h-3 sm:w-4 sm:h-4 ring-2 ring-white shadow-lg shadow-white/30"
+                    : "w-2 h-2 sm:w-3 sm:h-3"
                 } ${!isAnswered && !isCurrent ? "opacity-40" : "opacity-100"}`}
                 title={`Q${q.number}: ${q.title}`}
               />
