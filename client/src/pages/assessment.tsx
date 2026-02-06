@@ -20,7 +20,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Link, useSearch } from "wouter";
-import { ArrowDown, ArrowUp, ArrowLeft, Send, Check, ChevronDown, Save, Home } from "lucide-react";
+import { ArrowDown, ArrowUp, ArrowLeft, Send, Check, ChevronDown, Save, Home, Shield, ShieldCheck, ShieldAlert, AlertTriangle, TrendingUp, BarChart3, Users, Zap, Target, AlertCircle, Info, Download, ChevronRight } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Footer } from "@/components/footer";
@@ -36,6 +36,87 @@ const PROFILER_FIELD_KEYS = [
   "executionThinkingMix",
   "deliveryConfidence",
 ];
+
+const questionRiskMapping: Record<string, Record<string, "low" | "medium" | "high">> = {
+  organisationSize: { "200-500": "low", "500-1000": "low", "1000-1500": "medium", "1500-2000": "high" },
+  decisionEvaluating: { "new-client-win": "low", "renewal-extension": "low", "scope-expansion": "high", "escalation": "high", "strategic-exception": "medium", "exploratory": "low" },
+  specifyContext: { "single-client": "low", "group-of-clients": "medium" },
+  engagementClassification: { "new": "medium", "ongoing-less-6": "medium", "ongoing-6-12": "low", "ongoing-12-plus": "low", "renewal-expansion": "medium" },
+  engagementType: { "fixed-fee": "high", "retainer": "low", "hybrid": "medium" },
+  clientVolatility: { "low": "low", "medium": "medium", "high": "high" },
+  stakeholderComplexity: { "low": "low", "medium": "medium", "high": "high" },
+  seniorLeadershipInvolvement: { "minimal": "low", "periodic": "medium", "frequent": "high", "continuous": "high" },
+  midLevelOversight: { "low": "low", "medium": "medium", "high": "high" },
+  executionThinkingMix: { "execution-heavy": "low", "balanced": "medium", "thinking-heavy": "high" },
+  iterationIntensity: { "low": "low", "medium": "medium", "high": "high" },
+  scopeChangeLikelihood: { "low": "low", "medium": "medium", "high": "high" },
+  crossFunctionalCoordination: { "low": "low", "medium": "medium", "high": "high" },
+  aiImpactMeasurement: { "yes": "low", "no": "medium", "not_applicable": "low" },
+  marginalValueSaturation: { "significant": "low", "some": "medium", "minimal": "high", "none": "high" },
+  seniorOversightLoad: { "less": "low", "about_same": "medium", "more": "high" },
+  coordinationDecisionDrag: { "minimal": "low", "moderate": "medium", "heavy": "high" },
+  deliveryConfidence: { "high": "low", "some_concerns": "medium", "low": "high" },
+};
+
+function getHeatmapColor(risk: "low" | "medium" | "high"): string {
+  if (risk === "high") return "bg-red-500";
+  if (risk === "medium") return "bg-amber-400";
+  return "bg-emerald-500";
+}
+
+const neutralFields = ["fullName", "workEmail", "roleTitle", "organisationName", "openSignal"];
+
+const bucketLabels: Record<string, string> = {
+  WI: "Workforce Intensity",
+  SI: "Scope & Iteration",
+  CO: "Coordination & Overhead",
+  VSI: "Volatility & Stakeholder Impact",
+  CE: "Commercial Exposure",
+};
+
+function getVerdictRecommendations(verdict: string): string[] {
+  switch (verdict) {
+    case "Do Not Proceed Without Repricing":
+      return [
+        "Halt engagement until pricing reflects true delivery complexity",
+        "Conduct a structural redesign of the delivery model",
+        "Re-evaluate senior involvement requirements and cost implications",
+        "Negotiate scope boundaries before any commitment",
+        "Establish mandatory repricing triggers for scope changes",
+      ];
+    case "Structurally Fragile":
+      return [
+        "Reduce coordination load across teams and stakeholders",
+        "Implement governance checkpoints at key delivery milestones",
+        "Cap senior involvement to sustainable levels",
+        "Establish clear escalation protocols to prevent ad-hoc demands",
+        "Monitor workforce intensity metrics weekly",
+      ];
+    case "Execution Heavy":
+      return [
+        "Set clear effort caps for senior and mid-level resources",
+        "Limit senior leadership involvement to strategic checkpoints only",
+        "Automate repetitive execution tasks where possible",
+        "Track iteration cycles to prevent scope creep through overwork",
+      ];
+    case "Price Sensitive":
+      return [
+        "Protect scope boundaries with formal change request processes",
+        "Build pricing safeguards for out-of-scope work",
+        "Review commercial terms for flexibility provisions",
+        "Monitor scope elasticity indicators monthly",
+      ];
+    case "Structurally Safe":
+      return [
+        "Proceed with standard governance and monitoring",
+        "Maintain current delivery model and resource allocation",
+        "Schedule periodic reviews to catch emerging risk signals",
+        "Document successful patterns for future engagements",
+      ];
+    default:
+      return ["Review engagement parameters and consult with leadership."];
+  }
+}
 
 const assessmentSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -397,8 +478,10 @@ const questions: Question[] = [
 
 export default function Assessment() {
   const [currentQuestion, setCurrentQuestion] = useState(-1); // -1 = intro
-  const [showConfirmation, setShowConfirmation] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [decisionResult, setDecisionResult] = useState<any>(null);
+  const [showDecisionPage, setShowDecisionPage] = useState(false);
+  const [storedPdfData, setStoredPdfData] = useState<any>(null);
   const [consentChecked, setConsentChecked] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -753,21 +836,16 @@ export default function Assessment() {
         const result = await response.json();
         
         if (result.pdfs) {
-          setTimeout(() => {
-            downloadPDF(result.pdfs.decisionMemo.filename, result.pdfs.decisionMemo.data);
-          }, 100);
-          setTimeout(() => {
-            downloadPDF(result.pdfs.assessmentOutput.filename, result.pdfs.assessmentOutput.data);
-          }, 500);
+          setStoredPdfData(result.pdfs);
+          setTimeout(() => downloadPDF(result.pdfs.decisionMemo.filename, result.pdfs.decisionMemo.data), 100);
+          setTimeout(() => downloadPDF(result.pdfs.assessmentOutput.filename, result.pdfs.assessmentOutput.data), 500);
         }
         
-        try {
-          localStorage.removeItem(STORAGE_KEY);
-        } catch (e) {
-          console.error("Error clearing saved progress:", e);
-        }
-        setShowConfirmation(true);
-        form.reset();
+        setDecisionResult(result.decisionObject);
+        setShowDecisionPage(true);
+        setIsSubmitting(false);
+        
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
         
         toast({
           title: "Assessment Complete",
@@ -1155,12 +1233,320 @@ export default function Assessment() {
     );
   };
 
+  const renderDecisionPage = () => {
+    if (!showDecisionPage || !decisionResult) return null;
+    
+    const d = decisionResult;
+    const verdictColorMap: Record<string, string> = {
+      "Structurally Safe": "text-emerald-400",
+      "Price Sensitive": "text-amber-400",
+      "Execution Heavy": "text-amber-400",
+      "Structurally Fragile": "text-red-400",
+      "Do Not Proceed Without Repricing": "text-red-500",
+    };
+    const verdictBgMap: Record<string, string> = {
+      "Structurally Safe": "from-emerald-500/20 to-emerald-600/10 border-emerald-500/30",
+      "Price Sensitive": "from-amber-500/20 to-amber-600/10 border-amber-500/30",
+      "Execution Heavy": "from-amber-500/20 to-orange-600/10 border-amber-500/30",
+      "Structurally Fragile": "from-red-500/20 to-red-600/10 border-red-500/30",
+      "Do Not Proceed Without Repricing": "from-red-600/20 to-red-700/10 border-red-600/30",
+    };
+    const riskBandColor: Record<string, string> = {
+      Low: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
+      Moderate: "bg-amber-500/20 text-amber-400 border-amber-500/30",
+      High: "bg-red-500/20 text-red-400 border-red-500/30",
+      "Very High": "bg-red-600/20 text-red-500 border-red-600/30",
+    };
+    
+    const getDimensionColor = (level: string) => {
+      if (level === "high" || level === "negative") return "text-red-400 bg-red-500/20 border-red-500/30";
+      if (level === "medium" || level === "neutral") return "text-amber-400 bg-amber-500/20 border-amber-500/30";
+      return "text-emerald-400 bg-emerald-500/20 border-emerald-500/30";
+    };
+    
+    const getDimensionLabel = (level: string) => {
+      if (level === "positive") return "Positive";
+      if (level === "negative") return "Negative";
+      if (level === "neutral") return "Neutral";
+      return level.charAt(0).toUpperCase() + level.slice(1);
+    };
+
+    const getBucketBarColor = (score: number) => {
+      if (score >= 60) return "bg-red-500";
+      if (score >= 40) return "bg-amber-400";
+      return "bg-emerald-500";
+    };
+
+    const recommendations = getVerdictRecommendations(d.marginRiskVerdict);
+
+    const handleRedownload = () => {
+      if (storedPdfData) {
+        setTimeout(() => downloadPDF(storedPdfData.decisionMemo.filename, storedPdfData.decisionMemo.data), 100);
+        setTimeout(() => downloadPDF(storedPdfData.assessmentOutput.filename, storedPdfData.assessmentOutput.data), 500);
+        toast({ title: "PDFs Downloading", description: "Your assessment files are being downloaded." });
+      }
+    };
+
+    const dimensionCards = [
+      { name: "Workforce Intensity", level: d.dimensions?.workforceIntensity, icon: Users },
+      { name: "Coordination Entropy", level: d.dimensions?.coordinationEntropy, icon: Zap },
+      { name: "Commercial Exposure", level: d.dimensions?.commercialExposure, icon: TrendingUp },
+      { name: "Volatility Control", level: d.dimensions?.volatilityControl, icon: AlertTriangle },
+      { name: "Confidence Signal", level: d.dimensions?.confidenceSignal, icon: Shield },
+      { name: "Measurement Maturity", level: d.dimensions?.measurementMaturity, icon: BarChart3 },
+    ];
+
+    return (
+      <div className="absolute inset-0 z-30 overflow-y-auto">
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-16 sm:py-20 px-4 sm:px-6">
+          <div className="max-w-3xl mx-auto">
+
+            {/* Section 1 - Verdict Banner */}
+            <div className={`rounded-2xl border bg-gradient-to-br ${verdictBgMap[d.marginRiskVerdict] || verdictBgMap["Structurally Safe"]} p-6 sm:p-8 mb-6`}>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold ${verdictColorMap[d.marginRiskVerdict] || "text-white"}`}>
+                  {d.marginRiskVerdict}
+                </h1>
+                <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${riskBandColor[d.riskBand] || riskBandColor["Moderate"]}`}>
+                  {d.riskBand} Risk
+                </span>
+              </div>
+              <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">
+                {d.verdictReason}
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="flex-1">
+                  <div className="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>Composite Risk Score</span>
+                    <span className="font-mono font-bold text-white">{d.compositeRiskScore}/100</span>
+                  </div>
+                  <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-1000 ${
+                        d.compositeRiskScore >= 60 ? "bg-red-500" : d.compositeRiskScore >= 35 ? "bg-amber-400" : "bg-emerald-500"
+                      }`}
+                      style={{ width: `${d.compositeRiskScore}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 2 - Risk Dimension Summary */}
+            <div className="mb-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <Target className="h-5 w-5 text-emerald-400" />
+                Risk Dimensions
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {dimensionCards.map((dim) => {
+                  const Icon = dim.icon;
+                  return (
+                    <div key={dim.name} className={`rounded-xl border p-3 sm:p-4 ${getDimensionColor(dim.level || "low")}`}>
+                      <Icon className="h-4 w-4 mb-2 opacity-80" />
+                      <p className="text-xs text-gray-400 mb-1">{dim.name}</p>
+                      <p className="text-sm font-semibold">{getDimensionLabel(dim.level || "low")}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Section 3 - Bucket Scores */}
+            <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-emerald-400" />
+                Bucket Scores
+              </h2>
+              <div className="space-y-4">
+                {(["WI", "SI", "CO", "VSI", "CE"] as const).map((key) => {
+                  const score = d.bucketScores?.[key] ?? 0;
+                  const band = d.bucketBands?.[key] ?? "";
+                  return (
+                    <div key={key}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm text-gray-300">{bucketLabels[key]}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500">{band}</span>
+                          <span className="text-sm font-mono font-bold text-white">{score}</span>
+                        </div>
+                      </div>
+                      <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                        <div className={`h-full rounded-full transition-all duration-700 ${getBucketBarColor(score)}`} style={{ width: `${score}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Section 4 - Effort Allocation */}
+            <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-white mb-2 flex items-center gap-2">
+                <Users className="h-5 w-5 text-emerald-400" />
+                Effort Allocation
+              </h2>
+              <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-gray-300 mb-4">
+                {d.effortBand}
+              </span>
+              <div className="space-y-3">
+                {[
+                  { label: "Senior", value: d.effortPercentages?.senior, detail: d.effortAllocation?.senior },
+                  { label: "Mid-Level", value: d.effortPercentages?.mid, detail: d.effortAllocation?.mid },
+                  { label: "Junior / Execution", value: d.effortPercentages?.junior, detail: d.effortAllocation?.execution },
+                ].map((item) => (
+                  <div key={item.label}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="text-sm text-gray-300">{item.label}</span>
+                      <span className="text-sm font-mono font-bold text-white">{item.value}</span>
+                    </div>
+                    <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                      <div className="h-full bg-cyan-500 rounded-full transition-all duration-700" style={{ width: item.value || "0%" }} />
+                    </div>
+                    {item.detail != null && (
+                      <p className="text-xs text-gray-500 mt-0.5">Allocation: {item.detail}%</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Section 5 - Primary Risk Drivers */}
+            {d.dominantDrivers && d.dominantDrivers.length > 0 && (
+              <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                  <AlertTriangle className="h-5 w-5 text-amber-400" />
+                  Primary Risk Drivers
+                </h2>
+                <div className="flex flex-wrap gap-2">
+                  {d.dominantDrivers.map((driver: string, i: number) => (
+                    <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                      <ChevronRight className="h-3 w-3" />
+                      {driver}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Section 6 - Structural Risk Signals */}
+            <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <ShieldAlert className="h-5 w-5 text-red-400" />
+                Structural Risk Signals
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                {[
+                  { label: "Value Saturation Present", value: d.saturationDetails?.valueSaturationPresent },
+                  { label: "Optics-Driven Staffing", value: d.saturationDetails?.opticsDrivenStaffing },
+                  { label: "Upward Cost Shift", value: d.saturationDetails?.upwardCostShift },
+                ].map((flag) => (
+                  <div key={flag.label} className="flex items-center gap-2 p-2 rounded-lg bg-white/5">
+                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${flag.value ? "bg-red-500" : "bg-emerald-500"}`} />
+                    <span className="text-sm text-gray-300">{flag.label}</span>
+                    <span className={`ml-auto text-xs font-medium ${flag.value ? "text-red-400" : "text-emerald-400"}`}>
+                      {flag.value ? "Yes" : "No"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="p-3 rounded-lg bg-white/5">
+                  <p className="text-xs text-gray-500 mb-1">AI Impact</p>
+                  <p className="text-sm font-medium text-white">{d.aiImpactClassification}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-white/5">
+                  <p className="text-xs text-gray-500 mb-1">Risk Source</p>
+                  <p className="text-sm font-medium text-white">{d.riskSource}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-white/5">
+                  <p className="text-xs text-gray-500 mb-1">Correctability</p>
+                  <p className="text-sm font-medium text-white">{d.correctability}</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Section 7 - Contradiction Flags */}
+            {d.contradictionFlags && d.contradictionFlags.length > 0 && (
+              <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
+                <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                  <AlertCircle className="h-5 w-5 text-amber-400" />
+                  Contradiction Flags
+                </h2>
+                <div className="space-y-2">
+                  {d.contradictionFlags.map((flag: any, i: number) => (
+                    <div key={i} className={`flex items-start gap-3 p-3 rounded-lg ${flag.severity === "warning" ? "bg-amber-500/10 border border-amber-500/20" : "bg-blue-500/10 border border-blue-500/20"}`}>
+                      {flag.severity === "warning" ? (
+                        <AlertTriangle className="h-4 w-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                      ) : (
+                        <Info className="h-4 w-4 text-blue-400 flex-shrink-0 mt-0.5" />
+                      )}
+                      <div>
+                        <p className="text-sm text-gray-200">{flag.description}</p>
+                        <span className={`text-xs ${flag.severity === "warning" ? "text-amber-400" : "text-blue-400"}`}>
+                          {flag.severity === "warning" ? "Warning" : "Info"}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Section 8 - Actionable Recommendations */}
+            <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                Actionable Recommendations
+              </h2>
+              <div className="space-y-2">
+                {recommendations.map((rec, i) => (
+                  <div key={i} className="flex items-start gap-3 p-3 rounded-lg bg-white/5">
+                    <span className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold flex-shrink-0 mt-0.5">
+                      {i + 1}
+                    </span>
+                    <p className="text-sm text-gray-300">{rec}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Section 9 - CTA Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 pt-4 pb-8">
+              {storedPdfData && (
+                <Button
+                  onClick={handleRedownload}
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-6 text-base shadow-lg rounded-xl flex-1"
+                >
+                  <Download className="mr-2 h-5 w-5" />
+                  Download PDFs Again
+                </Button>
+              )}
+              <Link href="/" className="flex-1">
+                <Button
+                  variant="outline"
+                  className="w-full border-white/20 text-white hover:bg-white/10 py-6 text-base rounded-xl"
+                >
+                  <Home className="mr-2 h-5 w-5" />
+                  Return to Home
+                </Button>
+              </Link>
+            </div>
+
+          </div>
+          <Footer />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
       {/* Render all screens first */}
       {renderIntro()}
       {activeQuestions.map((_, index) => renderCard(index))}
       {renderReview()}
+      {renderDecisionPage()}
 
       {/* Fixed header with progress - rendered after content to be on top */}
       <div className="fixed top-0 left-0 right-0 z-[100] bg-black/40 backdrop-blur-md" style={{ pointerEvents: 'auto' }}>
@@ -1172,7 +1558,7 @@ export default function Assessment() {
             </Button>
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
-            {!isIntro && (
+            {!isIntro && !showDecisionPage && (
               <>
                 <span className="text-xs sm:text-sm text-white/80 font-medium">
                   {isReviewScreen ? "Review" : `${currentQuestion + 1}/${totalQuestions}`}
@@ -1201,10 +1587,42 @@ export default function Assessment() {
             )}
           </div>
         </div>
+        {!isIntro && !isReviewScreen && !showDecisionPage && (
+          <div className="max-w-4xl mx-auto px-3 sm:px-4 pb-2 flex items-center gap-0.5 overflow-x-auto">
+            {activeQuestions.map((q, idx) => {
+              const value = watchedValues[q.id] || "";
+              const isAnswered = value !== "";
+              const isCurrent = currentQuestion === idx;
+              const isNeutral = neutralFields.includes(q.id);
+              const riskMapping = questionRiskMapping[q.id];
+              const risk = riskMapping && value ? riskMapping[value] : null;
+              
+              let cellColor = "bg-white/10";
+              if (isAnswered) {
+                if (isNeutral || !risk) {
+                  cellColor = "bg-white/30";
+                } else {
+                  cellColor = getHeatmapColor(risk);
+                }
+              }
+              
+              return (
+                <button
+                  key={q.id}
+                  onClick={() => scrollToQuestion(idx)}
+                  className={`flex-shrink-0 w-[6px] h-[6px] sm:w-[7px] sm:h-[7px] rounded-[1px] transition-all duration-300 ${cellColor} ${
+                    isCurrent ? "ring-1 ring-white ring-offset-1 ring-offset-transparent animate-pulse scale-150" : ""
+                  } ${!isAnswered && !isCurrent ? "opacity-40" : ""}`}
+                  title={`Q${q.number}: ${q.title}`}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Navigation buttons - rendered after content to be on top */}
-      {!isIntro && !isReviewScreen && (
+      {!isIntro && !isReviewScreen && !showDecisionPage && (
         <div className="fixed bottom-4 sm:bottom-8 left-0 right-0 z-[100] flex flex-col items-center gap-2 px-4 sm:px-6" style={{ pointerEvents: 'auto' }}>
           {/* Swipe hint for mobile - show on first few questions */}
           {currentQuestion >= 0 && currentQuestion <= 2 && (
@@ -1256,26 +1674,6 @@ export default function Assessment() {
         </DialogContent>
       </Dialog>
 
-      {/* Confirmation Dialog */}
-      <Dialog open={showConfirmation} onOpenChange={setShowConfirmation}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-center text-emerald-600">
-              Assessment Submitted
-            </DialogTitle>
-            <DialogDescription className="text-center text-lg pt-4">
-              Thank you for submitting the responses. The Decision Memo & Assessment have been automatically downloaded on this device and an email copy has been sent to you!
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-center pt-4">
-            <Link href="/">
-              <Button className="bg-emerald-600 hover:bg-emerald-700">
-                Return to Home
-              </Button>
-            </Link>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
