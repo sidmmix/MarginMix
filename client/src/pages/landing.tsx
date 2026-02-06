@@ -24,25 +24,25 @@ export default function Landing() {
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 leading-tight">
               Predict Margin Risk prior to Delivery Commitment!
             </h1>
-            <p className="text-sm sm:text-base md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap">
               MarginMix is a deterministic pricing and margin decision engine for the services economy.
             </p>
-            <p className="text-sm sm:text-base md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 mx-auto leading-relaxed sm:whitespace-nowrap">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 mx-auto leading-relaxed sm:whitespace-nowrap">
               Use it for new briefs, new contracts, renewals, scope changes, or repricing discussions.
             </p>
-            <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 px-2 sm:px-0">
+            <p className="text-sm sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 px-2 sm:px-0">
               Works across all commercial models: Time & Materials · Fixed Price · Outcome-based · Hybrid engagements
             </p>
             <Button 
               size="lg" 
-              className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
+              className="h-12 sm:h-14 text-base sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
               data-testid="button-cta-hero"
               onClick={() => window.location.href = '/quick-profiler'}
             >
               1 Minute Risk Profile Scan
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
-            <p className="mt-5 sm:mt-6 text-base sm:text-xl font-bold text-gray-900 dark:text-white px-2 sm:px-0">
+            <p className="mt-5 sm:mt-6 text-lg sm:text-xl font-bold text-gray-900 dark:text-white px-2 sm:px-0">
               MarginMix is a decision infrastructure for{" "}
               <span className="text-emerald-600 dark:text-emerald-400">pricing risk</span>,{" "}
               <span className="text-red-600 dark:text-red-400">not a productivity tool!</span>
@@ -55,13 +55,13 @@ export default function Landing() {
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6 text-center">
               Why This Matters
             </h2>
-            <p className="text-xl text-gray-700 dark:text-gray-300 mb-6 text-center">
+            <p className="text-base md:text-xl text-gray-700 dark:text-gray-300 mb-6 text-center">
               Most margin risk is locked in at pricing and scoping. Once delivery starts, leaders are often flying blind — relying on gut feel rather than structured insight.
             </p>
-            <p className="text-xl text-emerald-600 dark:text-emerald-400 font-semibold text-center">
+            <p className="text-base md:text-xl text-emerald-600 dark:text-emerald-400 font-semibold text-center">
               MarginMix helps price work accurately - an imperative for the billable hours intensive service industry.  
             </p>
           </div>
@@ -72,10 +72,10 @@ export default function Landing() {
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">
               What MarginMix Does
             </h2>
-            <p className="text-xl text-gray-700 dark:text-gray-300 mb-12 text-center max-w-3xl mx-auto">
+            <p className="text-base md:text-xl text-gray-700 dark:text-gray-300 mb-12 text-center max-w-3xl mx-auto">
               MarginMix acts as a pricing and margin assurance layer. It evaluates whether work is structurally viable based on how it will actually be staffed, governed, and reviewed — not how it looks on paper.
             </p>
             
@@ -158,7 +158,7 @@ export default function Landing() {
       {/* Who this is designed for */}
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
             Who this is designed for
           </h2>
           <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
@@ -213,7 +213,7 @@ export default function Landing() {
       {/* How the Margin Risk Assessment works */}
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
             How the Margin Risk Assessment works
           </h2>
           <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -221,7 +221,7 @@ export default function Landing() {
               <div className="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
                 1
               </div>
-              <p className="text-gray-700 dark:text-gray-300 text-lg">
+              <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
                 You describe the intended structure of an engagement
               </p>
             </div>
@@ -229,7 +229,7 @@ export default function Landing() {
               <div className="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
                 2
               </div>
-              <p className="text-gray-700 dark:text-gray-300 text-lg">
+              <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
                 MarginMix evaluates workforce intensity and shadow labor risk
               </p>
             </div>
@@ -237,12 +237,12 @@ export default function Landing() {
               <div className="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
                 3
               </div>
-              <p className="text-gray-700 dark:text-gray-300 text-lg">
+              <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
                 You receive a clear margin-risk verdict with decision guidance
               </p>
             </div>
           </div>
-          <p className="text-center text-emerald-600 dark:text-emerald-400 mt-8 text-lg font-bold">
+          <p className="text-center text-emerald-600 dark:text-emerald-400 mt-8 text-base md:text-lg font-bold">
             This is an assessment of economic viability — not a delivery forecast.
           </p>
         </div>
@@ -251,7 +251,7 @@ export default function Landing() {
       {/* Example output */}
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
             Example output
           </h2>
           <div className="max-w-3xl mx-auto">
@@ -280,13 +280,13 @@ export default function Landing() {
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               Why MarginMix exists
             </h2>
-            <p className="text-xl text-gray-700 dark:text-gray-300 mb-6">
+            <p className="text-base md:text-xl text-gray-700 dark:text-gray-300 mb-6">
               MarginMix is built from lived agency and consulting experience — where margin loss isn't theoretical, it's experienced.
             </p>
-            <p className="text-xl text-emerald-600 dark:text-emerald-400 font-semibold">
+            <p className="text-base md:text-xl text-emerald-600 dark:text-emerald-400 font-semibold">
               It exists to surface economic truth early, while decisions can still be changed.
             </p>
           </div>
