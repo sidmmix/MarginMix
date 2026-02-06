@@ -9,6 +9,7 @@ import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import Dashboard from "@/pages/dashboard";
 import Assessment from "@/pages/assessment";
+import QuickProfiler from "@/pages/quick-profiler";
 import Founder from "@/pages/founder";
 import WhyChoose from "@/pages/why-choose";
 import { AuthPage } from "@/pages/auth";
@@ -43,6 +44,7 @@ function Router() {
     <Switch>
       {/* Public routes */}
       <Route path="/" component={Landing} />
+      <Route path="/quick-profiler" component={QuickProfiler} />
       <Route path="/assessment" component={Assessment} />
       <Route path="/founder" component={Founder} />
       <Route path="/why-choose" component={WhyChoose} />

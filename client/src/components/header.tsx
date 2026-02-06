@@ -39,6 +39,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
   const navLinks = [
     { href: "/founder", label: "Why Exists", mobileLabel: "Why Exists" },
     { href: "/why-choose", label: "Why Choose", mobileLabel: "Why Choose" },
+    { href: "/quick-profiler", label: "Quick Risk Check", mobileLabel: "Risk Check" },
     { href: "/assessment", label: "Assessment", mobileLabel: "Assess" },
   ];
 

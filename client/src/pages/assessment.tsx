@@ -19,13 +19,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Link } from "wouter";
+import { Link, useSearch } from "wouter";
 import { ArrowDown, ArrowUp, ArrowLeft, Send, Check, ChevronDown, Save, Home } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Footer } from "@/components/footer";
 
 const STORAGE_KEY = "marginmix_assessment_progress";
+const PROFILER_STORAGE_KEY = "marginmix_profiler_answers";
+
+const PROFILER_FIELD_KEYS = [
+  "decisionEvaluating",
+  "engagementClassification",
+  "clientVolatility",
+  "seniorLeadershipInvolvement",
+  "executionThinkingMix",
+  "deliveryConfidence",
+];
 
 const assessmentSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
@@ -393,6 +403,28 @@ export default function Assessment() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const searchString = useSearch();
+  const isFromProfiler = searchString.includes("from=profiler");
+
+  const [profilerAnswers, setProfilerAnswers] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (isFromProfiler) {
+      try {
+        const stored = localStorage.getItem(PROFILER_STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setProfilerAnswers(parsed);
+        }
+      } catch (e) {
+        console.error("Error loading profiler answers:", e);
+      }
+    }
+  }, [isFromProfiler]);
+
+  const activeQuestions = isFromProfiler
+    ? questions.filter(q => !PROFILER_FIELD_KEYS.includes(q.id)).map((q, idx) => ({ ...q, number: idx + 1 }))
+    : questions;
 
   const saveProgress = () => {
     try {
@@ -416,7 +448,7 @@ export default function Assessment() {
     }
   };
 
-  const totalQuestions = questions.length;
+  const totalQuestions = activeQuestions.length;
   const isIntro = currentQuestion === -1;
   const isReviewScreen = currentQuestion === totalQuestions;
 
@@ -454,6 +486,15 @@ export default function Assessment() {
   });
 
   useEffect(() => {
+    if (isFromProfiler && Object.keys(profilerAnswers).length > 0) {
+      const currentValues = form.getValues();
+      form.reset({ ...currentValues, ...profilerAnswers });
+      toast({
+        title: "Quick Profile Loaded",
+        description: `${Object.keys(profilerAnswers).length} answers carried over. Complete the remaining questions.`,
+      });
+      return;
+    }
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -470,7 +511,7 @@ export default function Assessment() {
     } catch (e) {
       console.error("Error loading saved progress:", e);
     }
-  }, []);
+  }, [profilerAnswers]);
 
   const watchedValues = form.watch();
 
@@ -541,8 +582,7 @@ export default function Assessment() {
   // Q23 (index 22): textarea - auto-focus enabled
   useEffect(() => {
     if (currentQuestion >= 0 && currentQuestion < totalQuestions) {
-      const question = questions[currentQuestion];
-      // Only auto-focus for Q1-Q4 (indices 0-3) and Q23 (index 22)
+      const question = activeQuestions[currentQuestion];
       const shouldAutoFocus = currentQuestion <= 3 || currentQuestion === totalQuestions - 1;
       
       if (shouldAutoFocus && (question.type === "text" || question.type === "email" || question.type === "textarea")) {
@@ -562,7 +602,7 @@ export default function Assessment() {
     const values = form.getValues();
     // Questions 0-21 (indices) are mandatory, question 22 (index) / Q23 is optional
     for (let i = 0; i < totalQuestions - 1; i++) {
-      const question = questions[i];
+      const question = activeQuestions[i];
       const value = values[question.id as keyof typeof values];
       if (!value || value === "") {
         return false;
@@ -574,7 +614,7 @@ export default function Assessment() {
   // Check if current question is answered
   const isCurrentQuestionAnswered = () => {
     if (currentQuestion < 0 || currentQuestion >= totalQuestions) return true;
-    const question = questions[currentQuestion];
+    const question = activeQuestions[currentQuestion];
     // Q23 (last question) is optional
     if (currentQuestion === totalQuestions - 1) return true;
     const values = form.getValues();
@@ -795,14 +835,14 @@ export default function Assessment() {
   };
 
   const handleOptionSelect = (value: string) => {
-    const question = questions[currentQuestion];
+    const question = activeQuestions[currentQuestion];
     form.setValue(question.id, value);
     setTimeout(() => handleNext(), 400);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey && currentQuestion >= 0 && currentQuestion < totalQuestions) {
-      const question = questions[currentQuestion];
+      const question = activeQuestions[currentQuestion];
       const isLastQuestion = currentQuestion === totalQuestions - 1;
       // Allow Enter on non-textarea questions, or on the last question (optional) to go to review
       if (question.type !== "textarea" || isLastQuestion) {
@@ -842,7 +882,7 @@ export default function Assessment() {
   };
 
   const renderCard = (questionIndex: number) => {
-    const question = questions[questionIndex];
+    const question = activeQuestions[questionIndex];
     const isActive = currentQuestion === questionIndex;
     
     // Only render cards that are nearby for performance
@@ -989,15 +1029,15 @@ export default function Assessment() {
             </p>
             
             <p className="text-sm sm:text-base md:text-lg text-emerald-50 mb-6 sm:mb-10 leading-relaxed max-w-xl mx-auto px-2">
-              You're about to assess margin risk before it gets priced into a decision.
-              This assessment helps leaders evaluate whether a client engagement 
-              is priced in line with its true delivery complexity.
+              {isFromProfiler
+                ? "Your Quick Risk Profile answers have been carried over. Complete the remaining questions for full Decision Clarity with a detailed Margin Risk Decision Memo."
+                : "You're about to assess margin risk before it gets priced into a decision. This assessment helps leaders evaluate whether a client engagement is priced in line with its true delivery complexity."}
             </p>
             
             <div className="flex flex-wrap justify-center gap-2 sm:gap-6 mb-6 sm:mb-12 text-emerald-100 text-xs sm:text-base">
               <div className="flex items-center gap-2 bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
                 <Check className="h-4 w-4 sm:h-5 sm:w-5" />
-                <span>23 questions</span>
+                <span>{totalQuestions} questions</span>
               </div>
               <div className="flex items-center gap-2 bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
                 <Check className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -1042,7 +1082,7 @@ export default function Assessment() {
             <p className="text-gray-400 mb-8">Click any answer to edit it.</p>
             
             <div className="space-y-3 mb-8">
-              {questions.map((question, index) => {
+              {activeQuestions.map((question, index) => {
                 const value = watchedValues[question.id];
                 const displayValue = question.options?.find(o => o.value === value)?.label || value || "Not answered";
                 const gradient = getSectionGradient(question.sectionColor);
@@ -1119,7 +1159,7 @@ export default function Assessment() {
     <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
       {/* Render all screens first */}
       {renderIntro()}
-      {questions.map((_, index) => renderCard(index))}
+      {activeQuestions.map((_, index) => renderCard(index))}
       {renderReview()}
 
       {/* Fixed header with progress - rendered after content to be on top */}
