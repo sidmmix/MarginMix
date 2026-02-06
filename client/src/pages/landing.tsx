@@ -18,14 +18,14 @@ export default function Landing() {
       <div className="h-16"></div>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-8 pb-20">
+      <section className="relative overflow-hidden pt-16 sm:pt-20 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 leading-tight">
-              Don't under-price your complexity!
+              Predict Margin Risk prior to Delivery Commitment!
             </h1>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-4 max-w-4xl mx-auto leading-relaxed">
-              MarginMix is a decision system that shows how staffing complexity, coordination load, and senior effort impact margin — before you commit.
+              MarginMix is a deterministic pricing and margin decision engine for the services economy.
             </p>
             <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto leading-relaxed">
               Use it for new briefs, new contracts, renewals, scope changes, or repricing discussions.
