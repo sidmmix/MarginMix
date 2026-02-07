@@ -581,10 +581,10 @@ export default function QuickProfiler() {
     return (
       <div
         key={question.id}
-        className={`absolute inset-0 z-20 ${isActive ? "" : "pointer-events-none opacity-0"}`}
+        className={`absolute inset-0 z-20 overflow-y-auto ${isActive ? "" : "pointer-events-none opacity-0"}`}
       >
         <div className={`min-h-screen bg-gradient-to-br ${gradient} flex flex-col`}>
-          <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-16 sm:py-20">
+          <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
             <div
               className={`w-full max-w-2xl transition-all duration-500 ${
                 isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
