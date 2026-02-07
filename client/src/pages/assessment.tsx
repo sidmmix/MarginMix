@@ -42,7 +42,7 @@ const questionRiskMapping: Record<string, Record<string, "low" | "medium" | "hig
   decisionEvaluating: { "new-client-win": "low", "renewal-extension": "low", "scope-expansion": "high", "escalation": "high", "strategic-exception": "medium", "exploratory": "low" },
   specifyContext: { "single-client": "low", "group-of-clients": "medium" },
   engagementClassification: { "new": "medium", "ongoing-less-6": "medium", "ongoing-6-12": "low", "ongoing-12-plus": "low", "renewal-expansion": "medium" },
-  engagementType: { "commission": "medium", "fixed-fee": "high", "retainer": "low", "outcome-based": "high", "hybrid-retainer-commission": "medium", "hybrid-retainer-outcome": "medium" },
+  engagementType: { "commission": "high", "fixed-fee": "low", "retainer": "low", "outcome-based": "high", "hybrid-retainer-commission": "medium", "hybrid-retainer-outcome": "medium" },
   clientVolatility: { "low": "low", "medium": "medium", "high": "high" },
   stakeholderComplexity: { "low": "low", "medium": "medium", "high": "high" },
   seniorLeadershipInvolvement: { "minimal": "low", "periodic": "medium", "frequent": "high", "continuous": "high" },

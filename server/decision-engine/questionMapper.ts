@@ -137,8 +137,8 @@ export function mapQuestionsToSignals(input: AssessmentInput): Signals {
     input.decisionType === "strategic-exception" ? "strategic" : "new";
 
   const pricingRigidity: Level =
-    (input.engagementType === "fixed-fee" || input.engagementType === "outcome-based") ? "high" :
-    (input.engagementType === "hybrid" || input.engagementType === "hybrid-retainer-commission" || input.engagementType === "hybrid-retainer-outcome" || input.engagementType === "commission") ? "medium" : "low";
+    (input.engagementType === "commission" || input.engagementType === "outcome-based") ? "high" :
+    (input.engagementType === "hybrid" || input.engagementType === "hybrid-retainer-commission" || input.engagementType === "hybrid-retainer-outcome") ? "medium" : "low";
 
   const executionMix = input.executionThinkingMix;
   const teamMaturity: Level =
