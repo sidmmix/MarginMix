@@ -13,6 +13,7 @@ interface ProfilerQuestion {
   number: number;
   title: string;
   subtitle?: string;
+  context?: string;
   section: string;
   sectionColor: string;
   options: { value: string; label: string }[];
@@ -25,6 +26,7 @@ const profilerQuestions: ProfilerQuestion[] = [
     fieldKey: "decisionEvaluating",
     number: 1,
     title: "What decision are you evaluating with this assessment?",
+    context: "The type of decision shapes how much pricing flexibility remains.",
     section: "Context",
     sectionColor: "emerald",
     options: [
@@ -49,6 +51,7 @@ const profilerQuestions: ProfilerQuestion[] = [
     fieldKey: "engagementClassification",
     number: 2,
     title: "How would you classify this engagement today?",
+    context: "Engagement maturity affects how predictable the delivery effort will be.",
     section: "Context",
     sectionColor: "emerald",
     options: [
@@ -71,6 +74,7 @@ const profilerQuestions: ProfilerQuestion[] = [
     fieldKey: "clientVolatility",
     number: 3,
     title: "How would you rate client volatility?",
+    context: "Client stability directly impacts coordination cost and rework risk.",
     section: "Workforce Intensity",
     sectionColor: "teal",
     options: [
@@ -89,6 +93,7 @@ const profilerQuestions: ProfilerQuestion[] = [
     fieldKey: "seniorLeadershipInvolvement",
     number: 4,
     title: "What's the planned senior leadership involvement?",
+    context: "Senior time is the most expensive resource — its draw shapes margin.",
     section: "Workforce Intensity",
     sectionColor: "teal",
     options: [
@@ -109,6 +114,7 @@ const profilerQuestions: ProfilerQuestion[] = [
     fieldKey: "executionThinkingMix",
     number: 5,
     title: "What's the execution vs thinking mix?",
+    context: "Thinking-heavy work is harder to scope, price, and delegate.",
     section: "Effort & Delivery",
     sectionColor: "cyan",
     options: [
@@ -128,6 +134,7 @@ const profilerQuestions: ProfilerQuestion[] = [
     number: 6,
     title: "Delivery Confidence",
     subtitle: "How confident are you in the delivery model for this engagement? (executive gut-check)",
+    context: "Low confidence often signals structural issues that pricing alone cannot fix.",
     section: "Confidence Signal",
     sectionColor: "amber",
     options: [
@@ -598,8 +605,14 @@ export default function QuickProfiler() {
               </h2>
 
               {question.subtitle && (
-                <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
+                <p className="text-base sm:text-xl text-white/80 mb-3 sm:mb-4">
                   {question.subtitle}
+                </p>
+              )}
+
+              {question.context && (
+                <p className="text-sm sm:text-base text-white/60 italic mb-6 sm:mb-8">
+                  Why this matters: {question.context}
                 </p>
               )}
 

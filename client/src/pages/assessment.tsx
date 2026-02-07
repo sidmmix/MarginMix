@@ -151,6 +151,7 @@ interface Question {
   number: number;
   title: string;
   subtitle?: string;
+  context?: string;
   type: "text" | "email" | "select" | "textarea";
   placeholder?: string;
   options?: { value: string; label: string }[];
@@ -204,6 +205,7 @@ const questions: Question[] = [
     id: "organisationSize",
     number: 5,
     title: "What's your organization size?",
+    context: "Larger organizations create more coordination layers that consume margin.",
     type: "select",
     options: [
       { value: "200-500", label: "200–500" },
@@ -219,6 +221,7 @@ const questions: Question[] = [
     id: "decisionEvaluating",
     number: 6,
     title: "What decision are you evaluating with this assessment?",
+    context: "The type of decision shapes how much pricing flexibility remains.",
     type: "select",
     options: [
       { value: "new-client-win", label: "New client win / pitch acceptance" },
@@ -236,6 +239,7 @@ const questions: Question[] = [
     id: "specifyContext",
     number: 7,
     title: "Specify Context",
+    context: "Multi-client assessments carry compounding coordination risk.",
     type: "select",
     options: [
       { value: "single-client", label: "Single client" },
@@ -249,6 +253,7 @@ const questions: Question[] = [
     id: "engagementClassification",
     number: 8,
     title: "How would you classify this engagement today?",
+    context: "Engagement maturity affects how predictable the delivery effort will be.",
     type: "select",
     options: [
       { value: "new", label: "New (pre-kickoff / onboarding phase)" },
@@ -265,6 +270,7 @@ const questions: Question[] = [
     id: "engagementType",
     number: 9,
     title: "What's the engagement type?",
+    context: "Fixed-fee models absorb scope creep risk that retainers can pass through.",
     type: "select",
     options: [
       { value: "fixed-fee", label: "Fixed fee" },
@@ -279,6 +285,7 @@ const questions: Question[] = [
     id: "clientVolatility",
     number: 10,
     title: "How would you rate client volatility?",
+    context: "Client stability directly impacts coordination cost and rework risk.",
     type: "select",
     options: [
       { value: "low", label: "Low (stable stakeholders, clear expectations)" },
@@ -293,6 +300,7 @@ const questions: Question[] = [
     id: "stakeholderComplexity",
     number: 11,
     title: "What's the stakeholder complexity level?",
+    context: "More stakeholders mean more alignment cycles and hidden decision drag.",
     type: "select",
     options: [
       { value: "low", label: "Low" },
@@ -307,6 +315,7 @@ const questions: Question[] = [
     id: "seniorLeadershipInvolvement",
     number: 12,
     title: "What's the planned senior leadership involvement?",
+    context: "Senior time is the most expensive resource — its draw shapes margin.",
     type: "select",
     options: [
       { value: "minimal", label: "Minimal (oversight only)" },
@@ -322,6 +331,7 @@ const questions: Question[] = [
     id: "midLevelOversight",
     number: 13,
     title: "What's the mid-level oversight intensity?",
+    context: "Mid-level oversight intensity reveals how much management tax the work carries.",
     type: "select",
     options: [
       { value: "low", label: "Low" },
@@ -336,6 +346,7 @@ const questions: Question[] = [
     id: "executionThinkingMix",
     number: 14,
     title: "What's the execution vs thinking mix?",
+    context: "Thinking-heavy work is harder to scope, price, and delegate.",
     type: "select",
     options: [
       { value: "execution-heavy", label: "Execution-heavy" },
@@ -350,6 +361,7 @@ const questions: Question[] = [
     id: "iterationIntensity",
     number: 15,
     title: "What's the expected iteration intensity?",
+    context: "High iteration erodes margin through repeated cycles of rework and refinement.",
     type: "select",
     options: [
       { value: "low", label: "Low" },
@@ -364,6 +376,7 @@ const questions: Question[] = [
     id: "scopeChangeLikelihood",
     number: 16,
     title: "What's the likelihood of scope change?",
+    context: "Scope changes without repricing are the most common source of margin leak.",
     type: "select",
     options: [
       { value: "low", label: "Low" },
@@ -378,6 +391,7 @@ const questions: Question[] = [
     id: "crossFunctionalCoordination",
     number: 17,
     title: "How much cross-functional coordination is required?",
+    context: "Cross-team coordination creates invisible overhead that rarely gets priced in.",
     type: "select",
     options: [
       { value: "low", label: "Low" },
@@ -392,6 +406,7 @@ const questions: Question[] = [
     id: "aiImpactMeasurement",
     number: 18,
     title: "Are you measuring the impact of AI in your client delivery?",
+    context: "Unmeasured AI impact can mask true delivery cost or inflate perceived efficiency.",
     type: "select",
     options: [
       { value: "yes", label: "Yes" },
@@ -407,6 +422,7 @@ const questions: Question[] = [
     number: 19,
     title: "Value Saturation",
     subtitle: "Compared to similar work, how much incremental value does adding more people create here?",
+    context: "When adding people stops creating value, staffing becomes a cost center.",
     type: "select",
     options: [
       { value: "significant", label: "Significant additional value" },
@@ -423,6 +439,7 @@ const questions: Question[] = [
     number: 20,
     title: "Senior Oversight Load",
     subtitle: "Compared to similar engagements, how much senior oversight does this require?",
+    context: "Disproportionate senior oversight signals structural delivery risk.",
     type: "select",
     options: [
       { value: "less", label: "Less than usual" },
@@ -438,6 +455,7 @@ const questions: Question[] = [
     number: 21,
     title: "Coordination & Decision Drag",
     subtitle: "How much coordination is required across teams and stakeholders?",
+    context: "Heavy coordination slows decisions and inflates the cost of every deliverable.",
     type: "select",
     options: [
       { value: "minimal", label: "Minimal" },
@@ -453,6 +471,7 @@ const questions: Question[] = [
     number: 22,
     title: "Delivery Confidence",
     subtitle: "How confident are you in the delivery model for this engagement? (executive gut-check)",
+    context: "Low confidence often signals structural issues that pricing alone cannot fix.",
     type: "select",
     options: [
       { value: "high", label: "High confidence" },
@@ -1007,8 +1026,14 @@ export default function Assessment() {
               </h2>
               
               {question.subtitle && (
-                <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
+                <p className="text-base sm:text-xl text-white/80 mb-3 sm:mb-4">
                   {question.subtitle}
+                </p>
+              )}
+
+              {question.context && (
+                <p className="text-sm sm:text-base text-white/60 italic mb-6 sm:mb-8">
+                  Why this matters: {question.context}
                 </p>
               )}
 
