@@ -42,7 +42,7 @@ const questionRiskMapping: Record<string, Record<string, "low" | "medium" | "hig
   decisionEvaluating: { "new-client-win": "low", "renewal-extension": "low", "scope-expansion": "high", "escalation": "high", "strategic-exception": "medium", "exploratory": "low" },
   specifyContext: { "single-client": "low", "group-of-clients": "medium" },
   engagementClassification: { "new": "medium", "ongoing-less-6": "medium", "ongoing-6-12": "low", "ongoing-12-plus": "low", "renewal-expansion": "medium" },
-  engagementType: { "fixed-fee": "high", "retainer": "low", "hybrid": "medium" },
+  engagementType: { "commission": "medium", "fixed-fee": "high", "retainer": "low", "outcome-based": "high", "hybrid-retainer-commission": "medium", "hybrid-retainer-outcome": "medium" },
   clientVolatility: { "low": "low", "medium": "medium", "high": "high" },
   stakeholderComplexity: { "low": "low", "medium": "medium", "high": "high" },
   seniorLeadershipInvolvement: { "minimal": "low", "periodic": "medium", "frequent": "high", "continuous": "high" },
@@ -273,9 +273,12 @@ const questions: Question[] = [
     context: "Fixed-fee models absorb scope creep risk that retainers can pass through.",
     type: "select",
     options: [
-      { value: "fixed-fee", label: "Fixed fee" },
+      { value: "commission", label: "Commission" },
+      { value: "fixed-fee", label: "Fixed Fees" },
       { value: "retainer", label: "Retainer" },
-      { value: "hybrid", label: "Hybrid" }
+      { value: "outcome-based", label: "Outcome based" },
+      { value: "hybrid-retainer-commission", label: "Hybrid - Retainer + Commission" },
+      { value: "hybrid-retainer-outcome", label: "Hybrid - Retainer + Outcome based" }
     ],
     required: true,
     section: "Client Engagement Context",
