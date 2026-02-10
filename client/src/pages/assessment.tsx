@@ -1196,7 +1196,7 @@ export default function Assessment() {
               </div>
 
               <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-3 sm:mb-4">
-                What's the current margin of the client/group of clients you are evaluating?
+                What's the current margin of the project/client/group of clients you are evaluating?
               </h2>
 
               <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
