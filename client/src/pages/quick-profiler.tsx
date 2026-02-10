@@ -630,7 +630,7 @@ export default function QuickProfiler() {
               </h2>
 
               <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
-                This is optional — enter your margin % to see estimated impact on your results
+                Enter your margin % to see estimated impact on your results
               </p>
 
               <div className="w-full max-w-md mx-auto">
