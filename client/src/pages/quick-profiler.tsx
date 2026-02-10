@@ -545,7 +545,7 @@ export default function QuickProfiler() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentQuestion, isIntro, isMarginQuestion, showResult, answers]);
+  }, [currentQuestion, isIntro, isMarginQuestion, isTransitioning, showResult, answers]);
 
   const calculateProgress = () => {
     if (showResult) return 100;

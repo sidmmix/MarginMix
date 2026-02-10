@@ -1011,7 +1011,7 @@ export default function Assessment() {
     };
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [currentQuestion, isIntro, isMarginQuestion, isTransitioning, answers]);
+  }, [currentQuestion, isIntro, isMarginQuestion, isTransitioning]);
 
   const calculateProgress = () => {
     if (isIntro) return 0;
