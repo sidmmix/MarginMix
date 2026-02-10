@@ -34,7 +34,7 @@ const PROFILER_FIELD_KEYS = [
   "clientVolatility",
   "seniorLeadershipInvolvement",
   "executionThinkingMix",
-  "deliveryConfidence",
+  "aiEffortShift",
 ];
 
 const questionRiskMapping: Record<string, Record<string, "low" | "medium" | "high">> = {

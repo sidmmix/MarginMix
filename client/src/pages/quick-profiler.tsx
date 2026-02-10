@@ -131,22 +131,23 @@ const profilerQuestions: ProfilerQuestion[] = [
   },
   {
     id: "q6",
-    fieldKey: "deliveryConfidence",
+    fieldKey: "aiEffortShift",
     number: 6,
-    title: "Delivery Confidence",
-    subtitle: "How confident are you in the delivery model for this engagement? (executive gut-check)",
-    context: "Low confidence often signals structural issues that pricing alone cannot fix.",
-    section: "Confidence Signal",
+    title: "Where is AI primarily expected to substitute effort?",
+    context: "The layer where AI replaces human effort determines whether it reduces cost or increases oversight burden.",
+    section: "AI Impact",
     sectionColor: "amber",
     options: [
-      { value: "high", label: "High confidence" },
-      { value: "some_concerns", label: "Some concerns" },
-      { value: "low", label: "Low confidence" }
+      { value: "junior_execution", label: "Junior execution" },
+      { value: "mid_level_production", label: "Mid-level production" },
+      { value: "senior_thinking_review", label: "Senior thinking / review" },
+      { value: "no_clear_substitution", label: "No clear substitution" }
     ],
     riskMapping: {
-      "high": "low",
-      "some_concerns": "medium",
-      "low": "high"
+      "junior_execution": "low",
+      "mid_level_production": "medium",
+      "senior_thinking_review": "high",
+      "no_clear_substitution": "high"
     }
   }
 ];
@@ -164,7 +165,6 @@ interface RiskState {
 }
 
 type Level = "low" | "medium" | "high";
-type Confidence = "positive" | "neutral" | "negative";
 type Verdict = "Structurally Safe" | "Price Sensitive" | "Execution Heavy" | "Structurally Fragile" | "Do Not Proceed Without Repricing";
 
 function deriveSignals(answers: Record<string, string>) {
@@ -183,11 +183,11 @@ function deriveSignals(answers: Record<string, string>) {
     execMix === "execution-heavy" ? "high" :
     execMix === "balanced" ? "medium" : "low";
 
-  const delConf = answers["q6"] || "";
-  const deliveryConfidence: Confidence =
-    delConf === "high" ? "positive" :
-    delConf === "some_concerns" ? "neutral" :
-    delConf === "low" ? "negative" : "neutral";
+  const aiShift = answers["q6"] || "";
+  const aiEffortShift: Level =
+    aiShift === "junior_execution" ? "low" :
+    aiShift === "mid_level_production" ? "medium" :
+    aiShift === "senior_thinking_review" || aiShift === "no_clear_substitution" ? "high" : "medium";
 
   const decisionType = answers["q1"] || "";
   const decisionRisk: Level =
@@ -199,7 +199,7 @@ function deriveSignals(answers: Record<string, string>) {
     engagementClass === "new" || engagementClass === "ongoing-less-6" ? "medium" :
     engagementClass === "renewal-expansion" ? "medium" : "low";
 
-  return { seniorDependency, clientVolatility, teamMaturity, deliveryConfidence, decisionRisk, engagementMaturity };
+  return { seniorDependency, clientVolatility, teamMaturity, aiEffortShift, decisionRisk, engagementMaturity };
 }
 
 interface QuickDimensions {
@@ -207,7 +207,7 @@ interface QuickDimensions {
   coordinationEntropy: Level;
   commercialExposure: Level;
   volatilityControl: Level;
-  confidenceSignal: Confidence;
+  aiExposure: Level;
   measurementMaturity: Level;
 }
 
@@ -228,22 +228,22 @@ function deriveDimensions(signals: ReturnType<typeof deriveSignals>): QuickDimen
     signals.clientVolatility === "high" ? "high" :
     signals.clientVolatility === "medium" ? "medium" : "low";
 
-  const confidenceSignal: Confidence =
-    signals.deliveryConfidence === "negative" ? "negative" :
-    signals.deliveryConfidence === "positive" ? "positive" : "neutral";
+  const aiExposure: Level =
+    signals.aiEffortShift === "high" ? "high" :
+    signals.aiEffortShift === "medium" ? "medium" : "low";
 
   const measurementMaturity: Level =
     signals.teamMaturity === "high" ? "high" :
     signals.teamMaturity === "medium" ? "medium" : "low";
 
-  return { workforceIntensity, coordinationEntropy, commercialExposure, volatilityControl, confidenceSignal, measurementMaturity };
+  return { workforceIntensity, coordinationEntropy, commercialExposure, volatilityControl, aiExposure, measurementMaturity };
 }
 
 function decideVerdict(dims: QuickDimensions): { verdict: Verdict; reason: string } {
-  if (dims.confidenceSignal === "negative") {
+  if (dims.aiExposure === "high" && dims.workforceIntensity === "high") {
     return {
       verdict: "Do Not Proceed Without Repricing",
-      reason: "Pricing or delivery confidence is insufficient to proceed safely. Engagement requires repricing or structural changes before commitment."
+      reason: "AI is expected to substitute at the senior or unclear level while workforce intensity is high. This combination creates unsustainable cost pressure — engagement requires repricing or structural changes."
     };
   }
   if (dims.workforceIntensity === "high" && dims.coordinationEntropy === "high") {
@@ -258,10 +258,10 @@ function decideVerdict(dims: QuickDimensions): { verdict: Verdict; reason: strin
       reason: "Pricing assumptions require protection. High scope elasticity or pricing rigidity creates commercial vulnerability."
     };
   }
-  if (dims.workforceIntensity === "high") {
+  if (dims.workforceIntensity === "high" || dims.aiExposure === "high") {
     return {
       verdict: "Execution Heavy",
-      reason: "Execution and coordination will dominate effort. Senior dependency and iteration load require elevated management attention."
+      reason: "Execution and coordination will dominate effort. Senior dependency, AI oversight burden, or iteration load require elevated management attention."
     };
   }
   return {
@@ -306,11 +306,6 @@ function levelToWeight(level: Level): number {
   return 1;
 }
 
-function confidenceToWeight(confidence: Confidence): number {
-  if (confidence === "positive") return 0;
-  if (confidence === "neutral") return 0.5;
-  return 1;
-}
 
 function calculateMarginImpact(verdict: Verdict, currentMargin: number, dimensions: QuickDimensions): { estimatedLoss: number; effectiveMargin: number; impactLabel: string; impactColor: string } {
   const ranges: Record<Verdict, [number, number]> = {
@@ -327,7 +322,7 @@ function calculateMarginImpact(verdict: Verdict, currentMargin: number, dimensio
     levelToWeight(dimensions.coordinationEntropy),
     levelToWeight(dimensions.commercialExposure),
     levelToWeight(dimensions.volatilityControl),
-    confidenceToWeight(dimensions.confidenceSignal),
+    levelToWeight(dimensions.aiExposure),
     levelToWeight(dimensions.measurementMaturity),
   ];
   const avgWeight = dimensionWeights.reduce((a, b) => a + b, 0) / dimensionWeights.length;
@@ -833,9 +828,9 @@ export default function QuickProfiler() {
             </h2>
 
             <p className="text-gray-400 mb-8 max-w-lg mx-auto text-sm sm:text-base">
-              {risk.level === "critical" && "Your delivery confidence is critically low. This engagement requires repricing or structural changes before commitment."}
+              {risk.level === "critical" && "High AI exposure combined with workforce intensity creates unsustainable cost pressure. This engagement requires repricing or structural changes before commitment."}
               {risk.level === "high" && "Multiple high-risk signals detected. Structural overload likely — senior involvement and volatility create unsustainable margin pressure."}
-              {risk.level === "elevated" && "Elevated risk indicators present. Execution demands will dominate effort and may erode margins without careful management."}
+              {risk.level === "elevated" && "Elevated risk indicators present. Execution demands or AI oversight burden will dominate effort and may erode margins without careful management."}
               {risk.level === "moderate" && "Some risk signals present. Pricing assumptions may need protection to preserve margins."}
               {risk.level === "low" && "No high-risk conditions triggered. Engagement appears viable under stated assumptions."}
             </p>
