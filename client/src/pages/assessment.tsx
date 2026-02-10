@@ -499,7 +499,7 @@ const questions: Question[] = [
 ];
 
 export default function Assessment() {
-  const [currentQuestion, setCurrentQuestion] = useState(-1); // -1 = intro
+  const [currentQuestion, setCurrentQuestion] = useState(-2); // -2 = intro, -1 = margin question
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [decisionResult, setDecisionResult] = useState<any>(null);
   const [showDecisionPage, setShowDecisionPage] = useState(false);
@@ -559,7 +559,8 @@ export default function Assessment() {
   };
 
   const totalQuestions = activeQuestions.length;
-  const isIntro = currentQuestion === -1;
+  const isIntro = currentQuestion === -2;
+  const isMarginQuestion = currentQuestion === -1;
   const isReviewScreen = currentQuestion === totalQuestions;
 
   const getDefaultValues = useCallback(() => {
@@ -914,6 +915,15 @@ export default function Assessment() {
 
   const handleNext = () => {
     if (isIntro) {
+      if (isFromProfiler) {
+        scrollToQuestion(0);
+      } else {
+        scrollToQuestion(-1);
+      }
+      return;
+    }
+
+    if (isMarginQuestion) {
       scrollToQuestion(0);
       return;
     }
@@ -941,7 +951,19 @@ export default function Assessment() {
   };
 
   const handleBack = () => {
-    if (currentQuestion > -1) {
+    if (isMarginQuestion) {
+      scrollToQuestion(-2);
+      return;
+    }
+    if (currentQuestion === 0) {
+      if (isFromProfiler) {
+        scrollToQuestion(-2);
+      } else {
+        scrollToQuestion(-1);
+      }
+      return;
+    }
+    if (currentQuestion > 0) {
       scrollToQuestion(currentQuestion - 1);
     }
   };
@@ -999,7 +1021,7 @@ export default function Assessment() {
     
     // Only render cards that are nearby for performance
     const distance = Math.abs(questionIndex - currentQuestion);
-    if (distance > 1 && !isIntro && !isReviewScreen) return null;
+    if (distance > 1 && !isIntro && !isMarginQuestion && !isReviewScreen) return null;
     
     const gradient = getSectionGradient(question.sectionColor);
     const currentValue = watchedValues[question.id] || "";
@@ -1134,6 +1156,79 @@ export default function Assessment() {
     );
   };
 
+  const renderMarginQuestion = () => {
+    if (isFromProfiler) return null;
+    const isActive = isMarginQuestion && !showDecisionPage && !isReviewScreen;
+    if (!isActive && !isIntro) return null;
+
+    return (
+      <div
+        className={`absolute inset-0 z-20 overflow-y-auto ${isActive ? "" : "pointer-events-none opacity-0"}`}
+      >
+        <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex flex-col">
+          <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
+            <div
+              className={`w-full max-w-2xl transition-all duration-500 ${
+                isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+              }`}
+              style={{ transitionDelay: isActive ? "150ms" : "0ms" }}
+            >
+              <div className="mb-4 sm:mb-6">
+                <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm font-medium mb-2 sm:mb-3">
+                  Margin Qualifier
+                </span>
+              </div>
+
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-3 sm:mb-4">
+                What's the current margin of the client/group of clients you are evaluating?
+              </h2>
+
+              <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
+                This is optional — enter your margin % to see estimated impact on your results
+              </p>
+
+              <div className="w-full max-w-md mx-auto">
+                <div className="relative">
+                  <Input
+                    type="number"
+                    min="0"
+                    max="100"
+                    step="0.1"
+                    value={currentMargin}
+                    onChange={(e) => setCurrentMargin(e.target.value)}
+                    placeholder="e.g. 18"
+                    className="text-center text-2xl sm:text-3xl py-5 sm:py-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/40 focus:border-white focus:bg-white/20 rounded-xl pr-14"
+                  />
+                  <span className="absolute right-5 top-1/2 -translate-y-1/2 text-white/60 text-2xl font-medium">%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 bg-black/30 backdrop-blur-md border-t border-white/10">
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm sm:text-base"
+            >
+              <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="hidden sm:inline">Back</span>
+            </button>
+
+            <div className="flex items-center gap-2 sm:gap-4">
+              <button
+                onClick={handleNext}
+                className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-emerald-700 rounded-full font-semibold hover:bg-emerald-50 transition-all text-sm sm:text-base shadow-lg"
+              >
+                Continue
+                <ArrowDown className="h-4 w-4 sm:h-5 sm:w-5" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderIntro = () => {
     if (!isIntro) return null;
     
@@ -1167,28 +1262,6 @@ export default function Assessment() {
               </div>
             </div>
 
-            <div className="w-full max-w-sm mx-auto mb-6 sm:mb-10">
-              <label className="block text-sm sm:text-base text-emerald-100 mb-2 font-medium">
-                What's your current margin %? <span className="text-emerald-200/60 font-normal">(optional)</span>
-              </label>
-              <div className="relative">
-                <Input
-                  type="number"
-                  min="0"
-                  max="100"
-                  step="0.1"
-                  value={currentMargin}
-                  onChange={(e) => setCurrentMargin(e.target.value)}
-                  placeholder="e.g. 18"
-                  className="text-center text-lg sm:text-xl py-3 sm:py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/40 focus:border-white focus:bg-white/20 rounded-xl pr-10"
-                />
-                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 text-lg font-medium">%</span>
-              </div>
-              <p className="text-xs text-emerald-200/60 mt-2">
-                Enter your margin to see estimated impact after assessment
-              </p>
-            </div>
-            
             <Button
               onClick={handleNext}
               size="lg"
@@ -1720,6 +1793,7 @@ export default function Assessment() {
     <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
       {/* Render all screens first */}
       {renderIntro()}
+      {renderMarginQuestion()}
       {activeQuestions.map((_, index) => renderCard(index))}
       {renderReview()}
       {renderDecisionPage()}
@@ -1737,7 +1811,7 @@ export default function Assessment() {
             {!isIntro && !showDecisionPage && (
               <>
                 <span className="text-xs sm:text-sm text-white/80 font-medium">
-                  {isReviewScreen ? "Review" : `${currentQuestion + 1}/${totalQuestions}`}
+                  {isReviewScreen ? "Review" : isMarginQuestion ? "Margin" : `${currentQuestion + 1}/${totalQuestions}`}
                 </span>
                 <div className="w-16 sm:w-24 md:w-32">
                   <Progress value={calculateProgress()} className="h-1.5 bg-white/20" />
@@ -1807,7 +1881,7 @@ export default function Assessment() {
       )}
 
       {/* Navigation buttons - rendered after content to be on top */}
-      {!isIntro && !isReviewScreen && !showDecisionPage && (
+      {!isIntro && !isMarginQuestion && !isReviewScreen && !showDecisionPage && (
         <div className="fixed bottom-4 sm:bottom-8 left-0 right-0 z-[100] flex flex-col items-center gap-2 px-4 sm:px-6" style={{ pointerEvents: 'auto' }}>
           {/* Swipe hint for mobile - show on first few questions */}
           {currentQuestion >= 0 && currentQuestion <= 2 && (
