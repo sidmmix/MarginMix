@@ -435,7 +435,8 @@ export function registerRoutes(app: Express): Server {
         seniorOversightLoad: validatedData.seniorOversightLoad || "about_same",
         coordinationDecisionDrag: validatedData.coordinationDecisionDrag || "moderate",
         deliveryConfidence: validatedData.deliveryConfidence || "high",
-        openSignal: validatedData.openSignal ?? undefined
+        openSignal: validatedData.openSignal ?? undefined,
+        currentMargin: req.body.currentMargin ? parseFloat(req.body.currentMargin) : undefined
       });
       
       console.log(`Decision Engine executed for ${validatedData.organisationName}:`, {

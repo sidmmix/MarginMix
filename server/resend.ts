@@ -330,6 +330,45 @@ export async function sendAssessmentEmail(
                     </tr>
                   </table>
 
+                  ${decision.marginImpact ? `
+                  <!-- Margin Impact Section -->
+                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
+                    <tr>
+                      <td style="padding: 16px 20px;">
+                        <h3 style="color: white; margin: 0 0 12px 0; font-size: 16px;">📊 Estimated Margin Impact</h3>
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                          <tr>
+                            <td width="33%" style="text-align: center; padding: 8px 4px;">
+                              <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 11px;">Current Margin</p>
+                              <p style="color: white; margin: 0; font-size: 22px; font-weight: 700;">${decision.marginImpact.currentMargin}%</p>
+                            </td>
+                            <td width="33%" style="text-align: center; padding: 8px 4px;">
+                              <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 11px;">Est. Margin Loss</p>
+                              <p style="color: ${decision.marginImpact.impactColor === 'emerald' ? '#6ee7b7' : decision.marginImpact.impactColor === 'amber' ? '#fcd34d' : '#fca5a5'}; margin: 0; font-size: 22px; font-weight: 700;">${decision.marginImpact.estimatedLoss > 0 ? `-${decision.marginImpact.estimatedLoss}%` : '0%'}</p>
+                            </td>
+                            <td width="33%" style="text-align: center; padding: 8px 4px;">
+                              <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 11px;">Effective Margin</p>
+                              <p style="color: ${decision.marginImpact.effectiveMargin >= decision.marginImpact.currentMargin * 0.7 ? '#6ee7b7' : decision.marginImpact.effectiveMargin >= decision.marginImpact.currentMargin * 0.5 ? '#fcd34d' : '#fca5a5'}; margin: 0; font-size: 22px; font-weight: 700;">${decision.marginImpact.effectiveMargin}%</p>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="3" style="padding: 8px 0 0 0;">
+                              <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; position: relative;">
+                                <div style="width: ${Math.min(decision.marginImpact.effectiveMargin, 100)}%; height: 10px; background: ${decision.marginImpact.impactColor === 'emerald' ? '#10b981' : decision.marginImpact.impactColor === 'amber' ? '#f59e0b' : '#ef4444'}; border-radius: 5px;"></div>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="3" style="text-align: center; padding: 8px 0 0 0;">
+                              <span style="background: ${decision.marginImpact.impactColor === 'emerald' ? 'rgba(16,185,129,0.2)' : decision.marginImpact.impactColor === 'amber' ? 'rgba(245,158,11,0.2)' : 'rgba(239,68,68,0.2)'}; color: ${decision.marginImpact.impactColor === 'emerald' ? '#6ee7b7' : decision.marginImpact.impactColor === 'amber' ? '#fcd34d' : '#fca5a5'}; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid ${decision.marginImpact.impactColor === 'emerald' ? '#10b981' : decision.marginImpact.impactColor === 'amber' ? '#f59e0b' : '#ef4444'}; display: inline-block;">${decision.marginImpact.impactLabel}</span>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  ` : ''}
+
                   <!-- Section 2 - Basic Details -->
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
                     <tr>

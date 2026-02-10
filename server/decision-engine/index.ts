@@ -18,6 +18,7 @@
 
 import { runMarginMix, FullEngineOutput, AssessmentInput as EngineAssessmentInput } from "./engine";
 import { Verdict, Level, Confidence, EffortAllocation, ContradictionFlag, Dimensions, Signals } from "./types";
+import { calculateMarginImpact, MarginImpact } from "./marginImpactCalculator";
 
 export interface AssessmentInput {
   fullName: string;
@@ -43,6 +44,7 @@ export interface AssessmentInput {
   coordinationDecisionDrag: string;
   deliveryConfidence: string;
   openSignal?: string;
+  currentMargin?: number;
 }
 
 export type MarginVerdict = Verdict;
@@ -110,6 +112,7 @@ export interface DecisionObject {
   readonly verdictReason: string;
   readonly triggeredBy: readonly string[];
   readonly compositeRiskScore: number;
+  readonly marginImpact: MarginImpact | null;
   readonly createdAt: string;
 }
 
@@ -312,6 +315,10 @@ export function executeDecisionEngine(input: AssessmentInput): DecisionObject {
   const compositeScore = (bucketScores.WI * 0.3 + bucketScores.SI * 0.25 + 
                           bucketScores.CO * 0.25 + bucketScores.VSI * 0.2);
 
+  const marginImpact = (input.currentMargin !== undefined && input.currentMargin > 0)
+    ? calculateMarginImpact(input.currentMargin, engineOutput.verdict, engineOutput.dimensions)
+    : null;
+
   const decisionObject: DecisionObject = {
     id: generateDecisionId(),
     engagementContext: {
@@ -348,6 +355,7 @@ export function executeDecisionEngine(input: AssessmentInput): DecisionObject {
     verdictReason: engineOutput.verdictReason,
     triggeredBy: engineOutput.triggeredBy,
     compositeRiskScore: Math.round(compositeScore * 10) / 10,
+    marginImpact,
     createdAt: new Date().toISOString()
   };
 

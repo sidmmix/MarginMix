@@ -506,6 +506,7 @@ export default function Assessment() {
   const [storedPdfData, setStoredPdfData] = useState<any>(null);
   const [submittedUserInfo, setSubmittedUserInfo] = useState<{fullName: string; workEmail: string; roleTitle: string; organisationName: string; organisationSize: string} | null>(null);
   const [consentChecked, setConsentChecked] = useState(false);
+  const [currentMargin, setCurrentMargin] = useState<string>("");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -521,6 +522,9 @@ export default function Assessment() {
         if (stored) {
           const parsed = JSON.parse(stored);
           setProfilerAnswers(parsed);
+          if (parsed._currentMargin) {
+            setCurrentMargin(parsed._currentMargin);
+          }
         }
       } catch (e) {
         console.error("Error loading profiler answers:", e);
@@ -848,10 +852,11 @@ export default function Assessment() {
   const onSubmit = async (data: AssessmentFormData) => {
     setIsSubmitting(true);
     try {
+      const marginValue = currentMargin ? parseFloat(currentMargin) : undefined;
       const response = await fetch("/api/assessments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, currentMargin: marginValue }),
       });
       
       if (response.ok) {
@@ -1147,7 +1152,7 @@ export default function Assessment() {
                 : "You're about to assess margin risk before it gets priced into a decision. This assessment helps leaders evaluate whether a client engagement is priced in line with its true delivery complexity."}
             </p>
             
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-6 mb-6 sm:mb-12 text-emerald-100 text-xs sm:text-base">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-6 mb-6 sm:mb-8 text-emerald-100 text-xs sm:text-base">
               <div className="flex items-center gap-2 bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
                 <Check className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>{totalQuestions} questions</span>
@@ -1160,6 +1165,28 @@ export default function Assessment() {
                 <Check className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>GDPR & CCPA compliant</span>
               </div>
+            </div>
+
+            <div className="w-full max-w-sm mx-auto mb-6 sm:mb-10">
+              <label className="block text-sm sm:text-base text-emerald-100 mb-2 font-medium">
+                What's your current margin %? <span className="text-emerald-200/60 font-normal">(optional)</span>
+              </label>
+              <div className="relative">
+                <Input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={currentMargin}
+                  onChange={(e) => setCurrentMargin(e.target.value)}
+                  placeholder="e.g. 18"
+                  className="text-center text-lg sm:text-xl py-3 sm:py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/40 focus:border-white focus:bg-white/20 rounded-xl pr-10"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 text-lg font-medium">%</span>
+              </div>
+              <p className="text-xs text-emerald-200/60 mt-2">
+                Enter your margin to see estimated impact after assessment
+              </p>
             </div>
             
             <Button
@@ -1366,6 +1393,64 @@ export default function Assessment() {
                 </div>
               </div>
             </div>
+
+            {/* Margin Impact Section */}
+            {d.marginImpact && (
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6 mb-6">
+                <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-emerald-400" />
+                  Estimated Margin Impact
+                </h2>
+                <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-4">
+                  <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 border border-white/10">
+                    <p className="text-xs text-gray-500 mb-1">Current Margin</p>
+                    <p className="text-xl sm:text-3xl font-bold text-white">{d.marginImpact.currentMargin}%</p>
+                  </div>
+                  <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 border border-white/10">
+                    <p className="text-xs text-gray-500 mb-1">Est. Margin Loss</p>
+                    <p className={`text-xl sm:text-3xl font-bold ${
+                      d.marginImpact.impactColor === "emerald" ? "text-emerald-400" : 
+                      d.marginImpact.impactColor === "amber" ? "text-amber-400" : "text-red-400"
+                    }`}>
+                      {d.marginImpact.estimatedLoss > 0 ? `-${d.marginImpact.estimatedLoss}%` : "0%"}
+                    </p>
+                  </div>
+                  <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 border border-white/10">
+                    <p className="text-xs text-gray-500 mb-1">Effective Margin</p>
+                    <p className={`text-xl sm:text-3xl font-bold ${
+                      d.marginImpact.effectiveMargin >= d.marginImpact.currentMargin * 0.7 ? "text-emerald-400" : 
+                      d.marginImpact.effectiveMargin >= d.marginImpact.currentMargin * 0.5 ? "text-amber-400" : "text-red-400"
+                    }`}>
+                      {d.marginImpact.effectiveMargin}%
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 mr-4">
+                    <div className="relative h-3 bg-white/10 rounded-full overflow-hidden">
+                      <div
+                        className="absolute left-0 top-0 h-full bg-white/20 rounded-full"
+                        style={{ width: `${Math.min(d.marginImpact.currentMargin, 100)}%` }}
+                      />
+                      <div
+                        className={`absolute left-0 top-0 h-full rounded-full transition-all duration-1000 ${
+                          d.marginImpact.impactColor === "emerald" ? "bg-emerald-500" : 
+                          d.marginImpact.impactColor === "amber" ? "bg-amber-400" : "bg-red-500"
+                        }`}
+                        style={{ width: `${Math.min(d.marginImpact.effectiveMargin, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${
+                    d.marginImpact.impactColor === "emerald" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" :
+                    d.marginImpact.impactColor === "amber" ? "bg-amber-500/20 text-amber-400 border-amber-500/30" :
+                    "bg-red-500/20 text-red-400 border-red-500/30"
+                  }`}>
+                    {d.marginImpact.impactLabel}
+                  </span>
+                </div>
+              </div>
+            )}
 
             {/* Assessment Context */}
             {submittedUserInfo && (

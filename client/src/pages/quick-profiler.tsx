@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Link, useLocation } from "wouter";
 import { Progress } from "@/components/ui/progress";
 import { ArrowRight, ArrowDown, ArrowUp, ArrowLeft, Zap, AlertTriangle, ShieldCheck, ShieldAlert, Shield, ChevronRight, ChevronDown, Check, Home } from "lucide-react";
@@ -279,6 +280,29 @@ function computeRisk(answers: Record<string, string>): RiskState {
   return { ...riskStyle, percentage: verdictPercentage[verdict] };
 }
 
+function estimateMarginImpact(verdict: Verdict, currentMargin: number): { estimatedLoss: number; effectiveMargin: number; impactLabel: string; impactColor: string } {
+  const ranges: Record<Verdict, [number, number]> = {
+    "Structurally Safe": [0, 3],
+    "Execution Heavy": [3, 8],
+    "Price Sensitive": [5, 12],
+    "Structurally Fragile": [10, 18],
+    "Do Not Proceed Without Repricing": [15, 25],
+  };
+  const [min, max] = ranges[verdict] || [0, 3];
+  const estimatedLoss = Math.round(((min + max) / 2) * 10) / 10;
+  const effectiveMargin = Math.max(Math.round((currentMargin - estimatedLoss) * 10) / 10, 0);
+
+  let impactLabel: string;
+  let impactColor: string;
+  if (estimatedLoss <= 1) { impactLabel = "No Impact"; impactColor = "emerald"; }
+  else if (estimatedLoss <= 4) { impactLabel = "Minimal Impact"; impactColor = "emerald"; }
+  else if (estimatedLoss <= 8) { impactLabel = "Moderate Impact"; impactColor = "amber"; }
+  else if (estimatedLoss <= 15) { impactLabel = "Significant Impact"; impactColor = "red"; }
+  else { impactLabel = "Severe Impact"; impactColor = "red"; }
+
+  return { estimatedLoss, effectiveMargin, impactLabel, impactColor };
+}
+
 function getHeatmapColor(risk: "low" | "medium" | "high"): string {
   if (risk === "high") return "bg-red-500";
   if (risk === "medium") return "bg-amber-400";
@@ -301,6 +325,7 @@ const sectionGradients: Record<string, string> = {
 export default function QuickProfiler() {
   const [currentQuestion, setCurrentQuestion] = useState(-1);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [currentMargin, setCurrentMargin] = useState<string>("");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -373,6 +398,9 @@ export default function QuickProfiler() {
       if (answers[q.id]) {
         profilerData[q.fieldKey] = answers[q.id];
       }
+    }
+    if (currentMargin) {
+      profilerData._currentMargin = currentMargin;
     }
     localStorage.setItem(PROFILER_STORAGE_KEY, JSON.stringify(profilerData));
     setLocation("/assessment?from=profiler");
@@ -531,7 +559,7 @@ export default function QuickProfiler() {
               Get an instant margin risk indication before committing to the full assessment.
             </p>
 
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-6 mb-6 sm:mb-12 text-emerald-100 text-xs sm:text-base">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-6 mb-6 sm:mb-8 text-emerald-100 text-xs sm:text-base">
               <div className="flex items-center gap-2 bg-white/10 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full">
                 <Check className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>6 questions</span>
@@ -544,6 +572,28 @@ export default function QuickProfiler() {
                 <Check className="h-4 w-4 sm:h-5 sm:w-5" />
                 <span>Instant risk indication</span>
               </div>
+            </div>
+
+            <div className="w-full max-w-sm mx-auto mb-6 sm:mb-10">
+              <label className="block text-sm sm:text-base text-emerald-100 mb-2 font-medium">
+                What's your current margin %? <span className="text-emerald-200/60 font-normal">(optional)</span>
+              </label>
+              <div className="relative">
+                <Input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={currentMargin}
+                  onChange={(e) => setCurrentMargin(e.target.value)}
+                  placeholder="e.g. 18"
+                  className="text-center text-lg sm:text-xl py-3 sm:py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/40 focus:border-white focus:bg-white/20 rounded-xl pr-10"
+                />
+                <span className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 text-lg font-medium">%</span>
+              </div>
+              <p className="text-xs text-emerald-200/60 mt-2">
+                Enter your margin to see estimated impact after risk check
+              </p>
             </div>
 
             <Button
@@ -657,6 +707,11 @@ export default function QuickProfiler() {
     if (!showResult) return null;
 
     const RiskIcon = risk.icon;
+    const signals = deriveSignals(answers);
+    const dimensions = deriveDimensions(signals);
+    const { verdict } = decideVerdict(dimensions);
+    const marginValue = currentMargin ? parseFloat(currentMargin) : 0;
+    const marginImpact = marginValue > 0 ? estimateMarginImpact(verdict, marginValue) : null;
 
     return (
       <div className="absolute inset-0 z-30 overflow-y-auto">
@@ -678,6 +733,39 @@ export default function QuickProfiler() {
               {risk.level === "moderate" && "Some risk signals present. Pricing assumptions may need protection to preserve margins."}
               {risk.level === "low" && "No high-risk conditions triggered. Engagement appears viable under stated assumptions."}
             </p>
+
+            {marginImpact && (
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6 mb-8 text-left">
+                <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">Estimated Margin Impact</h3>
+                <div className="grid grid-cols-3 gap-3 sm:gap-4">
+                  <div className="text-center p-3 rounded-xl bg-white/5 border border-white/10">
+                    <p className="text-xs text-gray-500 mb-1">Current Margin</p>
+                    <p className="text-xl sm:text-2xl font-bold text-white">{marginImpact.estimatedLoss > 0 ? marginValue : marginValue}%</p>
+                  </div>
+                  <div className="text-center p-3 rounded-xl bg-white/5 border border-white/10">
+                    <p className="text-xs text-gray-500 mb-1">Est. Margin Loss</p>
+                    <p className={`text-xl sm:text-2xl font-bold ${marginImpact.impactColor === "emerald" ? "text-emerald-400" : marginImpact.impactColor === "amber" ? "text-amber-400" : "text-red-400"}`}>
+                      {marginImpact.estimatedLoss > 0 ? `-${marginImpact.estimatedLoss}%` : "0%"}
+                    </p>
+                  </div>
+                  <div className="text-center p-3 rounded-xl bg-white/5 border border-white/10">
+                    <p className="text-xs text-gray-500 mb-1">Effective Margin</p>
+                    <p className={`text-xl sm:text-2xl font-bold ${marginImpact.effectiveMargin >= marginValue * 0.7 ? "text-emerald-400" : marginImpact.effectiveMargin >= marginValue * 0.5 ? "text-amber-400" : "text-red-400"}`}>
+                      {marginImpact.effectiveMargin}%
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 text-center">
+                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${
+                    marginImpact.impactColor === "emerald" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" :
+                    marginImpact.impactColor === "amber" ? "bg-amber-500/20 text-amber-400 border-amber-500/30" :
+                    "bg-red-500/20 text-red-400 border-red-500/30"
+                  }`}>
+                    {marginImpact.impactLabel}
+                  </span>
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 sm:gap-3 mb-8 max-w-md sm:max-w-xl mx-auto">
               {profilerQuestions.map((q) => {
