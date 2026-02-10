@@ -430,7 +430,7 @@ export function registerRoutes(app: Express): Server {
         iterationIntensity: validatedData.iterationIntensity,
         scopeChangeLikelihood: validatedData.scopeChangeLikelihood,
         crossFunctionalCoordination: validatedData.crossFunctionalCoordination,
-        aiImpactMeasurement: validatedData.aiImpactMeasurement || "not_applicable",
+        aiEffortShift: validatedData.aiEffortShift || "no_clear_substitution",
         marginalValueSaturation: validatedData.marginalValueSaturation || "significant",
         seniorOversightLoad: validatedData.seniorOversightLoad || "about_same",
         coordinationDecisionDrag: validatedData.coordinationDecisionDrag || "moderate",

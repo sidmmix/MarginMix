@@ -15,7 +15,7 @@ export interface RawAssessmentInput {
   iterationIntensity: string;
   scopeChangeLikelihood: string;
   crossFunctionalCoordination: string;
-  aiImpactMeasurement: string;
+  aiEffortShift: string;
   marginalValueSaturation: string;
   seniorOversightLoad: string;
   coordinationDecisionDrag: string;
@@ -31,7 +31,7 @@ export interface NormalizedScores {
   iterationIntensity: number;
   scopeChangeLikelihood: number;
   crossFunctionalCoordination: number;
-  aiImpactMeasurement: number;
+  aiEffortShift: number;
   marginalValueSaturation: number;
   seniorOversightLoad: number;
   coordinationDecisionDrag: number;
@@ -103,11 +103,11 @@ export const SCORE_MAP: Record<string, Record<string, number>> = {
     "extensive": 90
   },
   
-  aiImpactMeasurement: {
-    "not_applicable": 50,
-    "accretive": 25,
-    "neutral": 50,
-    "dilutive": 80
+  aiEffortShift: {
+    "junior_execution": 20,
+    "mid_level_production": 45,
+    "senior_thinking_review": 75,
+    "no_clear_substitution": 80
   },
   
   marginalValueSaturation: {
@@ -157,7 +157,7 @@ export function normalizeScores(input: RawAssessmentInput): NormalizedScores {
     iterationIntensity: SCORE_MAP.iterationIntensity[input.iterationIntensity] ?? 50,
     scopeChangeLikelihood: SCORE_MAP.scopeChangeLikelihood[input.scopeChangeLikelihood] ?? 50,
     crossFunctionalCoordination: SCORE_MAP.crossFunctionalCoordination[input.crossFunctionalCoordination] ?? 50,
-    aiImpactMeasurement: SCORE_MAP.aiImpactMeasurement[input.aiImpactMeasurement] ?? 50,
+    aiEffortShift: SCORE_MAP.aiEffortShift[input.aiEffortShift] ?? 50,
     marginalValueSaturation: SCORE_MAP.marginalValueSaturation[input.marginalValueSaturation] ?? 50,
     seniorOversightLoad: SCORE_MAP.seniorOversightLoad[input.seniorOversightLoad] ?? 50,
     coordinationDecisionDrag: SCORE_MAP.coordinationDecisionDrag[input.coordinationDecisionDrag] ?? 50,

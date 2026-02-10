@@ -38,7 +38,7 @@ export interface AssessmentInput {
   iterationIntensity: string;
   scopeChangeLikelihood: string;
   crossFunctionalCoordination: string;
-  aiImpactMeasurement: string;
+  aiEffortShift: string;
   marginalValueSaturation: string;
   seniorOversightLoad: string;
   coordinationDecisionDrag: string;
@@ -98,6 +98,7 @@ export interface DecisionObject {
   readonly valueSaturationFlag: boolean;
   readonly saturationDetails: SaturationFlags;
   readonly aiImpactClassification: AIImpactClassification;
+  readonly aiEffortShiftLabel: string;
   readonly riskSource: RiskSource;
   readonly dominantDrivers: readonly string[];
   readonly contradictionFlags: readonly ContradictionFlag[];
@@ -169,17 +170,27 @@ function verdictToEffortBand(verdict: Verdict): string {
   }
 }
 
+function getAIEffortShiftLabel(value: string): string {
+  const labels: Record<string, string> = {
+    "junior_execution": "Junior execution",
+    "mid_level_production": "Mid-level production",
+    "senior_thinking_review": "Senior thinking / review",
+    "no_clear_substitution": "No clear substitution"
+  };
+  return labels[value] || "Not specified";
+}
+
 function computeAIImpact(signals: Signals): AIImpactClassification {
   if (signals.aiLeverage === "high" && signals.measurementMaturity === "high") {
     return "Accretive";
   }
-  if (signals.aiLeverage === "low") {
+  if (signals.aiLeverage === "medium") {
     return "Neutral";
   }
-  if (signals.aiLeverage === "high" && signals.measurementMaturity === "low") {
+  if (signals.aiLeverage === "low" && signals.measurementMaturity === "low") {
     return "Dilutive";
   }
-  return "Neutral";
+  return "Dilutive";
 }
 
 function computeRiskSource(dimensions: Dimensions): RiskSource {
@@ -273,7 +284,7 @@ export function executeDecisionEngine(input: AssessmentInput): DecisionObject {
     iterationIntensity: input.iterationIntensity,
     scopeChangeLikelihood: input.scopeChangeLikelihood,
     crossFunctionalCoordination: input.crossFunctionalCoordination,
-    aiImpactMeasurement: input.aiImpactMeasurement,
+    aiEffortShift: input.aiEffortShift,
     marginalValueSaturation: input.marginalValueSaturation,
     seniorOversightLoad: input.seniorOversightLoad,
     coordinationDecisionDrag: input.coordinationDecisionDrag,
@@ -341,6 +352,7 @@ export function executeDecisionEngine(input: AssessmentInput): DecisionObject {
     valueSaturationFlag: saturationFlags.valueSaturationPresent,
     saturationDetails: saturationFlags,
     aiImpactClassification: computeAIImpact(engineOutput.signals),
+    aiEffortShiftLabel: getAIEffortShiftLabel(input.aiEffortShift),
     riskSource: computeRiskSource(engineOutput.dimensions),
     dominantDrivers: identifyDominantDrivers(engineOutput.dimensions),
     contradictionFlags: engineOutput.flags,

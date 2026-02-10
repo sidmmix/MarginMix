@@ -26,7 +26,7 @@ export interface AssessmentInput {
   iterationIntensity: string; // Q15 - Iteration Intensity → IterationLoad
   scopeChangeLikelihood: string; // Q16 - Scope Volatility → ScopeElasticity
   crossFunctionalCoordination: string; // Q17 - Cross-Functional → CoordinationLoad
-  aiImpactMeasurement: string; // Q18 - AI Leverage → AILeverage / MeasurementMaturity
+  aiEffortShift: string; // Q18 - AI Effort Shift → AILeverage / MeasurementMaturity
   marginalValueSaturation: string; // Q19 - Value Saturation → GovernanceStrength proxy
   seniorOversightLoad: string; // Q20 - Senior Oversight Load → SeniorDependency modifier
   coordinationDecisionDrag: string; // Q21 - Coordination Drag → CoordinationLoad
@@ -120,12 +120,16 @@ export function mapQuestionsToSignals(input: AssessmentInput): Signals {
   });
 
   const measurementMaturity: Level =
-    input.aiImpactMeasurement === "yes" ? "high" :
-    input.aiImpactMeasurement === "no" ? "low" : "medium";
+    input.aiEffortShift === "junior_execution" ? "high" :
+    input.aiEffortShift === "mid_level_production" ? "medium" :
+    input.aiEffortShift === "senior_thinking_review" ? "low" :
+    "low";
 
   const aiLeverage: Level =
-    input.aiImpactMeasurement === "yes" ? "high" :
-    input.aiImpactMeasurement === "not_applicable" ? "low" : "medium";
+    input.aiEffortShift === "junior_execution" ? "high" :
+    input.aiEffortShift === "mid_level_production" ? "medium" :
+    input.aiEffortShift === "senior_thinking_review" ? "low" :
+    "low";
 
   const engagementState: Signals["engagementState"] =
     input.engagementClassification === "new" ? "new" :

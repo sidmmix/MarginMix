@@ -500,7 +500,7 @@ export async function sendAssessmentEmail(
                             <td width="33.33%" style="padding: 4px; vertical-align: top;">
                               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.03); border-radius: 8px;">
                                 <tr><td style="padding: 10px;">
-                                  <p style="color: #6b7280; margin: 0 0 2px 0; font-size: 11px;">AI Impact</p>
+                                  <p style="color: #6b7280; margin: 0 0 2px 0; font-size: 11px;">AI Effort Shift</p>
                                   <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${decision.aiImpactClassification}</p>
                                 </td></tr>
                               </table>

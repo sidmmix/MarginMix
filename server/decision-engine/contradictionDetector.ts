@@ -54,10 +54,10 @@ export function detectContradictions(s: Signals): ContradictionFlag[] {
     });
   }
 
-  if (s.aiLeverage === "high" && s.measurementMaturity === "low") {
+  if (s.aiLeverage === "low" && s.measurementMaturity === "low") {
     flags.push({
-      code: "AI_LEVERAGE_NO_MEASUREMENT",
-      description: "Claimed AI leverage without measurement capability limits value realization.",
+      code: "AI_EFFORT_SHIFT_NEGATIVE",
+      description: "AI is expected to substitute senior thinking or has no clear substitution — increased oversight cost likely offsets any efficiency gains.",
       severity: "warning"
     });
   }

@@ -51,7 +51,7 @@ const questionRiskMapping: Record<string, Record<string, "low" | "medium" | "hig
   iterationIntensity: { "low": "low", "medium": "medium", "high": "high" },
   scopeChangeLikelihood: { "low": "low", "medium": "medium", "high": "high" },
   crossFunctionalCoordination: { "low": "low", "medium": "medium", "high": "high" },
-  aiImpactMeasurement: { "yes": "low", "no": "medium", "not_applicable": "low" },
+  aiEffortShift: { "junior_execution": "low", "mid_level_production": "medium", "senior_thinking_review": "high", "no_clear_substitution": "high" },
   marginalValueSaturation: { "significant": "low", "some": "medium", "minimal": "high", "none": "high" },
   seniorOversightLoad: { "less": "low", "about_same": "medium", "more": "high" },
   coordinationDecisionDrag: { "minimal": "low", "moderate": "medium", "heavy": "high" },
@@ -136,7 +136,7 @@ const assessmentSchema = z.object({
   iterationIntensity: z.string().min(1, "Please select iteration intensity"),
   scopeChangeLikelihood: z.string().min(1, "Please select scope change likelihood"),
   crossFunctionalCoordination: z.string().min(1, "Please select cross-functional coordination"),
-  aiImpactMeasurement: z.string().min(1, "Please select AI impact measurement status"),
+  aiEffortShift: z.string().min(1, "Please select where AI is expected to substitute effort"),
   marginalValueSaturation: z.string().min(1, "Please select marginal value saturation"),
   seniorOversightLoad: z.string().min(1, "Please select senior oversight load"),
   coordinationDecisionDrag: z.string().min(1, "Please select coordination level"),
@@ -406,15 +406,16 @@ const questions: Question[] = [
     sectionColor: "sky"
   },
   {
-    id: "aiImpactMeasurement",
+    id: "aiEffortShift",
     number: 18,
-    title: "Are you measuring the impact of AI in your client delivery?",
-    context: "Unmeasured AI impact can mask true delivery cost or inflate perceived efficiency.",
+    title: "Where is AI primarily expected to substitute effort?",
+    context: "The layer where AI replaces human effort determines whether it reduces cost or increases oversight burden.",
     type: "select",
     options: [
-      { value: "yes", label: "Yes" },
-      { value: "no", label: "No" },
-      { value: "not_applicable", label: "Not Applicable" }
+      { value: "junior_execution", label: "Junior execution" },
+      { value: "mid_level_production", label: "Mid-level production" },
+      { value: "senior_thinking_review", label: "Senior thinking / review" },
+      { value: "no_clear_substitution", label: "No clear substitution" }
     ],
     required: true,
     section: "Delivery Dynamics",
@@ -582,7 +583,7 @@ export default function Assessment() {
       iterationIntensity: "",
       scopeChangeLikelihood: "",
       crossFunctionalCoordination: "",
-      aiImpactMeasurement: "",
+      aiEffortShift: "",
       marginalValueSaturation: "",
       seniorOversightLoad: "",
       coordinationDecisionDrag: "",
@@ -1715,11 +1716,7 @@ export default function Assessment() {
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="p-3 rounded-lg bg-white/5">
-                  <p className="text-xs text-gray-500 mb-1">AI Impact</p>
-                  <p className="text-sm font-medium text-white">{d.aiImpactClassification}</p>
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="p-3 rounded-lg bg-white/5">
                   <p className="text-xs text-gray-500 mb-1">Risk Source</p>
                   <p className="text-sm font-medium text-white">{d.riskSource}</p>
@@ -1731,7 +1728,38 @@ export default function Assessment() {
               </div>
             </div>
 
-            {/* Section 7 - Contradiction Flags */}
+            {/* Section 7 - AI Effort Shift */}
+            <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">
+                <Zap className="h-5 w-5 text-cyan-400" />
+                AI Effort Shift
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="p-3 rounded-lg bg-white/5">
+                  <p className="text-xs text-gray-500 mb-1">AI Substitution Layer</p>
+                  <p className="text-sm font-medium text-white">{d.aiEffortShiftLabel || "Not specified"}</p>
+                </div>
+                <div className="p-3 rounded-lg bg-white/5">
+                  <p className="text-xs text-gray-500 mb-1">Risk Marker</p>
+                  <p className={`text-sm font-medium ${
+                    d.aiImpactClassification === "Accretive" ? "text-emerald-400" :
+                    d.aiImpactClassification === "Neutral" ? "text-amber-400" :
+                    "text-red-400"
+                  }`}>{d.aiImpactClassification}</p>
+                </div>
+              </div>
+              <div className="mt-3 p-3 rounded-lg bg-white/5">
+                <p className="text-xs text-gray-500 mb-1">Implication</p>
+                <p className="text-sm text-gray-300">{
+                  d.aiImpactClassification === "Accretive" ? "AI is substituting junior execution — real cost reduction with minimal oversight overhead." :
+                  d.aiImpactClassification === "Neutral" ? "AI is substituting mid-level production — efficiency gains possible but requires monitoring." :
+                  d.aiImpactClassification === "Fragile" ? "AI is substituting senior thinking/review — increased oversight cost may offset gains." :
+                  "No clear AI substitution identified — risk of unmeasured effort displacement."
+                }</p>
+              </div>
+            </div>
+
+            {/* Section 8 - Contradiction Flags */}
             {d.contradictionFlags && d.contradictionFlags.length > 0 && (
               <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
                 <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">

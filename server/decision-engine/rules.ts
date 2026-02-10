@@ -69,15 +69,11 @@ export function detectSaturationPatterns(buckets: BucketScores): SaturationFlags
 }
 
 export function classifyAIImpact(scores: NormalizedScores, buckets: BucketScores): AIImpactClassification {
-  const aiScore = scores.aiImpactMeasurement;
+  const aiScore = scores.aiEffortShift;
   
   if (aiScore <= 30) return "Accretive";
   
   if (aiScore >= 70) return "Dilutive";
-  
-  if (buckets.WI > 60 && buckets.SI > 60) {
-    return "Fragile";
-  }
   
   return "Neutral";
 }
