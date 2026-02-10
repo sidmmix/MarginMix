@@ -457,37 +457,36 @@ export function registerRoutes(app: Express): Server {
         // Use fallback narrative if GPT fails
         narrative = {
           decisionMemo: {
-            executiveSummary: `This engagement has been classified as ${decisionObject.marginRiskVerdict} with a ${decisionObject.riskBand} risk band based on the assessment inputs.`,
-            keyInsight: `Primary margin risk drivers include: ${decisionObject.dominantDrivers.join(", ")}.`,
-            riskAssessment: {
-              structural: decisionObject.riskBand,
-              behavioral: decisionObject.riskBand,
-              overall: decisionObject.riskBand
-            },
-            decisionGuidance: [
-              "Monitor senior involvement levels closely",
-              "Establish clear scope boundaries",
-              "Track coordination overhead regularly"
-            ],
+            decisionContext: `${decisionObject.engagementContext.type} engagement for ${decisionObject.engagementContext.organisationName}, classified as ${decisionObject.engagementContext.classification}. Pricing structure: ${decisionObject.engagementContext.decisionType}.`,
+            marginRiskVerdict: `This engagement has been classified as ${decisionObject.marginRiskVerdict} with a ${decisionObject.riskBand} risk band based on the assessment inputs.`,
+            primaryDriversOfRisk: decisionObject.dominantDrivers.length > 0
+              ? decisionObject.dominantDrivers.map(d => `${d} contributes to structural margin pressure`)
+              : ["No significant risk drivers identified"],
+            pricingGovernanceImplications: `${decisionObject.riskBand} risk band requires ${decisionObject.riskBand === "Low" ? "standard" : "enhanced"} pricing review and governance oversight.`,
+            whatWouldNeedToChange: decisionObject.marginRiskVerdict === "Structurally Safe"
+              ? ["Current conditions support proceeding as planned"]
+              : ["Reduce workforce intensity through scope refinement", "Strengthen coordination governance structures"],
             recommendation: `Proceed with appropriate governance controls for a ${decisionObject.riskBand.toLowerCase()} risk engagement.`
           },
           assessmentOutput: {
-            criticalSignalAnalysis: openSignal || "No additional context provided.",
-            riskDrivers: {
-              structural: { level: "🟡", description: "Structural load is within expected parameters." },
-              behavioral: { level: "🟡", description: "Behavioral patterns require monitoring." },
-              governance: { level: "🟡", description: "Governance framework should be reviewed periodically." }
+            executiveSnapshot: `${decisionObject.marginRiskVerdict}. This assessment identifies ${decisionObject.riskBand.toLowerCase()} overall margin risk based on structural factors including ${decisionObject.dominantDrivers.join(", ") || "standard operating conditions"}.`,
+            riskDimensionSummary: {
+              workforceIntensity: { level: decisionObject.dimensions.workforceIntensity, description: `Workforce requirements are ${decisionObject.dimensions.workforceIntensity}.` },
+              coordinationEntropy: { level: decisionObject.dimensions.coordinationEntropy, description: `Coordination complexity is ${decisionObject.dimensions.coordinationEntropy}.` },
+              commercialExposure: { level: decisionObject.dimensions.commercialExposure, description: `Commercial exposure is ${decisionObject.dimensions.commercialExposure}.` },
+              volatilityControl: { level: decisionObject.dimensions.volatilityControl, description: `Volatility control is ${decisionObject.dimensions.volatilityControl}.` }
             },
-            effortBandRationale: {
-              senior: "Senior involvement should be capped to preserve margins.",
-              midLevel: "Mid-level should absorb majority of delivery volatility.",
-              junior: "Junior layer handles execution velocity."
+            effortBandsAllocation: {
+              senior: { percentage: decisionObject.effortPercentages.senior, rationale: "Senior involvement should be capped to preserve margins." },
+              midLevel: { percentage: decisionObject.effortPercentages.mid, rationale: "Mid-level should absorb majority of delivery volatility." },
+              execution: { percentage: decisionObject.effortPercentages.junior, rationale: "Junior layer handles execution velocity." }
             },
-            earlyWarningIndicators: [
-              "Senior involvement exceeds target band",
-              "Scope changes without formal approval",
-              "Client escalations increase frequency"
-            ]
+            structuralRiskSignals: decisionObject.triggeredBy.length > 0
+              ? [...decisionObject.triggeredBy.map(t => `${t} signal detected in assessment`), `AI Effort Shift: ${decisionObject.aiImpactClassification}`]
+              : ["No significant structural risk signals detected"],
+            overrideConditions: decisionObject.triggeredBy.length > 0
+              ? `Override triggered by: ${decisionObject.triggeredBy.join(", ")}`
+              : "No override conditions were triggered."
           }
         };
       }
@@ -530,7 +529,7 @@ export function registerRoutes(app: Express): Server {
       try {
         // Wait 10 seconds before sending the second email to avoid Resend rate limits
         await new Promise(resolve => setTimeout(resolve, 10000));
-        await sendFeedbackRequestEmail(validatedData.fullName, validatedData.workEmail, assessment.id);
+        await sendFeedbackRequestEmail(validatedData.fullName, validatedData.workEmail, Number(assessment.id));
         console.log(`Feedback request email sent to: ${validatedData.workEmail}`);
       } catch (feedbackEmailError: any) {
         console.error("Failed to send feedback request email:", feedbackEmailError.message);
