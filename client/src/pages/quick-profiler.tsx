@@ -189,7 +189,17 @@ function deriveSignals(answers: Record<string, string>) {
     delConf === "some_concerns" ? "neutral" :
     delConf === "low" ? "negative" : "neutral";
 
-  return { seniorDependency, clientVolatility, teamMaturity, deliveryConfidence };
+  const decisionType = answers["q1"] || "";
+  const decisionRisk: Level =
+    decisionType === "scope-expansion" || decisionType === "escalation" ? "high" :
+    decisionType === "strategic-exception" || decisionType === "renewal-extension" ? "medium" : "low";
+
+  const engagementClass = answers["q2"] || "";
+  const engagementMaturity: Level =
+    engagementClass === "new" || engagementClass === "ongoing-less-6" ? "medium" :
+    engagementClass === "renewal-expansion" ? "medium" : "low";
+
+  return { seniorDependency, clientVolatility, teamMaturity, deliveryConfidence, decisionRisk, engagementMaturity };
 }
 
 interface QuickDimensions {
@@ -198,6 +208,7 @@ interface QuickDimensions {
   commercialExposure: Level;
   volatilityControl: Level;
   confidenceSignal: Confidence;
+  measurementMaturity: Level;
 }
 
 function deriveDimensions(signals: ReturnType<typeof deriveSignals>): QuickDimensions {
@@ -205,8 +216,13 @@ function deriveDimensions(signals: ReturnType<typeof deriveSignals>): QuickDimen
     signals.seniorDependency === "high" ? "high" :
     signals.seniorDependency === "medium" ? "medium" : "low";
 
-  const coordinationEntropy: Level = "low" as Level;
-  const commercialExposure: Level = "low" as Level;
+  const coordinationEntropy: Level =
+    signals.clientVolatility === "high" && signals.seniorDependency !== "low" ? "high" :
+    signals.clientVolatility === "high" || signals.engagementMaturity === "medium" ? "medium" : "low";
+
+  const commercialExposure: Level =
+    signals.decisionRisk === "high" ? "high" :
+    signals.decisionRisk === "medium" || signals.teamMaturity === "low" ? "medium" : "low";
 
   const volatilityControl: Level =
     signals.clientVolatility === "high" ? "high" :
@@ -216,7 +232,11 @@ function deriveDimensions(signals: ReturnType<typeof deriveSignals>): QuickDimen
     signals.deliveryConfidence === "negative" ? "negative" :
     signals.deliveryConfidence === "positive" ? "positive" : "neutral";
 
-  return { workforceIntensity, coordinationEntropy, commercialExposure, volatilityControl, confidenceSignal };
+  const measurementMaturity: Level =
+    signals.teamMaturity === "high" ? "high" :
+    signals.teamMaturity === "medium" ? "medium" : "low";
+
+  return { workforceIntensity, coordinationEntropy, commercialExposure, volatilityControl, confidenceSignal, measurementMaturity };
 }
 
 function decideVerdict(dims: QuickDimensions): { verdict: Verdict; reason: string } {
@@ -280,7 +300,19 @@ function computeRisk(answers: Record<string, string>): RiskState {
   return { ...riskStyle, percentage: verdictPercentage[verdict] };
 }
 
-function estimateMarginImpact(verdict: Verdict, currentMargin: number): { estimatedLoss: number; effectiveMargin: number; impactLabel: string; impactColor: string } {
+function levelToWeight(level: Level): number {
+  if (level === "low") return 0;
+  if (level === "medium") return 0.5;
+  return 1;
+}
+
+function confidenceToWeight(confidence: Confidence): number {
+  if (confidence === "positive") return 0;
+  if (confidence === "neutral") return 0.5;
+  return 1;
+}
+
+function calculateMarginImpact(verdict: Verdict, currentMargin: number, dimensions: QuickDimensions): { estimatedLoss: number; effectiveMargin: number; impactLabel: string; impactColor: string } {
   const ranges: Record<Verdict, [number, number]> = {
     "Structurally Safe": [0, 3],
     "Execution Heavy": [3, 8],
@@ -289,7 +321,18 @@ function estimateMarginImpact(verdict: Verdict, currentMargin: number): { estima
     "Do Not Proceed Without Repricing": [15, 25],
   };
   const [min, max] = ranges[verdict] || [0, 3];
-  const estimatedLoss = Math.round(((min + max) / 2) * 10) / 10;
+
+  const dimensionWeights = [
+    levelToWeight(dimensions.workforceIntensity),
+    levelToWeight(dimensions.coordinationEntropy),
+    levelToWeight(dimensions.commercialExposure),
+    levelToWeight(dimensions.volatilityControl),
+    confidenceToWeight(dimensions.confidenceSignal),
+    levelToWeight(dimensions.measurementMaturity),
+  ];
+  const avgWeight = dimensionWeights.reduce((a, b) => a + b, 0) / dimensionWeights.length;
+
+  const estimatedLoss = Math.round((min + (max - min) * avgWeight) * 10) / 10;
   const effectiveMargin = Math.max(Math.round((currentMargin - estimatedLoss) * 10) / 10, 0);
 
   let impactLabel: string;
@@ -768,7 +811,7 @@ export default function QuickProfiler() {
     const dimensions = deriveDimensions(signals);
     const { verdict } = decideVerdict(dimensions);
     const marginValue = currentMargin ? parseFloat(currentMargin) : 0;
-    const marginImpact = marginValue > 0 ? estimateMarginImpact(verdict, marginValue) : null;
+    const marginImpact = marginValue > 0 ? calculateMarginImpact(verdict, marginValue, dimensions) : null;
 
     return (
       <div className="absolute inset-0 z-30 overflow-y-auto">
