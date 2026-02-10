@@ -681,8 +681,8 @@ export default function Assessment() {
     // Execute after a short delay (helps with AMP and slow-loading environments)
     const timer = setTimeout(scrollToTop, 100);
     
-    // Ensure we start at intro (currentQuestion = -1)
-    setCurrentQuestion(-1);
+    // Ensure we start at intro (currentQuestion = -2)
+    setCurrentQuestion(-2);
     
     return () => clearTimeout(timer);
   }, []);
