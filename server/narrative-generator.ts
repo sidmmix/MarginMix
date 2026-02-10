@@ -57,7 +57,7 @@ Based on this decision data, generate narrative content for two PDFs:
 - Primary Drivers of Risk: List 3-4 structural contributors based on dominant drivers: ${decision.dominantDrivers.join(", ")}
 - Pricing & Governance Implications: Describe impact on pricing decisions and control requirements
 - What Would Need to Change: List 2-3 specific conditions required to improve viability
-- Recommendation: Final guidance - proceed, reprice, or restructure based on verdict
+- Recommendation: Final guidance - proceed, reprice, or restructure based on verdict. Mention AI effort shift implications if relevant (AI Impact: ${decision.aiImpactClassification}).
 
 2. ASSESSMENT OUTPUT:
 - Executive Snapshot: 2-3 sentences with the verdict "${decision.marginRiskVerdict}" and high-level risk context
@@ -66,8 +66,10 @@ Based on this decision data, generate narrative content for two PDFs:
   * Coordination Entropy: ${decision.dimensions.coordinationEntropy}
   * Commercial Exposure: ${decision.dimensions.commercialExposure}
   * Volatility Control: ${decision.dimensions.volatilityControl}
+  * Confidence Signal: ${decision.dimensions.confidenceSignal}
+  * Measurement Maturity: ${decision.dimensions.measurementMaturity}
 - Effort Bands & Allocation: Explain the rationale for Senior ${decision.effortPercentages.senior}, Mid ${decision.effortPercentages.mid}, Execution ${decision.effortPercentages.junior}
-- Structural Risk Signals: List 3-4 key signals that influenced the verdict
+- Structural Risk Signals: List 3-4 key signals that influenced the verdict. Include AI effort shift impact (${decision.aiImpactClassification}: ${decision.aiEffortShiftLabel || "not specified"}) and any saturation flags.
 - Override Conditions: Describe any overrides triggered (${decision.triggeredBy.join(", ") || "None"})
 
 Respond in JSON format matching this structure:
@@ -196,9 +198,12 @@ function generateFallbackNarrative(decision: DecisionObject): NarrativeOutput {
           rationale: `Execution layer at ${decision.effortPercentages.junior} enables ${decision.dimensions.workforceIntensity === "high" ? "intensive delivery requirements" : "standard delivery operations"}.`
         }
       },
-      structuralRiskSignals: decision.triggeredBy.length > 0
-        ? decision.triggeredBy.map(t => `${t} signal detected in assessment`)
-        : ["No significant structural risk signals detected"],
+      structuralRiskSignals: [
+        ...(decision.triggeredBy.length > 0
+          ? decision.triggeredBy.map(t => `${t} signal detected in assessment`)
+          : ["No significant structural risk signals detected"]),
+        `AI Effort Shift: ${decision.aiImpactClassification} — ${decision.aiEffortShiftLabel || "not specified"}`
+      ],
       overrideConditions: decision.triggeredBy.length > 0
         ? `Override triggered by: ${decision.triggeredBy.join(", ")}`
         : "No override conditions were triggered. Verdict determined by primary rule evaluation."
