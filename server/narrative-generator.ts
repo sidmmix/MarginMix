@@ -59,7 +59,7 @@ Based on this decision data, generate narrative content for two PDFs:
 - What Would Need to Change: List 2-3 specific conditions required to improve viability
 - Recommendation: Final guidance - proceed, reprice, or restructure based on verdict. Mention AI effort shift implications if relevant (AI Impact: ${decision.aiImpactClassification}).
 
-2. ASSESSMENT OUTPUT:
+2. ASSESSMENT RESULTS:
 - Executive Snapshot: 2-3 sentences with the verdict "${decision.marginRiskVerdict}" and high-level risk context
 - Risk Dimension Summary: For each dimension, provide level and brief description:
   * Workforce Intensity: ${decision.dimensions.workforceIntensity}

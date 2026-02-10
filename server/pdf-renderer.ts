@@ -174,7 +174,7 @@ export async function renderAssessmentOutputPDF(
 
     doc.moveDown(3);
 
-    doc.fontSize(22).fillColor(COLORS.primary).text("MarginMix – Margin Risk Assessment Output", { align: "center" });
+    doc.fontSize(22).fillColor(COLORS.primary).text("MarginMix – Margin Risk Assessment Results", { align: "center" });
     doc.moveDown(2);
 
     doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Executive Snapshot");
@@ -387,7 +387,7 @@ export async function renderAssessmentOutputPDF(
 }
 
 export function generatePDFFilename(
-  type: "decision_memo" | "assessment_output",
+  type: "decision_memo" | "assessment_output" | "assessment_results",
   fullName: string,
   organisationName: string
 ): string {
@@ -399,5 +399,5 @@ export function generatePDFFilename(
   if (type === "decision_memo") {
     return `MMIX_Decision_Memo_${name}_${org}_${timestamp}.pdf`;
   }
-  return `MMIX_Assessment_Output_${name}_${org}_${timestamp}.pdf`;
+  return `MMIX_Assessment_Results_${name}_${org}_${timestamp}.pdf`;
 }

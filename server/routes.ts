@@ -511,7 +511,7 @@ export function registerRoutes(app: Express): Server {
       }
       
       const decisionMemoFilename = generatePDFFilename("decision_memo", validatedData.fullName, validatedData.organisationName);
-      const assessmentOutputFilename = generatePDFFilename("assessment_output", validatedData.fullName, validatedData.organisationName);
+      const assessmentOutputFilename = generatePDFFilename("assessment_results", validatedData.fullName, validatedData.organisationName);
       
       // Send email with PDF attachments
       const pdfAttachments: PDFAttachment[] = [
