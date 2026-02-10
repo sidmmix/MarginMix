@@ -974,29 +974,44 @@ export default function Assessment() {
     setTimeout(() => handleNext(), 400);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey && currentQuestion >= 0 && currentQuestion < totalQuestions) {
-      const question = activeQuestions[currentQuestion];
-      const isLastQuestion = currentQuestion === totalQuestions - 1;
-      // Allow Enter on non-textarea questions, or on the last question (optional) to go to review
-      if (question.type !== "textarea" || isLastQuestion) {
-        // Must answer current question before advancing
-        if (!isCurrentQuestionAnswered()) {
-          toast({
-            title: "Please answer before proceeding.",
-            variant: "destructive",
-          });
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (isTransitioning) return;
+      if (e.key === "Enter" && !e.shiftKey) {
+        if (isIntro || isMarginQuestion) {
+          e.preventDefault();
+          handleNext();
           return;
         }
-        // On last question, only allow going to review if Q1-Q22 are answered
-        if (isLastQuestion && !areMandatoryQuestionsAnswered()) {
-          return;
+        if (currentQuestion >= 0 && currentQuestion < totalQuestions) {
+          const question = activeQuestions[currentQuestion];
+          const isLastQuestion = currentQuestion === totalQuestions - 1;
+          if (question.type !== "textarea" || isLastQuestion) {
+            if (!isCurrentQuestionAnswered()) {
+              toast({
+                title: "Please answer before proceeding.",
+                variant: "destructive",
+              });
+              return;
+            }
+            if (isLastQuestion && !areMandatoryQuestionsAnswered()) {
+              return;
+            }
+            e.preventDefault();
+            handleNext();
+          }
         }
+      } else if (e.key === "ArrowDown") {
         e.preventDefault();
         handleNext();
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        handleBack();
       }
-    }
-  };
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [currentQuestion, isIntro, isMarginQuestion, isTransitioning, answers]);
 
   const calculateProgress = () => {
     if (isIntro) return 0;
@@ -1068,7 +1083,7 @@ export default function Assessment() {
               )}
 
               {/* Input area */}
-              <div className="mt-6 sm:mt-8" onKeyDown={handleKeyDown}>
+              <div className="mt-6 sm:mt-8">
                 <Form {...form}>
                   {question.type === "text" || question.type === "email" ? (
                     <FormField

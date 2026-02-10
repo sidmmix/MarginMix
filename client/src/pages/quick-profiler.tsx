@@ -531,15 +531,21 @@ export default function QuickProfiler() {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (isTransitioning || showResult) return;
       if (e.key === "Enter" && !e.shiftKey) {
         e.preventDefault();
-        if (showResult) return;
         handleNext();
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        handleNext();
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        handleBack();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentQuestion, isIntro, showResult, answers]);
+  }, [currentQuestion, isIntro, isMarginQuestion, showResult, answers]);
 
   const calculateProgress = () => {
     if (showResult) return 100;
