@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import marginMixLogo from "@assets/marginmix-logo.png";
 
 interface HeaderProps {
   variant?: "transparent" | "solid";
@@ -54,9 +55,8 @@ export function Header({ variant = "transparent" }: HeaderProps) {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/" onClick={scrollToTop}>
-              <div className="flex-shrink-0 flex flex-col cursor-pointer">
-                <h1 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">MarginMix</h1>
-                <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
+              <div className="flex-shrink-0 cursor-pointer">
+                <img src={marginMixLogo} alt="MarginMix" className="h-10 w-auto" />
               </div>
             </Link>
           </div>
@@ -78,7 +78,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 1 Minute Risk Profile Scan
               </Button>
             </Link>
-            {isAuthenticated && user && (
+            {isAuthenticated && user ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
                   <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
@@ -102,7 +102,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                   {isLoggingOut ? "Logging out..." : "Logout"}
                 </Button>
               </div>
-            )}
+            ) : null}
           </div>
 
           {/* Mobile Hamburger Button */}
@@ -141,7 +141,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                   </span>
                 </Link>
               ))}
-              {isAuthenticated && user && (
+              {isAuthenticated && user ? (
                 <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex items-center space-x-2 px-2 py-2">
                     <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
@@ -160,7 +160,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                     {isLoggingOut ? "Logging out..." : "Logout"}
                   </Button>
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
         )}
