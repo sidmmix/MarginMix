@@ -241,10 +241,6 @@ export default function Landing() {
                   <span className="text-gray-400">•</span>
                   <span>Delivery optimization, task management, or dashboards</span>
                 </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gray-400">•</span>
-                  <span>Holdcos at group/country level - Structural Impediment</span>
-                </li>
               </ul>
             </div>
           </div>
