@@ -211,7 +211,7 @@ export default function Landing() {
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <Building2 className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-gray-700 dark:text-gray-300">Independent and mid-tier agencies and consulting firms in high income countries</span>
+                  <span className="text-gray-700 dark:text-gray-300">Agencies & Consulting firms</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Users className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
@@ -219,7 +219,7 @@ export default function Landing() {
                 </li>
                 <li className="flex items-start gap-3">
                   <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-gray-700 dark:text-gray-300">Firms where margin decisions are frequent, nuanced, and rarely supported by reliable data</span>
+                  <span className="text-gray-700 dark:text-gray-300">Firms where margin decisions are rarely supported by reliable data</span>
                 </li>
               </ul>
             </div>
