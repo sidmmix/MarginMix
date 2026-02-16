@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft, Shield, Gauge, Target, Lightbulb, Scale, Zap } from "lucide-react";
-import { Link } from "wouter";
+import { ArrowRight, Shield, Gauge, Target, Lightbulb, Scale, Zap } from "lucide-react";
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 
 export default function WhyChoose() {
   return (
@@ -11,34 +12,10 @@ export default function WhyChoose() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-emerald-100/20 to-teal-100/20 dark:from-emerald-800/10 dark:to-teal-800/10 rounded-full blur-3xl"></div>
       </div>
 
-      <nav className="border-b bg-white/80 backdrop-blur-sm dark:bg-gray-900/80 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <Link href="/" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <div className="flex-shrink-0 flex flex-col cursor-pointer">
-                  <h1 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">MarginMix</h1>
-                  <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
-                </div>
-              </Link>
-            </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link href="/founder" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-[10px] sm:text-sm font-medium cursor-pointer whitespace-nowrap">Why Exists</span>
-              </Link>
-              <Link href="/why-choose" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <span className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-[10px] sm:text-sm font-medium cursor-pointer whitespace-nowrap border-b-2 border-emerald-600">Why Choose</span>
-              </Link>
-              <Link href="/" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-                <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Back to Home</span>
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Header />
+
+      {/* Spacer for fixed header */}
+      <div className="h-16"></div>
 
       <section className="relative py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -135,15 +112,14 @@ export default function WhyChoose() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
               Assess Margin risk & Price work appropriately!
             </h2>
-            <Link href="/assessment" onClick={() => window.scrollTo({ top: 0, left: 0, behavior: "instant" })}>
-              <Button 
-                size="lg" 
-                className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
-              >
-                Run a Margin Risk Assessment
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            </Link>
+            <Button 
+              size="lg" 
+              className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
+              onClick={() => window.location.href = '/quick-profiler'}
+            >
+              1 Minute Risk Profile Scan
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
             <p className="text-emerald-100 mt-4 text-sm">
               Early access assessments are reviewed for fit.
             </p>
@@ -151,26 +127,7 @@ export default function WhyChoose() {
         </div>
       </section>
 
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-emerald-400 mb-1">MarginMix</h3>
-            <p className="text-sm italic text-gray-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</p>
-            <p className="text-gray-300 mb-6 mt-4">
-              MarginMix is a decision system for margin governance — not a delivery or productivity platform.
-            </p>
-            <p className="text-gray-400 text-sm mb-2">
-              MarginMix is a Digital Lexicon Corp brand.
-            </p>
-            <p className="text-gray-400 text-sm mb-2">
-              Digital Lexicon, Delaware, DE
-            </p>
-            <p className="text-gray-400 text-sm">
-              © 2026 Digital Lexicon. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

@@ -1,0 +1,177 @@
+You are implementing MarginMix, a deterministic decision-support system for assessing margin risk and pricing viability in professional services engagements.
+
+Important constraints:
+
+This system is not a productivity tool and not a forecasting model.
+
+All decision logic is deterministic, rule-based, and explainable.
+
+AI must never infer, score, or decide anything.
+
+AI may only be used to narrate outputs that are already computed deterministically.
+
+1. INPUTS
+
+The system ingests responses to 23 fixed assessment questions.
+
+Each question maps to exactly one derived signal.
+
+Context / identifier questions must not produce risk signals.
+
+Implement a strict Question → Signal mapping layer.
+
+2. SIGNALS
+
+Signals are atomic (e.g. seniorDependency, coordinationLoad, scopeElasticity, pricingConfidence).
+
+Signals must be strongly typed (enums / unions).
+
+No aggregation, scoring, or weighting at this stage.
+
+3. DIMENSIONS
+
+Implement a deterministic Signal → Dimension mapper that produces:
+
+Workforce Intensity
+
+Coordination Entropy
+
+Commercial Exposure
+
+Volatility Control
+
+Confidence Signal
+
+Measurement Maturity
+
+Use explicit if–then promotion rules only.
+No averages, no math, no ML.
+
+4. VERDICT LOGIC (DECISION TABLE)
+
+Implement verdicts using strict rule precedence:
+
+Overrides (highest priority):
+
+High Workforce Intensity + High Coordination Entropy → Structurally Fragile
+
+Negative Confidence Signal → Do Not Proceed Without Repricing
+
+Primary states:
+
+High Commercial Exposure → Price Sensitive
+
+High Workforce Intensity → Execution Heavy
+
+Default:
+
+Structurally Safe
+
+Verdict logic must be isolated in a decisionTable.ts.
+
+5. EFFORT BANDS & % ALLOCATION
+
+Effort allocation is derived only after the verdict is decided.
+
+Implement a dedicated effortAllocator.ts that maps:
+
+Structurally Safe → 20% Senior / 25% Mid / 55% Execution
+
+Price Sensitive → 30% / 30% / 40%
+
+Execution Heavy → 25% / 40% / 35%
+
+Structurally Fragile → 45% / 35% / 20%
+
+Do Not Proceed Without Repricing → 50% / 35% / 15%
+
+Effort allocation must never influence verdicts.
+
+6. CONTRADICTION DETECTION
+
+Implement soft flags for inconsistent inputs, e.g.:
+
+High volatility + High confidence
+
+Fixed fee + High scope elasticity
+
+Contradictions may add explanatory flags but must not downgrade risk.
+
+7. ENGINE ORCHESTRATION
+
+Create a single orchestrator (engine.ts) that returns:
+
+{
+  signals,
+  dimensions,
+  verdict,
+  flags,
+  effortAllocation
+}
+
+
+This object is the only source of truth for outputs.
+
+8. AI USAGE (STRICTLY LIMITED)
+
+AI may be used only to generate narrative text for:
+
+Margin Risk Assessment Output (PDF)
+
+Decision Memo (PDF)
+
+AI must not:
+
+infer risk
+
+compute numbers
+
+override verdicts
+
+soften language
+
+All AI prompts must explicitly state:
+
+“Narrate only. Do not infer or decide.”
+
+9. OUTPUTS
+
+Generate two PDFs using fixed templates:
+
+Assessment Output:
+
+Executive Snapshot
+
+Risk Dimensions
+
+Effort Bands & %
+
+Structural Flags
+
+What This Does / Does Not Measure
+
+Decision Memo:
+
+Decision Context
+
+Verdict Summary
+
+Risk Drivers
+
+Pricing & Governance Implications
+
+Recommendation
+
+10. QUALITY BAR
+
+The system must be:
+
+explainable to a CFO
+
+auditable by a partner
+
+portable to Python
+
+non-black-box
+
+If anything is ambiguous, do not guess. Ask for clarification.

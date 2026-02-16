@@ -231,7 +231,7 @@ export const marginAssessments = pgTable("margin_assessments", {
   iterationIntensity: varchar("iteration_intensity", { length: 50 }).notNull(),
   scopeChangeLikelihood: varchar("scope_change_likelihood", { length: 50 }).notNull(),
   crossFunctionalCoordination: varchar("cross_functional_coordination", { length: 50 }).notNull(),
-  aiImpactMeasurement: varchar("ai_impact_measurement", { length: 50 }).notNull().default("not_applicable"),
+  aiEffortShift: varchar("ai_effort_shift", { length: 50 }).notNull().default("no_clear_substitution"),
   marginalValueSaturation: varchar("marginal_value_saturation", { length: 100 }).notNull().default("significant"),
   seniorOversightLoad: varchar("senior_oversight_load", { length: 50 }).notNull().default("about_same"),
   coordinationDecisionDrag: varchar("coordination_decision_drag", { length: 50 }).notNull().default("moderate"),
