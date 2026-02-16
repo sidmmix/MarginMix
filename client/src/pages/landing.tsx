@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, AlertTriangle, CheckCircle, XCircle, Users, Building2, Briefcase, Target } from "lucide-react";
 import { Link } from "wouter";
+import marginMixLogo from "@assets/MarginMix_Logo_Transparent_1771235313740.png";
 import { Header } from "@/components/header";
 
 export default function Landing() {
@@ -357,8 +358,7 @@ export default function Landing() {
       <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h3 className="text-2xl font-bold text-emerald-400 mb-1">MarginMix</h3>
-            <p className="text-sm italic text-gray-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</p>
+            <img src={marginMixLogo} alt="MarginMix - Margin Risk Clarity" className="h-16 w-auto mx-auto mb-4" />
             <p className="text-gray-300 mb-6 mt-4">
               MarginMix is a decision system for margin governance — not a delivery or productivity platform.
             </p>

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import marginMixLogo from "@assets/MarginMix_Logo_Transparent_1771235313740.png";
 import { Button } from "@/components/ui/button";
 import { Menu, X, User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -53,9 +54,8 @@ export function Header({ variant = "transparent" }: HeaderProps) {
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
             <Link href="/" onClick={scrollToTop}>
-              <div className="flex-shrink-0 flex flex-col cursor-pointer">
-                <h1 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">MarginMix</h1>
-                <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
+              <div className="flex-shrink-0 cursor-pointer">
+                <img src={marginMixLogo} alt="MarginMix - Margin Risk Clarity" className="h-12 w-auto" />
               </div>
             </Link>
           </div>

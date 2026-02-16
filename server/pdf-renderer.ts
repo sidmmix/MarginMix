@@ -67,9 +67,9 @@ export async function renderDecisionMemoPDF(
 
     addLogoToPage(doc);
 
-    doc.moveDown(3);
+    doc.moveDown(5);
 
-    doc.fontSize(24).fillColor(COLORS.primary).text("MarginMix – Decision Memo", { align: "center" });
+    doc.fontSize(24).fillColor(COLORS.primary).text("Decision Memo", { align: "center" });
     doc.moveDown(2);
 
     doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Decision Context");
@@ -174,7 +174,7 @@ export async function renderAssessmentOutputPDF(
 
     doc.moveDown(3);
 
-    doc.fontSize(22).fillColor(COLORS.primary).text("MarginMix – Margin Risk Assessment Results", { align: "center" });
+    doc.fontSize(22).fillColor(COLORS.primary).text("Margin Risk Assessment Results", { align: "center" });
     doc.moveDown(2);
 
     doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Executive Snapshot");

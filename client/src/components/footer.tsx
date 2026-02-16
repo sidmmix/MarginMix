@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import marginMixLogo from "@assets/MarginMix_Logo_Transparent_1771235313740.png";
 
 export function Footer() {
   return (
@@ -6,9 +7,8 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <Link href="/">
-            <h3 className="text-2xl font-bold text-emerald-400 mb-1 cursor-pointer hover:text-emerald-300">MarginMix</h3>
+            <img src={marginMixLogo} alt="MarginMix - Margin Risk Clarity" className="h-16 w-auto mx-auto cursor-pointer hover:opacity-80 mb-4" />
           </Link>
-          <p className="text-sm italic text-gray-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</p>
           <p className="text-gray-300 mb-6 mt-4">
             MarginMix is a decision system for margin governance — not a delivery or productivity platform.
           </p>

@@ -293,8 +293,7 @@ export async function sendAssessmentEmail(
             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
               <tr>
                 <td class="header-padding" style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0;">
-                  <h1 style="color: white; margin: 0; font-size: 28px;">MarginMix</h1>
-                  <p style="color: #d1fae5; margin: 5px 0 0 0; font-style: italic; font-family: Georgia, serif;">Margin Risk Clarity</p>
+                  <img src="${APP_URL}/images/marginmix-logo.png" alt="MarginMix - Margin Risk Clarity" style="max-height: 80px; width: auto;" />
                 </td>
               </tr>
             </table>
@@ -554,7 +553,7 @@ export async function sendAssessmentEmail(
             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
               <tr>
                 <td style="background: #111827; padding: 20px; text-align: center; border-radius: 0 0 12px 12px; border: 1px solid rgba(255,255,255,0.1); border-top: none;">
-                  <p style="color: #10b981; font-weight: bold; margin: 0;">MarginMix</p>
+                  <img src="${APP_URL}/images/marginmix-logo.png" alt="MarginMix" style="max-height: 50px; width: auto;" />
                   <p style="color: #9ca3af; font-size: 12px; margin: 5px 0 0 0;">Deterministic Decision Engine v1.0</p>
                   <p style="color: #6b7280; font-size: 11px; margin: 5px 0 0 0;">© 2026 Digital Lexicon. All rights reserved.</p>
                 </td>
@@ -609,8 +608,7 @@ export async function sendFeedbackRequestEmail(
             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
               <tr>
                 <td style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
-                  <h1 style="color: white; margin: 0; font-size: 28px;">MarginMix</h1>
-                  <p style="color: #d1fae5; margin: 5px 0 0 0; font-style: italic; font-family: Georgia, serif;">Margin Risk Clarity</p>
+                  <img src="${APP_URL}/images/marginmix-logo.png" alt="MarginMix - Margin Risk Clarity" style="max-height: 80px; width: auto;" />
                 </td>
               </tr>
             </table>
@@ -654,7 +652,7 @@ export async function sendFeedbackRequestEmail(
             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
               <tr>
                 <td style="background: #1f2937; padding: 20px; text-align: center; border-radius: 0 0 8px 8px;">
-                  <p style="color: #10b981; font-weight: bold; margin: 0;">MarginMix</p>
+                  <img src="${APP_URL}/images/marginmix-logo.png" alt="MarginMix" style="max-height: 50px; width: auto;" />
                   <p style="color: #6b7280; font-size: 11px; margin: 5px 0 0 0;">© 2026 Digital Lexicon. All rights reserved.</p>
                 </td>
               </tr>
@@ -738,7 +736,7 @@ export async function sendFeedbackNotificationEmail(
             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
               <tr>
                 <td style="background: #1f2937; padding: 15px; text-align: center; border-radius: 0 0 8px 8px;">
-                  <p style="color: #10b981; font-weight: bold; margin: 0; font-size: 14px;">MarginMix Feedback System</p>
+                  <img src="${APP_URL}/images/marginmix-logo.png" alt="MarginMix" style="max-height: 40px; width: auto;" />
                 </td>
               </tr>
             </table>

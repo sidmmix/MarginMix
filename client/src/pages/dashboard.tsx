@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import marginMixLogo from "@assets/MarginMix_Logo_Transparent_1771235313740.png";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -79,11 +80,9 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="flex flex-col">
-                <h1 className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
-                  MarginMix Dashboard
-                </h1>
-                <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
+              <div className="flex items-center gap-3">
+                <img src={marginMixLogo} alt="MarginMix" className="h-10 w-auto" />
+                <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">Dashboard</span>
               </div>
             </div>
             <div className="flex items-center gap-2 sm:gap-4">

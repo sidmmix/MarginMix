@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import marginMixLogo from "@assets/MarginMix_Logo_Transparent_1771235313740.png";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -1253,9 +1254,7 @@ export default function Assessment() {
         <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
           <div className="max-w-2xl mx-auto text-center text-white">
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-4">Margin Risk Assessment</h1>
-            <p className="text-base sm:text-xl md:text-2xl text-emerald-100 mb-4 sm:mb-8 italic" style={{ fontFamily: 'Georgia, serif' }}>
-              Margin Risk Clarity
-            </p>
+            <img src={marginMixLogo} alt="MarginMix - Margin Risk Clarity" className="h-20 sm:h-24 w-auto mx-auto mb-4 sm:mb-8" />
             
             <p className="text-sm sm:text-base md:text-lg text-emerald-50 mb-6 sm:mb-10 leading-relaxed max-w-xl mx-auto px-2">
               {isFromProfiler
@@ -1847,7 +1846,7 @@ export default function Assessment() {
           <Link href="/">
             <Button variant="ghost" className="text-white hover:text-emerald-200 hover:bg-white/10 px-2 sm:px-3 py-1.5 sm:py-2">
               <ArrowLeft className="h-4 w-4 sm:mr-2" />
-              <span className="font-bold hidden sm:inline">MarginMix</span>
+              <img src={marginMixLogo} alt="MarginMix" className="h-8 w-auto hidden sm:inline" />
             </Button>
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
