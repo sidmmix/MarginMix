@@ -13,10 +13,7 @@ import {
   insertMarginAssessmentSchema
 } from "@shared/schema";
 import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
-import { sendAssessmentEmail, sendFeedbackRequestEmail, sendFeedbackNotificationEmail, PDFAttachment } from "./resend";
-import { executeDecisionEngine, DecisionObject } from "./decision-engine";
-import { generateNarrative } from "./narrative-generator";
-import { renderDecisionMemoPDF, renderAssessmentOutputPDF, generatePDFFilename } from "./pdf-renderer";
+import { sendAssessmentEmail } from "./resend";
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -318,239 +315,42 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-  // Track processed feedback to prevent duplicates
-  const processedFeedback = new Set<string>();
-
-  // Feedback response endpoint - handles Yes/No clicks from feedback email
-  app.get("/api/feedback", async (req, res) => {
-    try {
-      const { response, name, email, token } = req.query;
-      
-      if (!response || !name || !email) {
-        return res.status(400).send(`
-          <!DOCTYPE html>
-          <html>
-          <head><title>Invalid Request</title></head>
-          <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-            <h1 style="color: #dc2626;">Invalid Request</h1>
-            <p>Missing required parameters.</p>
-          </body>
-          </html>
-        `);
-      }
-      
-      const feedbackResponse = response === 'yes' ? 'yes' : 'no';
-      const fullName = decodeURIComponent(name as string);
-      const userEmail = decodeURIComponent(email as string);
-      
-      // Create unique key to prevent duplicate processing
-      const feedbackKey = `${userEmail}:${token || Date.now()}`;
-      
-      // Only send notification if not already processed
-      if (!processedFeedback.has(feedbackKey)) {
-        processedFeedback.add(feedbackKey);
-        
-        // Send notification email to Sid
-        try {
-          await sendFeedbackNotificationEmail(fullName, userEmail, feedbackResponse);
-          console.log(`Feedback notification sent: ${feedbackResponse} from ${fullName} (${userEmail})`);
-        } catch (notifyError: any) {
-          console.error("Failed to send feedback notification:", notifyError.message);
-        }
-      } else {
-        console.log(`Duplicate feedback ignored for: ${userEmail}`);
-      }
-      
-      // Return a thank you page
-      const responseMessage = feedbackResponse === 'yes' 
-        ? "Thank you for your interest! We'll be in touch soon with more details."
-        : "Thank you for your feedback. We appreciate your honesty!";
-      
-      res.send(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-          <title>Thank You - MarginMix</title>
-          <meta charset="utf-8">
-        </head>
-        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f9fafb;">
-          <div style="max-width: 500px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            <div style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-              <h1 style="color: white; margin: 0; font-size: 28px;">MarginMix</h1>
-              <p style="color: #d1fae5; margin: 5px 0 0 0; font-style: italic;">Margin Risk Clarity</p>
-            </div>
-            <h2 style="color: #059669; margin-bottom: 20px;">Thank You!</h2>
-            <p style="color: #374151; font-size: 16px; line-height: 1.6;">${responseMessage}</p>
-            <p style="color: #6b7280; margin-top: 30px; font-size: 14px;">
-              Regards,<br>
-              <strong>Siddhartha</strong><br>
-              Founder, MarginMix
-            </p>
-          </div>
-        </body>
-        </html>
-      `);
-    } catch (error: any) {
-      console.error("Feedback endpoint error:", error);
-      res.status(500).send(`
-        <!DOCTYPE html>
-        <html>
-        <head><title>Error</title></head>
-        <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px;">
-          <h1 style="color: #dc2626;">Something went wrong</h1>
-          <p>Please try again later.</p>
-        </body>
-        </html>
-      `);
-    }
-  });
-
   // Margin Risk Assessment endpoint
   app.post("/api/assessments", async (req, res) => {
     try {
       const validatedData = insertMarginAssessmentSchema.parse(req.body);
       const assessment = await storage.createMarginAssessment(validatedData);
       
-      // Execute the deterministic decision engine
-      const decisionObject = executeDecisionEngine({
-        fullName: validatedData.fullName,
-        workEmail: validatedData.workEmail,
-        roleTitle: validatedData.roleTitle,
-        organisationName: validatedData.organisationName,
-        organisationSize: validatedData.organisationSize,
-        decisionType: validatedData.decisionEvaluating || "exploratory",
-        specifyContext: validatedData.specifyContext || "single-client",
-        engagementType: validatedData.engagementType,
-        engagementClassification: validatedData.engagementClassification || "new",
-        clientVolatility: validatedData.clientVolatility,
-        stakeholderComplexity: validatedData.stakeholderComplexity,
-        seniorLeadershipInvolvement: validatedData.seniorLeadershipInvolvement,
-        midLevelOversight: validatedData.midLevelOversight,
-        executionThinkingMix: validatedData.executionThinkingMix,
-        iterationIntensity: validatedData.iterationIntensity,
-        scopeChangeLikelihood: validatedData.scopeChangeLikelihood,
-        crossFunctionalCoordination: validatedData.crossFunctionalCoordination,
-        aiEffortShift: validatedData.aiEffortShift || "no_clear_substitution",
-        marginalValueSaturation: validatedData.marginalValueSaturation || "significant",
-        seniorOversightLoad: validatedData.seniorOversightLoad || "about_same",
-        coordinationDecisionDrag: validatedData.coordinationDecisionDrag || "moderate",
-        deliveryConfidence: validatedData.deliveryConfidence || "high",
-        openSignal: validatedData.openSignal ?? undefined,
-        currentMargin: req.body.currentMargin ? parseFloat(req.body.currentMargin) : undefined
-      });
-      
-      console.log(`Decision Engine executed for ${validatedData.organisationName}:`, {
-        verdict: decisionObject.marginRiskVerdict,
-        riskBand: decisionObject.riskBand,
-        compositeScore: decisionObject.compositeRiskScore
-      });
-      
-      const openSignal = validatedData.openSignal || null;
-      
-      // Generate narrative using GPT-4.1 (narrative only, no score recalculation)
-      let narrative;
+      // Send email notification with assessment details
       try {
-        narrative = await generateNarrative(decisionObject, openSignal);
-        console.log(`Narrative generated for: ${validatedData.organisationName}`);
-      } catch (narrativeError: any) {
-        console.error("Failed to generate narrative:", narrativeError.message);
-        // Use fallback narrative if GPT fails
-        narrative = {
-          decisionMemo: {
-            decisionContext: `${decisionObject.engagementContext.type} engagement for ${decisionObject.engagementContext.organisationName}, classified as ${decisionObject.engagementContext.classification}. Pricing structure: ${decisionObject.engagementContext.decisionType}.`,
-            marginRiskVerdict: `This engagement has been classified as ${decisionObject.marginRiskVerdict} with a ${decisionObject.riskBand} risk band based on the assessment inputs.`,
-            primaryDriversOfRisk: decisionObject.dominantDrivers.length > 0
-              ? decisionObject.dominantDrivers.map(d => `${d} contributes to structural margin pressure`)
-              : ["No significant risk drivers identified"],
-            pricingGovernanceImplications: `${decisionObject.riskBand} risk band requires ${decisionObject.riskBand === "Low" ? "standard" : "enhanced"} pricing review and governance oversight.`,
-            whatWouldNeedToChange: decisionObject.marginRiskVerdict === "Structurally Safe"
-              ? ["Current conditions support proceeding as planned"]
-              : ["Reduce workforce intensity through scope refinement", "Strengthen coordination governance structures"],
-            recommendation: `Proceed with appropriate governance controls for a ${decisionObject.riskBand.toLowerCase()} risk engagement.`
-          },
-          assessmentOutput: {
-            executiveSnapshot: `${decisionObject.marginRiskVerdict}. This assessment identifies ${decisionObject.riskBand.toLowerCase()} overall margin risk based on structural factors including ${decisionObject.dominantDrivers.join(", ") || "standard operating conditions"}.`,
-            riskDimensionSummary: {
-              workforceIntensity: { level: decisionObject.dimensions.workforceIntensity, description: `Workforce requirements are ${decisionObject.dimensions.workforceIntensity}.` },
-              coordinationEntropy: { level: decisionObject.dimensions.coordinationEntropy, description: `Coordination complexity is ${decisionObject.dimensions.coordinationEntropy}.` },
-              commercialExposure: { level: decisionObject.dimensions.commercialExposure, description: `Commercial exposure is ${decisionObject.dimensions.commercialExposure}.` },
-              volatilityControl: { level: decisionObject.dimensions.volatilityControl, description: `Volatility control is ${decisionObject.dimensions.volatilityControl}.` }
-            },
-            effortBandsAllocation: {
-              senior: { percentage: decisionObject.effortPercentages.senior, rationale: "Senior involvement should be capped to preserve margins." },
-              midLevel: { percentage: decisionObject.effortPercentages.mid, rationale: "Mid-level should absorb majority of delivery volatility." },
-              execution: { percentage: decisionObject.effortPercentages.junior, rationale: "Junior layer handles execution velocity." }
-            },
-            structuralRiskSignals: decisionObject.triggeredBy.length > 0
-              ? [...decisionObject.triggeredBy.map(t => `${t} signal detected in assessment`), `AI Effort Shift: ${decisionObject.aiImpactClassification}`]
-              : ["No significant structural risk signals detected"],
-            overrideConditions: decisionObject.triggeredBy.length > 0
-              ? `Override triggered by: ${decisionObject.triggeredBy.join(", ")}`
-              : "No override conditions were triggered."
-          }
-        };
-      }
-      
-      // Generate PDFs
-      let decisionMemoPdf: Buffer;
-      let assessmentOutputPdf: Buffer;
-      
-      try {
-        [decisionMemoPdf, assessmentOutputPdf] = await Promise.all([
-          renderDecisionMemoPDF(decisionObject, narrative.decisionMemo),
-          renderAssessmentOutputPDF(decisionObject, narrative.assessmentOutput, openSignal)
-        ]);
-        console.log(`PDFs generated for: ${validatedData.organisationName}`);
-      } catch (pdfError: any) {
-        console.error("Failed to generate PDFs:", pdfError.message);
-        return res.status(500).json({
-          success: false,
-          message: "Failed to generate PDF reports"
+        await sendAssessmentEmail({
+          fullName: validatedData.fullName,
+          workEmail: validatedData.workEmail,
+          roleTitle: validatedData.roleTitle,
+          organisationName: validatedData.organisationName,
+          organisationSize: validatedData.organisationSize,
+          engagementType: validatedData.engagementType,
+          engagementDuration: validatedData.engagementDuration,
+          clientVolatility: validatedData.clientVolatility,
+          stakeholderComplexity: validatedData.stakeholderComplexity,
+          seniorLeadershipInvolvement: validatedData.seniorLeadershipInvolvement,
+          midLevelOversight: validatedData.midLevelOversight,
+          executionThinkingMix: validatedData.executionThinkingMix,
+          iterationIntensity: validatedData.iterationIntensity,
+          scopeChangeLikelihood: validatedData.scopeChangeLikelihood,
+          crossFunctionalCoordination: validatedData.crossFunctionalCoordination,
+          openSignal: validatedData.openSignal,
+          submittedAt: new Date()
         });
-      }
-      
-      const decisionMemoFilename = generatePDFFilename("decision_memo", validatedData.fullName, validatedData.organisationName);
-      const assessmentOutputFilename = generatePDFFilename("assessment_results", validatedData.fullName, validatedData.organisationName);
-      
-      // Send email with PDF attachments
-      const pdfAttachments: PDFAttachment[] = [
-        { filename: decisionMemoFilename, content: decisionMemoPdf },
-        { filename: assessmentOutputFilename, content: assessmentOutputPdf }
-      ];
-      
-      try {
-        await sendAssessmentEmail(decisionObject, openSignal, pdfAttachments);
-        console.log(`Assessment email sent with PDFs for: ${validatedData.organisationName}`);
+        console.log(`Assessment email sent for: ${validatedData.organisationName}`);
       } catch (emailError: any) {
         console.error("Failed to send assessment email:", emailError.message);
       }
       
-      // Send follow-up feedback request email with delay to avoid rate limiting
-      try {
-        // Wait 10 seconds before sending the second email to avoid Resend rate limits
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        await sendFeedbackRequestEmail(validatedData.fullName, validatedData.workEmail, Number(assessment.id));
-        console.log(`Feedback request email sent to: ${validatedData.workEmail}`);
-      } catch (feedbackEmailError: any) {
-        console.error("Failed to send feedback request email:", feedbackEmailError.message);
-      }
-      
-      // Return PDFs as base64 for frontend download
       res.status(201).json({ 
         success: true, 
         message: "Assessment submitted successfully",
-        assessmentId: assessment.id,
-        decisionObject,
-        pdfs: {
-          decisionMemo: {
-            filename: decisionMemoFilename,
-            data: decisionMemoPdf.toString('base64')
-          },
-          assessmentOutput: {
-            filename: assessmentOutputFilename,
-            data: assessmentOutputPdf.toString('base64')
-          }
-        }
+        assessmentId: assessment.id 
       });
     } catch (error: any) {
       console.error("Assessment submission error:", error);

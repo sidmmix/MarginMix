@@ -6,11 +6,6 @@ Margin Mix is a full-stack web application that serves as an Intelligent Financi
 
 ## Recent Changes
 
-- **Final Decision Page & Heatmap (February 6, 2026)**: Added comprehensive Final Decision Page after assessment submission replacing the simple confirmation dialog. Shows: verdict banner, 6 risk dimension cards (WI/CE/Commercial/Volatility/Confidence/Measurement), 5 bucket scores with progress bars, effort allocation bars, dominant drivers, structural risk signals (saturation/AI impact/risk source/correctability), contradiction flags, and actionable recommendations per verdict type. Progressive heatmap added to assessment header matching profiler style (green/amber/red cells per question). PDFs auto-download during decision page display. Decision logic verified consistent between profiler and full assessment (identical precedence rules from decisionTable.ts).
-- **Quick Risk Profiler (February 6, 2026)**: Added 60-second Quick Margin Risk Profiler using 6 key questions (Q6, Q8, Q10, Q12, Q14, Q22). Full assessment skips these 6 when coming from profiler, leaving 17 questions correctly numbered 1–17. Features Typeform-style full-screen gradient UI matching main assessment, progressive heatmap that updates in real-time, risk calculation aligned with decision engine logic (same verdict precedence rules), and "Get Full Margin Risk Decision Clarity" button that passes answers to the full assessment. Full assessment detects `?from=profiler` param to skip already-answered questions and renumber remaining ones. Route: /quick-profiler.
-- **PDF Template Updates (February 1, 2026)**: Updated Decision Memo and Assessment Output PDFs to match latest template specifications. Decision Memo now includes: Decision Context (with pricing structure), Margin Risk Verdict, Primary Drivers of Risk, Pricing & Governance Implications, What Would Need to Change, Recommendation. Assessment Output includes: Executive Snapshot, Risk Dimension Summary (WI/CE/Commercial/Volatility), Effort Bands & Allocation, Structural Risk Signals, Override Conditions, What This Assessment Measures/Does Not Measure.
-- **Pure Rule-Based Decision Engine Refactor (February 1, 2026)**: Complete refactoring of decision engine to be purely rule-based with NO scoring math, NO ML, NO AI in verdict logic. New 7-layer architecture: types.ts (canonical Level/Confidence/Verdict types), questionMapper.ts (Q6-Q23→signals), dimensionMapper.ts (if-then rules only), decisionTable.ts (strict precedence: Low Confidence override takes priority over Structural Overload), effortAllocator.ts (verdict→effort), contradictionDetector.ts (soft flags), engine.ts (orchestrator). Numeric scores retained for PDF display only.
-- **PDF Generation & GPT-4.1 Narratives (January 30, 2026)**: Added dual PDF output system (Decision Memo + Assessment Output). PDFs auto-download on submission and are sent via email as attachments. GPT-4.1 generates narrative explanations only - it cannot recalculate scores, change bands, or override verdicts. Fallback narrative provided if GPT fails. Files: narrative-generator.ts, pdf-renderer.ts.
 - **Brand Rebrand to Margin Mix (December 26, 2025)**: Complete rebrand from YourBrief to Margin Mix with new value proposition: "The Financial Reasoning Engine for Media Agencies - Stopping Margin Leak!" Updated all branding, colors (blue → emerald/teal), messaging, and feature descriptions across the entire application.
 - **DNA_Scraper Capability (December 26, 2025)**: Added Playwright-based web scraper that analyzes websites and generates Brand Briefs with brand_name, industry_category, top_3_usps, and complexity_score using GPT-4o-mini.
 - **11-Question Comprehensive Brief System with Platform CPM/Impressions (October 21, 2025)**: Expanded questionnaire to 11 strategic open-ended questions covering Geo, Demo, Industry, Budget, Timeline, KPIs, Creative, Competitive, Platforms, Affinity, and InMarket segments.
@@ -64,57 +59,6 @@ Product Focus: Financial reasoning engine for media planning margins and media m
 - **Session Security**: Enhanced session management with CSRF protection and secure cookies
 - **Rate Limiting**: Brute force protection with IP-based attempt tracking
 - **Security Headers**: Comprehensive security headers including XSS, CSRF, and clickjacking protection
-
-### Deterministic Decision Engine (server/decision-engine/)
-A pure rule-based decision system for margin risk assessment. NO scoring math, NO ML, NO AI in verdict logic.
-
-**Layer 1 - types.ts**: Canonical Type Definitions
-- Level: "low" | "medium" | "high"
-- Confidence: "positive" | "neutral" | "negative"
-- Verdict: 5 possible outcomes (Structurally Safe → Do Not Proceed Without Repricing)
-- Signals: 15 atomic indicators derived from assessment questions
-
-**Layer 2 - questionMapper.ts**: Question → Signal Extraction
-- Maps Q6-Q23 responses to atomic signals (Q1-Q5 are context only)
-- Pure mapping functions, no scoring
-
-**Layer 3 - dimensionMapper.ts**: Signal → Dimension Promotion
-- If-then rules ONLY (no numeric calculations)
-- Dimensions: workforceIntensity, coordinationEntropy, commercialExposure, volatilityControl, confidenceSignal, measurementMaturity
-
-**Layer 4 - decisionTable.ts**: Verdict Logic with Strict Precedence
-- OVERRIDES (highest priority): Low Confidence → Do Not Proceed, Structural Overload → Fragile
-- PRIMARY: High Commercial → Price Sensitive, High Workforce → Execution Heavy
-- DEFAULT: Structurally Safe
-
-**Layer 5 - effortAllocator.ts**: Verdict → Effort Allocation
-- Derived AFTER verdict is determined (never influences verdict)
-- Senior/Mid/Junior percentages based on verdict
-
-**Layer 6 - contradictionDetector.ts**: Soft Flags
-- Detects inconsistent inputs (confidence mismatch, effort mismatch, scope contradiction)
-
-**Layer 7 - engine.ts**: Orchestrator
-- Runs all layers in sequence
-- Returns canonical {signals, dimensions, verdict, flags, effortAllocation}
-
-**index.ts**: Integration Layer
-- Bridges decision engine with PDF/email systems
-- Numeric scores are for DISPLAY ONLY (not used in verdict logic)
-- Saturation detection: Value saturation, optics-driven staffing, upward cost shift
-- AI impact classification: Accretive, Neutral, Fragile, Dilutive
-- Risk source attribution: Structural, Behavioral, Technology-Amplified, Mixed
-
-**Layer 4 - verdict.ts**: Margin Risk Classification
-- Risk bands: Low, Moderate, High, Very High
-- Verdicts: Structurally Viable, Conditionally Viable, Structurally Fragile, Economically Non-Viable
-- Effort distribution: Senior/Mid/Junior percentages
-- Dominant driver identification
-
-**Layer 5 - decisionObject.ts**: Immutable System-of-Record
-- Canonical output object with readonly properties
-- Contains all computed values for rendering
-- GPT uses this for narrative generation only (no recalculation)
 
 ### AI-Powered Financial Reasoning
 - **Workforce Intensity Matrix**: World's first framework correlating workforce effort with media planning margins
