@@ -21,11 +21,11 @@ export default function Landing() {
       <section className="relative overflow-hidden pt-16 sm:pt-20 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 leading-tight">
-              Predict Margin Risk prior to Delivery Commitment
+            <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 leading-tight">
+              Predict Margin Risk for every campaign/project in 20 minutes - before delivery begins
             </h1>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap">
-              MarginMix is a deterministic pricing and margin decision engine for the services economy
+              MarginMix is a deterministic pricing and margin decision engine for Mid tier Agencies & Consulting Firms
             </p>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 mx-auto leading-relaxed sm:whitespace-nowrap">
               Use it for new briefs, new contracts, renewals, scope changes, or repricing discussions
