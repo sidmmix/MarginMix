@@ -57,8 +57,11 @@ export default function Landing() {
           <p className="italic text-gray-500 dark:text-gray-400 text-base sm:text-lg leading-relaxed mb-4">
             "Agencies benchmark 18–20% EBITDA. Most realize 13% or less. On a $25M agency, that gap is worth over $1.5M a year — not lost to bad clients, but to delivery complexity that was never priced in."
           </p>
-          <p className="text-lg sm:text-xl font-semibold text-emerald-600 dark:text-emerald-400">
+          <p className="text-lg sm:text-xl font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
             MarginMix helps you plug that gap!
+          </p>
+          <p className="text-xs text-gray-400 dark:text-gray-500">
+            Figures derived from publicly available data
           </p>
         </div>
       </section>
