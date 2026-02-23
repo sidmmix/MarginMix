@@ -4,8 +4,6 @@ import { z } from "zod";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import OpenAI from "openai";
-import multer from "multer";
-import * as XLSX from "xlsx";
 import { storage } from "./storage";
 import { setupOAuth } from "./oauth";
 import { 
@@ -21,12 +19,6 @@ import { renderDecisionMemoPDF, renderAssessmentOutputPDF, generatePDFFilename }
 // Initialize OpenAI client
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-});
-
-// Multer configuration for file uploads
-const upload = multer({ 
-  storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
 // Session configuration
@@ -127,91 +119,6 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Legacy campaign brief routes removed - old questionnaire flow deprecated
-
-  // Benchmark import endpoint - accepts Excel file
-  app.post("/api/benchmarks/import", requireAuth, upload.single('file'), async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ message: "No file uploaded" });
-      }
-
-      // Parse Excel file
-      const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const data = XLSX.utils.sheet_to_json(worksheet);
-
-      // Delete existing benchmarks before importing new data
-      await storage.deleteAllBenchmarks();
-
-      let importedCount = 0;
-      const errors: string[] = [];
-
-      // Process each row and generate embeddings
-      for (let index = 0; index < data.length; index++) {
-        try {
-          const rowData = data[index] as any;
-          
-          // Validate required fields
-          if (!rowData.Industry || !rowData.Platform || !rowData.Objective) {
-            errors.push(`Row ${index + 2}: Missing required fields (Industry, Platform, or Objective)`);
-            continue;
-          }
-
-          // Create text for embedding: combines industry, objective, targeting for semantic search
-          const embeddingText = [
-            rowData.Industry,
-            rowData.Objective,
-            rowData.Targeting || ''
-          ].filter(Boolean).join(' - ');
-
-          // Generate embedding using OpenAI
-          const embeddingResponse = await openai.embeddings.create({
-            model: "text-embedding-3-large",
-            input: embeddingText,
-            dimensions: 3072
-          });
-
-          const embedding = embeddingResponse.data[0].embedding;
-
-          // Create benchmark record
-          await storage.createBenchmark({
-            industry: rowData.Industry,
-            platform: rowData.Platform,
-            objective: rowData.Objective,
-            targeting: rowData.Targeting || null,
-            cpm: rowData.CPM ? String(rowData.CPM) : null,
-            cpa: rowData.CPA ? String(rowData.CPA) : null,
-            geo: rowData.Geo || "India",
-            embedding: embedding,
-            metadata: {
-              importDate: new Date().toISOString(),
-              sourceFile: req.file.originalname
-            }
-          });
-
-          importedCount++;
-        } catch (rowError: any) {
-          console.error(`Error processing row ${index + 2}:`, rowError);
-          errors.push(`Row ${index + 2}: ${rowError.message}`);
-        }
-      }
-
-      res.json({
-        success: true,
-        message: `Successfully imported ${importedCount} benchmarks`,
-        importedCount,
-        totalRows: data.length,
-        errors: errors.length > 0 ? errors : undefined
-      });
-    } catch (error: any) {
-      console.error("Error importing benchmarks:", error);
-      res.status(500).json({ 
-        message: "Error importing benchmarks", 
-        error: error.message 
-      });
-    }
-  });
 
   // Benchmark search endpoint - hybrid semantic + exact filters
   app.post("/api/benchmarks/search", async (req, res) => {
