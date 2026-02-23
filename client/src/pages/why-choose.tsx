@@ -24,7 +24,6 @@ export default function WhyChoose() {
               Why Choose <span className="text-emerald-600 dark:text-emerald-400">MarginMix</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Because pricing risk is decided before delivery begins
             </p>
           </div>
 
