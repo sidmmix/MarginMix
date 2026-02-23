@@ -282,7 +282,7 @@ export default function Landing() {
                 2
               </div>
               <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
-                MarginMix analyses your inputs
+                MarginMix analyzes your inputs
               </p>
             </div>
             <div className="text-center">
