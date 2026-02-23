@@ -594,7 +594,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
-              Assess Margin Risk & Price work Profitably!
+              Assess Margin risk & Price work appropriately!
             </h2>
             <Button 
               size="lg" 
@@ -606,7 +606,6 @@ export default function Landing() {
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <p className="text-emerald-100 mt-4 text-sm">
-              Early access assessments are reviewed for fit.
             </p>
           </div>
         </div>
