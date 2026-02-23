@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, AlertTriangle, CheckCircle, XCircle, Users, Building2, Briefcase, Target } from "lucide-react";
+import { ArrowRight, AlertTriangle, CheckCircle, XCircle, Users, Building2, Briefcase, Target, Shield, TrendingUp, BarChart3, Zap } from "lucide-react";
 import { Link } from "wouter";
 import { Header } from "@/components/header";
 
@@ -300,31 +300,275 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Example output */}
+      {/* Example Verdicts */}
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
-            Example output
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 text-center">
+            What MarginMix tells you
           </h2>
-          <div className="max-w-3xl mx-auto">
-            <div className="bg-gray-900 dark:bg-gray-950 rounded-2xl p-8 text-white">
-              <div className="flex items-center gap-3 mb-6">
-                <AlertTriangle className="h-8 w-8 text-amber-500" />
-                <div>
-                  <p className="text-sm text-gray-400 uppercase tracking-wide">Margin Risk Verdict</p>
-                  <p className="text-2xl font-bold text-amber-500">At Risk</p>
+          <p className="text-gray-500 dark:text-gray-400 text-center mb-12 text-sm sm:text-base">
+            Real verdict scenarios from the decision engine — every output is deterministic, not AI-generated
+          </p>
+
+          <div className="space-y-6 max-w-5xl mx-auto">
+
+            {/* Verdict 1: Structurally Safe */}
+            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+              <div className="p-6 sm:p-8">
+                <div className="rounded-xl border bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 p-5 sm:p-6 mb-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
+                    <h3 className="text-xl sm:text-2xl font-bold text-emerald-400">Structurally Safe</h3>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border bg-emerald-500/20 text-emerald-400 border-emerald-500/30 w-fit">
+                      Low Risk
+                    </span>
+                  </div>
+                  <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                    Delivery complexity is contained. Coordination overhead is low, senior involvement is predictable, and scope boundaries are well-defined. Margin is protected by structural clarity.
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <div className="flex justify-between text-xs text-gray-400 mb-1">
+                        <span>Composite Risk Score</span>
+                        <span className="font-mono font-bold text-white">22/100</span>
+                      </div>
+                      <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full bg-emerald-500" style={{ width: "22%" }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5">
+                  {[
+                    { name: "Workforce", level: "Low", icon: Users, color: "text-emerald-400 bg-emerald-500/20 border-emerald-500/30" },
+                    { name: "Coordination", level: "Low", icon: Zap, color: "text-emerald-400 bg-emerald-500/20 border-emerald-500/30" },
+                    { name: "Commercial", level: "Low", icon: TrendingUp, color: "text-emerald-400 bg-emerald-500/20 border-emerald-500/30" },
+                    { name: "Volatility", level: "Low", icon: AlertTriangle, color: "text-emerald-400 bg-emerald-500/20 border-emerald-500/30" },
+                    { name: "Confidence", level: "Positive", icon: Shield, color: "text-emerald-400 bg-emerald-500/20 border-emerald-500/30" },
+                    { name: "Measurement", level: "Low", icon: BarChart3, color: "text-emerald-400 bg-emerald-500/20 border-emerald-500/30" },
+                  ].map((dim) => (
+                    <div key={dim.name} className="text-center p-2 rounded-lg bg-white/5 border border-white/10">
+                      <dim.icon className="h-4 w-4 mx-auto text-gray-400 mb-1" />
+                      <p className="text-[10px] text-gray-500 mb-1">{dim.name}</p>
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold border ${dim.color}`}>
+                        {dim.level}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-xs text-gray-500 mb-2">Estimated Margin Impact</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center">
+                      <p className="text-[10px] text-gray-500">Current</p>
+                      <p className="text-lg font-bold text-white">18%</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] text-gray-500">Est. Loss</p>
+                      <p className="text-lg font-bold text-emerald-400">-1%</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] text-gray-500">Effective</p>
+                      <p className="text-lg font-bold text-emerald-400">17%</p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="space-y-4 text-gray-300">
-                <p>
-                  Even if delivery meets expectations, this engagement is likely to lose margin due to unplanned senior involvement and coordination overhead.
-                </p>
-                <p>
-                  The proposed structure assumes a level of containment that is unlikely given stakeholder complexity.
-                </p>
+            </div>
+
+            {/* Verdict 2: Price Sensitive */}
+            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+              <div className="p-6 sm:p-8">
+                <div className="rounded-xl border bg-gradient-to-br from-amber-500/20 to-amber-600/10 border-amber-500/30 p-5 sm:p-6 mb-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
+                    <h3 className="text-xl sm:text-2xl font-bold text-amber-400">Price Sensitive</h3>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border bg-amber-500/20 text-amber-400 border-amber-500/30 w-fit">
+                      Moderate Risk
+                    </span>
+                  </div>
+                  <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                    Commercial exposure is elevated. The pricing model may not adequately cover the level of effort required. Margin erosion is likely unless pricing is renegotiated or scope is contained.
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <div className="flex justify-between text-xs text-gray-400 mb-1">
+                        <span>Composite Risk Score</span>
+                        <span className="font-mono font-bold text-white">52/100</span>
+                      </div>
+                      <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full bg-amber-400" style={{ width: "52%" }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5">
+                  {[
+                    { name: "Workforce", level: "Medium", icon: Users, color: "text-amber-400 bg-amber-500/20 border-amber-500/30" },
+                    { name: "Coordination", level: "Medium", icon: Zap, color: "text-amber-400 bg-amber-500/20 border-amber-500/30" },
+                    { name: "Commercial", level: "High", icon: TrendingUp, color: "text-red-400 bg-red-500/20 border-red-500/30" },
+                    { name: "Volatility", level: "Medium", icon: AlertTriangle, color: "text-amber-400 bg-amber-500/20 border-amber-500/30" },
+                    { name: "Confidence", level: "Neutral", icon: Shield, color: "text-amber-400 bg-amber-500/20 border-amber-500/30" },
+                    { name: "Measurement", level: "Medium", icon: BarChart3, color: "text-amber-400 bg-amber-500/20 border-amber-500/30" },
+                  ].map((dim) => (
+                    <div key={dim.name} className="text-center p-2 rounded-lg bg-white/5 border border-white/10">
+                      <dim.icon className="h-4 w-4 mx-auto text-gray-400 mb-1" />
+                      <p className="text-[10px] text-gray-500 mb-1">{dim.name}</p>
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold border ${dim.color}`}>
+                        {dim.level}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-xs text-gray-500 mb-2">Estimated Margin Impact</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center">
+                      <p className="text-[10px] text-gray-500">Current</p>
+                      <p className="text-lg font-bold text-white">15%</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] text-gray-500">Est. Loss</p>
+                      <p className="text-lg font-bold text-amber-400">-7%</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] text-gray-500">Effective</p>
+                      <p className="text-lg font-bold text-amber-400">8%</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
+
+            {/* Verdict 3: Structurally Fragile */}
+            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+              <div className="p-6 sm:p-8">
+                <div className="rounded-xl border bg-gradient-to-br from-red-500/20 to-red-600/10 border-red-500/30 p-5 sm:p-6 mb-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
+                    <h3 className="text-xl sm:text-2xl font-bold text-red-400">Structurally Fragile</h3>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border bg-red-500/20 text-red-400 border-red-500/30 w-fit">
+                      High Risk
+                    </span>
+                  </div>
+                  <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                    Workforce intensity and coordination entropy are both elevated. Senior effort is being consumed by structural complexity rather than value creation. Margin is at risk of systemic erosion.
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <div className="flex justify-between text-xs text-gray-400 mb-1">
+                        <span>Composite Risk Score</span>
+                        <span className="font-mono font-bold text-white">74/100</span>
+                      </div>
+                      <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full bg-red-500" style={{ width: "74%" }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5">
+                  {[
+                    { name: "Workforce", level: "High", icon: Users, color: "text-red-400 bg-red-500/20 border-red-500/30" },
+                    { name: "Coordination", level: "High", icon: Zap, color: "text-red-400 bg-red-500/20 border-red-500/30" },
+                    { name: "Commercial", level: "Medium", icon: TrendingUp, color: "text-amber-400 bg-amber-500/20 border-amber-500/30" },
+                    { name: "Volatility", level: "High", icon: AlertTriangle, color: "text-red-400 bg-red-500/20 border-red-500/30" },
+                    { name: "Confidence", level: "Neutral", icon: Shield, color: "text-amber-400 bg-amber-500/20 border-amber-500/30" },
+                    { name: "Measurement", level: "High", icon: BarChart3, color: "text-red-400 bg-red-500/20 border-red-500/30" },
+                  ].map((dim) => (
+                    <div key={dim.name} className="text-center p-2 rounded-lg bg-white/5 border border-white/10">
+                      <dim.icon className="h-4 w-4 mx-auto text-gray-400 mb-1" />
+                      <p className="text-[10px] text-gray-500 mb-1">{dim.name}</p>
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold border ${dim.color}`}>
+                        {dim.level}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-xs text-gray-500 mb-2">Estimated Margin Impact</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center">
+                      <p className="text-[10px] text-gray-500">Current</p>
+                      <p className="text-lg font-bold text-white">20%</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] text-gray-500">Est. Loss</p>
+                      <p className="text-lg font-bold text-red-400">-14%</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] text-gray-500">Effective</p>
+                      <p className="text-lg font-bold text-red-400">6%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Verdict 4: Do Not Proceed Without Repricing */}
+            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+              <div className="p-6 sm:p-8">
+                <div className="rounded-xl border bg-gradient-to-br from-red-600/20 to-red-700/10 border-red-600/30 p-5 sm:p-6 mb-5">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
+                    <h3 className="text-xl sm:text-2xl font-bold text-red-500">Do Not Proceed Without Repricing</h3>
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border bg-red-600/20 text-red-500 border-red-600/30 w-fit">
+                      Very High Risk
+                    </span>
+                  </div>
+                  <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                    Confidence signal is negative. The engagement lacks the structural conditions for margin protection. Proceeding at current pricing carries a high probability of material margin loss.
+                  </p>
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1">
+                      <div className="flex justify-between text-xs text-gray-400 mb-1">
+                        <span>Composite Risk Score</span>
+                        <span className="font-mono font-bold text-white">89/100</span>
+                      </div>
+                      <div className="w-full h-3 bg-white/10 rounded-full overflow-hidden">
+                        <div className="h-full rounded-full bg-red-500" style={{ width: "89%" }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-5">
+                  {[
+                    { name: "Workforce", level: "High", icon: Users, color: "text-red-400 bg-red-500/20 border-red-500/30" },
+                    { name: "Coordination", level: "High", icon: Zap, color: "text-red-400 bg-red-500/20 border-red-500/30" },
+                    { name: "Commercial", level: "High", icon: TrendingUp, color: "text-red-400 bg-red-500/20 border-red-500/30" },
+                    { name: "Volatility", level: "High", icon: AlertTriangle, color: "text-red-400 bg-red-500/20 border-red-500/30" },
+                    { name: "Confidence", level: "Negative", icon: Shield, color: "text-red-400 bg-red-500/20 border-red-500/30" },
+                    { name: "Measurement", level: "High", icon: BarChart3, color: "text-red-400 bg-red-500/20 border-red-500/30" },
+                  ].map((dim) => (
+                    <div key={dim.name} className="text-center p-2 rounded-lg bg-white/5 border border-white/10">
+                      <dim.icon className="h-4 w-4 mx-auto text-gray-400 mb-1" />
+                      <p className="text-[10px] text-gray-500 mb-1">{dim.name}</p>
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold border ${dim.color}`}>
+                        {dim.level}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-xs text-gray-500 mb-2">Estimated Margin Impact</p>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center">
+                      <p className="text-[10px] text-gray-500">Current</p>
+                      <p className="text-lg font-bold text-white">16%</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] text-gray-500">Est. Loss</p>
+                      <p className="text-lg font-bold text-red-400">-20%</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-[10px] text-gray-500">Effective</p>
+                      <p className="text-lg font-bold text-red-500">-4%</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
+
+          <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-8">
+            These are illustrative scenarios showing actual verdict types from the MarginMix decision engine
+          </p>
         </div>
       </section>
 
