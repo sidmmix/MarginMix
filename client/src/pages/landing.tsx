@@ -274,7 +274,7 @@ export default function Landing() {
                 1
               </div>
               <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
-                You describe the intended structure of an engagement
+                You describe the intended structure & delivery complexity of an engagement objectively
               </p>
             </div>
             <div className="text-center">
@@ -282,7 +282,7 @@ export default function Landing() {
                 2
               </div>
               <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
-                MarginMix evaluates workforce intensity and shadow labor risk
+                MarginMix analyses your inputs
               </p>
             </div>
             <div className="text-center">
