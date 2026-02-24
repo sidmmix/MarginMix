@@ -405,6 +405,11 @@ export default function QuickProfiler() {
       return;
     }
     if (isMarginQuestion) {
+      const parsed = Number(currentMargin);
+      if (!currentMargin || !Number.isFinite(parsed) || parsed <= 0 || parsed > 100) {
+        toast({ title: "Please enter a valid margin % (between 0 and 100) to continue.", variant: "destructive" });
+        return;
+      }
       scrollToQuestion(0);
       return;
     }
@@ -674,7 +679,7 @@ export default function QuickProfiler() {
               </h2>
 
               <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
-                Enter your margin % to see estimated impact on your results
+                Enter your margin % to see estimated impact on your results <span className="text-red-300">*</span>
               </p>
 
               <div className="w-full max-w-md mx-auto">
