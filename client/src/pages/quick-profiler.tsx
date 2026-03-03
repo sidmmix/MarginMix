@@ -674,9 +674,13 @@ export default function QuickProfiler() {
                 </span>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-3 sm:mb-4">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-2 sm:mb-3">
                 What's the current margin of the project/client/group of clients you are evaluating?
               </h2>
+
+              <p className="text-sm sm:text-base text-white/50 italic mb-3 sm:mb-4">
+                Indicative required, if not actual
+              </p>
 
               <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
                 Enter your margin % to see estimated impact on your results <span className="text-red-300">*</span>
