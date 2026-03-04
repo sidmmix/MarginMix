@@ -742,39 +742,13 @@ export default function Assessment() {
       const now = Date.now();
       if (now - lastScrollTime < scrollThrottle) return;
       if (isTransitioning || isSubmitting) return;
-      
       if (isReviewScreen || showDecisionPage) return;
-      
+
+      lastScrollTime = now;
       if (e.deltaY > 50) {
-        // Scroll down - go to next question (forward)
-        // Must answer current question before advancing (except Q23 which is optional)
-        if (!isCurrentQuestionAnswered()) {
-          lastScrollTime = now;
-          toast({
-            title: "Please answer before proceeding.",
-            variant: "destructive",
-          });
-          return;
-        }
-        
-        lastScrollTime = now;
-        if (isIntro) {
-          scrollToQuestion(0);
-        } else if (currentQuestion < totalQuestions - 1) {
-          // Can scroll forward if current question is answered
-          scrollToQuestion(currentQuestion + 1);
-        } else if (currentQuestion === totalQuestions - 1) {
-          // On last question (Q23), only allow scroll to review if Q1-Q22 are answered
-          if (areMandatoryQuestionsAnswered()) {
-            scrollToQuestion(currentQuestion + 1);
-          }
-        }
+        handleNext();
       } else if (e.deltaY < -50) {
-        // Scroll up - go to previous question (backward)
-        lastScrollTime = now;
-        if (currentQuestion > -1) {
-          scrollToQuestion(currentQuestion - 1);
-        }
+        handleBack();
       }
     };
     
@@ -783,7 +757,7 @@ export default function Assessment() {
       container.addEventListener('wheel', handleWheel, { passive: true });
       return () => container.removeEventListener('wheel', handleWheel);
     }
-  }, [currentQuestion, isIntro, isReviewScreen, isTransitioning, isSubmitting, totalQuestions, showDecisionPage]);
+  }, [currentQuestion, isIntro, isMarginQuestion, currentMargin, isFromProfiler, isReviewScreen, isTransitioning, isSubmitting, totalQuestions, showDecisionPage]);
 
   // Touch swipe for mobile navigation
   useEffect(() => {
@@ -803,29 +777,9 @@ export default function Assessment() {
       
       if (Math.abs(swipeDistance) > minSwipeDistance) {
         if (swipeDistance > 0) {
-          // Swipe up - go to next question (forward)
-          if (!isCurrentQuestionAnswered()) {
-            toast({
-              title: "Please answer before proceeding.",
-              variant: "destructive",
-            });
-            return;
-          }
-          
-          if (isIntro) {
-            scrollToQuestion(0);
-          } else if (currentQuestion < totalQuestions - 1) {
-            scrollToQuestion(currentQuestion + 1);
-          } else if (currentQuestion === totalQuestions - 1) {
-            if (areMandatoryQuestionsAnswered()) {
-              scrollToQuestion(currentQuestion + 1);
-            }
-          }
+          handleNext();
         } else {
-          // Swipe down - go to previous question (backward)
-          if (currentQuestion > -1) {
-            scrollToQuestion(currentQuestion - 1);
-          }
+          handleBack();
         }
       }
     };
@@ -839,7 +793,7 @@ export default function Assessment() {
         container.removeEventListener('touchend', handleTouchEnd);
       };
     }
-  }, [currentQuestion, isIntro, isReviewScreen, isTransitioning, isSubmitting, totalQuestions, showDecisionPage]);
+  }, [currentQuestion, isIntro, isMarginQuestion, currentMargin, isFromProfiler, isReviewScreen, isTransitioning, isSubmitting, totalQuestions, showDecisionPage]);
 
   const downloadPDF = (filename: string, base64Data: string) => {
     const link = document.createElement('a');
@@ -1011,7 +965,7 @@ export default function Assessment() {
     };
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [currentQuestion, isIntro, isMarginQuestion, isTransitioning]);
+  }, [currentQuestion, isIntro, isMarginQuestion, currentMargin, isFromProfiler, isTransitioning]);
 
   const calculateProgress = () => {
     if (isIntro) return 0;
