@@ -490,7 +490,7 @@ export default function QuickProfiler() {
       container.addEventListener('wheel', handleWheel, { passive: true });
       return () => container.removeEventListener('wheel', handleWheel);
     }
-  }, [currentQuestion, isIntro, isTransitioning, showResult, answers, totalQuestions]);
+  }, [currentQuestion, isIntro, isMarginQuestion, currentMargin, isTransitioning, showResult, answers, totalQuestions]);
 
   useEffect(() => {
     let touchStartY = 0;
@@ -527,7 +527,7 @@ export default function QuickProfiler() {
         container.removeEventListener('touchend', handleTouchEnd);
       };
     }
-  }, [currentQuestion, isIntro, isTransitioning, showResult, answers, totalQuestions]);
+  }, [currentQuestion, isIntro, isMarginQuestion, currentMargin, isTransitioning, showResult, answers, totalQuestions]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -545,7 +545,7 @@ export default function QuickProfiler() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentQuestion, isIntro, isMarginQuestion, isTransitioning, showResult, answers]);
+  }, [currentQuestion, isIntro, isMarginQuestion, currentMargin, isTransitioning, showResult, answers]);
 
   const calculateProgress = () => {
     if (showResult) return 100;
