@@ -187,7 +187,7 @@ doc.fontSize(9).fillColor("#6EE7B7")
   .text(`Generated: ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}`, LEFT, 168);
 
 doc.y = 240;
-body("This document describes the complete rule-based scoring mechanism used by MarginMix to assess margin risk for agency and consulting engagements. The system is fully deterministic — no AI, no ML, no averages in the verdict logic. All decisions follow explicit if-then rules across four sequential layers.");
+body("This document describes the complete scoring mechanism used by MarginMix to assess margin risk for agency and consulting engagements. The system is fully deterministic — no AI, no ML. Layers 1 and 2 use explicit if-then rules. Layer 3 uses a weighted scoring model to catch accumulated medium-risk engagements that a rule-only system would miss. Layer 4 translates the verdict into an estimated margin erosion figure.");
 divider();
 
 // ─── LAYER 1 ─────────────────────────────────────────────────────────────────
@@ -258,34 +258,47 @@ drawTable(
 );
 
 // ─── LAYER 3 ─────────────────────────────────────────────────────────────────
-h1("Layer 3 — Dimensions → Verdict");
-body("Rules are evaluated in strict precedence order. The first matching rule determines the verdict. No subsequent rules are evaluated — there is no blending, averaging, or combining of verdicts.");
+h1("Layer 3 — Dimensions → Verdict (Weighted Scoring Model)");
+body("Layer 3 produces the final verdict through two sequential steps: (1) a hard override check that fires unconditionally before any scoring, and (2) a weighted numerical score applied to the remaining five dimensions. This two-step design captures both unambiguous confidence failures and accumulated moderate-risk engagements that a pure rule-based system would misclassify as safe.");
 
+h3("Step 1 — Hard Override (fires before scoring)");
 drawTable(
-  ["Priority", "Condition", "Verdict", "Trigger Code"],
+  ["Override", "Condition", "Verdict", "Trigger Code"],
   [
-    ["1 — OVERRIDE\n(Highest priority)",
-     "Confidence Signal = Negative\nTriggered when pricingConfidence OR deliveryConfidence = Negative (from Q19 or Q22)",
-     "Do Not Proceed Without Repricing",
-     "LOW_CONFIDENCE"],
-    ["2 — OVERRIDE",
-     "Workforce Intensity = High AND Coordination Entropy = High simultaneously\nBoth conditions must be true",
-     "Structurally Fragile",
-     "STRUCTURAL_OVERLOAD"],
-    ["3 — PRIMARY",
-     "Commercial Exposure = High\nTriggered when scopeElasticity = High (Q16)",
-     "Price Sensitive",
-     "HIGH_COMMERCIAL_EXPOSURE"],
-    ["4 — PRIMARY",
-     "Workforce Intensity = High\n(without Rule 2 being triggered)",
-     "Execution Heavy",
-     "HIGH_WORKFORCE_INTENSITY"],
-    ["5 — DEFAULT",
-     "No high-risk conditions met from Rules 1–4",
-     "Structurally Safe",
-     "NO_HIGH_RISK_CONDITIONS"],
+    ["Confidence Failure",
+     "Confidence Signal = Negative\nFires when pricingConfidence OR deliveryConfidence = Negative\n(from Q19 or Q22). Confidence is non-negotiable — no weight can\ndilute a fundamental pricing or delivery confidence failure.",
+     "Do Not Proceed\nWithout Repricing",
+     "LOW_CONFIDENCE\n_OVERRIDE"],
   ],
-  [80, 205, 130, 70]
+  [75, 230, 110, 70]
+);
+
+h3("Step 2 — Weighted Score (applied when no override fires)");
+body("Each of the five remaining dimensions is converted to a numeric value (Low=0, Medium=0.5, High=1.0) and multiplied by its weight. The weighted score is the sum of all five dimension scores × 100. A score of 50 correctly reflects an all-Medium engagement as Price Sensitive — a key accuracy improvement over the prior rule-based model.");
+drawTable(
+  ["Dimension", "Weight", "Low Score", "Medium Score", "High Score"],
+  [
+    ["Workforce Intensity",   "30%", "0", "15", "30"],
+    ["Coordination Entropy",  "25%", "0", "12.5", "25"],
+    ["Commercial Exposure",   "20%", "0", "10", "20"],
+    ["Volatility Control",    "15%", "0", "7.5", "15"],
+    ["Measurement Maturity",  "10%", "0", "5", "10"],
+    ["TOTAL",                 "100%", "0", "50", "100"],
+  ],
+  [145, 50, 65, 85, 70]
+);
+
+h3("Score → Verdict Thresholds");
+drawTable(
+  ["Score Range", "Verdict", "Trigger Code"],
+  [
+    ["0 – 19",  "Structurally Safe",                   "WEIGHTED_SCORE_SAFE"],
+    ["20 – 39", "Execution Heavy",                      "WEIGHTED_SCORE_EXECUTION_HEAVY"],
+    ["40 – 59", "Price Sensitive",                      "WEIGHTED_SCORE_PRICE_SENSITIVE"],
+    ["60 – 79", "Structurally Fragile",                 "WEIGHTED_SCORE_FRAGILE"],
+    ["80 – 100","Do Not Proceed Without Repricing",      "WEIGHTED_SCORE_CRITICAL"],
+  ],
+  [75, 200, 210]
 );
 
 h3("Verdict Meanings");
@@ -363,13 +376,15 @@ drawTable(
 
 // ─── PRINCIPLES ──────────────────────────────────────────────────────────────
 h1("Core Design Principles");
-bullet("Fully deterministic", "No AI, no ML, and no probabilistic scoring anywhere in the verdict logic. Given identical inputs, the system always produces an identical verdict.");
-bullet("First-match precedence", "Verdict rules fire in strict priority order. The first matching rule wins immediately. There is no blending, weighting, or combining of verdict outcomes.");
+bullet("Fully deterministic", "No AI, no ML, and no probabilistic scoring anywhere in the verdict logic. Given identical inputs, the system always produces an identical verdict. The weighted score is computed from fixed rules — it is deterministic arithmetic, not learned inference.");
+bullet("Confidence is a hard override, not a weight", "A Negative Confidence Signal fires unconditionally before any scoring begins. No combination of low-risk dimension scores can counteract a confidence failure. This reflects the real-world truth that a client or team without delivery confidence represents non-negotiable structural risk.");
+bullet("Weighted scoring catches accumulated medium risk", "A first-match rule-only system cannot detect an engagement that is Medium on every dimension — it would return Structurally Safe. The weighted model produces a score of 50 for an all-Medium engagement, correctly classifying it as Price Sensitive. This is the primary motivation for the scoring model.");
+bullet("Weights reflect margin sensitivity, not operational severity", "Workforce Intensity (30%) and Coordination Entropy (25%) carry the highest weights because senior-dependency and coordination drag are the two most consistent drivers of margin erosion in agency engagements. Commercial Exposure (20%) reflects pricing structure fragility. Volatility Control (15%) and Measurement Maturity (10%) are real but secondary contributors.");
 bullet("Margin erosion is display-only", "The erosion percentage is computed after the verdict is already set. It provides decision context but cannot change the verdict under any circumstances.");
 bullet("Identifiers are invisible to the engine", "Q1–Q5 (name, email, role, organisation name, organisation size) are passed to PDFs, emails, and heatmaps but are never evaluated by any scoring rule.");
-bullet("Q23 open signal", "The optional open text field feeds GPT-4.1 for written narrative generation only. It cannot alter, override, soften, or harden the verdict in any way.");
-bullet("AI exposure (Q18)", "Only affects the Measurement Maturity signal. It is not a direct verdict driver — it influences margin erosion depth through the dimension weight average, not the verdict itself.");
-bullet("No numeric math in the verdict layer", "Layers 1 through 3 use only logical comparisons (equals, AND, OR). Numeric weights appear exclusively in Layer 4 for the margin erosion display calculation.");
+bullet("Q23 open signal is narrative only", "The optional open text field feeds GPT-4.1 for written narrative generation only. It cannot alter, override, soften, or harden the verdict in any way. GPT is never permitted to recalculate, reinterpret, or contradict the deterministic verdict.");
+bullet("AI exposure (Q18)", "Only affects the Measurement Maturity signal. It is not a direct verdict driver — it influences margin erosion depth through the dimension weight average, not the verdict itself. Junior-execution AI substitution = High risk; mid-level production = Medium; senior thinking or no clear substitution = Low.");
+bullet("Layers 1 and 2 use no arithmetic", "Questions → Signals (Layer 1) and Signals → Dimensions (Layer 2) use only logical comparisons (equals, AND, OR, MAX). Numeric weights appear only in Layer 3 Step 2 (verdict scoring) and Layer 4 (margin erosion display).");
 
 divider();
 doc.fontSize(8).fillColor(MID_GRAY).font("Helvetica")
