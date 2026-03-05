@@ -50,6 +50,7 @@ export function runMarginMix(input: AssessmentInput): FullEngineOutput {
     verdict: decision.verdict,
     verdictReason: decision.reason,
     triggeredBy: decision.triggeredBy,
+    weightedScore: decision.weightedScore,
     flags,
     effortAllocation,
     effortBands,

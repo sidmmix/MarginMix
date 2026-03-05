@@ -1,70 +1,110 @@
 /**
- * decisionTable.ts - Verdict Logic with Strict Rule Precedence
- * 
- * Implements verdicts using strict rule precedence:
- * 
- * OVERRIDES (highest priority):
- * 1. High Workforce Intensity + High Coordination Entropy → Structurally Fragile
- * 2. Negative Confidence Signal → Do Not Proceed Without Repricing
- * 
- * PRIMARY RULES:
- * 3. High Commercial Exposure → Price Sensitive
- * 4. High Workforce Intensity → Execution Heavy
- * 
- * DEFAULT:
- * 5. No High-Risk Conditions → Structurally Safe
- * 
- * Verdict logic is isolated in this file.
+ * decisionTable.ts - Weighted Scoring Verdict Engine
+ *
+ * Verdict is determined by a weighted score across 5 risk dimensions.
+ * Confidence Signal = Negative is the only remaining hard override —
+ * it fires unconditionally before scoring, because no weight should be
+ * able to dilute a fundamental confidence failure.
+ *
+ * WEIGHTS (sum = 100):
+ *   Workforce Intensity   30  — most direct driver of margin erosion
+ *   Coordination Entropy  25  — compounding overhead across layers
+ *   Commercial Exposure   20  — pricing and scope risk
+ *   Volatility Control    15  — client-side unpredictability
+ *   Measurement Maturity  10  — AI substitution risk
+ *
+ * SCORE THRESHOLDS (0–100):
+ *   0–19   → Structurally Safe
+ *   20–39  → Execution Heavy
+ *   40–59  → Price Sensitive
+ *   60–79  → Structurally Fragile
+ *   80–100 → Do Not Proceed Without Repricing
+ *
+ * Accumulated medium risk example:
+ *   All 5 dims at Medium → score 50 → Price Sensitive
+ *   (Previously returned Structurally Safe — the bottleneck this fixes)
  */
 
 import { Dimensions, Verdict, VerdictResult } from "./types";
 
-export function decideVerdict(d: Dimensions): VerdictResult {
-  const triggeredBy: string[] = [];
+const WEIGHTS = {
+  workforceIntensity:  30,
+  coordinationEntropy: 25,
+  commercialExposure:  20,
+  volatilityControl:   15,
+  measurementMaturity: 10,
+} as const;
 
-  // OVERRIDE 1 (HIGHEST PRIORITY): Negative confidence always wins
-  // Spec: "Negative Confidence Signal → Do Not Proceed Without Repricing"
-  if (d.confidenceSignal === "negative") {
-    triggeredBy.push("LOW_CONFIDENCE");
+function levelToFactor(level: "low" | "medium" | "high"): number {
+  switch (level) {
+    case "low":    return 0;
+    case "medium": return 0.5;
+    case "high":   return 1;
+  }
+}
+
+function calculateWeightedScore(d: Dimensions): number {
+  const raw =
+    levelToFactor(d.workforceIntensity)  * WEIGHTS.workforceIntensity  +
+    levelToFactor(d.coordinationEntropy) * WEIGHTS.coordinationEntropy +
+    levelToFactor(d.commercialExposure)  * WEIGHTS.commercialExposure  +
+    levelToFactor(d.volatilityControl)   * WEIGHTS.volatilityControl   +
+    levelToFactor(d.measurementMaturity) * WEIGHTS.measurementMaturity;
+  return Math.round(raw);
+}
+
+function scoreToVerdict(score: number): { verdict: Verdict; reason: string; triggeredBy: string[] } {
+  if (score >= 80) {
     return {
       verdict: "Do Not Proceed Without Repricing",
-      reason: "Pricing or delivery confidence is insufficient to proceed safely. Engagement requires repricing or structural changes before commitment.",
-      triggeredBy
+      reason: "Critical multi-dimensional risk across weighted dimensions. Cumulative exposure exceeds safe operating thresholds. Engagement requires repricing or structural changes before commitment.",
+      triggeredBy: ["WEIGHTED_SCORE_CRITICAL"],
     };
   }
-
-  // OVERRIDE 2: Structural overload
-  // Spec: "High Workforce Intensity + High Coordination Entropy → Structurally Fragile"
-  if (d.workforceIntensity === "high" && d.coordinationEntropy === "high") {
-    triggeredBy.push("STRUCTURAL_OVERLOAD");
+  if (score >= 60) {
     return {
       verdict: "Structurally Fragile",
-      reason: "Structural load exceeds safe operating assumptions. High workforce intensity combined with high coordination entropy creates unsustainable margin pressure.",
-      triggeredBy
+      reason: "Multiple high-weight risk dimensions are elevated simultaneously. Combined workforce intensity, coordination overhead, and commercial exposure create unsustainable margin pressure.",
+      triggeredBy: ["WEIGHTED_SCORE_FRAGILE"],
     };
   }
-
-  if (d.commercialExposure === "high") {
-    triggeredBy.push("HIGH_COMMERCIAL_EXPOSURE");
+  if (score >= 40) {
     return {
       verdict: "Price Sensitive",
-      reason: "Pricing assumptions require protection. High scope elasticity or pricing rigidity creates commercial vulnerability.",
-      triggeredBy
+      reason: "Accumulated risk across dimensions requires pricing protection. Scope elasticity, workforce demands, or coordination overhead will erode margin without active governance.",
+      triggeredBy: ["WEIGHTED_SCORE_PRICE_SENSITIVE"],
     };
   }
-
-  if (d.workforceIntensity === "high") {
-    triggeredBy.push("HIGH_WORKFORCE_INTENSITY");
+  if (score >= 20) {
     return {
       verdict: "Execution Heavy",
-      reason: "Execution and coordination will dominate effort. Senior dependency and iteration load require elevated management attention.",
-      triggeredBy
+      reason: "Elevated workforce intensity or coordination load will dominate delivery effort. Senior attention and iteration demands require active management.",
+      triggeredBy: ["WEIGHTED_SCORE_EXECUTION_HEAVY"],
+    };
+  }
+  return {
+    verdict: "Structurally Safe",
+    reason: "Weighted risk score within safe operating range. No material risk conditions triggered across any dimension. Proceed with standard governance.",
+    triggeredBy: ["WEIGHTED_SCORE_SAFE"],
+  };
+}
+
+export function decideVerdict(d: Dimensions): VerdictResult {
+  // Hard override: Negative confidence is non-negotiable.
+  // No weighted score can compensate for a fundamental confidence failure.
+  if (d.confidenceSignal === "negative") {
+    return {
+      verdict: "Do Not Proceed Without Repricing",
+      reason: "Pricing or delivery confidence is insufficient to proceed safely. Engagement requires repricing or structural changes before commitment. This overrides all other risk signals.",
+      triggeredBy: ["LOW_CONFIDENCE_OVERRIDE"],
+      weightedScore: null,
     };
   }
 
-  return {
-    verdict: "Structurally Safe",
-    reason: "Engagement viable under stated assumptions. No high-risk conditions triggered. Proceed with standard governance.",
-    triggeredBy: ["NO_HIGH_RISK_CONDITIONS"]
-  };
+  const score = calculateWeightedScore(d);
+  const { verdict, reason, triggeredBy } = scoreToVerdict(score);
+
+  return { verdict, reason, triggeredBy, weightedScore: score };
 }
+
+export { WEIGHTS };

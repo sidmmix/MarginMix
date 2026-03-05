@@ -55,6 +55,7 @@ export interface VerdictResult {
   verdict: Verdict;
   reason: string;
   triggeredBy: string[];
+  weightedScore: number | null; // null when hard override fires
 }
 
 export interface EffortAllocation {
@@ -75,6 +76,7 @@ export interface EngineOutput {
   verdict: Verdict;
   verdictReason: string;
   triggeredBy: string[];
+  weightedScore: number | null;
   flags: ContradictionFlag[];
   effortAllocation: EffortAllocation;
 }

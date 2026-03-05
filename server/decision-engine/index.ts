@@ -321,10 +321,12 @@ export function executeDecisionEngine(input: AssessmentInput): DecisionObject {
                      engineOutput.dimensions.commercialExposure === "high"
   };
 
-  // NOTE: compositeScore is for DISPLAY/RENDERING ONLY
-  // It is NOT used in verdict determination, which is purely rule-based
-  const compositeScore = (bucketScores.WI * 0.3 + bucketScores.SI * 0.25 + 
-                          bucketScores.CO * 0.25 + bucketScores.VSI * 0.2);
+  // Use the engine's weighted score (0-100) as the composite risk score.
+  // When the confidence override fires, weightedScore is null — use 85 to
+  // represent a high-severity Do Not Proceed on the display bar.
+  const compositeScore = engineOutput.weightedScore !== null
+    ? engineOutput.weightedScore
+    : 85;
 
   const marginImpact = (input.currentMargin !== undefined && input.currentMargin > 0)
     ? calculateMarginImpact(input.currentMargin, engineOutput.verdict, engineOutput.dimensions)
