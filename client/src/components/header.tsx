@@ -109,9 +109,9 @@ export function Header({ variant = "transparent" }: HeaderProps) {
             <Link href="/quick-profiler" onClick={scrollToTop}>
               <Button 
                 size="sm" 
-                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs px-3"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs px-2 py-1 h-7"
               >
-                Predict Margin Risk in 60 Seconds!
+                Predict Risk
               </Button>
             </Link>
             <Button
@@ -131,18 +131,25 @@ export function Header({ variant = "transparent" }: HeaderProps) {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden pb-4 border-t border-gray-200 dark:border-gray-700 mt-2 pt-4">
-            <div className="flex flex-col space-y-3">
+          <div className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700 pb-4 pt-3">
+            <div className="flex flex-col space-y-1">
               {navLinks.map((link) => (
                 <Link key={link.href} href={link.href} onClick={scrollToTop}>
-                  <span className={`block text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 text-base font-medium cursor-pointer py-2 px-2 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 ${isActive(link.href) ? 'bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-600' : ''}`}>
+                  <span className={`block text-gray-800 dark:text-gray-100 hover:text-emerald-700 dark:hover:text-emerald-300 text-base font-medium cursor-pointer py-3 px-3 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 ${isActive(link.href) ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 border-l-4 border-emerald-600' : ''}`}>
                     {link.mobileLabel}
                   </span>
                 </Link>
               ))}
+              <div className="pt-2 px-3">
+                <Link href="/quick-profiler" onClick={scrollToTop}>
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm">
+                    Predict Margin Risk in 60 Seconds!
+                  </Button>
+                </Link>
+              </div>
               {isAuthenticated && user ? (
-                <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-                  <div className="flex items-center space-x-2 px-2 py-2">
+                <div className="pt-3 border-t border-gray-200 dark:border-gray-700 mt-2">
+                  <div className="flex items-center space-x-2 px-3 py-2">
                     <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                     <span className="text-sm font-medium text-gray-900 dark:text-white">
                       {String((user as Record<string, unknown>).firstName || '')} {String((user as Record<string, unknown>).lastName || '')}
