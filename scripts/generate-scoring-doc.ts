@@ -312,7 +312,7 @@ note("Important: Rule 1 (Negative Confidence Signal) always fires before Rule 2 
 
 // ─── LAYER 4 ─────────────────────────────────────────────────────────────────
 h1("Layer 4 — Margin Erosion Calculation");
-body("Once the verdict is determined, the estimated margin erosion is calculated in four steps. This figure is for decision support and display only — it never feeds back into the verdict logic.");
+body("Once the verdict is determined, the estimated margin erosion is calculated in four steps. These figures are real arithmetic derived from the user's stated current margin — they represent a genuine estimated loss and effective margin, not cosmetic indicators. The calculation runs post-verdict and cannot change the verdict, but the output numbers are actual predictions, not approximations for display.");
 
 h3("Step 1 — Verdict Sets the Erosion Range");
 drawTable(
@@ -380,11 +380,11 @@ bullet("Fully deterministic", "No AI, no ML, and no probabilistic scoring anywhe
 bullet("Confidence is a hard override, not a weight", "A Negative Confidence Signal fires unconditionally before any scoring begins. No combination of low-risk dimension scores can counteract a confidence failure. This reflects the real-world truth that a client or team without delivery confidence represents non-negotiable structural risk.");
 bullet("Weighted scoring catches accumulated medium risk", "A first-match rule-only system cannot detect an engagement that is Medium on every dimension — it would return Structurally Safe. The weighted model produces a score of 50 for an all-Medium engagement, correctly classifying it as Price Sensitive. This is the primary motivation for the scoring model.");
 bullet("Weights reflect margin sensitivity, not operational severity", "Workforce Intensity (30%) and Coordination Entropy (25%) carry the highest weights because senior-dependency and coordination drag are the two most consistent drivers of margin erosion in agency engagements. Commercial Exposure (20%) reflects pricing structure fragility. Volatility Control (15%) and Measurement Maturity (10%) are real but secondary contributors.");
-bullet("Margin erosion is display-only", "The erosion percentage is computed after the verdict is already set. It provides decision context but cannot change the verdict under any circumstances.");
+bullet("Margin erosion is a post-verdict calculation", "The erosion percentage is computed after the verdict is fixed and cannot change it. However, the numbers are real — they are deterministic arithmetic derived from the user's stated current margin and the six dimension weights. Estimated Margin Loss and Effective Margin are genuine predictions, not cosmetic display values. They represent how much of the stated margin is likely to erode under the assessed engagement conditions.");
 bullet("Identifiers are invisible to the engine", "Q1–Q5 (name, email, role, organisation name, organisation size) are passed to PDFs, emails, and heatmaps but are never evaluated by any scoring rule.");
 bullet("Q23 open signal is narrative only", "The optional open text field feeds GPT-4.1 for written narrative generation only. It cannot alter, override, soften, or harden the verdict in any way. GPT is never permitted to recalculate, reinterpret, or contradict the deterministic verdict.");
 bullet("AI exposure (Q18)", "Only affects the Measurement Maturity signal. It is not a direct verdict driver — it influences margin erosion depth through the dimension weight average, not the verdict itself. Junior-execution AI substitution = High risk; mid-level production = Medium; senior thinking or no clear substitution = Low.");
-bullet("Layers 1 and 2 use no arithmetic", "Questions → Signals (Layer 1) and Signals → Dimensions (Layer 2) use only logical comparisons (equals, AND, OR, MAX). Numeric weights appear only in Layer 3 Step 2 (verdict scoring) and Layer 4 (margin erosion display).");
+bullet("Layers 1 and 2 use no arithmetic", "Questions → Signals (Layer 1) and Signals → Dimensions (Layer 2) use only logical comparisons (equals, AND, OR, MAX). Numeric weights appear only in Layer 3 Step 2 (verdict scoring) and Layer 4 (margin erosion calculation).");
 
 divider();
 doc.fontSize(8).fillColor(MID_GRAY).font("Helvetica")
