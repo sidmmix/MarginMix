@@ -74,7 +74,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 size="sm" 
                 className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
               >
-                Calculate your Margin Risk in a Minute!
+                Calculate your Margin Risk in 60 Seconds!
               </Button>
             </Link>
             {isAuthenticated && user ? (
@@ -111,7 +111,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 size="sm" 
                 className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs px-3"
               >
-                Margin Risk in a Minute!
+                Margin Risk in 60 Seconds!
               </Button>
             </Link>
             <Button
