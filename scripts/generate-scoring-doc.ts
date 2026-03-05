@@ -8,285 +8,374 @@ const stream = fs.createWriteStream(outputPath);
 doc.pipe(stream);
 
 const EMERALD = "#059669";
-const DARK = "#111827";
-const GRAY = "#6B7280";
+const DARK    = "#111827";
+const GRAY    = "#6B7280";
 const MID_GRAY = "#9CA3AF";
 const LIGHT_BG = "#F0FDF4";
-const BORDER = "#6EE7B7";
-const PAGE_WIDTH = 595 - 110; // A4 minus margins
+const BORDER  = "#6EE7B7";
+const ROW_ALT = "#F9FAFB";
+const PAGE_W  = 485; // usable width (595 - 2*55)
+const LEFT    = 55;
+const RIGHT   = LEFT + PAGE_W;
+const BOTTOM_MARGIN = 790; // trigger new page before this y
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
+// ─── TEXT HEIGHT ESTIMATOR ────────────────────────────────────────────────────
+// Estimates how many points tall a block of text will be given a column width
+function estimateTextHeight(text: string, colWidth: number, fontSize: number): number {
+  const innerWidth = colWidth - 10; // cell padding
+  // average character width ≈ 0.52× font size for Helvetica
+  const avgCharW = fontSize * 0.52;
+  const charsPerLine = Math.max(1, Math.floor(innerWidth / avgCharW));
+  const lineHeight = fontSize * 1.35;
 
-function h1(text: string) {
-  doc.moveDown(1)
-    .fontSize(16).fillColor(EMERALD).font("Helvetica-Bold")
-    .text(text.toUpperCase(), { characterSpacing: 0.5 })
-    .moveDown(0.15);
-  doc.moveTo(55, doc.y).lineTo(540, doc.y).strokeColor(EMERALD).lineWidth(1.5).stroke();
-  doc.moveDown(0.5);
+  let lines = 0;
+  for (const paragraph of text.split("\n")) {
+    const words = paragraph.split(" ").filter(Boolean);
+    if (words.length === 0) { lines++; continue; }
+    let lineLen = 0;
+    let lineCount = 1;
+    for (const word of words) {
+      if (lineLen > 0 && lineLen + word.length + 1 > charsPerLine) {
+        lineCount++;
+        lineLen = word.length;
+      } else {
+        lineLen += (lineLen ? 1 : 0) + word.length;
+      }
+    }
+    lines += lineCount;
+  }
+
+  return lines * lineHeight;
 }
 
-function h2(text: string) {
-  doc.moveDown(0.7)
-    .fontSize(11).fillColor(DARK).font("Helvetica-Bold")
-    .text(text)
-    .moveDown(0.2);
+// ─── TABLE RENDERER ───────────────────────────────────────────────────────────
+function drawTable(
+  headers: string[],
+  rows: string[][],
+  colWidths: number[],
+  fontSize = 8.5
+) {
+  const PAD_V = 5;   // vertical padding top & bottom inside cell
+  const totalW = colWidths.reduce((a, b) => a + b, 0);
+  const headerH = 20;
+
+  // ── header ──
+  if (doc.y + headerH > BOTTOM_MARGIN) doc.addPage();
+  const hY = doc.y;
+  doc.rect(LEFT, hY, totalW, headerH).fill(EMERALD);
+  let hx = LEFT;
+  headers.forEach((h, i) => {
+    doc.fontSize(fontSize).fillColor("#FFFFFF").font("Helvetica-Bold")
+      .text(h, hx + 5, hY + 5, { width: colWidths[i] - 10, lineBreak: false });
+    hx += colWidths[i];
+  });
+  doc.y = hY + headerH;
+
+  // ── data rows ──
+  rows.forEach((row, rowIdx) => {
+    // Measure each cell to find the tallest
+    const cellHeights = row.map((cell, ci) =>
+      estimateTextHeight(cell, colWidths[ci], fontSize)
+    );
+    const rowH = Math.max(...cellHeights) + PAD_V * 2;
+
+    // Page break if needed
+    if (doc.y + rowH > BOTTOM_MARGIN) doc.addPage();
+
+    const ry = doc.y;
+
+    // Background
+    if (rowIdx % 2 === 0) {
+      doc.rect(LEFT, ry, totalW, rowH).fill(ROW_ALT);
+    } else {
+      doc.rect(LEFT, ry, totalW, rowH).fill("#FFFFFF");
+    }
+
+    // Border
+    doc.rect(LEFT, ry, totalW, rowH).stroke("#E5E7EB").lineWidth(0.3);
+
+    // Cell text — rendered after background so it sits on top
+    let rx = LEFT;
+    row.forEach((cell, ci) => {
+      doc.fontSize(fontSize).fillColor(DARK).font("Helvetica")
+        .text(cell, rx + 5, ry + PAD_V, {
+          width: colWidths[ci] - 10,
+          lineBreak: true,
+          lineGap: 1.5,
+        });
+      // reset x for next cell; doc.text moves doc.x & doc.y
+      rx += colWidths[ci];
+    });
+
+    // Force doc.y to the bottom of this row
+    doc.y = ry + rowH;
+  });
+
+  // bottom outer border line
+  doc.moveTo(LEFT, doc.y).lineTo(LEFT + totalW, doc.y)
+    .strokeColor("#D1D5DB").lineWidth(0.5).stroke();
+  doc.moveDown(0.6);
+}
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+function h1(text: string) {
+  if (doc.y > 680) doc.addPage();
+  doc.moveDown(0.8)
+    .fontSize(15).fillColor(EMERALD).font("Helvetica-Bold")
+    .text(text.toUpperCase(), LEFT, doc.y, { characterSpacing: 0.4, width: PAGE_W });
+  doc.moveDown(0.15);
+  doc.moveTo(LEFT, doc.y).lineTo(RIGHT, doc.y).strokeColor(EMERALD).lineWidth(1.5).stroke();
+  doc.moveDown(0.5);
 }
 
 function h3(text: string) {
   doc.moveDown(0.5)
     .fontSize(10).fillColor(EMERALD).font("Helvetica-Bold")
-    .text(text)
-    .moveDown(0.1);
+    .text(text, LEFT, doc.y, { width: PAGE_W })
+    .moveDown(0.15);
 }
 
 function body(text: string, indent = 0) {
   doc.fontSize(9.5).fillColor(DARK).font("Helvetica")
-    .text(text, 55 + indent, doc.y, { width: PAGE_WIDTH - indent, lineGap: 2 })
-    .moveDown(0.25);
+    .text(text, LEFT + indent, doc.y, { width: PAGE_W - indent, lineGap: 2 })
+    .moveDown(0.3);
 }
 
 function bullet(label: string, detail: string) {
   const y = doc.y;
   doc.fontSize(9.5).fillColor(DARK).font("Helvetica-Bold")
-    .text(`• ${label}:`, 65, y, { continued: true, width: PAGE_WIDTH - 10 });
+    .text(`• ${label}: `, LEFT + 10, y, { continued: true, width: PAGE_W - 10 });
   doc.font("Helvetica").fillColor(GRAY)
-    .text(` ${detail}`, { lineGap: 2 });
-  doc.moveDown(0.15);
+    .text(detail, { lineGap: 2 });
+  doc.moveDown(0.2);
 }
 
 function note(text: string) {
   doc.fontSize(8.5).fillColor(GRAY).font("Helvetica-Oblique")
-    .text(text, 55, doc.y, { width: PAGE_WIDTH, lineGap: 2 })
-    .moveDown(0.3);
+    .text(text, LEFT, doc.y, { width: PAGE_W, lineGap: 2 })
+    .moveDown(0.4);
 }
 
 function divider() {
-  doc.moveDown(0.5);
-  doc.moveTo(55, doc.y).lineTo(540, doc.y).strokeColor("#E5E7EB").lineWidth(0.5).stroke();
-  doc.moveDown(0.5);
-}
-
-function drawTable(headers: string[], rows: string[][], colWidths: number[]) {
-  const startX = 55;
-  const rowH = 18;
-  const headerH = 20;
-
-  // Header row
-  let hx = startX;
-  const hy = doc.y;
-  const totalW = colWidths.reduce((a, b) => a + b, 0);
-  doc.rect(startX, hy, totalW, headerH).fill(EMERALD);
-  headers.forEach((h, i) => {
-    doc.fontSize(8.5).fillColor("#FFFFFF").font("Helvetica-Bold")
-      .text(h, hx + 4, hy + 5, { width: colWidths[i] - 8, lineBreak: false });
-    hx += colWidths[i];
-  });
-
-  // Data rows
-  rows.forEach((row, rowIdx) => {
-    // Check if we need a new page
-    if (doc.y + rowH > 770) {
-      doc.addPage();
-    }
-
-    const ry = doc.y;
-    if (rowIdx % 2 === 0) {
-      doc.rect(startX, ry, totalW, rowH).fill("#F9FAFB");
-    }
-
-    let rx = startX;
-    row.forEach((cell, ci) => {
-      doc.fontSize(8.5).fillColor(DARK).font("Helvetica")
-        .text(cell, rx + 4, ry + 4, { width: colWidths[ci] - 8, lineBreak: false });
-      rx += colWidths[ci];
-    });
-
-    // Row border
-    doc.rect(startX, ry, totalW, rowH).stroke("#E5E7EB").lineWidth(0.3);
-    doc.y = ry + rowH;
-  });
-
-  // Outer border
+  doc.moveDown(0.4);
+  doc.moveTo(LEFT, doc.y).lineTo(RIGHT, doc.y).strokeColor("#E5E7EB").lineWidth(0.5).stroke();
   doc.moveDown(0.5);
 }
 
 function infoBox(lines: string[]) {
+  const lineH = 15;
+  const boxH = lines.length * lineH + 14;
   const boxY = doc.y;
-  const lineH = 16;
-  const boxH = lines.length * lineH + 16;
-  doc.rect(55, boxY, PAGE_WIDTH, boxH).fill(LIGHT_BG).stroke(BORDER).lineWidth(0.5);
+  doc.rect(LEFT, boxY, PAGE_W, boxH).fill(LIGHT_BG).stroke(BORDER).lineWidth(0.8);
   lines.forEach((line, i) => {
-    doc.fontSize(9.5).fillColor(DARK).font(i === 0 ? "Helvetica-Bold" : "Helvetica")
-      .text(line, 65, boxY + 8 + i * lineH, { width: PAGE_WIDTH - 20, lineBreak: false });
+    doc.fontSize(9.5)
+      .fillColor(DARK)
+      .font(i === 0 ? "Helvetica-Bold" : "Helvetica")
+      .text(line, LEFT + 10, boxY + 7 + i * lineH, { width: PAGE_W - 20, lineBreak: false });
   });
-  doc.y = boxY + boxH + 8;
+  doc.y = boxY + boxH + 10;
 }
 
 // ─── COVER PAGE ──────────────────────────────────────────────────────────────
-doc.rect(0, 0, 595, 210).fill(EMERALD);
-doc.fontSize(32).fillColor("#FFFFFF").font("Helvetica-Bold").text("MarginMix", 55, 55);
-doc.fontSize(18).fillColor("#D1FAE5").font("Helvetica")
-  .text("Decision Engine — Scoring & Rules Logic", 55, 100);
+doc.rect(0, 0, 595, 220).fill(EMERALD);
+doc.fontSize(32).fillColor("#FFFFFF").font("Helvetica-Bold").text("MarginMix", LEFT, 58);
+doc.fontSize(17).fillColor("#D1FAE5").font("Helvetica")
+  .text("Decision Engine — Scoring & Rules Logic", LEFT, 103);
 doc.fontSize(10).fillColor("#A7F3D0")
-  .text("Complete reference for the deterministic margin risk assessment system", 55, 135);
+  .text("Complete reference for the deterministic margin risk assessment system", LEFT, 138);
 doc.fontSize(9).fillColor("#6EE7B7")
-  .text(`Generated: ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}`, 55, 165);
-doc.y = 230;
+  .text(`Generated: ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}`, LEFT, 168);
 
+doc.y = 240;
 body("This document describes the complete rule-based scoring mechanism used by MarginMix to assess margin risk for agency and consulting engagements. The system is fully deterministic — no AI, no ML, no averages in the verdict logic. All decisions follow explicit if-then rules across four sequential layers.");
-
 divider();
 
 // ─── LAYER 1 ─────────────────────────────────────────────────────────────────
 h1("Layer 1 — Questions → Signals");
-body("18 of the 23 questions (Q6–Q22) produce signals that feed the engine. Q1–Q5 are context identifiers and never influence the verdict. Q23 is an open text field for narrative generation only.");
+body("18 of the 23 questions (Q6–Q22) produce signals that feed the engine. Q1–Q5 are context identifiers that never influence the verdict. Q23 is an open text field used for narrative generation only.");
 
 h3("Identifier Questions (Q1–Q5) — No Signal Produced");
-note("Q1 Full Name  ·  Q2 Work Email  ·  Q3 Role/Title  ·  Q4 Organisation Name  ·  Q5 Organisation Size");
+note("Q1 Full Name  ·  Q2 Work Email  ·  Q3 Role / Title  ·  Q4 Organisation Name  ·  Q5 Organisation Size");
 
 h3("Signal-Producing Questions (Q6–Q22)");
-
 drawTable(
   ["Q#", "Question", "Signal Produced", "Mapping Logic"],
   [
-    ["Q6",  "Decision type",                    "engagementState",                "New / ongoing / renewal / escalation / strategic"],
-    ["Q7",  "Specify context",                  "engagementState (modifier)",     "Single client vs group of clients"],
-    ["Q8",  "Engagement classification",        "engagementState",                "New · Ongoing <6m / 6–12m / 12m+ · Renewal"],
-    ["Q9",  "Pricing model",                    "pricingRigidity",                "Commission/Outcome=High · Hybrid=Medium · Retainer/T&M=Low"],
-    ["Q10", "Client volatility",                "clientVolatility",               "Direct pass-through: Low / Medium / High"],
-    ["Q11", "Stakeholder complexity",           "stakeholderLoad",                "Direct pass-through: Low / Medium / High"],
-    ["Q12", "Senior leadership involvement",    "seniorDependency (input 1)",     "Minimal=Low · Periodic=Medium · Frequent/Continuous=High"],
-    ["Q13", "Mid-level oversight",              "coordinationLoad (input 1)",     "Direct pass-through: Low / Medium / High"],
-    ["Q14", "Execution vs thinking mix",        "teamMaturity",                   "Execution-heavy=High · Balanced=Medium · Thinking-led=Low"],
-    ["Q15", "Iteration intensity",              "iterationLoad",                  "Direct pass-through: Low / Medium / High"],
-    ["Q16", "Scope change likelihood",          "scopeElasticity",                "Direct pass-through: Low / Medium / High"],
-    ["Q17", "Cross-functional coordination",   "coordinationLoad (input 2)",     "Direct pass-through: Low / Medium / High"],
-    ["Q18", "AI effort shift",                  "measurementMaturity + aiLeverage","Junior exec=High · Mid production=Medium · Senior/None=Low"],
-    ["Q19", "Marginal value saturation",        "pricingConfidence + governance", "Significant=Positive · Some=Neutral · Minimal/None=Negative"],
-    ["Q20", "Senior oversight load",            "seniorDependency (input 2)",     "Less=Low · About same=Medium · More=High"],
-    ["Q21", "Coordination decision drag",       "coordinationLoad (input 3)",     "Minimal=Low · Moderate=Medium · Heavy=High"],
-    ["Q22", "Delivery confidence",              "deliveryConfidence",             "High=Positive · Some concerns=Neutral · Low=Negative"],
-    ["Q23", "Open signal (optional)",           "Narrative only",                 "Never enters verdict, dimension, or signal logic"],
+    ["Q6",  "Decision type",                   "engagementState",                    "New / ongoing / renewal / escalation / strategic"],
+    ["Q7",  "Specify context",                 "engagementState (modifier)",          "Single client vs group of clients"],
+    ["Q8",  "Engagement classification",       "engagementState",                    "New · Ongoing <6m / 6–12m / 12m+ · Renewal-expansion"],
+    ["Q9",  "Pricing model",                   "pricingRigidity",                    "Commission or Outcome-based = High · Hybrid = Medium · Retainer or T&M = Low"],
+    ["Q10", "Client volatility",               "clientVolatility",                   "Direct pass-through: Low / Medium / High"],
+    ["Q11", "Stakeholder complexity",          "stakeholderLoad",                    "Direct pass-through: Low / Medium / High"],
+    ["Q12", "Senior leadership involvement",   "seniorDependency (input 1 of 2)",    "Minimal = Low · Periodic = Medium · Frequent or Continuous = High"],
+    ["Q13", "Mid-level oversight",             "coordinationLoad (input 1 of 3)",    "Direct pass-through: Low / Medium / High"],
+    ["Q14", "Execution vs thinking mix",       "teamMaturity",                       "Execution-heavy = High · Balanced = Medium · Thinking-led = Low"],
+    ["Q15", "Iteration intensity",             "iterationLoad",                      "Direct pass-through: Low / Medium / High"],
+    ["Q16", "Scope change likelihood",         "scopeElasticity",                    "Direct pass-through: Low / Medium / High"],
+    ["Q17", "Cross-functional coordination",  "coordinationLoad (input 2 of 3)",    "Direct pass-through: Low / Medium / High"],
+    ["Q18", "AI effort shift",                 "measurementMaturity + aiLeverage",   "Junior execution = High · Mid-level production = Medium · Senior thinking or no clear substitution = Low"],
+    ["Q19", "Marginal value saturation",       "pricingConfidence + governance",     "Significant = Positive · Some = Neutral · Minimal or None = Negative"],
+    ["Q20", "Senior oversight load",           "seniorDependency (input 2 of 2)",    "Less than usual = Low · About the same = Medium · More than usual = High"],
+    ["Q21", "Coordination decision drag",      "coordinationLoad (input 3 of 3)",    "Minimal = Low · Moderate = Medium · Heavy = High"],
+    ["Q22", "Delivery confidence",             "deliveryConfidence",                 "High = Positive · Some concerns = Neutral · Low = Negative"],
+    ["Q23", "Open signal (optional text)",     "Narrative only — no signal",         "Feeds GPT-4.1 for written narrative. Never enters verdict, dimension, or signal logic."],
   ],
-  [32, 140, 130, 183]
+  [28, 138, 130, 189]
 );
 
 h3("Combined Signal Merging Rules");
+note("Where multiple questions feed the same signal, the following OR-logic applies:");
 bullet("seniorDependency", "High if Q12 OR Q20 is High · Medium if either is Medium · Low if both are Low");
-bullet("coordinationLoad", "High if Q13 OR Q17 OR Q21 is High · Medium if any is Medium · Low if all are Low");
+bullet("coordinationLoad", "High if Q13 OR Q17 OR Q21 is High · Medium if any one is Medium · Low if all are Low");
 
 // ─── LAYER 2 ─────────────────────────────────────────────────────────────────
 h1("Layer 2 — Signals → 6 Risk Dimensions");
-body("Signals are promoted to dimensions using pure if-then rules. No numeric averaging is used at this layer. Each dimension resolves to Low, Medium, or High (Confidence resolves to Positive, Neutral, or Negative).");
+body("Signals are promoted to dimensions using pure if-then rules only. No numeric averaging or weighting is used at this layer. Each dimension resolves to Low, Medium, or High — except Confidence Signal which resolves to Positive, Neutral, or Negative.");
 
 drawTable(
   ["Dimension", "Input Signals", "Promotion Rule"],
   [
-    ["Workforce Intensity",   "seniorDependency, iterationLoad",         "High if EITHER = High · Medium if either = Medium · Low otherwise"],
-    ["Coordination Entropy",  "stakeholderLoad, coordinationLoad",       "High if EITHER = High · Medium if either = Medium · Low otherwise"],
-    ["Commercial Exposure",   "scopeElasticity, pricingRigidity",        "High if scopeElasticity = High · Medium if = Medium · Low otherwise"],
-    ["Volatility Control",    "clientVolatility",                        "Directly mirrors clientVolatility (Low / Medium / High)"],
-    ["Confidence Signal",     "pricingConfidence, deliveryConfidence",   "Negative if EITHER = Negative · Positive if BOTH = Positive · Neutral otherwise"],
-    ["Measurement Maturity",  "measurementMaturity (from Q18)",          "Directly mirrors measurementMaturity signal (Low / Medium / High)"],
+    ["Workforce Intensity",
+     "seniorDependency\niterationLoad",
+     "High if EITHER seniorDependency OR iterationLoad = High\nMedium if either = Medium\nLow if both = Low"],
+    ["Coordination Entropy",
+     "stakeholderLoad\ncoordinationLoad",
+     "High if EITHER stakeholderLoad OR coordinationLoad = High\nMedium if either = Medium\nLow if both = Low"],
+    ["Commercial Exposure",
+     "scopeElasticity\npricingRigidity",
+     "High if scopeElasticity = High (regardless of pricingRigidity)\nMedium if scopeElasticity = Medium\nLow if scopeElasticity = Low"],
+    ["Volatility Control",
+     "clientVolatility",
+     "Directly mirrors clientVolatility\nLow / Medium / High — no transformation applied"],
+    ["Confidence Signal",
+     "pricingConfidence\ndeliveryConfidence",
+     "Negative if EITHER pricingConfidence OR deliveryConfidence = Negative\nPositive only if BOTH = Positive\nNeutral in all other cases"],
+    ["Measurement Maturity",
+     "measurementMaturity\n(derived from Q18)",
+     "Directly mirrors measurementMaturity signal\nJunior execution = High · Mid production = Medium · Senior or None = Low"],
   ],
-  [130, 155, 200]
+  [120, 120, 245]
 );
 
 // ─── LAYER 3 ─────────────────────────────────────────────────────────────────
 h1("Layer 3 — Dimensions → Verdict");
-body("Verdict rules are evaluated in strict precedence order. The first rule that matches wins — subsequent rules are not evaluated. There is no blending or averaging of verdicts.");
+body("Rules are evaluated in strict precedence order. The first matching rule determines the verdict. No subsequent rules are evaluated — there is no blending, averaging, or combining of verdicts.");
 
 drawTable(
   ["Priority", "Condition", "Verdict", "Trigger Code"],
   [
-    ["1 — OVERRIDE\n(highest)", "Confidence Signal = Negative",                              "Do Not Proceed Without Repricing", "LOW_CONFIDENCE"],
-    ["2 — OVERRIDE",            "Workforce Intensity = High AND Coordination Entropy = High", "Structurally Fragile",             "STRUCTURAL_OVERLOAD"],
-    ["3 — PRIMARY",             "Commercial Exposure = High",                                 "Price Sensitive",                  "HIGH_COMMERCIAL_EXPOSURE"],
-    ["4 — PRIMARY",             "Workforce Intensity = High",                                 "Execution Heavy",                  "HIGH_WORKFORCE_INTENSITY"],
-    ["5 — DEFAULT",             "No high-risk conditions triggered",                          "Structurally Safe",                "NO_HIGH_RISK_CONDITIONS"],
+    ["1 — OVERRIDE\n(Highest priority)",
+     "Confidence Signal = Negative\nTriggered when pricingConfidence OR deliveryConfidence = Negative (from Q19 or Q22)",
+     "Do Not Proceed Without Repricing",
+     "LOW_CONFIDENCE"],
+    ["2 — OVERRIDE",
+     "Workforce Intensity = High AND Coordination Entropy = High simultaneously\nBoth conditions must be true",
+     "Structurally Fragile",
+     "STRUCTURAL_OVERLOAD"],
+    ["3 — PRIMARY",
+     "Commercial Exposure = High\nTriggered when scopeElasticity = High (Q16)",
+     "Price Sensitive",
+     "HIGH_COMMERCIAL_EXPOSURE"],
+    ["4 — PRIMARY",
+     "Workforce Intensity = High\n(without Rule 2 being triggered)",
+     "Execution Heavy",
+     "HIGH_WORKFORCE_INTENSITY"],
+    ["5 — DEFAULT",
+     "No high-risk conditions met from Rules 1–4",
+     "Structurally Safe",
+     "NO_HIGH_RISK_CONDITIONS"],
   ],
-  [75, 175, 150, 85]
+  [80, 205, 130, 70]
 );
 
-h3("Verdict Descriptions");
-bullet("Structurally Safe", "Engagement viable under stated assumptions. Proceed with standard governance.");
-bullet("Execution Heavy", "Senior dependency and iteration load will dominate effort. Elevated management attention required.");
-bullet("Price Sensitive", "High scope elasticity or pricing rigidity creates commercial vulnerability. Pricing assumptions require protection.");
-bullet("Structurally Fragile", "Structural load exceeds safe operating assumptions. High workforce intensity combined with high coordination entropy creates unsustainable margin pressure.");
-bullet("Do Not Proceed Without Repricing", "Pricing or delivery confidence is insufficient. Engagement requires repricing or structural changes before commitment.");
+h3("Verdict Meanings");
+bullet("Structurally Safe", "Engagement viable under stated assumptions. Proceed with standard governance and monitoring.");
+bullet("Execution Heavy", "Senior dependency and iteration load will dominate effort. Elevated management attention required throughout delivery.");
+bullet("Price Sensitive", "High scope elasticity or pricing rigidity creates commercial vulnerability. Pricing assumptions require explicit protection.");
+bullet("Structurally Fragile", "High workforce intensity combined with high coordination entropy creates unsustainable margin pressure. Structural changes required.");
+bullet("Do Not Proceed Without Repricing", "Pricing or delivery confidence is insufficient to proceed safely. Engagement requires repricing or structural changes before commitment.");
 
-note("Important: Rule 1 (Confidence Signal = Negative) always fires before Rule 2. A negative confidence signal overrides even structural overload.");
+note("Important: Rule 1 (Negative Confidence Signal) always fires before Rule 2 (Structural Overload). A negative confidence signal overrides even a full structural overload scenario.");
 
 // ─── LAYER 4 ─────────────────────────────────────────────────────────────────
 h1("Layer 4 — Margin Erosion Calculation");
-body("Once the verdict is determined, the margin erosion is calculated in four steps using the verdict's base range and the dimension weights. This value is for display and decision support only — it never feeds back into the verdict logic.");
+body("Once the verdict is determined, the estimated margin erosion is calculated in four steps. This figure is for decision support and display only — it never feeds back into the verdict logic.");
 
 h3("Step 1 — Verdict Sets the Erosion Range");
 drawTable(
   ["Verdict", "Min Erosion", "Max Erosion", "Interpretation"],
   [
-    ["Structurally Safe",                 "0%",  "3%",  "Minimal risk under standard governance"],
-    ["Execution Heavy",                   "3%",  "8%",  "Senior effort and iteration will consume margin"],
-    ["Price Sensitive",                   "5%",  "12%", "Pricing assumptions need explicit protection"],
-    ["Structurally Fragile",              "10%", "18%", "Structural overload threatens commercial viability"],
-    ["Do Not Proceed Without Repricing",  "15%", "25%", "Engagement non-viable at current pricing"],
+    ["Structurally Safe",                "0%",  "3%",  "Minimal risk. Standard governance is sufficient."],
+    ["Execution Heavy",                  "3%",  "8%",  "Senior effort and iteration intensity will consume margin over time."],
+    ["Price Sensitive",                  "5%",  "12%", "Pricing assumptions need explicit protection to prevent leakage."],
+    ["Structurally Fragile",             "10%", "18%", "Structural overload is actively threatening commercial viability."],
+    ["Do Not Proceed Without Repricing", "15%", "25%", "Engagement is not commercially viable at the current price level."],
   ],
-  [180, 80, 80, 145]
+  [175, 75, 75, 160]
 );
 
-h3("Step 2 — Dimension Weights");
-body("Each of the 6 dimensions is converted to a numeric weight on a 0–1 scale:");
+h3("Step 2 — Dimension Weights Position You Within the Range");
+body("Each of the 6 risk dimensions is converted to a numeric weight on a 0 to 1 scale:");
 bullet("Low", "0.0");
 bullet("Medium", "0.5");
 bullet("High", "1.0");
-bullet("Confidence Positive", "0.0  ·  Neutral: 0.5  ·  Negative: 1.0");
-doc.moveDown(0.3);
-body("The 6 weights (one per dimension) are summed and divided by 6 to produce a single average weight between 0 and 1. This average determines where within the verdict's range the final erosion figure lands.");
+bullet("Confidence Signal — Positive", "0.0   ·   Neutral: 0.5   ·   Negative: 1.0");
+doc.moveDown(0.2);
+body("The 6 weights (one per dimension) are added together and divided by 6 to produce a single average weight between 0 and 1. This average determines where within the verdict's erosion range the final figure lands — 0 means minimum erosion, 1 means maximum.");
 
 h3("Step 3 — Formula");
 infoBox([
   "Estimated Margin Loss  =  Min + (Max − Min) × Average Dimension Weight",
-  "Effective Margin  =  Current Margin % − Estimated Margin Loss",
+  "Effective Margin  =  Current Margin %  −  Estimated Margin Loss",
 ]);
 
 h3("Worked Example");
-body("Verdict: Price Sensitive  →  Range: 5% to 12%");
-body("Dimension weights: Workforce Intensity=1.0, Coordination Entropy=0.5, Commercial Exposure=1.0, Volatility Control=0.5, Confidence=0.5, Measurement Maturity=0.0");
-body("Average weight = (1.0 + 0.5 + 1.0 + 0.5 + 0.5 + 0.0) ÷ 6 = 0.583");
-body("Estimated Loss = 5 + (12 − 5) × 0.583 = 5 + 4.08 = 9.1%");
-body("If current margin entered is 18% → Effective Margin = 18 − 9.1 = 8.9%");
+drawTable(
+  ["Input", "Value"],
+  [
+    ["Verdict", "Price Sensitive  →  Range: 5% to 12%"],
+    ["Workforce Intensity", "High = 1.0"],
+    ["Coordination Entropy", "Medium = 0.5"],
+    ["Commercial Exposure", "High = 1.0"],
+    ["Volatility Control", "Medium = 0.5"],
+    ["Confidence Signal", "Neutral = 0.5"],
+    ["Measurement Maturity", "Low = 0.0"],
+    ["Average weight", "(1.0 + 0.5 + 1.0 + 0.5 + 0.5 + 0.0) ÷ 6  =  0.583"],
+    ["Estimated Margin Loss", "5 + (12 − 5) × 0.583  =  5 + 4.08  =  9.1%"],
+    ["Current Margin entered", "18%"],
+    ["Effective Margin", "18 − 9.1  =  8.9%"],
+  ],
+  [175, 310]
+);
 
 h3("Step 4 — Impact Label");
 drawTable(
-  ["Estimated Loss", "Label", "Colour", "Meaning"],
+  ["Estimated Loss", "Label", "Colour", "What It Means"],
   [
-    ["0 – 1%",  "No Impact",           "Green", "Safe to proceed as structured"],
-    ["1 – 4%",  "Minimal Impact",      "Green", "Manageable with standard controls"],
-    ["4 – 8%",  "Moderate Impact",     "Amber", "Warrants active monitoring and governance"],
-    ["8 – 15%", "Significant Impact",  "Red",   "Requires structural intervention before proceeding"],
-    ["15%+",    "Severe Impact",       "Red",   "Engagement non-viable at current margin"],
+    ["0 – 1%",  "No Impact",          "Green", "Safe to proceed as structured. No margin intervention needed."],
+    ["1 – 4%",  "Minimal Impact",     "Green", "Manageable with standard controls and normal monitoring."],
+    ["4 – 8%",  "Moderate Impact",    "Amber", "Warrants active monitoring. Consider governance checkpoints."],
+    ["8 – 15%", "Significant Impact", "Red",   "Requires structural intervention. Revisit pricing or scope before proceeding."],
+    ["15%+",    "Severe Impact",      "Red",   "Engagement is not viable at the current margin. Repricing mandatory."],
   ],
-  [80, 105, 70, 230]
+  [75, 110, 65, 235]
 );
 
 // ─── PRINCIPLES ──────────────────────────────────────────────────────────────
 h1("Core Design Principles");
-bullet("Fully deterministic", "No AI, no ML, and no probabilistic scoring anywhere in the verdict logic. Given the same inputs, the system always produces the same verdict.");
-bullet("First-match precedence", "Verdict rules fire in strict priority order. The first matching rule wins. There is no blending or weighting of verdicts.");
-bullet("Margin erosion is display-only", "The erosion percentage is computed after the verdict is set. It provides context for the decision but cannot change the verdict.");
-bullet("Identifiers are invisible to the engine", "Q1–Q5 (name, email, role, org name, org size) pass to PDFs, emails, and heatmaps but are never evaluated by any rule.");
-bullet("Q23 open signal", "The open text field feeds GPT-4.1 for narrative generation only. It cannot alter, override, or soften the verdict in any way.");
-bullet("AI exposure (Q18)", "Only affects the Measurement Maturity signal. It is not a direct verdict driver — it influences margin erosion depth through the dimension weight, not the verdict itself.");
-bullet("No scoring math in verdict layer", "Layers 1–3 use only comparisons (=, AND, OR). Numeric weights only appear in Layer 4 for margin erosion display.");
+bullet("Fully deterministic", "No AI, no ML, and no probabilistic scoring anywhere in the verdict logic. Given identical inputs, the system always produces an identical verdict.");
+bullet("First-match precedence", "Verdict rules fire in strict priority order. The first matching rule wins immediately. There is no blending, weighting, or combining of verdict outcomes.");
+bullet("Margin erosion is display-only", "The erosion percentage is computed after the verdict is already set. It provides decision context but cannot change the verdict under any circumstances.");
+bullet("Identifiers are invisible to the engine", "Q1–Q5 (name, email, role, organisation name, organisation size) are passed to PDFs, emails, and heatmaps but are never evaluated by any scoring rule.");
+bullet("Q23 open signal", "The optional open text field feeds GPT-4.1 for written narrative generation only. It cannot alter, override, soften, or harden the verdict in any way.");
+bullet("AI exposure (Q18)", "Only affects the Measurement Maturity signal. It is not a direct verdict driver — it influences margin erosion depth through the dimension weight average, not the verdict itself.");
+bullet("No numeric math in the verdict layer", "Layers 1 through 3 use only logical comparisons (equals, AND, OR). Numeric weights appear exclusively in Layer 4 for the margin erosion display calculation.");
 
-// ─── FOOTER ──────────────────────────────────────────────────────────────────
 divider();
 doc.fontSize(8).fillColor(MID_GRAY).font("Helvetica")
-  .text("MarginMix — Confidential Internal Reference  ·  marginmix.ai  ·  Decision Support for Margin Risk Clarity", 55, doc.y, { align: "center", width: PAGE_WIDTH });
+  .text("MarginMix — Confidential Internal Reference  ·  marginmix.ai  ·  Decision Support for Margin Risk Clarity",
+    LEFT, doc.y, { align: "center", width: PAGE_W });
 
 doc.end();
 
-stream.on("finish", () => {
-  console.log(`✓ PDF saved to: ${outputPath}`);
-});
+stream.on("finish", () => console.log(`✓ PDF saved: ${outputPath}`));
