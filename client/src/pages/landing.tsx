@@ -39,7 +39,7 @@ export default function Landing() {
               data-testid="button-cta-hero"
               onClick={() => window.location.href = '/quick-profiler'}
             >
-              Calculate your Margin Risk in 60 Seconds!
+              Predict Margin Risk in 60 Seconds!
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <p className="mt-5 sm:mt-6 text-lg sm:text-xl font-bold text-gray-900 dark:text-white px-2 sm:px-0">
@@ -602,7 +602,7 @@ export default function Landing() {
               data-testid="button-cta-footer"
               onClick={() => window.location.href = '/quick-profiler'}
             >
-              Calculate your Margin Risk in 60 Seconds!
+              Predict Margin Risk in 60 Seconds!
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>
             <p className="text-emerald-100 mt-4 text-sm">
