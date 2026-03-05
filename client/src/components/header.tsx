@@ -74,7 +74,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 size="sm" 
                 className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
               >
-                Predict Margin Risk in 60 Seconds!
+                See your Margin Risk in 60 seconds!
               </Button>
             </Link>
             {isAuthenticated && user ? (
@@ -111,7 +111,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 size="sm" 
                 className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs px-2 py-1 h-7"
               >
-                Predict Risk
+                See Margin Risk
               </Button>
             </Link>
             <Button
@@ -143,7 +143,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
               <div className="pt-2 px-3">
                 <Link href="/quick-profiler" onClick={scrollToTop}>
                   <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm">
-                    Predict Margin Risk in 60 Seconds!
+                    See your Margin Risk in 60 seconds!
                   </Button>
                 </Link>
               </div>
