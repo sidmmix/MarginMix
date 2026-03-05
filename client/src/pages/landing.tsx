@@ -55,7 +55,7 @@ export default function Landing() {
       <section className="py-12 bg-white dark:bg-gray-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="italic text-gray-500 dark:text-gray-400 text-base sm:text-lg leading-relaxed mb-4">
-            "Agencies benchmark 18–20% EBITDA. Most realize 13% or less. On a $25M agency, that gap is worth over $1.5M a year — not lost to bad clients, but to delivery complexity that was never priced in."
+            "Agencies benchmark 18–20% EBITDA. Most realize 13% or less. For a $25M agency, that gap is worth over $1.5M a year — not lost to bad clients, but to delivery complexity that was never priced in."
           </p>
           <p className="text-lg sm:text-xl font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
             MarginMix helps you plug that gap!
