@@ -4,6 +4,9 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
+// Health check — must be first, before all middleware, so it responds instantly
+app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
+
 // Security: Add request size limits to prevent DoS
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
