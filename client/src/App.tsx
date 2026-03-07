@@ -1,4 +1,4 @@
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route, useLocation, Redirect } from "wouter";
 import { useEffect, lazy, Suspense } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Landing from "@/pages/landing";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const Home = lazy(() => import("@/pages/home"));
 const Dashboard = lazy(() => import("@/pages/dashboard"));
@@ -13,8 +14,16 @@ const Assessment = lazy(() => import("@/pages/assessment"));
 const QuickProfiler = lazy(() => import("@/pages/quick-profiler"));
 const Founder = lazy(() => import("@/pages/founder"));
 const WhyChoose = lazy(() => import("@/pages/why-choose"));
+const PitchDeck = lazy(() => import("@/pages/pitch"));
 const AuthPage = lazy(() => import("@/pages/auth").then(m => ({ default: m.AuthPage })));
 const NotFound = lazy(() => import("@/pages/not-found"));
+
+function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  if (isLoading) return <PageLoader />;
+  if (!isAuthenticated) return <Redirect to="/auth" />;
+  return <Component />;
+}
 
 function PageLoader() {
   return (
@@ -58,6 +67,10 @@ function Router() {
         <Route path="/why-choose" component={WhyChoose} />
         <Route path="/auth" component={AuthPage} />
         
+        <Route path="/pitch">
+          {() => <ProtectedRoute component={PitchDeck} />}
+        </Route>
+
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/home" component={Home} />
         
