@@ -149,10 +149,10 @@ export default function Founder() {
 
           <div className="bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800 p-6 rounded-xl mb-6">
             <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-              These matter, but they miss a deeper structural issue: <strong className="text-teal-700 dark:text-teal-400">workforce intensity</strong> — how much senior attention, coordination, and cognitive load an engagement quietly demands over time.
+              These matter, but they miss a deeper structural issue: <strong className="text-teal-700 dark:text-teal-400">delivery complexities</strong> — how much senior attention, coordination drag, iteration intensity and cognitive load an engagement quietly demands over time.
             </p>
             <p className="text-teal-700 dark:text-teal-400 font-semibold">
-              This "shadow labor" is rarely tracked formally. Yet it is often the single biggest driver of margin erosion.
+              "Delivery Complexity" is rarely tracked formally. Yet it is often the single biggest driver of margin erosion.
             </p>
           </div>
 
