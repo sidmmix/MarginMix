@@ -77,10 +77,10 @@ function card(x: number, y: number, w: number, h: number, tinted = false) {
   doc.rect(x, y, w, h).stroke(RULE);
 }
 
-function bullet(x: number, y: number, text: string, color = BODY) {
+function bullet(x: number, y: number, text: string, color = BODY, width = W - PAD * 2 - 14) {
   doc.rect(x + 2, y + 5, 4, 4).fill(ACCENT);
   doc.fontSize(9).fillColor(color).font("Helvetica")
-    .text(text, x + 14, y, { width: W - PAD * 2 - 14, lineGap: 1.5 });
+    .text(text, x + 14, y, { width: width - 14, lineGap: 1.5 });
   return doc.y;
 }
 
@@ -128,47 +128,47 @@ newSlide();
 doc.rect(0, 0, 6, H).fill(ACCENT);
 pageNum(2);
 
+// Right impact box drawn first (sits behind left content z-order doesn't matter in PDF)
+const bx2 = W - 192;
+const bw2 = 140;
+const leftW2 = bx2 - (PAD + 10) - 14; // 595-192 - 62 - 14 = 327 — safe left column
+
+doc.rect(bx2, 60, bw2, 240).fill(LABEL_BG).stroke(RULE);
+doc.fontSize(7).fillColor(ACCENT).font("Helvetica-Bold")
+  .text("THE RESULT", bx2 + 12, 76, { characterSpacing: 1.5 });
+doc.fontSize(22).fillColor(INK).font("Helvetica-Bold")
+  .text("$300K–$1M", bx2 + 12, 96, { width: bw2 - 24 });
+doc.fontSize(8).fillColor(BODY).font("Helvetica")
+  .text("margin destroyed per year from 1–2 mispriced engagements", bx2 + 12, 130, { width: bw2 - 24, lineGap: 2 });
+doc.moveTo(bx2 + 12, 174).lineTo(bx2 + bw2 - 12, 174).strokeColor(RULE).lineWidth(0.75).stroke();
+doc.fontSize(11).fillColor(INK).font("Helvetica-Bold")
+  .text("Discovered\ntoo late", bx2 + 12, 184, { width: bw2 - 24, lineGap: 3 });
+doc.fontSize(8).fillColor(MUTED).font("Helvetica")
+  .text("Erosion only visible after damage is done", bx2 + 12, 218, { width: bw2 - 24, lineGap: 2 });
+
+// Left column — all widths capped at leftW2
 tag("The Problem", PAD + 10, 60);
-h1("Firms price work before\nthey understand how\nit will be delivered.", PAD + 10, 76);
+h1("Firms price work before\nthey understand how\nit will be delivered.", PAD + 10, 76, leftW2);
 accentBar(PAD + 10, 164, 36);
+body("Professional services firms commit to price before they have clarity on delivery load. The gap between pricing and delivery reality is where margin is destroyed.", PAD + 10, 174, leftW2);
+rule(PAD + 10, 222, leftW2);
 
-body("Professional services firms commit to price before they have clarity on delivery load. The gap between pricing and delivery reality is where margin is destroyed.", PAD + 10, 174, W - PAD * 2 - 120);
-
-rule(PAD + 10, 222, W - PAD * 2 - 10);
-
-const causes = [
+const causes2 = [
   "Timesheets are inaccurate and lagging",
   "Historical data is noisy and backward-looking",
   "Complexity and coordination costs are underestimated",
   "AI adoption changes effort patterns — but ROI is unclear",
-  "Judgment lives in senior operators' heads, not in systems",
+  "Judgment lives in senior operators' heads, not systems",
 ];
-let py = 234;
-causes.forEach(c => {
-  bullet(PAD + 10, py, c);
-  py = doc.y + 7;
+let py2 = 234;
+causes2.forEach(c => {
+  bullet(PAD + 10, py2, c, BODY, leftW2);
+  py2 = doc.y + 7;
 });
 
-// Impact box
-const bx = W - 190;
-doc.rect(bx, 60, 138, 220).fill(LABEL_BG).stroke(RULE);
-doc.fontSize(7).fillColor(ACCENT).font("Helvetica-Bold")
-  .text("THE RESULT", bx + 12, 76, { characterSpacing: 1.5 });
-doc.fontSize(22).fillColor(INK).font("Helvetica-Bold")
-  .text("$300K–$1M", bx + 12, 96, { width: 114 });
-doc.fontSize(8).fillColor(BODY).font("Helvetica")
-  .text("margin destroyed per year from 1–2 mispriced engagements", bx + 12, 126, { width: 114, lineGap: 2 });
-
-doc.moveTo(bx + 12, 168).lineTo(bx + 126, 168).strokeColor(RULE).lineWidth(0.75).stroke();
-
-doc.fontSize(10).fillColor(INK).font("Helvetica-Bold")
-  .text("Discovered\ntoo late", bx + 12, 178, { width: 114, lineGap: 3 });
-doc.fontSize(8).fillColor(MUTED).font("Helvetica")
-  .text("Erosion is only visible after damage is done", bx + 12, 210, { width: 114, lineGap: 2 });
-
-rule(PAD + 10, py + 14, W - PAD * 2 - 10);
+rule(PAD + 10, py2 + 10, leftW2);
 doc.fontSize(9).fillColor(ACCENT).font("Helvetica-Bold")
-  .text("This is not a margin leakage problem. It is a pricing and commitment risk problem.", PAD + 10, py + 24, { width: W - PAD * 2 - 10 });
+  .text("This is not a margin leakage problem.\nIt is a pricing and commitment risk problem.", PAD + 10, py2 + 20, { width: leftW2 });
 
 // ── SLIDE 3: THE SOLUTION ─────────────────────────────────────────────────────
 newSlide();
