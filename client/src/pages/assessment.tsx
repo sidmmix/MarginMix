@@ -1290,10 +1290,10 @@ export default function Assessment() {
             <Button
               onClick={handleNext}
               size="lg"
-              className="bg-white text-emerald-700 hover:bg-emerald-50 px-6 sm:px-12 py-4 sm:py-7 text-base sm:text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 flex flex-col items-center h-auto gap-1"
+              className="bg-white text-emerald-700 hover:bg-emerald-50 px-6 sm:px-12 py-4 sm:py-7 text-base sm:text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
             >
-              <span>Start Assessment for $89</span>
-              <span className="text-xs text-emerald-500 font-normal">Payment at Submission</span>
+              Start Paid Assessment
+              <ArrowDown className="ml-2 sm:ml-3 h-4 w-4 sm:h-6 sm:w-6" />
             </Button>
             
             <p className="mt-8 sm:mt-10 text-xs sm:text-sm text-emerald-200/80 px-4">

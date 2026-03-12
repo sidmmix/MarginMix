@@ -33,28 +33,15 @@ export default function Landing() {
             <p className="text-sm sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 px-2 sm:px-0">
               Works across all commercial models: Time & Materials · Fixed Price · Outcome-based · Hybrid engagements
             </p>
-            <div className="flex flex-col sm:flex-row items-center gap-4">
-              <Button 
-                size="lg" 
-                className="h-12 sm:h-14 text-base sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
-                data-testid="button-cta-hero"
-                onClick={() => window.location.href = '/quick-profiler'}
-              >
-                See your Margin Risk in 60 seconds!
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <div className="flex flex-col items-center">
-                <Button 
-                  size="lg" 
-                  className="h-12 sm:h-14 text-base sm:text-lg px-5 sm:px-8 bg-white border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 rounded-xl"
-                  onClick={() => window.location.href = '/assessment'}
-                >
-                  Start Assessment for $89
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <span className="text-xs text-gray-500 mt-1">Payment at Submission</span>
-              </div>
-            </div>
+            <Button 
+              size="lg" 
+              className="h-12 sm:h-14 text-base sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
+              data-testid="button-cta-hero"
+              onClick={() => window.location.href = '/quick-profiler'}
+            >
+              See your Margin Risk in 60 seconds!
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
             <p className="mt-5 sm:mt-6 text-lg sm:text-xl font-bold text-gray-900 dark:text-white px-2 sm:px-0">
               MarginMix is a decision infrastructure for{" "}
               <span className="text-emerald-600 dark:text-emerald-400">pricing & margin risk - </span>
@@ -609,28 +596,15 @@ export default function Landing() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
               Assess Margin Risk & Price work Profitably!
             </h2>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button 
-                size="lg" 
-                className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl border border-white/20"
-                data-testid="button-cta-footer"
-                onClick={() => window.location.href = '/quick-profiler'}
-              >
-                See your Margin Risk in 60 seconds!
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <div className="flex flex-col items-center">
-                <Button 
-                  size="lg" 
-                  className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl"
-                  onClick={() => window.location.href = '/assessment'}
-                >
-                  Start Assessment for $89
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <span className="text-xs text-emerald-200 mt-1">Payment at Submission</span>
-              </div>
-            </div>
+            <Button 
+              size="lg" 
+              className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
+              data-testid="button-cta-footer"
+              onClick={() => window.location.href = '/quick-profiler'}
+            >
+              See your Margin Risk in 60 seconds!
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
             <p className="text-emerald-100 mt-4 text-sm">
             </p>
           </div>
