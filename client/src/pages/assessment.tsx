@@ -2020,10 +2020,7 @@ export default function Assessment() {
             <DialogDescription className="text-center text-lg pt-4">
               <div className="flex flex-col items-center space-y-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-                <p className="text-gray-600">Give us a minute. Please stay on this page.</p>
-                <p className="text-gray-600">
-                  Your assessment and decision memo will be auto downloaded on this device and sent to you via email as well.
-                </p>
+                <p className="text-gray-600">Give us a minute - Please stay on this page.</p>
               </div>
             </DialogDescription>
           </DialogHeader>
