@@ -47,6 +47,9 @@ export default function Landing() {
               <span className="text-emerald-600 dark:text-emerald-400">pricing & margin risk - </span>
               <span className="text-red-600 dark:text-red-400">not a productivity tool!</span>
             </p>
+            <p className="mt-3 text-sm sm:text-base text-gray-500 dark:text-gray-400 px-2 sm:px-0 tracking-wide">
+              Lightweight <span className="text-emerald-500 mx-1">›</span> Interactive <span className="text-emerald-500 mx-1">›</span> Insightful <span className="text-emerald-500 mx-1">›</span> API enabled
+            </p>
           </div>
         </div>
       </section>
