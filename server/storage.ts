@@ -1,6 +1,6 @@
 import { eq, and, isNull, or, sql as drizzleSql } from "drizzle-orm";
 import { db } from "./db";
-import { users, conversationSessions, campaignBriefs, cpmBenchmarks, marginAssessments } from "@shared/schema";
+import { users, conversationSessions, campaignBriefs, cpmBenchmarks, marginAssessments, pendingAssessmentResults } from "@shared/schema";
 import type { 
   User, 
   InsertUser, 
@@ -12,7 +12,8 @@ import type {
   CpmBenchmark,
   InsertCpmBenchmark,
   MarginAssessment,
-  InsertMarginAssessment
+  InsertMarginAssessment,
+  PendingAssessmentResult
 } from "@shared/schema";
 import bcrypt from "bcryptjs";
 
@@ -46,6 +47,12 @@ export interface IStorage {
   // Margin Assessment operations
   createMarginAssessment(assessment: InsertMarginAssessment): Promise<MarginAssessment>;
   getMarginAssessments(): Promise<MarginAssessment[]>;
+
+  // Pending Assessment Result operations (Stripe gate)
+  createPendingResult(data: { assessmentId: string; decisionObject: any; pdfs: any; formData: any }): Promise<PendingAssessmentResult>;
+  getPendingResult(id: string): Promise<PendingAssessmentResult | undefined>;
+  updatePendingResultStripeSession(id: string, stripeSessionId: string): Promise<void>;
+  claimPendingResult(id: string): Promise<void>;
   
   // Authentication helpers
   hashPassword(password: string): Promise<string>;
@@ -300,6 +307,41 @@ export class DatabaseStorage implements IStorage {
 
   async getMarginAssessments(): Promise<MarginAssessment[]> {
     return await db.select().from(marginAssessments);
+  }
+
+  async createPendingResult(data: { assessmentId: string; decisionObject: any; pdfs: any; formData: any }): Promise<PendingAssessmentResult> {
+    const [result] = await db
+      .insert(pendingAssessmentResults)
+      .values({
+        assessmentId: data.assessmentId,
+        decisionObject: data.decisionObject,
+        pdfs: data.pdfs,
+        formData: data.formData,
+      })
+      .returning();
+    return result;
+  }
+
+  async getPendingResult(id: string): Promise<PendingAssessmentResult | undefined> {
+    const [result] = await db
+      .select()
+      .from(pendingAssessmentResults)
+      .where(eq(pendingAssessmentResults.id, id));
+    return result || undefined;
+  }
+
+  async updatePendingResultStripeSession(id: string, stripeSessionId: string): Promise<void> {
+    await db
+      .update(pendingAssessmentResults)
+      .set({ stripeSessionId })
+      .where(eq(pendingAssessmentResults.id, id));
+  }
+
+  async claimPendingResult(id: string): Promise<void> {
+    await db
+      .update(pendingAssessmentResults)
+      .set({ claimed: true, emailSent: true })
+      .where(eq(pendingAssessmentResults.id, id));
   }
 
   async hashPassword(password: string): Promise<string> {

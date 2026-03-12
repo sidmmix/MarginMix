@@ -4,12 +4,14 @@ import { z } from "zod";
 import session from "express-session";
 import connectPg from "connect-pg-simple";
 import OpenAI from "openai";
+import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupOAuth } from "./oauth";
 import { 
   insertCampaignBriefSchema,
   insertMarginAssessmentSchema
 } from "@shared/schema";
+
 import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
 import { sendAssessmentEmail, sendFeedbackRequestEmail, sendFeedbackNotificationEmail, PDFAttachment } from "./resend";
 import { executeDecisionEngine, DecisionObject } from "./decision-engine";
@@ -20,6 +22,10 @@ import { renderDecisionMemoPDF, renderAssessmentOutputPDF, generatePDFFilename }
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+// Initialize Stripe
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-09-30.clover" });
+const STRIPE_PRICE_ID = "price_1T9zMr8BZU5Go7KUDA859e8D";
 
 // Session configuration
 const pgStore = connectPg(session);
@@ -418,46 +424,49 @@ export function registerRoutes(app: Express): Server {
       
       const decisionMemoFilename = generatePDFFilename("decision_memo", validatedData.fullName, validatedData.organisationName);
       const assessmentOutputFilename = generatePDFFilename("assessment_results", validatedData.fullName, validatedData.organisationName);
-      
-      // Send email with PDF attachments
-      const pdfAttachments: PDFAttachment[] = [
-        { filename: decisionMemoFilename, content: decisionMemoPdf },
-        { filename: assessmentOutputFilename, content: assessmentOutputPdf }
-      ];
-      
-      try {
-        await sendAssessmentEmail(decisionObject, openSignal, pdfAttachments);
-        console.log(`Assessment email sent with PDFs for: ${validatedData.organisationName}`);
-      } catch (emailError: any) {
-        console.error("Failed to send assessment email:", emailError.message);
-      }
-      
-      // Send follow-up feedback request email with delay to avoid rate limiting
-      try {
-        // Wait 10 seconds before sending the second email to avoid Resend rate limits
-        await new Promise(resolve => setTimeout(resolve, 10000));
-        await sendFeedbackRequestEmail(validatedData.fullName, validatedData.workEmail, Number(assessment.id));
-        console.log(`Feedback request email sent to: ${validatedData.workEmail}`);
-      } catch (feedbackEmailError: any) {
-        console.error("Failed to send feedback request email:", feedbackEmailError.message);
-      }
-      
-      // Return PDFs as base64 for frontend download
-      res.status(201).json({ 
-        success: true, 
-        message: "Assessment submitted successfully",
-        assessmentId: assessment.id,
+
+      // Store the processed result — released only after payment is confirmed
+      const pending = await storage.createPendingResult({
+        assessmentId: String(assessment.id),
         decisionObject,
         pdfs: {
-          decisionMemo: {
-            filename: decisionMemoFilename,
-            data: decisionMemoPdf.toString('base64')
-          },
-          assessmentOutput: {
-            filename: assessmentOutputFilename,
-            data: assessmentOutputPdf.toString('base64')
-          }
-        }
+          decisionMemo: { filename: decisionMemoFilename, data: decisionMemoPdf.toString("base64") },
+          assessmentOutput: { filename: assessmentOutputFilename, data: assessmentOutputPdf.toString("base64") },
+        },
+        formData: {
+          fullName: validatedData.fullName,
+          workEmail: validatedData.workEmail,
+          roleTitle: validatedData.roleTitle,
+          organisationName: validatedData.organisationName,
+          organisationSize: validatedData.organisationSize,
+          openSignal,
+          assessmentId: String(assessment.id),
+        },
+      });
+
+      // Create Stripe Checkout session
+      const origin = `${req.protocol}://${req.get("host")}`;
+      const checkoutSession = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
+        mode: "payment",
+        customer_email: validatedData.workEmail,
+        client_reference_id: pending.id,
+        success_url: `${origin}/assessment?stripe_session={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${origin}/assessment?payment_cancelled=true`,
+        metadata: { pendingId: pending.id, organisation: validatedData.organisationName },
+      });
+
+      // Persist the Stripe session ID
+      await storage.updatePendingResultStripeSession(pending.id, checkoutSession.id);
+
+      console.log(`Stripe checkout created for ${validatedData.organisationName}: ${checkoutSession.id}`);
+
+      res.status(201).json({
+        success: true,
+        requiresPayment: true,
+        checkoutUrl: checkoutSession.url,
+        assessmentId: assessment.id,
       });
     } catch (error: any) {
       console.error("Assessment submission error:", error);
@@ -472,6 +481,74 @@ export function registerRoutes(app: Express): Server {
         success: false, 
         message: "Failed to submit assessment" 
       });
+    }
+  });
+
+  // ── Stripe: complete checkout and release PDFs ──────────────────────────────
+  app.get("/api/checkout-complete", async (req, res) => {
+    try {
+      const { session_id } = req.query as { session_id?: string };
+      if (!session_id) {
+        return res.status(400).json({ success: false, message: "Missing session_id" });
+      }
+
+      // Verify payment with Stripe
+      const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
+      if (checkoutSession.payment_status !== "paid") {
+        return res.status(402).json({ success: false, message: "Payment not completed" });
+      }
+
+      // Retrieve the pending result using client_reference_id
+      const pendingId = checkoutSession.client_reference_id;
+      if (!pendingId) {
+        return res.status(404).json({ success: false, message: "No pending result linked to this session" });
+      }
+
+      const pending = await storage.getPendingResult(pendingId);
+      if (!pending) {
+        return res.status(404).json({ success: false, message: "Pending result not found" });
+      }
+
+      const formData = pending.formData as any;
+      const pdfsData = pending.pdfs as any;
+
+      // Prevent replay attacks — send emails only on first claim
+      if (!pending.claimed) {
+        await storage.claimPendingResult(pendingId);
+
+        const openSignal = formData.openSignal || null;
+        const decisionMemoBuffer = Buffer.from(pdfsData.decisionMemo.data, "base64");
+        const assessmentOutputBuffer = Buffer.from(pdfsData.assessmentOutput.data, "base64");
+        const pdfAttachments: PDFAttachment[] = [
+          { filename: pdfsData.decisionMemo.filename, content: decisionMemoBuffer },
+          { filename: pdfsData.assessmentOutput.filename, content: assessmentOutputBuffer },
+        ];
+
+        try {
+          await sendAssessmentEmail(pending.decisionObject as any, openSignal, pdfAttachments);
+          console.log(`Assessment email sent after payment for: ${formData.organisationName}`);
+        } catch (emailError: any) {
+          console.error("Failed to send assessment email:", emailError.message);
+        }
+
+        setTimeout(async () => {
+          try {
+            await sendFeedbackRequestEmail(formData.fullName, formData.workEmail, Number(formData.assessmentId));
+          } catch (e: any) {
+            console.error("Failed to send feedback request email:", e.message);
+          }
+        }, 10000);
+      }
+
+      return res.json({
+        success: true,
+        decisionObject: pending.decisionObject,
+        pdfs: pdfsData,
+        assessmentId: pending.assessmentId,
+      });
+    } catch (error: any) {
+      console.error("Checkout complete error:", error);
+      res.status(500).json({ success: false, message: "Failed to retrieve assessment result" });
     }
   });
 

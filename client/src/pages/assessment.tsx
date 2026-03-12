@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Link, useSearch } from "wouter";
+import { Link, useSearch, useLocation } from "wouter";
 import { ArrowDown, ArrowUp, ArrowLeft, Send, Check, ChevronDown, Save, Home, Shield, ShieldCheck, ShieldAlert, AlertTriangle, TrendingUp, BarChart3, Users, Zap, Target, AlertCircle, Info, Download, ChevronRight, Mail, Building2, Briefcase } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
@@ -501,6 +501,7 @@ const questions: Question[] = [
 export default function Assessment() {
   const [currentQuestion, setCurrentQuestion] = useState(-2); // -2 = intro, -1 = margin question
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isVerifyingPayment, setIsVerifyingPayment] = useState(false);
   const [decisionResult, setDecisionResult] = useState<any>(null);
   const [showDecisionPage, setShowDecisionPage] = useState(false);
   const [storedPdfData, setStoredPdfData] = useState<any>(null);
@@ -511,6 +512,7 @@ export default function Assessment() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const searchString = useSearch();
+  const [, setLocation] = useLocation();
   const isFromProfiler = searchString.includes("from=profiler");
 
   const [profilerAnswers, setProfilerAnswers] = useState<Record<string, string>>({});
@@ -531,6 +533,61 @@ export default function Assessment() {
       }
     }
   }, [isFromProfiler]);
+
+  // Handle return from Stripe Checkout — verify payment and release PDFs
+  useEffect(() => {
+    const params = new URLSearchParams(searchString);
+    const stripeSession = params.get("stripe_session");
+    if (!stripeSession) return;
+
+    setIsVerifyingPayment(true);
+
+    fetch(`/api/checkout-complete?session_id=${stripeSession}`)
+      .then(r => r.json())
+      .then(result => {
+        if (result.success) {
+          if (result.pdfs) {
+            setStoredPdfData(result.pdfs);
+            setTimeout(() => downloadPDF(result.pdfs.decisionMemo.filename, result.pdfs.decisionMemo.data), 300);
+            setTimeout(() => downloadPDF(result.pdfs.assessmentOutput.filename, result.pdfs.assessmentOutput.data), 700);
+          }
+          setDecisionResult(result.decisionObject);
+          // Restore user info from formData stored in pending result
+          const fd = result.decisionObject?.engagementContext || {};
+          setSubmittedUserInfo({
+            fullName: fd.assessorName || "",
+            workEmail: fd.workEmail || "",
+            roleTitle: fd.assessorRole || "",
+            organisationName: fd.organisationName || "",
+            organisationSize: "",
+          });
+          setShowDecisionPage(true);
+          try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+          toast({ title: "Payment confirmed", description: "Your PDFs are downloading and your report has been emailed to you." });
+        } else {
+          toast({ title: "Could not verify payment", description: result.message || "Please contact support.", variant: "destructive" });
+        }
+      })
+      .catch(() => {
+        toast({ title: "Verification error", description: "Could not confirm your payment. Please contact support.", variant: "destructive" });
+      })
+      .finally(() => {
+        setIsVerifyingPayment(false);
+        // Clean up URL params
+        setLocation("/assessment");
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Handle cancellation return from Stripe
+  useEffect(() => {
+    const params = new URLSearchParams(searchString);
+    if (params.get("payment_cancelled") === "true") {
+      toast({ title: "Payment cancelled", description: "No charge was made. You can resubmit when ready.", variant: "destructive" });
+      setLocation("/assessment");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const activeQuestions = isFromProfiler
     ? questions.filter(q => !PROFILER_FIELD_KEYS.includes(q.id)).map((q, idx) => ({ ...q, number: idx + 1 }))
@@ -813,16 +870,23 @@ export default function Assessment() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...data, currentMargin: marginValue }),
       });
-      
+
       if (response.ok) {
         const result = await response.json();
-        
+
+        // Stripe payment required — redirect to checkout
+        if (result.requiresPayment && result.checkoutUrl) {
+          toast({ title: "Redirecting to payment…", description: "Your assessment is ready. Complete payment to unlock your results." });
+          window.location.href = result.checkoutUrl;
+          return;
+        }
+
+        // Fallback: direct result (should not happen in normal flow)
         if (result.pdfs) {
           setStoredPdfData(result.pdfs);
           setTimeout(() => downloadPDF(result.pdfs.decisionMemo.filename, result.pdfs.decisionMemo.data), 100);
           setTimeout(() => downloadPDF(result.pdfs.assessmentOutput.filename, result.pdfs.assessmentOutput.data), 500);
         }
-        
         setDecisionResult(result.decisionObject);
         setSubmittedUserInfo({
           fullName: data.fullName,
@@ -832,14 +896,8 @@ export default function Assessment() {
           organisationSize: data.organisationSize,
         });
         setShowDecisionPage(true);
-        setIsSubmitting(false);
-        
         try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-        
-        toast({
-          title: "Assessment Complete",
-          description: "Your PDFs are downloading and email has been sent.",
-        });
+        toast({ title: "Assessment Complete", description: "Your PDFs are downloading and email has been sent." });
       } else {
         const error = await response.json();
         toast({
@@ -1788,6 +1846,20 @@ export default function Assessment() {
       </div>
     );
   };
+
+  if (isVerifyingPayment) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-teal-800 to-emerald-900 flex items-center justify-center">
+        <div className="text-center px-6">
+          <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-6" />
+          <h2 className="text-2xl font-bold text-white mb-3">Confirming your payment…</h2>
+          <p className="text-white/70 text-base max-w-sm mx-auto">
+            Please wait while we verify your payment and prepare your assessment results.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
