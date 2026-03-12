@@ -362,7 +362,7 @@ const questions: Question[] = [
   {
     id: "iterationIntensity",
     number: 15,
-    title: "What's the expected iteration intensity?",
+    title: "What's the expected or current iteration intensity?",
     context: "High iteration erodes margin through repeated cycles of rework and refinement.",
     type: "select",
     options: [
