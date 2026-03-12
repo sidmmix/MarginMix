@@ -621,7 +621,7 @@ export default function Landing() {
               MarginMix is a decision system for margin governance — not a delivery or productivity platform.
             </p>
             <p className="text-gray-300 mb-6">
-              Contact: <a href="mailto:sid@marginmix.ai" className="text-emerald-400 hover:text-emerald-300">sid@marginmix.ai</a> <span className="text-white">·</span> <a href="tel:+16286001309" className="text-emerald-400 hover:text-emerald-300">+1.628.600.1309</a>
+              Contact: <a href="mailto:sid@marginmix.ai" className="text-emerald-400 hover:text-emerald-300">sid@marginmix.ai</a> <span className="text-white text-lg">·</span> <a href="tel:+16286001309" className="text-emerald-400 hover:text-emerald-300">+1.628.600.1309</a>
             </p>
             <p className="text-gray-400 text-sm mb-2">
               MarginMix is a Digital Lexicon Corp brand.
