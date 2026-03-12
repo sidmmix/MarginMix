@@ -502,6 +502,8 @@ export default function Assessment() {
   const [currentQuestion, setCurrentQuestion] = useState(-2); // -2 = intro, -1 = margin question
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVerifyingPayment, setIsVerifyingPayment] = useState(false);
+  const [isPaid, setIsPaid] = useState(false);
+  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [decisionResult, setDecisionResult] = useState<any>(null);
   const [showDecisionPage, setShowDecisionPage] = useState(false);
   const [storedPdfData, setStoredPdfData] = useState<any>(null);
@@ -551,16 +553,11 @@ export default function Assessment() {
             setTimeout(() => downloadPDF(result.pdfs.decisionMemo.filename, result.pdfs.decisionMemo.data), 300);
             setTimeout(() => downloadPDF(result.pdfs.assessmentOutput.filename, result.pdfs.assessmentOutput.data), 700);
           }
-          setDecisionResult(result.decisionObject);
-          // Restore user info from formData stored in pending result
-          const fd = result.decisionObject?.engagementContext || {};
-          setSubmittedUserInfo({
-            fullName: fd.assessorName || "",
-            workEmail: fd.workEmail || "",
-            roleTitle: fd.assessorRole || "",
-            organisationName: fd.organisationName || "",
-            organisationSize: "",
-          });
+          // If we don't already have the decision result (e.g. page was refreshed), set it
+          if (result.decisionObject) {
+            setDecisionResult(result.decisionObject);
+          }
+          setIsPaid(true);
           setShowDecisionPage(true);
           try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
           toast({ title: "Payment confirmed", description: "Your PDFs are downloading and your report has been emailed to you." });
@@ -874,30 +871,22 @@ export default function Assessment() {
       if (response.ok) {
         const result = await response.json();
 
-        // Stripe payment required — redirect to checkout
+        // Show blurred decision page — payment required to unlock PDFs
         if (result.requiresPayment && result.checkoutUrl) {
-          toast({ title: "Redirecting to payment…", description: "Your assessment is ready. Complete payment to unlock your results." });
-          window.location.href = result.checkoutUrl;
+          setCheckoutUrl(result.checkoutUrl);
+          setDecisionResult(result.decisionObject);
+          setIsPaid(false);
+          setSubmittedUserInfo({
+            fullName: data.fullName,
+            workEmail: data.workEmail,
+            roleTitle: data.roleTitle,
+            organisationName: data.organisationName,
+            organisationSize: data.organisationSize,
+          });
+          setShowDecisionPage(true);
+          try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
           return;
         }
-
-        // Fallback: direct result (should not happen in normal flow)
-        if (result.pdfs) {
-          setStoredPdfData(result.pdfs);
-          setTimeout(() => downloadPDF(result.pdfs.decisionMemo.filename, result.pdfs.decisionMemo.data), 100);
-          setTimeout(() => downloadPDF(result.pdfs.assessmentOutput.filename, result.pdfs.assessmentOutput.data), 500);
-        }
-        setDecisionResult(result.decisionObject);
-        setSubmittedUserInfo({
-          fullName: data.fullName,
-          workEmail: data.workEmail,
-          roleTitle: data.roleTitle,
-          organisationName: data.organisationName,
-          organisationSize: data.organisationSize,
-        });
-        setShowDecisionPage(true);
-        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
-        toast({ title: "Assessment Complete", description: "Your PDFs are downloading and email has been sent." });
       } else {
         const error = await response.json();
         toast({
@@ -1131,6 +1120,11 @@ export default function Assessment() {
                             />
                           </FormControl>
                           <FormMessage className="text-white/90 mt-2" />
+                          {question.id === "openSignal" && (
+                            <p className="mt-3 text-sm text-white/60 italic">
+                              Press Enter or click <span className="font-semibold text-white/80">Review</span> to continue if you're leaving the box empty.
+                            </p>
+                          )}
                         </FormItem>
                       )}
                     />
@@ -1296,10 +1290,10 @@ export default function Assessment() {
             <Button
               onClick={handleNext}
               size="lg"
-              className="bg-white text-emerald-700 hover:bg-emerald-50 px-6 sm:px-12 py-4 sm:py-7 text-base sm:text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
+              className="bg-white text-emerald-700 hover:bg-emerald-50 px-6 sm:px-12 py-4 sm:py-7 text-base sm:text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 flex flex-col items-center h-auto gap-1"
             >
-              Start Assessment
-              <ArrowDown className="ml-2 sm:ml-3 h-4 w-4 sm:h-6 sm:w-6" />
+              <span>Start Assessment for $89</span>
+              <span className="text-xs text-emerald-500 font-normal">Payment at Submission</span>
             </Button>
             
             <p className="mt-8 sm:mt-10 text-xs sm:text-sm text-emerald-200/80 px-4">
@@ -1377,10 +1371,10 @@ export default function Assessment() {
                   disabled={isSubmitting || !consentChecked}
                 >
                   {isSubmitting ? (
-                    "Submitting..."
+                    "Processing…"
                   ) : (
                     <>
-                      Submit Assessment
+                      Submit to Proceed
                       <Send className="ml-2 h-5 w-5" />
                     </>
                   )}
@@ -1480,7 +1474,7 @@ export default function Assessment() {
               <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">
                 {d.verdictReason}
               </p>
-              <div className="flex items-center gap-4">
+              <div className={`flex items-center gap-4 ${!isPaid ? "blur-sm select-none" : ""}`}>
                 <div className="flex-1">
                   <div className="flex justify-between text-xs text-gray-400 mb-1">
                     <span>Composite Risk Score</span>
@@ -1497,6 +1491,34 @@ export default function Assessment() {
                 </div>
               </div>
             </div>
+
+            {/* Pay-gate: everything below the verdict banner */}
+            <div className="relative">
+              {/* Blur overlay when not paid */}
+              {!isPaid && (
+                <div className="absolute inset-0 z-20 flex items-start justify-center pt-16 px-4">
+                  <div className="text-center bg-gray-900/95 backdrop-blur-sm rounded-2xl p-8 border border-white/20 shadow-2xl max-w-sm w-full">
+                    <div className="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mx-auto mb-4">
+                      <Shield className="h-6 w-6 text-emerald-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-2">Your Full Margin Risk Report</h3>
+                    <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+                      Pay $89 to access the complete risk breakdown, effort allocation, structural signals, and download your Decision Memo &amp; Assessment PDFs. A copy is also emailed to you.
+                    </p>
+                    <Button
+                      size="lg"
+                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-6 rounded-xl text-base font-semibold shadow-lg flex flex-col h-auto gap-1"
+                      onClick={() => checkoutUrl && (window.location.href = checkoutUrl)}
+                    >
+                      <span>Pay $89 to Unlock Full Report &amp; PDFs</span>
+                      <span className="text-xs text-emerald-100 font-normal">Decision Memo + Assessment Results auto-download</span>
+                    </Button>
+                  </div>
+                </div>
+              )}
+
+              {/* Content — blurred until paid */}
+              <div className={!isPaid ? "blur-md select-none pointer-events-none" : ""}>
 
             {/* Margin Impact Section */}
             {d.marginImpact && (
@@ -1839,6 +1861,9 @@ export default function Assessment() {
                 </Button>
               </Link>
             </div>
+
+              </div>{/* end blurred content */}
+            </div>{/* end pay-gate relative wrapper */}
 
           </div>
           <Footer />

@@ -13,7 +13,7 @@ import {
 } from "@shared/schema";
 
 import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
-import { sendAssessmentEmail, sendFeedbackRequestEmail, sendFeedbackNotificationEmail, PDFAttachment } from "./resend";
+import { sendAssessmentEmail, sendFeedbackNotificationEmail, PDFAttachment } from "./resend";
 import { executeDecisionEngine, DecisionObject } from "./decision-engine";
 import { generateNarrative } from "./narrative-generator";
 import { renderDecisionMemoPDF, renderAssessmentOutputPDF, generatePDFFilename } from "./pdf-renderer";
@@ -467,6 +467,7 @@ export function registerRoutes(app: Express): Server {
         requiresPayment: true,
         checkoutUrl: checkoutSession.url,
         assessmentId: assessment.id,
+        decisionObject,
       });
     } catch (error: any) {
       console.error("Assessment submission error:", error);
@@ -531,13 +532,6 @@ export function registerRoutes(app: Express): Server {
           console.error("Failed to send assessment email:", emailError.message);
         }
 
-        setTimeout(async () => {
-          try {
-            await sendFeedbackRequestEmail(formData.fullName, formData.workEmail, Number(formData.assessmentId));
-          } catch (e: any) {
-            console.error("Failed to send feedback request email:", e.message);
-          }
-        }, 10000);
       }
 
       return res.json({

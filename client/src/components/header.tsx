@@ -38,7 +38,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
   const navLinks = [
     { href: "/founder", label: "Why We Exist", mobileLabel: "Why We Exist" },
     { href: "/why-choose", label: "Why Choose Us", mobileLabel: "Why Choose Us" },
-    { href: "/assessment", label: "Assessment", mobileLabel: "Assess" },
+    { href: "/assessment", label: "Paid Assessment", mobileLabel: "Assessment" },
   ];
 
   const isActive = (href: string) => location === href;

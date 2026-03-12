@@ -906,11 +906,14 @@ export default function QuickProfiler() {
 
             <Button
               size="lg"
-              className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-6 sm:py-7 px-8 sm:px-10 text-base sm:text-lg shadow-lg rounded-xl"
+              className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-4 sm:py-5 px-8 sm:px-10 text-base sm:text-lg shadow-lg rounded-xl flex flex-col h-auto gap-1 items-center"
               onClick={handleGoToFullAssessment}
             >
-              Get Full Margin Risk Decision Clarity
-              <ChevronRight className="ml-2 h-5 w-5" />
+              <span className="flex items-center gap-2">
+                Continue to Paid Assessment @ $89
+                <ChevronRight className="h-5 w-5" />
+              </span>
+              <span className="text-xs text-emerald-100 font-normal">Payment at Submission</span>
             </Button>
 
             <p className="text-xs text-gray-500 mt-4">
