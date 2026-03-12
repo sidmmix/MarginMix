@@ -904,21 +904,23 @@ export default function QuickProfiler() {
               </p>
             </div>
 
-            <Button
-              size="lg"
-              className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-4 sm:py-5 px-8 sm:px-10 text-base sm:text-lg shadow-lg rounded-xl flex flex-col h-auto gap-1 items-center"
-              onClick={handleGoToFullAssessment}
-            >
-              <span className="flex items-center gap-2">
-                Continue to Paid Assessment
-                <ChevronRight className="h-5 w-5" />
-              </span>
-              <span className="text-xs text-emerald-100 font-normal">Payment at Submission</span>
-            </Button>
+            <div className="flex flex-col items-center">
+              <Button
+                size="lg"
+                className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-4 sm:py-5 px-8 sm:px-10 text-base sm:text-lg shadow-lg rounded-xl flex flex-col h-auto gap-1 items-center"
+                onClick={handleGoToFullAssessment}
+              >
+                <span className="flex items-center gap-2">
+                  Continue to Paid Assessment
+                  <ChevronRight className="h-5 w-5" />
+                </span>
+                <span className="text-xs text-emerald-100 font-normal">Payment at Submission</span>
+              </Button>
 
-            <p className="text-xs text-gray-500 mt-4">
-              Your answers carry forward — the full assessment will skip these questions.
-            </p>
+              <p className="text-xs text-gray-500 mt-4 text-center">
+                Your answers carry forward — the full assessment will skip these questions.
+              </p>
+            </div>
           </div>
         </div>
       </div>
