@@ -38,7 +38,7 @@ const PROFILER_FIELD_KEYS = [
 ];
 
 const questionRiskMapping: Record<string, Record<string, "low" | "medium" | "high">> = {
-  organisationSize: { "50-100": "low", "100-250": "medium", "250-500": "high" },
+  organisationSize: { "50-500": "low", "500-1000": "medium", "1000-1500": "high", "1500-2000": "high" },
   decisionEvaluating: { "new-client-win": "low", "renewal-extension": "low", "scope-expansion": "high", "escalation": "high", "strategic-exception": "medium", "exploratory": "low" },
   specifyContext: { "single-client": "low", "group-of-clients": "medium" },
   engagementClassification: { "new": "medium", "ongoing-less-6": "medium", "ongoing-6-12": "low", "ongoing-12-plus": "low", "renewal-expansion": "medium" },
@@ -208,9 +208,10 @@ const questions: Question[] = [
     context: "Larger organizations create more coordination layers that consume margin.",
     type: "select",
     options: [
-      { value: "50-100", label: "50–100" },
-      { value: "100-250", label: "100–250" },
-      { value: "250-500", label: "250–500" }
+      { value: "50-500", label: "50–500" },
+      { value: "500-1000", label: "500–1000" },
+      { value: "1000-1500", label: "1000–1500" },
+      { value: "1500-2000", label: "1500–2000" }
     ],
     required: true,
     section: "Contact & Context",
