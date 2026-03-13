@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "pxlW93aqhjRaPqcRJQwL6"
+uri = "file://assessment-questions.pdf"
+type = "pdf"
+title = "MarginMix — Full Assessment Questions"
