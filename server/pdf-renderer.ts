@@ -207,7 +207,7 @@ export async function renderAssessmentOutputPDF(
       doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
       doc.text(`Current Margin: ${decision.marginImpact.currentMargin}%`);
       const lossColor = decision.marginImpact.impactColor === "emerald" ? COLORS.riskLow : decision.marginImpact.impactColor === "amber" ? COLORS.riskModerate : COLORS.riskVeryHigh;
-      doc.text(`Estimated Margin Loss: `, { continued: true });
+      doc.text(`Estimated Margin Erosion: `, { continued: true });
       doc.fillColor(lossColor).text(`${decision.marginImpact.estimatedLoss > 0 ? `-${decision.marginImpact.estimatedLoss}%` : "0%"}`);
       doc.fillColor(COLORS.gray).text(`Effective Margin: `, { continued: true });
       doc.fillColor(lossColor).text(`${decision.marginImpact.effectiveMargin}%`);

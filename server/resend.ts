@@ -343,7 +343,7 @@ export async function sendAssessmentEmail(
                               <p style="color: white; margin: 0; font-size: 22px; font-weight: 700;">${decision.marginImpact.currentMargin}%</p>
                             </td>
                             <td width="33%" style="text-align: center; padding: 8px 4px;">
-                              <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 11px;">Est. Margin Loss</p>
+                              <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 11px;">Estimated Margin Erosion</p>
                               <p style="color: ${decision.marginImpact.impactColor === 'emerald' ? '#6ee7b7' : decision.marginImpact.impactColor === 'amber' ? '#fcd34d' : '#fca5a5'}; margin: 0; font-size: 22px; font-weight: 700;">${decision.marginImpact.estimatedLoss > 0 ? `-${decision.marginImpact.estimatedLoss}%` : '0%'}</p>
                             </td>
                             <td width="33%" style="text-align: center; padding: 8px 4px;">

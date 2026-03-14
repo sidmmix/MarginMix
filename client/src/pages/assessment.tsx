@@ -1534,7 +1534,7 @@ export default function Assessment() {
                     <p className="text-xl sm:text-3xl font-bold text-white">{d.marginImpact.currentMargin}%</p>
                   </div>
                   <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-xs text-gray-500 mb-1">Est. Margin Loss</p>
+                    <p className="text-xs text-gray-500 mb-1">Estimated Margin Erosion</p>
                     <p className={`text-xl sm:text-3xl font-bold ${
                       d.marginImpact.impactColor === "emerald" ? "text-emerald-400" : 
                       d.marginImpact.impactColor === "amber" ? "text-amber-400" : "text-red-400"
