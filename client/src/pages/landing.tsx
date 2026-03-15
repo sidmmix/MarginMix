@@ -18,7 +18,7 @@ export default function Landing() {
       <div className="h-16"></div>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 sm:pt-20 pb-20">
+      <section className="relative overflow-hidden pt-10 sm:pt-14 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-xl sm:text-2xl md:text-2xl lg:text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 leading-tight lg:whitespace-nowrap">
@@ -27,8 +27,11 @@ export default function Landing() {
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap">
               MarginMix is a deterministic pricing and margin decision engine
             </p>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 mx-auto leading-relaxed sm:whitespace-nowrap">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap">
               Every commercial decision has a margin risk moment. MarginMix finds it before it costs you. 
+            </p>
+            <p className="text-sm sm:text-base md:text-lg text-gray-500 dark:text-gray-400 mb-6 sm:mb-8 mx-auto leading-relaxed italic">
+              AI is reshaping how work gets delivered. Most pricing models haven't caught up.
             </p>
             <p className="text-sm sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 px-2 sm:px-0">
               Works across all commercial models: Time & Materials · Fixed Price · Outcome-based · Hybrid engagements
