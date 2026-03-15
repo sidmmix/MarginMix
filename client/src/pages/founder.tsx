@@ -242,7 +242,6 @@ export default function Founder() {
                     I've led large accounts, managed cross-market teams, sat in commercial and operational conversations, and been accountable for both growth and profitability.
                   </p>
                   <p className="text-gray-300">
-                    I am currently based out of Kuala Lumpur, Malaysia.
                   </p>
                 </div>
               </div>
