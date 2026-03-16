@@ -293,7 +293,7 @@ export default function Founder() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <Button 
             size="default" 
-            className="h-12 text-base px-6 bg-white hover:bg-gray-100 text-emerald-700 rounded-xl font-semibold shadow-lg"
+            className="w-full sm:w-auto h-auto py-3 text-sm sm:text-base px-6 bg-white hover:bg-gray-100 text-emerald-700 rounded-xl font-semibold shadow-lg whitespace-normal"
             onClick={() => window.location.href = '/quick-profiler'}
           >
             Free Margin Risk check in 60 seconds!

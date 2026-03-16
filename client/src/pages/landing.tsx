@@ -38,7 +38,7 @@ export default function Landing() {
             </p>
             <Button 
               size="lg" 
-              className="h-12 sm:h-14 text-base sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl"
+              className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl whitespace-normal"
               data-testid="button-cta-hero"
               onClick={() => window.location.href = '/quick-profiler'}
             >
@@ -604,7 +604,7 @@ export default function Landing() {
             </h2>
             <Button 
               size="lg" 
-              className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
+              className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl whitespace-normal"
               data-testid="button-cta-footer"
               onClick={() => window.location.href = '/quick-profiler'}
             >

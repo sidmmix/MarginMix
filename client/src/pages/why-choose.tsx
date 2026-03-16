@@ -113,7 +113,7 @@ export default function WhyChoose() {
             </h2>
             <Button 
               size="lg" 
-              className="h-12 sm:h-14 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl"
+              className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl whitespace-normal"
               onClick={() => window.location.href = '/quick-profiler'}
             >
               Free Margin Risk check in 60 seconds!
