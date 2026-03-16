@@ -6,3 +6,9 @@ id = "pxlW93aqhjRaPqcRJQwL6"
 uri = "file://assessment-questions.pdf"
 type = "pdf"
 title = "MarginMix — Full Assessment Questions"
+
+[[outputs]]
+id = "biKnits26f_fJ5xVp4DTc"
+uri = "file://MarginMix_Risk_Logic_Reference.pdf"
+type = "pdf"
+title = "MarginMix Risk Logic Reference"
