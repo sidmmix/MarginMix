@@ -451,7 +451,20 @@ export function registerRoutes(app: Express): Server {
 
       // DEV / STAGING BYPASS: skip Stripe in non-production so the full flow can be tested
       if (process.env.NODE_ENV !== "production") {
-        console.log(`[DEV] Payment bypassed for ${validatedData.organisationName} — returning result directly`);
+        console.log(`[DEV] Payment bypassed for ${validatedData.organisationName} — sending email and returning result directly`);
+
+        // Send email with PDF attachments (same as production post-payment)
+        try {
+          const pdfAttachments: PDFAttachment[] = [
+            { filename: decisionMemoFilename,     content: decisionMemoPdf },
+            { filename: assessmentOutputFilename, content: assessmentOutputPdf },
+          ];
+          await sendAssessmentEmail(decisionObject as any, openSignal, pdfAttachments);
+          console.log(`[DEV] Assessment email sent to: ${validatedData.workEmail}`);
+        } catch (emailError: any) {
+          console.error("[DEV] Failed to send assessment email:", emailError.message);
+        }
+
         return res.status(201).json({
           success: true,
           requiresPayment: false,

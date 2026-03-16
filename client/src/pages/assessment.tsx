@@ -852,8 +852,8 @@ export default function Assessment() {
           });
           setShowDecisionPage(true);
           try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
-          setTimeout(() => downloadPDF(result.pdfs.decisionMemo.data, result.pdfs.decisionMemo.filename), 300);
-          setTimeout(() => downloadPDF(result.pdfs.assessmentOutput.data, result.pdfs.assessmentOutput.filename), 700);
+          setTimeout(() => downloadPDF(result.pdfs.decisionMemo.filename, result.pdfs.decisionMemo.data), 300);
+          setTimeout(() => downloadPDF(result.pdfs.assessmentOutput.filename, result.pdfs.assessmentOutput.data), 700);
           return;
         }
 
