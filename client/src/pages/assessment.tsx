@@ -42,12 +42,18 @@ const questionRiskMapping: Record<string, Record<string, "low" | "medium" | "hig
   decisionEvaluating: { "new-client-win": "low", "renewal-extension": "low", "scope-expansion": "high", "escalation": "high", "strategic-exception": "medium", "exploratory": "low" },
   specifyContext: { "single-client": "low", "group-of-clients": "medium" },
   engagementClassification: { "new": "medium", "ongoing-less-6": "medium", "ongoing-6-12": "low", "ongoing-12-plus": "low", "renewal-expansion": "medium" },
-  engagementType: { "commission": "high", "fixed-fee": "low", "retainer": "low", "outcome-based": "high", "hybrid-retainer-commission": "medium", "hybrid-retainer-outcome": "medium" },
+  engagementType: {
+    "commission": "high", "fixed-fee": "low", "retainer": "low", "outcome-based": "high", "hybrid-retainer-commission": "medium", "hybrid-retainer-outcome": "medium",
+    "ites-tm": "medium", "ites-fixed-price": "high", "ites-managed-services": "medium", "ites-retainer": "low", "ites-outcome": "high", "ites-hybrid": "medium",
+    "mc-fixed-fee": "high", "mc-retainer": "low", "mc-tm": "medium", "mc-outcome": "high", "mc-hybrid": "medium",
+    "sw-implementation": "high", "sw-managed-services": "medium", "sw-saas-services": "medium", "sw-fixed-price": "high", "sw-tm": "medium", "sw-outcome": "high",
+  },
+  deliveryModel: { "onshore-only": "low", "offshore-only": "medium", "hybrid-onshore-offshore": "medium", "nearshore": "low" },
   clientVolatility: { "low": "low", "medium": "medium", "high": "high" },
   stakeholderComplexity: { "low": "low", "medium": "medium", "high": "high" },
   seniorLeadershipInvolvement: { "minimal": "low", "periodic": "medium", "frequent": "high", "continuous": "high" },
   midLevelOversight: { "low": "low", "medium": "medium", "high": "high" },
-  executionThinkingMix: { "execution-heavy": "low", "balanced": "medium", "thinking-heavy": "high" },
+  executionThinkingMix: { "execution-heavy": "low", "balanced": "medium", "thinking-heavy": "high", "advisory-solutioning": "high", "strategy-advisory": "high", "technical-implementation": "medium" },
   iterationIntensity: { "low": "low", "medium": "medium", "high": "high" },
   scopeChangeLikelihood: { "low": "low", "medium": "medium", "high": "high" },
   crossFunctionalCoordination: { "low": "low", "medium": "medium", "high": "high" },
@@ -56,6 +62,9 @@ const questionRiskMapping: Record<string, Record<string, "low" | "medium" | "hig
   seniorOversightLoad: { "less": "low", "about_same": "medium", "more": "high" },
   coordinationDecisionDrag: { "minimal": "low", "moderate": "medium", "heavy": "high" },
   deliveryConfidence: { "high": "low", "some_concerns": "medium", "low": "high" },
+  aiHumanHoursReplaced: { "0-25": "low", "25-50": "medium", "50-75": "high", "75-100": "high", "na": "low" },
+  aiCommercialImpactMeasured: { "yes": "low", "no": "high", "na": "low" },
+  aiAgenticFramework: { "yes": "high", "no": "low", "na": "low" },
 };
 
 function getHeatmapColor(risk: "low" | "medium" | "high"): string {
@@ -64,7 +73,7 @@ function getHeatmapColor(risk: "low" | "medium" | "high"): string {
   return "bg-emerald-500";
 }
 
-const neutralFields = ["fullName", "workEmail", "roleTitle", "organisationName", "openSignal"];
+const neutralFields = ["fullName", "workEmail", "roleTitle", "organisationName", "industry", "openSignal"];
 
 const bucketLabels: Record<string, string> = {
   WI: "Workforce Intensity",
@@ -124,8 +133,10 @@ const assessmentSchema = z.object({
   roleTitle: z.string().min(1, "Role/Title is required"),
   organisationName: z.string().min(1, "Organization name is required"),
   organisationSize: z.string().min(1, "Please select organization size"),
+  industry: z.string().min(1, "Please select your industry"),
   decisionEvaluating: z.string().min(1, "Please select what decision you are evaluating"),
   engagementType: z.string().min(1, "Please select engagement type"),
+  deliveryModel: z.string().optional(),
   specifyContext: z.string().min(1, "Please select context"),
   engagementClassification: z.string().min(1, "Please select engagement classification"),
   clientVolatility: z.string().min(1, "Please select client volatility"),
@@ -141,6 +152,9 @@ const assessmentSchema = z.object({
   seniorOversightLoad: z.string().min(1, "Please select senior oversight load"),
   coordinationDecisionDrag: z.string().min(1, "Please select coordination level"),
   deliveryConfidence: z.string().min(1, "Please select delivery confidence"),
+  aiHumanHoursReplaced: z.string().min(1, "Please select"),
+  aiCommercialImpactMeasured: z.string().min(1, "Please select"),
+  aiAgenticFramework: z.string().min(1, "Please select"),
   openSignal: z.string().optional(),
 });
 
@@ -160,344 +174,275 @@ interface Question {
   sectionColor: string;
 }
 
-const questions: Question[] = [
-  {
-    id: "fullName",
-    number: 1,
-    title: "What's your full name?",
-    type: "text",
-    placeholder: "Enter your full name",
-    required: true,
-    section: "Contact & Context",
-    sectionColor: "emerald"
-  },
-  {
-    id: "workEmail",
-    number: 2,
-    title: "What's your work email?",
-    type: "email",
-    placeholder: "Enter your work email",
-    required: true,
-    section: "Contact & Context",
-    sectionColor: "emerald"
-  },
-  {
-    id: "roleTitle",
-    number: 3,
-    title: "What's your role or title?",
-    type: "text",
-    placeholder: "Enter your role or title",
-    required: true,
-    section: "Contact & Context",
-    sectionColor: "emerald"
-  },
-  {
-    id: "organisationName",
-    number: 4,
-    title: "What's your organization name?",
-    type: "text",
-    placeholder: "Enter your organization name",
-    required: true,
-    section: "Contact & Context",
-    sectionColor: "emerald"
-  },
-  {
-    id: "organisationSize",
-    number: 5,
-    title: "What's your organization size?",
-    context: "Larger organizations create more coordination layers that consume margin.",
-    type: "select",
-    options: [
-      { value: "50-500", label: "50–500" },
-      { value: "500-1000", label: "500–1000" },
-      { value: "1000-1500", label: "1000–1500" },
-      { value: "1500-2000", label: "1500–2000" }
-    ],
-    required: true,
-    section: "Contact & Context",
-    sectionColor: "emerald"
-  },
-  {
-    id: "decisionEvaluating",
-    number: 6,
-    title: "What decision are you evaluating with this assessment?",
-    context: "The type of decision shapes how much pricing flexibility remains.",
-    type: "select",
-    options: [
-      { value: "new-client-win", label: "New client win / pitch acceptance" },
-      { value: "renewal-extension", label: "Renewal / contract extension" },
-      { value: "scope-expansion", label: "Scope expansion without repricing" },
-      { value: "escalation", label: "Escalation on a live account" },
-      { value: "strategic-exception", label: "Strategic / leadership-driven exception" },
-      { value: "exploratory", label: "Exploratory / no active decision" }
-    ],
-    required: true,
-    section: "Contact & Context",
-    sectionColor: "emerald"
-  },
-  {
-    id: "specifyContext",
-    number: 7,
-    title: "Specify Context",
-    context: "Multi-client assessments carry compounding coordination risk.",
-    type: "select",
-    options: [
-      { value: "single-client", label: "Single client" },
-      { value: "group-of-clients", label: "Group of clients - Org level" }
-    ],
-    required: true,
-    section: "Client Engagement Context",
-    sectionColor: "teal"
-  },
-  {
-    id: "engagementClassification",
-    number: 8,
-    title: "How would you classify this engagement today?",
-    context: "Engagement maturity affects how predictable the delivery effort will be.",
-    type: "select",
-    options: [
-      { value: "new", label: "New (pre-kickoff / onboarding phase)" },
-      { value: "ongoing-less-6", label: "Ongoing (in delivery for less than 6 months)" },
-      { value: "ongoing-6-12", label: "Ongoing (in delivery for 6–12 months)" },
-      { value: "ongoing-12-plus", label: "Ongoing (in delivery for 12+ months)" },
-      { value: "renewal-expansion", label: "Renewal / scope expansion of an existing engagement" }
-    ],
-    required: true,
-    section: "Client Engagement Context",
-    sectionColor: "teal"
-  },
-  {
-    id: "engagementType",
-    number: 9,
-    title: "What's the engagement type?",
-    context: "Fixed-fee models absorb scope creep risk that retainers can pass through.",
-    type: "select",
-    options: [
-      { value: "commission", label: "Commission" },
-      { value: "fixed-fee", label: "Fixed Fees" },
-      { value: "retainer", label: "Retainer" },
-      { value: "outcome-based", label: "Outcome based" },
-      { value: "hybrid-retainer-commission", label: "Hybrid - Retainer + Commission" },
-      { value: "hybrid-retainer-outcome", label: "Hybrid - Retainer + Outcome based" }
-    ],
-    required: true,
-    section: "Client Engagement Context",
-    sectionColor: "teal"
-  },
-  {
-    id: "clientVolatility",
-    number: 10,
-    title: "How would you rate client volatility?",
-    context: "Client stability directly impacts coordination cost and rework risk.",
-    type: "select",
-    options: [
-      { value: "low", label: "Low (stable stakeholders, clear expectations)" },
-      { value: "medium", label: "Medium" },
-      { value: "high", label: "High (frequent changes, multiple decision-makers)" }
-    ],
-    required: true,
-    section: "Client Engagement Context",
-    sectionColor: "teal"
-  },
-  {
-    id: "stakeholderComplexity",
-    number: 11,
-    title: "What's the stakeholder complexity level?",
-    context: "More stakeholders mean more alignment cycles and hidden decision drag.",
-    type: "select",
-    options: [
-      { value: "low", label: "Low" },
-      { value: "medium", label: "Medium" },
-      { value: "high", label: "High" }
-    ],
-    required: true,
-    section: "Client Engagement Context",
-    sectionColor: "teal"
-  },
-  {
-    id: "seniorLeadershipInvolvement",
-    number: 12,
-    title: "What's the planned senior leadership involvement?",
-    context: "Senior time is the most expensive resource — its draw shapes margin.",
-    type: "select",
-    options: [
-      { value: "minimal", label: "Minimal (oversight only)" },
-      { value: "periodic", label: "Periodic (key moments)" },
-      { value: "frequent", label: "Frequent (ongoing)" },
-      { value: "continuous", label: "Continuous (embedded)" }
-    ],
-    required: true,
-    section: "Planned Delivery Structure",
-    sectionColor: "cyan"
-  },
-  {
-    id: "midLevelOversight",
-    number: 13,
-    title: "What's the mid-level oversight intensity?",
-    context: "Mid-level oversight intensity reveals how much management tax the work carries.",
-    type: "select",
-    options: [
-      { value: "low", label: "Low" },
-      { value: "medium", label: "Medium" },
-      { value: "high", label: "High" }
-    ],
-    required: true,
-    section: "Planned Delivery Structure",
-    sectionColor: "cyan"
-  },
-  {
-    id: "executionThinkingMix",
-    number: 14,
-    title: "What's the execution vs thinking mix?",
-    context: "Thinking-heavy work is harder to scope, price, and delegate.",
-    type: "select",
-    options: [
-      { value: "execution-heavy", label: "Execution-heavy" },
-      { value: "balanced", label: "Balanced" },
-      { value: "thinking-heavy", label: "Thinking-heavy" }
-    ],
-    required: true,
-    section: "Planned Delivery Structure",
-    sectionColor: "cyan"
-  },
-  {
-    id: "iterationIntensity",
-    number: 15,
-    title: "What's the expected or current iteration intensity?",
-    context: "High iteration erodes margin through repeated cycles of rework and refinement.",
-    type: "select",
-    options: [
-      { value: "low", label: "Low" },
-      { value: "medium", label: "Medium" },
-      { value: "high", label: "High" }
-    ],
-    required: true,
-    section: "Delivery Dynamics",
-    sectionColor: "sky"
-  },
-  {
-    id: "scopeChangeLikelihood",
-    number: 16,
-    title: "What's the likelihood of scope change?",
-    context: "Scope changes without repricing are the most common source of margin leak.",
-    type: "select",
-    options: [
-      { value: "low", label: "Low" },
-      { value: "medium", label: "Medium" },
-      { value: "high", label: "High" }
-    ],
-    required: true,
-    section: "Delivery Dynamics",
-    sectionColor: "sky"
-  },
-  {
-    id: "crossFunctionalCoordination",
-    number: 17,
-    title: "How much cross-functional coordination is required?",
-    context: "Cross-team coordination creates invisible overhead that rarely gets priced in.",
-    type: "select",
-    options: [
-      { value: "low", label: "Low" },
-      { value: "medium", label: "Medium" },
-      { value: "high", label: "High" }
-    ],
-    required: true,
-    section: "Delivery Dynamics",
-    sectionColor: "sky"
-  },
-  {
-    id: "aiEffortShift",
-    number: 18,
-    title: "Where is AI primarily expected to substitute effort?",
-    context: "The layer where AI replaces human effort determines whether it reduces cost or increases oversight burden.",
-    type: "select",
-    options: [
-      { value: "junior_execution", label: "Junior execution" },
-      { value: "mid_level_production", label: "Mid-level production" },
-      { value: "senior_thinking_review", label: "Senior thinking / review" },
-      { value: "no_clear_substitution", label: "No clear substitution" }
-    ],
-    required: true,
-    section: "Delivery Dynamics",
-    sectionColor: "sky"
-  },
-  {
-    id: "marginalValueSaturation",
-    number: 19,
-    title: "Value Saturation",
-    subtitle: "Compared to similar work, how much incremental value does adding more people create here?",
-    context: "When adding people stops creating value, staffing becomes a cost center.",
-    type: "select",
-    options: [
-      { value: "significant", label: "Significant additional value" },
-      { value: "some", label: "Some additional value" },
-      { value: "minimal", label: "Minimal additional value" },
-      { value: "none", label: "No meaningful additional value" }
-    ],
-    required: true,
-    section: "Value, Load & Confidence",
-    sectionColor: "amber"
-  },
-  {
-    id: "seniorOversightLoad",
-    number: 20,
-    title: "Senior Oversight Load",
-    subtitle: "Compared to similar engagements, how much senior oversight does this require?",
-    context: "Disproportionate senior oversight signals structural delivery risk.",
-    type: "select",
-    options: [
-      { value: "less", label: "Less than usual" },
-      { value: "about_same", label: "About the same" },
-      { value: "more", label: "More than usual" }
-    ],
-    required: true,
-    section: "Value, Load & Confidence",
-    sectionColor: "amber"
-  },
-  {
-    id: "coordinationDecisionDrag",
-    number: 21,
-    title: "Coordination & Decision Drag",
-    subtitle: "How much coordination is required across teams and stakeholders?",
-    context: "Heavy coordination slows decisions and inflates the cost of every deliverable.",
-    type: "select",
-    options: [
-      { value: "minimal", label: "Minimal" },
-      { value: "moderate", label: "Moderate" },
-      { value: "heavy", label: "Heavy" }
-    ],
-    required: true,
-    section: "Value, Load & Confidence",
-    sectionColor: "amber"
-  },
-  {
-    id: "deliveryConfidence",
-    number: 22,
-    title: "Delivery Confidence",
-    subtitle: "How confident are you in the delivery model for this engagement? (executive gut-check)",
-    context: "Low confidence often signals structural issues that pricing alone cannot fix.",
-    type: "select",
-    options: [
-      { value: "high", label: "High confidence" },
-      { value: "some_concerns", label: "Some concerns" },
-      { value: "low", label: "Low confidence" }
-    ],
-    required: true,
-    section: "Value, Load & Confidence",
-    sectionColor: "amber"
-  },
-  {
-    id: "openSignal",
-    number: 23,
-    title: "Is there anything about this client engagement that feels risky or unusual?",
-    subtitle: "This is optional - share any concerns or observations",
-    type: "textarea",
-    placeholder: "Share any concerns or observations...",
-    required: false,
-    section: "Open Signal",
-    sectionColor: "violet"
-  }
-];
+function getQuestionsForIndustry(industry: string): Question[] {
+  const isITeS = industry === "ites";
+  const isMC = industry === "management-consulting";
+  const isSW = industry === "computer-software";
+  const hasDeliveryModel = isITeS || isSW;
+
+  const decisionOptions = [
+    { value: "new-client-win", label: isITeS ? "New contract / SOW acceptance" : "New client win / pitch acceptance" },
+    { value: "renewal-extension", label: "Renewal / contract extension" },
+    { value: "scope-expansion", label: "Scope expansion without repricing" },
+    { value: "escalation", label: "Escalation on a live account" },
+    { value: "strategic-exception", label: "Strategic / leadership-driven exception" },
+    { value: "exploratory", label: "Exploratory / no active decision" },
+  ];
+
+  const engagementTypeOptions = isITeS ? [
+    { value: "ites-tm", label: "Time & Materials (T&M)" },
+    { value: "ites-fixed-price", label: "Fixed Price" },
+    { value: "ites-managed-services", label: "Managed Services" },
+    { value: "ites-retainer", label: "Retainer / Ongoing Support" },
+    { value: "ites-outcome", label: "Outcome / Milestone-based" },
+    { value: "ites-hybrid", label: "Hybrid" },
+  ] : isMC ? [
+    { value: "mc-fixed-fee", label: "Fixed Fee / Project-based" },
+    { value: "mc-retainer", label: "Retainer / Advisory" },
+    { value: "mc-tm", label: "Time & Materials" },
+    { value: "mc-outcome", label: "Outcome / Success-based" },
+    { value: "mc-hybrid", label: "Hybrid" },
+  ] : isSW ? [
+    { value: "sw-implementation", label: "Implementation / Professional Services" },
+    { value: "sw-managed-services", label: "Managed Services" },
+    { value: "sw-saas-services", label: "SaaS + Services Hybrid" },
+    { value: "sw-fixed-price", label: "Fixed Price Development" },
+    { value: "sw-tm", label: "T&M Development" },
+    { value: "sw-outcome", label: "Outcome-based" },
+  ] : [
+    { value: "commission", label: "Commission" },
+    { value: "fixed-fee", label: "Fixed Fees" },
+    { value: "retainer", label: "Retainer" },
+    { value: "outcome-based", label: "Outcome based" },
+    { value: "hybrid-retainer-commission", label: "Hybrid - Retainer + Commission" },
+    { value: "hybrid-retainer-outcome", label: "Hybrid - Retainer + Outcome based" },
+  ];
+
+  const executionThinkingOptions = [
+    { value: "execution-heavy", label: "Execution-heavy" },
+    { value: "balanced", label: "Balanced" },
+    { value: "thinking-heavy", label: "Thinking-heavy" },
+    ...(isITeS ? [{ value: "advisory-solutioning", label: "Advisory / Solutioning-heavy" }] : []),
+    ...(isMC ? [{ value: "strategy-advisory", label: "Strategy / Advisory-heavy" }] : []),
+    ...(isSW ? [{ value: "technical-implementation", label: "Technical / Implementation-heavy" }] : []),
+  ];
+
+  const scopeChangeContext = isSW
+    ? "Scope changes without repricing are the most common source of margin leak. Including technical dependency changes outside your control."
+    : "Scope changes without repricing are the most common source of margin leak.";
+
+  const raw: Omit<Question, "number">[] = [
+    { id: "fullName", title: "What's your full name?", type: "text", placeholder: "Enter your full name", required: true, section: "Contact & Context", sectionColor: "emerald" },
+    { id: "workEmail", title: "What's your work email?", type: "email", placeholder: "Enter your work email", required: true, section: "Contact & Context", sectionColor: "emerald" },
+    { id: "roleTitle", title: "What's your role or title?", type: "text", placeholder: "Enter your role or title", required: true, section: "Contact & Context", sectionColor: "emerald" },
+    { id: "organisationName", title: "What's your organization name?", type: "text", placeholder: "Enter your organization name", required: true, section: "Contact & Context", sectionColor: "emerald" },
+    {
+      id: "organisationSize", title: "What's your organization size?",
+      context: "Larger organizations create more coordination layers that consume margin.",
+      type: "select",
+      options: [{ value: "50-500", label: "50–500" }, { value: "500-1000", label: "500–1000" }, { value: "1000-1500", label: "1000–1500" }, { value: "1500-2000", label: "1500–2000" }],
+      required: true, section: "Contact & Context", sectionColor: "emerald"
+    },
+    {
+      id: "industry", title: "Which industry do you belong to?",
+      type: "select",
+      options: [
+        { value: "marketing-advertising", label: "Marketing & Advertising" },
+        { value: "ites", label: "ITeS" },
+        { value: "management-consulting", label: "Management Consulting" },
+        { value: "computer-software", label: "Computer Software" },
+      ],
+      required: true, section: "Contact & Context", sectionColor: "emerald"
+    },
+    {
+      id: "decisionEvaluating", title: "What decision are you evaluating with this assessment?",
+      context: "The type of decision shapes how much pricing flexibility remains.",
+      type: "select", options: decisionOptions, required: true, section: "Contact & Context", sectionColor: "emerald"
+    },
+    {
+      id: "specifyContext", title: "Specify Context",
+      context: "Multi-client assessments carry compounding coordination risk.",
+      type: "select",
+      options: [{ value: "single-client", label: "Single client" }, { value: "group-of-clients", label: "Group of clients - Org level" }],
+      required: true, section: "Client Engagement Context", sectionColor: "teal"
+    },
+    {
+      id: "engagementClassification", title: "How would you classify this engagement today?",
+      context: "Engagement maturity affects how predictable the delivery effort will be.",
+      type: "select",
+      options: [
+        { value: "new", label: "New (pre-kickoff / onboarding phase)" },
+        { value: "ongoing-less-6", label: "Ongoing (in delivery for less than 6 months)" },
+        { value: "ongoing-6-12", label: "Ongoing (in delivery for 6–12 months)" },
+        { value: "ongoing-12-plus", label: "Ongoing (in delivery for 12+ months)" },
+        { value: "renewal-expansion", label: "Renewal / scope expansion of an existing engagement" }
+      ],
+      required: true, section: "Client Engagement Context", sectionColor: "teal"
+    },
+    {
+      id: "engagementType", title: "What's the engagement type?",
+      context: "Fixed-fee models absorb scope creep risk that retainers can pass through.",
+      type: "select", options: engagementTypeOptions, required: true, section: "Client Engagement Context", sectionColor: "teal"
+    },
+    ...(hasDeliveryModel ? [{
+      id: "deliveryModel" as keyof AssessmentFormData,
+      title: "What is the delivery model?",
+      context: "Onshore/offshore mix affects coordination overhead and margin risk.",
+      type: "select" as const,
+      options: [
+        { value: "onshore-only", label: "Onshore only" },
+        { value: "offshore-only", label: "Offshore only" },
+        { value: "hybrid-onshore-offshore", label: "Hybrid onshore/offshore" },
+        { value: "nearshore", label: "Nearshore" },
+      ],
+      required: true, section: "Client Engagement Context", sectionColor: "teal"
+    }] : []),
+    {
+      id: "clientVolatility", title: "How would you rate client volatility?",
+      context: "Client stability directly impacts coordination cost and rework risk.",
+      type: "select",
+      options: [
+        { value: "low", label: "Low (stable stakeholders, clear expectations)" },
+        { value: "medium", label: "Medium" },
+        { value: "high", label: "High (frequent changes, multiple decision-makers)" }
+      ],
+      required: true, section: "Client Engagement Context", sectionColor: "teal"
+    },
+    {
+      id: "stakeholderComplexity", title: "What's the stakeholder complexity level?",
+      context: "More stakeholders mean more alignment cycles and hidden decision drag.",
+      type: "select",
+      options: [{ value: "low", label: "Low" }, { value: "medium", label: "Medium" }, { value: "high", label: "High" }],
+      required: true, section: "Client Engagement Context", sectionColor: "teal"
+    },
+    {
+      id: "seniorLeadershipInvolvement", title: "How involved is senior leadership in day-to-day delivery?",
+      context: "Senior involvement in delivery signals that junior/mid teams cannot carry the engagement independently.",
+      type: "select",
+      options: [
+        { value: "minimal", label: "Minimal (strategic oversight only)" },
+        { value: "periodic", label: "Periodic (key milestones)" },
+        { value: "frequent", label: "Frequent (weekly touchpoints)" },
+        { value: "continuous", label: "Continuous (hands-on delivery)" }
+      ],
+      required: true, section: "Planned Delivery Structure", sectionColor: "cyan"
+    },
+    {
+      id: "midLevelOversight", title: "What's the mid-level oversight intensity?",
+      context: "Mid-level oversight absorbs coordination costs that are often invisible in project budgets.",
+      type: "select",
+      options: [{ value: "low", label: "Low" }, { value: "medium", label: "Medium" }, { value: "high", label: "High" }],
+      required: true, section: "Planned Delivery Structure", sectionColor: "cyan"
+    },
+    {
+      id: "executionThinkingMix", title: "What's the execution vs thinking mix?",
+      context: "Thinking-heavy work is harder to scope, price, and delegate.",
+      type: "select", options: executionThinkingOptions, required: true, section: "Planned Delivery Structure", sectionColor: "cyan"
+    },
+    {
+      id: "iterationIntensity", title: "What's the expected or current iteration intensity?",
+      context: "High iteration erodes margin through repeated cycles of rework and refinement.",
+      type: "select",
+      options: [{ value: "low", label: "Low" }, { value: "medium", label: "Medium" }, { value: "high", label: "High" }],
+      required: true, section: "Delivery Dynamics", sectionColor: "sky"
+    },
+    {
+      id: "scopeChangeLikelihood", title: "What's the likelihood of scope change?",
+      context: scopeChangeContext,
+      type: "select",
+      options: [{ value: "low", label: "Low" }, { value: "medium", label: "Medium" }, { value: "high", label: "High" }],
+      required: true, section: "Delivery Dynamics", sectionColor: "sky"
+    },
+    {
+      id: "crossFunctionalCoordination", title: "How much cross-functional coordination is required?",
+      context: "Cross-team coordination creates invisible overhead that rarely gets priced in.",
+      type: "select",
+      options: [{ value: "low", label: "Low" }, { value: "medium", label: "Medium" }, { value: "high", label: "High" }],
+      required: true, section: "Delivery Dynamics", sectionColor: "sky"
+    },
+    {
+      id: "aiEffortShift", title: "Where is AI primarily expected to substitute effort?",
+      context: "The layer where AI replaces human effort determines whether it reduces cost or increases oversight burden.",
+      type: "select",
+      options: [
+        { value: "junior_execution", label: "Junior execution" },
+        { value: "mid_level_production", label: "Mid-level production" },
+        { value: "senior_thinking_review", label: "Senior thinking / review" },
+        { value: "no_clear_substitution", label: "No clear substitution" }
+      ],
+      required: true, section: "Delivery Dynamics", sectionColor: "sky"
+    },
+    {
+      id: "marginalValueSaturation", title: "Value Saturation",
+      subtitle: "Compared to similar work, how much incremental value does adding more people create here?",
+      context: "When adding people stops creating value, staffing becomes a cost center.",
+      type: "select",
+      options: [
+        { value: "significant", label: "Significant additional value" },
+        { value: "some", label: "Some additional value" },
+        { value: "minimal", label: "Minimal additional value" },
+        { value: "none", label: "No meaningful additional value" }
+      ],
+      required: true, section: "Value, Load & Confidence", sectionColor: "amber"
+    },
+    {
+      id: "seniorOversightLoad", title: "Senior Oversight Load",
+      subtitle: "Compared to similar engagements, how much senior oversight does this require?",
+      context: "Disproportionate senior oversight signals structural delivery risk.",
+      type: "select",
+      options: [{ value: "less", label: "Less than usual" }, { value: "about_same", label: "About the same" }, { value: "more", label: "More than usual" }],
+      required: true, section: "Value, Load & Confidence", sectionColor: "amber"
+    },
+    {
+      id: "coordinationDecisionDrag", title: "Coordination & Decision Drag",
+      subtitle: "How much coordination is required across teams and stakeholders?",
+      context: "Heavy coordination slows decisions and inflates the cost of every deliverable.",
+      type: "select",
+      options: [{ value: "minimal", label: "Minimal" }, { value: "moderate", label: "Moderate" }, { value: "heavy", label: "Heavy" }],
+      required: true, section: "Value, Load & Confidence", sectionColor: "amber"
+    },
+    {
+      id: "deliveryConfidence", title: "Delivery Confidence",
+      subtitle: "How confident are you in the delivery model for this engagement? (executive gut-check)",
+      context: "Low confidence often signals structural issues that pricing alone cannot fix.",
+      type: "select",
+      options: [{ value: "high", label: "High confidence" }, { value: "some_concerns", label: "Some concerns" }, { value: "low", label: "Low confidence" }],
+      required: true, section: "Value, Load & Confidence", sectionColor: "amber"
+    },
+    {
+      id: "aiHumanHoursReplaced", title: "How many human hours will you replace / augment with an AI agent in delivery workflows?",
+      type: "select",
+      options: [
+        { value: "0-25", label: "0–25%" },
+        { value: "25-50", label: "25–50%" },
+        { value: "50-75", label: "50–75%" },
+        { value: "75-100", label: "75–100%" },
+        { value: "na", label: "NA" },
+      ],
+      required: true, section: "AI Risk", sectionColor: "violet"
+    },
+    {
+      id: "aiCommercialImpactMeasured", title: "Have you measured the commercial impact of using AI agents?",
+      type: "select",
+      options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }, { value: "na", label: "NA" }],
+      required: true, section: "AI Risk", sectionColor: "violet"
+    },
+    {
+      id: "aiAgenticFramework", title: "Are you using AI or an Agentic framework and what kind of projects they are being deployed on?",
+      type: "select",
+      options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }, { value: "na", label: "NA" }],
+      required: true, section: "AI Risk", sectionColor: "violet"
+    },
+    {
+      id: "openSignal", title: "Is there anything about this client engagement that feels risky or unusual?",
+      subtitle: "This is optional - share any concerns or observations",
+      type: "textarea", placeholder: "Share any concerns or observations...",
+      required: false, section: "Open Signal", sectionColor: "violet"
+    },
+  ];
+
+  return raw.map((q, idx) => ({ ...q, number: idx + 1 }));
+};
 
 export default function Assessment() {
   const [currentQuestion, setCurrentQuestion] = useState(-2); // -2 = intro, -1 = margin question
@@ -519,6 +464,7 @@ export default function Assessment() {
   const isFromProfiler = searchString.includes("from=profiler");
 
   const [profilerAnswers, setProfilerAnswers] = useState<Record<string, string>>({});
+  const [selectedIndustry, setSelectedIndustry] = useState("marketing-advertising");
 
   useEffect(() => {
     if (isFromProfiler) {
@@ -587,9 +533,10 @@ export default function Assessment() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const industryQuestions = getQuestionsForIndustry(selectedIndustry);
   const activeQuestions = isFromProfiler
-    ? questions.filter(q => !PROFILER_FIELD_KEYS.includes(q.id)).map((q, idx) => ({ ...q, number: idx + 1 }))
-    : questions;
+    ? industryQuestions.filter(q => !PROFILER_FIELD_KEYS.includes(q.id)).map((q, idx) => ({ ...q, number: idx + 1 }))
+    : industryQuestions;
 
   const saveProgress = () => {
     try {
@@ -625,8 +572,10 @@ export default function Assessment() {
       roleTitle: "",
       organisationName: "",
       organisationSize: "",
+      industry: "",
       decisionEvaluating: "",
       engagementType: "",
+      deliveryModel: "",
       specifyContext: "",
       engagementClassification: "",
       clientVolatility: "",
@@ -642,6 +591,9 @@ export default function Assessment() {
       seniorOversightLoad: "",
       coordinationDecisionDrag: "",
       deliveryConfidence: "",
+      aiHumanHoursReplaced: "",
+      aiCommercialImpactMeasured: "",
+      aiAgenticFramework: "",
       openSignal: "",
     };
   }, []);
@@ -650,6 +602,17 @@ export default function Assessment() {
     resolver: zodResolver(assessmentSchema),
     defaultValues: getDefaultValues(),
   });
+
+  const watchedIndustry = form.watch("industry");
+  useEffect(() => {
+    if (watchedIndustry && watchedIndustry !== selectedIndustry) {
+      setSelectedIndustry(watchedIndustry);
+      form.setValue("engagementType", "");
+      form.setValue("deliveryModel", "");
+      form.setValue("executionThinkingMix", "");
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedIndustry]);
 
   useEffect(() => {
     if (isFromProfiler && Object.keys(profilerAnswers).length > 0) {

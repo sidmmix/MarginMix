@@ -331,9 +331,11 @@ export function registerRoutes(app: Express): Server {
         roleTitle: validatedData.roleTitle,
         organisationName: validatedData.organisationName,
         organisationSize: validatedData.organisationSize,
+        industry: validatedData.industry || "marketing-advertising",
         decisionType: validatedData.decisionEvaluating || "exploratory",
         specifyContext: validatedData.specifyContext || "single-client",
         engagementType: validatedData.engagementType,
+        deliveryModel: validatedData.deliveryModel ?? undefined,
         engagementClassification: validatedData.engagementClassification || "new",
         clientVolatility: validatedData.clientVolatility,
         stakeholderComplexity: validatedData.stakeholderComplexity,
@@ -348,6 +350,9 @@ export function registerRoutes(app: Express): Server {
         seniorOversightLoad: validatedData.seniorOversightLoad || "about_same",
         coordinationDecisionDrag: validatedData.coordinationDecisionDrag || "moderate",
         deliveryConfidence: validatedData.deliveryConfidence || "high",
+        aiHumanHoursReplaced: validatedData.aiHumanHoursReplaced || "na",
+        aiCommercialImpactMeasured: validatedData.aiCommercialImpactMeasured || "na",
+        aiAgenticFramework: validatedData.aiAgenticFramework || "na",
         openSignal: validatedData.openSignal ?? undefined,
         currentMargin: req.body.currentMargin ? parseFloat(req.body.currentMargin) : undefined
       });

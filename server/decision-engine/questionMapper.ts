@@ -14,24 +14,29 @@ export interface AssessmentInput {
   roleTitle: string;          // Q3 - Identifier
   organisationName: string;   // Q4 - Identifier
   organisationSize: string;   // Q5 - Identifier
-  decisionType: string;       // Q6 - Engagement Type → EngagementState
-  specifyContext: string;     // Q7 - Context
-  engagementClassification: string; // Q8 - Classification → EngagementState
-  engagementType: string;     // Q9 - Pricing Model → PricingRigidity
-  clientVolatility: string;   // Q10 - Client Volatility → ClientVolatility
-  stakeholderComplexity: string; // Q11 - Stakeholder Complexity → StakeholderLoad
-  seniorLeadershipInvolvement: string; // Q12 - Senior Involvement → SeniorDependency
-  midLevelOversight: string;  // Q13 - Mid-level Coordination → CoordinationIntensity
-  executionThinkingMix: string; // Q14 - Execution vs Thinking → IterationLoad proxy
-  iterationIntensity: string; // Q15 - Iteration Intensity → IterationLoad
-  scopeChangeLikelihood: string; // Q16 - Scope Volatility → ScopeElasticity
-  crossFunctionalCoordination: string; // Q17 - Cross-Functional → CoordinationLoad
-  aiEffortShift: string; // Q18 - AI Effort Shift → AILeverage / MeasurementMaturity
-  marginalValueSaturation: string; // Q19 - Value Saturation → GovernanceStrength proxy
-  seniorOversightLoad: string; // Q20 - Senior Oversight Load → SeniorDependency modifier
-  coordinationDecisionDrag: string; // Q21 - Coordination Drag → CoordinationLoad
-  deliveryConfidence: string; // Q22 - Delivery Confidence → DeliveryConfidence
-  openSignal?: string;        // Q23 - Open Signal → Narrative only
+  industry?: string;          // Q6 - Identifier (Marketing/ITeS/MC/Software)
+  decisionType: string;       // Q7 - Engagement Type → EngagementState
+  specifyContext: string;     // Q8 - Context
+  engagementClassification: string; // Q9 - Classification → EngagementState
+  engagementType: string;     // Q10 - Pricing Model → PricingRigidity
+  deliveryModel?: string;     // Q10b - Identifier (ITeS/Software only)
+  clientVolatility: string;   // Q11 - Client Volatility → ClientVolatility
+  stakeholderComplexity: string; // Q12 - Stakeholder Complexity → StakeholderLoad
+  seniorLeadershipInvolvement: string; // Q13 - Senior Involvement → SeniorDependency
+  midLevelOversight: string;  // Q14 - Mid-level Coordination → CoordinationIntensity
+  executionThinkingMix: string; // Q15 - Execution vs Thinking → IterationLoad proxy
+  iterationIntensity: string; // Q16 - Iteration Intensity → IterationLoad
+  scopeChangeLikelihood: string; // Q17 - Scope Volatility → ScopeElasticity
+  crossFunctionalCoordination: string; // Q18 - Cross-Functional → CoordinationLoad
+  aiEffortShift: string; // Q19 - AI Effort Shift → AILeverage / MeasurementMaturity
+  marginalValueSaturation: string; // Q20 - Value Saturation → GovernanceStrength proxy
+  seniorOversightLoad: string; // Q21 - Senior Oversight Load → SeniorDependency modifier
+  coordinationDecisionDrag: string; // Q22 - Coordination Drag → CoordinationLoad
+  deliveryConfidence: string; // Q23 - Delivery Confidence → DeliveryConfidence
+  aiHumanHoursReplaced?: string; // Q24 - AI hours replaced → MeasurementMaturity modifier
+  aiCommercialImpactMeasured?: string; // Q25 - AI commercial impact → MeasurementMaturity modifier
+  aiAgenticFramework?: string;    // Q26 - Agentic framework usage → MeasurementMaturity modifier
+  openSignal?: string;        // Q27 - Open Signal → Narrative only
 }
 
 function mapToLevel(value: string, mapping: Record<string, Level>): Level {
@@ -119,10 +124,29 @@ export function mapQuestionsToSignals(input: AssessmentInput): Signals {
     "low": "negative"
   });
 
-  const measurementMaturity: Level =
+  const baseMaturity: Level =
     input.aiEffortShift === "junior_execution" ? "high" :
     input.aiEffortShift === "mid_level_production" ? "medium" :
     input.aiEffortShift === "senior_thinking_review" ? "low" :
+    "low";
+
+  const aiHoursRisk: Level =
+    input.aiHumanHoursReplaced === "75-100" ? "high" :
+    input.aiHumanHoursReplaced === "50-75" ? "high" :
+    input.aiHumanHoursReplaced === "25-50" ? "medium" :
+    "low";
+
+  const aiImpactRisk: Level = input.aiCommercialImpactMeasured === "no" ? "high" : "low";
+  const aiAgenticRisk: Level = input.aiAgenticFramework === "yes" ? "high" : "low";
+
+  const aiRiskPeak: Level =
+    aiHoursRisk === "high" || aiImpactRisk === "high" || aiAgenticRisk === "high" ? "high" :
+    aiHoursRisk === "medium" || aiImpactRisk === "medium" || aiAgenticRisk === "medium" ? "medium" :
+    "low";
+
+  const measurementMaturity: Level =
+    baseMaturity === "high" || aiRiskPeak === "high" ? "high" :
+    baseMaturity === "medium" || aiRiskPeak === "medium" ? "medium" :
     "low";
 
   const aiLeverage: Level =
@@ -140,14 +164,29 @@ export function mapQuestionsToSignals(input: AssessmentInput): Signals {
     input.decisionType === "escalation" ? "escalation" :
     input.decisionType === "strategic-exception" ? "strategic" : "new";
 
+  const HIGH_RIGIDITY = new Set([
+    "commission", "outcome-based",
+    "ites-fixed-price", "ites-outcome",
+    "mc-fixed-fee", "mc-outcome",
+    "sw-fixed-price", "sw-outcome", "sw-implementation"
+  ]);
+  const MEDIUM_RIGIDITY = new Set([
+    "hybrid", "hybrid-retainer-commission", "hybrid-retainer-outcome",
+    "ites-tm", "ites-managed-services", "ites-hybrid",
+    "mc-tm", "mc-hybrid",
+    "sw-managed-services", "sw-saas-services", "sw-tm"
+  ]);
   const pricingRigidity: Level =
-    (input.engagementType === "commission" || input.engagementType === "outcome-based") ? "high" :
-    (input.engagementType === "hybrid" || input.engagementType === "hybrid-retainer-commission" || input.engagementType === "hybrid-retainer-outcome") ? "medium" : "low";
+    HIGH_RIGIDITY.has(input.engagementType) ? "high" :
+    MEDIUM_RIGIDITY.has(input.engagementType) ? "medium" : "low";
 
   const executionMix = input.executionThinkingMix;
   const teamMaturity: Level =
     executionMix === "execution-heavy" ? "high" :
-    executionMix === "balanced" ? "medium" : "low";
+    executionMix === "balanced" ? "medium" :
+    executionMix === "technical-implementation" ? "medium" :
+    executionMix === "thinking-heavy" || executionMix === "advisory-solutioning" || executionMix === "strategy-advisory" ? "low" :
+    "low";
 
   const resourcingFlex: Level =
     pricingRigidity === "high" ? "low" :
