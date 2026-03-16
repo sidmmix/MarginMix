@@ -296,7 +296,7 @@ export default function Founder() {
             className="h-12 text-base px-6 bg-white hover:bg-gray-100 text-emerald-700 rounded-xl font-semibold shadow-lg"
             onClick={() => window.location.href = '/quick-profiler'}
           >
-            1 Minute Risk Profile Scan
+            See Your Free Risk Profile in 60 Seconds!
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
