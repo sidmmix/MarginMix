@@ -33,9 +33,9 @@ export interface AssessmentInput {
   seniorOversightLoad: string; // Q21 - Senior Oversight Load → SeniorDependency modifier
   coordinationDecisionDrag: string; // Q22 - Coordination Drag → CoordinationLoad
   deliveryConfidence: string; // Q23 - Delivery Confidence → DeliveryConfidence
-  aiHumanHoursReplaced?: string; // Q24 - AI hours replaced → MeasurementMaturity modifier
-  aiCommercialImpactMeasured?: string; // Q25 - AI commercial impact → MeasurementMaturity modifier
-  aiAgenticFramework?: string;    // Q26 - Agentic framework usage → MeasurementMaturity modifier
+  aiAgenticFramework?: string;          // Q24 - Agentic framework usage → MeasurementMaturity modifier
+  aiHumanHoursReplaced?: string;        // Q25 - AI hours replaced → MeasurementMaturity modifier
+  aiCommercialImpactMeasured?: string;  // Q26 - AI commercial impact → MeasurementMaturity modifier
   openSignal?: string;        // Q27 - Open Signal → Narrative only
 }
 
