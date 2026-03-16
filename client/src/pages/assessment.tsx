@@ -410,7 +410,15 @@ function getQuestionsForIndustry(industry: string): Question[] {
       required: true, section: "Value, Load & Confidence", sectionColor: "amber"
     },
     {
+      id: "aiAgenticFramework", title: "Are you using AI or an Agentic framework and what kind of projects are they being deployed on?",
+      context: "Agentic deployments in billable workflows directly affect pricing integrity and delivery accountability.",
+      type: "select",
+      options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }, { value: "na", label: "NA" }],
+      required: true, section: "AI Risk", sectionColor: "violet"
+    },
+    {
       id: "aiHumanHoursReplaced", title: "How many human hours will you replace / augment with an AI agent in delivery workflows?",
+      context: "The scale of AI substitution determines whether cost savings flow to margin or create oversight overhead.",
       type: "select",
       options: [
         { value: "0-25", label: "0–25%" },
@@ -423,12 +431,7 @@ function getQuestionsForIndustry(industry: string): Question[] {
     },
     {
       id: "aiCommercialImpactMeasured", title: "Have you measured the commercial impact of using AI agents?",
-      type: "select",
-      options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }, { value: "na", label: "NA" }],
-      required: true, section: "AI Risk", sectionColor: "violet"
-    },
-    {
-      id: "aiAgenticFramework", title: "Are you using AI or an Agentic framework and what kind of projects they are being deployed on?",
+      context: "Unmeasured AI impact means you cannot price its contribution or account for its risks.",
       type: "select",
       options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }, { value: "na", label: "NA" }],
       required: true, section: "AI Risk", sectionColor: "violet"

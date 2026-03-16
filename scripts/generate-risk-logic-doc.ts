@@ -306,8 +306,20 @@ const fullAssessmentQuestions: QuestionDef[] = [
     ],
   },
   {
-    number: "Q24", id: "aiHumanHoursReplaced", title: "How many human hours will you replace / augment with an AI agent in delivery workflows?",
+    number: "Q24", id: "aiAgenticFramework", title: "Are you using AI or an Agentic framework and what kind of projects are they being deployed on?",
     section: "AI Risk",
+    context: "Agentic deployments in billable workflows directly affect pricing integrity and delivery accountability.",
+    signal: "MeasurementMaturity modifier", dimension: "Measurement Maturity",
+    options: [
+      { label: "Yes", risk: "high" },
+      { label: "No",  risk: "low"  },
+      { label: "NA",  risk: "low"  },
+    ],
+  },
+  {
+    number: "Q25", id: "aiHumanHoursReplaced", title: "How many human hours will you replace / augment with an AI agent in delivery workflows?",
+    section: "AI Risk",
+    context: "The scale of AI substitution determines whether cost savings flow to margin or create oversight overhead.",
     signal: "MeasurementMaturity modifier", dimension: "Measurement Maturity",
     options: [
       { label: "0–25%",     risk: "low"    },
@@ -318,22 +330,13 @@ const fullAssessmentQuestions: QuestionDef[] = [
     ],
   },
   {
-    number: "Q25", id: "aiCommercialImpactMeasured", title: "Have you measured the commercial impact of using AI agents?",
+    number: "Q26", id: "aiCommercialImpactMeasured", title: "Have you measured the commercial impact of using AI agents?",
     section: "AI Risk",
+    context: "Unmeasured AI impact means you cannot price its contribution or account for its risks.",
     signal: "MeasurementMaturity modifier", dimension: "Measurement Maturity",
     options: [
       { label: "Yes", risk: "low"  },
       { label: "No",  risk: "high" },
-      { label: "NA",  risk: "low"  },
-    ],
-  },
-  {
-    number: "Q26", id: "aiAgenticFramework", title: "Are you using AI or an Agentic framework, and what kind of projects are they deployed on?",
-    section: "AI Risk",
-    signal: "MeasurementMaturity modifier", dimension: "Measurement Maturity",
-    options: [
-      { label: "Yes", risk: "high" },
-      { label: "No",  risk: "low"  },
       { label: "NA",  risk: "low"  },
     ],
   },
