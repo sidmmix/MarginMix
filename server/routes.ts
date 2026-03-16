@@ -449,6 +449,21 @@ export function registerRoutes(app: Express): Server {
         },
       });
 
+      // DEV / STAGING BYPASS: skip Stripe in non-production so the full flow can be tested
+      if (process.env.NODE_ENV !== "production") {
+        console.log(`[DEV] Payment bypassed for ${validatedData.organisationName} — returning result directly`);
+        return res.status(201).json({
+          success: true,
+          requiresPayment: false,
+          pdfs: {
+            decisionMemo:     { filename: decisionMemoFilename,     data: decisionMemoPdf.toString("base64") },
+            assessmentOutput: { filename: assessmentOutputFilename, data: assessmentOutputPdf.toString("base64") },
+          },
+          decisionObject,
+          assessmentId: assessment.id,
+        });
+      }
+
       // Create Stripe Checkout session
       const origin = `${req.protocol}://${req.get("host")}`;
       const checkoutSession = await stripe.checkout.sessions.create({

@@ -838,6 +838,25 @@ export default function Assessment() {
       if (response.ok) {
         const result = await response.json();
 
+        // DEV/staging bypass — result returned directly without payment
+        if (!result.requiresPayment && result.pdfs) {
+          setStoredPdfData(result.pdfs);
+          setDecisionResult(result.decisionObject);
+          setIsPaid(true);
+          setSubmittedUserInfo({
+            fullName: data.fullName,
+            workEmail: data.workEmail,
+            roleTitle: data.roleTitle,
+            organisationName: data.organisationName,
+            organisationSize: data.organisationSize,
+          });
+          setShowDecisionPage(true);
+          try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
+          setTimeout(() => downloadPDF(result.pdfs.decisionMemo.data, result.pdfs.decisionMemo.filename), 300);
+          setTimeout(() => downloadPDF(result.pdfs.assessmentOutput.data, result.pdfs.assessmentOutput.filename), 700);
+          return;
+        }
+
         // Show blurred decision page — payment required to unlock PDFs
         if (result.requiresPayment && result.checkoutUrl) {
           setCheckoutUrl(result.checkoutUrl);
