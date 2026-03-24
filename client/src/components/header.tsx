@@ -39,10 +39,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
     { href: "/founder", label: "Why We Exist", mobileLabel: "Why We Exist" },
     { href: "/why-choose", label: "Why Choose Us", mobileLabel: "Why Choose Us" },
     { href: "/assessment", label: "Paid Assessment", mobileLabel: "Paid Assessment" },
-  ];
-
-  const mobileOnlyLinks = [
-    { href: "/quick-profiler", label: "Free Margin Risk Profiler" },
+    { href: "/quick-profiler", label: "Free Risk Profiler", mobileLabel: "Free Margin Risk Profiler" },
   ];
 
   const isActive = (href: string) => location === href;
@@ -141,13 +138,6 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 <Link key={link.href} href={link.href} onClick={scrollToTop}>
                   <span className={`block text-gray-800 dark:text-gray-100 hover:text-emerald-700 dark:hover:text-emerald-300 text-base font-medium cursor-pointer py-3 px-3 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 ${isActive(link.href) ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 border-l-4 border-emerald-600' : ''}`}>
                     {link.mobileLabel}
-                  </span>
-                </Link>
-              ))}
-              {mobileOnlyLinks.map((link) => (
-                <Link key={link.href} href={link.href} onClick={scrollToTop}>
-                  <span className={`block text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 text-base font-semibold cursor-pointer py-3 px-3 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 ${isActive(link.href) ? 'bg-emerald-50 dark:bg-emerald-900/20 border-l-4 border-emerald-600' : ''}`}>
-                    ✦ {link.label}
                   </span>
                 </Link>
               ))}
