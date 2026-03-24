@@ -69,14 +69,14 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 </span>
               </Link>
             ))}
-            <Link href="/quick-profiler" onClick={scrollToTop}>
+            <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer">
               <Button 
                 size="sm" 
                 className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
               >
-                Free Margin Risk check in 60 seconds!
+                Book Demo
               </Button>
-            </Link>
+            </a>
             {isAuthenticated && user ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
@@ -106,14 +106,14 @@ export function Header({ variant = "transparent" }: HeaderProps) {
 
           {/* Mobile Hamburger Button */}
           <div className="md:hidden flex items-center space-x-2">
-            <Link href="/quick-profiler" onClick={scrollToTop}>
+            <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer">
               <Button 
                 size="sm" 
                 className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs px-2 py-1 h-7"
               >
-                Free Risk Check
+                Book Demo
               </Button>
-            </Link>
+            </a>
             <Button
               variant="ghost"
               size="sm"
@@ -141,11 +141,11 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 </Link>
               ))}
               <div className="pt-2 px-3">
-                <Link href="/quick-profiler" onClick={scrollToTop}>
+                <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer" className="block">
                   <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm">
-                    Free Margin Risk check in 60 seconds!
+                    Book Demo
                   </Button>
-                </Link>
+                </a>
               </div>
               {isAuthenticated && user ? (
                 <div className="pt-3 border-t border-gray-200 dark:border-gray-700 mt-2">

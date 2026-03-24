@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, AlertTriangle, Eye, Target, Lightbulb, UserCheck, Building2 } from "lucide-react";
+import { AlertTriangle, Eye, Target, Lightbulb, UserCheck, Building2 } from "lucide-react";
 import founderPhoto from "@assets/1586921422945_1768559339757.jpeg";
 import advisorPhoto from "@assets/Screenshot_2026-01-21-08-12-37-88_254de13a4bc8758c9908fff1f73e_1768955128744.jpg";
 import { Footer } from "@/components/footer";
@@ -294,10 +294,9 @@ export default function Founder() {
           <Button 
             size="default" 
             className="w-full sm:w-auto h-auto py-3 text-sm sm:text-base px-6 bg-white hover:bg-gray-100 text-emerald-700 rounded-xl font-semibold shadow-lg whitespace-normal"
-            onClick={() => window.location.href = '/quick-profiler'}
+            onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
           >
-            Free Margin Risk check in 60 seconds!
-            <ArrowRight className="ml-2 h-5 w-5" />
+            Book Demo
           </Button>
         </div>
       </section>

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, Gauge, Target, Lightbulb, Scale, Zap } from "lucide-react";
+import { Shield, Gauge, Target, Lightbulb, Scale, Zap } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 
@@ -114,10 +114,9 @@ export default function WhyChoose() {
             <Button 
               size="lg" 
               className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl whitespace-normal"
-              onClick={() => window.location.href = '/quick-profiler'}
+              onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
             >
-              Free Margin Risk check in 60 seconds!
-              <ArrowRight className="ml-2 h-5 w-5" />
+              Book Demo
             </Button>
             <p className="text-emerald-100 mt-4 text-sm">
             </p>
