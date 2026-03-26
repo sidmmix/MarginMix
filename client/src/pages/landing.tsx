@@ -18,7 +18,7 @@ export default function Landing() {
       <div className="h-16"></div>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-10 sm:pt-14 pb-20">
+      <section className="relative overflow-hidden pt-4 sm:pt-8 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-xl sm:text-2xl md:text-2xl lg:text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 leading-tight lg:whitespace-nowrap">
