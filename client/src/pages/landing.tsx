@@ -243,7 +243,7 @@ export default function Landing() {
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <Building2 className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-gray-700 dark:text-gray-300">Agencies & Consulting firms</span>
+                  <span className="text-gray-700 dark:text-gray-300">Agencies, Consulting, ITeS & Professional Services</span>
                 </li>
                 <li className="flex items-start gap-3">
                   <Users className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
