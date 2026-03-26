@@ -27,8 +27,8 @@ export default function Landing() {
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap">
               MarginMix is a deterministic pricing and margin decision engine
             </p>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap">
-              Every commercial decision has a margin risk moment. MarginMix finds it before it costs you. 
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-red-600 dark:text-red-400 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap font-semibold">
+              MarginMix protects you from losing thousands / millions in margin to delivery complexity!
             </p>
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 mx-auto leading-relaxed sm:whitespace-nowrap">
               AI is reshaping how work gets delivered. Most pricing models haven't caught up.
