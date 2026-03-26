@@ -36,7 +36,7 @@ export default function Landing() {
             <p className="text-sm sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 px-2 sm:px-0">
               Works across all commercial models: Time & Materials · Fixed Price · Outcome-based · Hybrid engagements
             </p>
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Button 
                 size="lg" 
                 className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl whitespace-normal"
