@@ -24,9 +24,7 @@ export default function Landing() {
             <h1 className="text-xl sm:text-2xl md:text-2xl lg:text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 leading-tight lg:whitespace-nowrap">
               Your Margins slowly bleed on every engagement - in Delivery
             </h1>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap">
-              MarginMix is a deterministic pricing and margin decision engine
-            </p>
+
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-red-600 dark:text-red-400 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap font-semibold">
               MarginMix protects you from losing thousands / millions in margin to delivery complexity!
             </p>
