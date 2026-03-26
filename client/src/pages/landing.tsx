@@ -30,8 +30,11 @@ export default function Landing() {
             <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-red-600 dark:text-red-400 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap font-semibold">
               MarginMix protects you from losing thousands / millions in margin to delivery complexity!
             </p>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-6 sm:mb-8 mx-auto leading-relaxed sm:whitespace-nowrap">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap">
               AI is reshaping how work gets delivered. Most pricing models haven't caught up.
+            </p>
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-red-600 dark:text-red-400 mb-6 sm:mb-8 mx-auto leading-relaxed font-semibold">
+              Don't just rely on spreadsheets, gut feel & past experience, every engagement has unique delivery risks.
             </p>
             <p className="text-sm sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 px-2 sm:px-0">
               Works across all commercial models: Time & Materials · Fixed Price · Outcome-based · Hybrid engagements
