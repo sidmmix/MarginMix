@@ -78,6 +78,14 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 Book Demo
               </Button>
             </a>
+            <Link href="/quick-profiler" onClick={scrollToTop}>
+              <Button
+                size="sm"
+                className="bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-600 rounded-lg whitespace-nowrap"
+              >
+                Free Delivery Risk Check - 60 seconds!
+              </Button>
+            </Link>
             {isAuthenticated && user ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
@@ -141,12 +149,17 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                   </span>
                 </Link>
               ))}
-              <div className="pt-2 px-3">
+              <div className="pt-2 px-3 flex flex-col space-y-2">
                 <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer" className="block">
                   <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm">
                     Book Demo
                   </Button>
                 </a>
+                <Link href="/quick-profiler" onClick={scrollToTop} className="block">
+                  <Button className="w-full bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-600 text-sm">
+                    Free Delivery Risk Check - 60 seconds!
+                  </Button>
+                </Link>
               </div>
               {isAuthenticated && user ? (
                 <div className="pt-3 border-t border-gray-200 dark:border-gray-700 mt-2">

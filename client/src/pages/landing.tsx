@@ -36,14 +36,23 @@ export default function Landing() {
             <p className="text-sm sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 px-2 sm:px-0">
               Works across all commercial models: Time & Materials · Fixed Price · Outcome-based · Hybrid engagements
             </p>
-            <Button 
-              size="lg" 
-              className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl whitespace-normal"
-              data-testid="button-cta-hero"
-              onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
-            >
-              Book Demo
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button 
+                size="lg" 
+                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl whitespace-normal"
+                data-testid="button-cta-hero"
+                onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
+              >
+                Book Demo
+              </Button>
+              <Button
+                size="lg"
+                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-600 rounded-xl whitespace-normal"
+                onClick={() => window.location.href = '/quick-profiler'}
+              >
+                Free Delivery Risk Check - 60 seconds!
+              </Button>
+            </div>
             <p className="mt-5 sm:mt-6 text-lg sm:text-xl font-bold text-gray-900 dark:text-white px-2 sm:px-0">
               MarginMix is a decision infrastructure for{" "}
               <span className="text-emerald-600 dark:text-emerald-400">pricing & margin risk - </span>
@@ -601,14 +610,23 @@ export default function Landing() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
               Assess Margin Risk & Price work Profitably!
             </h2>
-            <Button 
-              size="lg" 
-              className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl whitespace-normal"
-              data-testid="button-cta-footer"
-              onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
-            >
-              Book Demo
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button 
+                size="lg" 
+                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl whitespace-normal"
+                data-testid="button-cta-footer"
+                onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
+              >
+                Book Demo
+              </Button>
+              <Button
+                size="lg"
+                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-4 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl whitespace-normal"
+                onClick={() => window.location.href = '/quick-profiler'}
+              >
+                Free Delivery Risk Check - 60 seconds!
+              </Button>
+            </div>
             <p className="text-emerald-100 mt-4 text-sm">
             </p>
           </div>
