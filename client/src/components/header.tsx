@@ -39,7 +39,6 @@ export function Header({ variant = "transparent" }: HeaderProps) {
     { href: "/founder", label: "Why We Exist", mobileLabel: "Why We Exist" },
     { href: "/why-choose", label: "Why Choose Us", mobileLabel: "Why Choose Us" },
     { href: "/assessment", label: "Paid Assessment", mobileLabel: "Paid Assessment" },
-    { href: "/quick-profiler", label: "Free Risk Profiler", mobileLabel: "Free Margin Risk Profiler" },
   ];
 
   const isActive = (href: string) => location === href;
