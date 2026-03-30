@@ -81,240 +81,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Pre vs Post MarginMix */}
-      <section className="py-20 bg-white dark:bg-gray-800">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-8">
-              <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">Pre MarginMix</h3>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
-                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Pricing decisions rely on heuristics and experience</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
-                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Delivery complexity is discussed, not quantified</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
-                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Senior involvement is assumed</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
-                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Iteration risk emerges after work begins</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
-                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Margin outcomes are discovered late</span>
-                </li>
-              </ul>
-            </div>
-            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-8">
-              <h3 className="text-xl md:text-2xl font-bold text-emerald-700 dark:text-emerald-400 mb-6">Post MarginMix</h3>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Pricing decisions are supported by structured signals</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Delivery complexity is made explicit upfront</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Senior and coordination effort are visible early</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Iteration risk is flagged before commitment</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Margin risk is known at the decision point</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* What MarginMix Does */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-              What MarginMix Does
-            </h2>
-            <p className="text-base md:text-xl text-gray-700 dark:text-gray-300 mb-12 text-center max-w-3xl mx-auto">
-              MarginMix acts as a pricing and margin assurance layer. It evaluates whether work is structurally viable based on how it will actually be staffed, governed, and reviewed — not how it looks on paper.
-            </p>
-            
-            <div className="space-y-10">
-              {/* What We Measure */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-emerald-500 shadow-sm">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                  What We Measure
-                </h3>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300">Senior attention required over time</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300">Coordination overhead as stakeholders multiply</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300">Likelihood of rework, refinement, and re-explanation</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300">Hidden cognitive and governance load</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* What MarginMix Is (and Isn't) */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-gray-400 shadow-sm">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                  What MarginMix Is (and Isn't)
-                </h3>
-                <div className="space-y-3 mb-6">
-                  <p className="text-gray-600 dark:text-gray-400">
-                    <XCircle className="h-4 w-4 text-gray-400 inline-block mr-2 align-middle" />
-                    <span>MarginMix is <span className="font-semibold">not</span> a productivity tool.</span>
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    <XCircle className="h-4 w-4 text-gray-400 inline-block mr-2 align-middle" />
-                    <span>It is <span className="font-semibold">not</span> a time-tracking system.</span>
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    <XCircle className="h-4 w-4 text-gray-400 inline-block mr-2 align-middle" />
-                    <span>It is <span className="font-semibold">not</span> a utilization dashboard.</span>
-                  </p>
-                </div>
-                <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-lg">
-                  <CheckCircle className="h-5 w-5 inline-block mr-2 align-middle" />
-                  <span>It is a decision lens for pricing and margin assurance.</span>
-                </p>
-              </div>
-
-              {/* Outcome for Leaders */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-emerald-500 shadow-sm">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                  Outcome for Leaders
-                </h3>
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div className="flex items-start gap-3">
-                    <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300 font-medium">Clearer pricing decisions</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300 font-medium">Fewer surprises mid-delivery</span>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300 font-medium">More defensible margins — without adding process or friction</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Who this is designed for */}
-      <section className="py-20 bg-white dark:bg-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
-            Who this is designed for
-          </h2>
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-8">
-              <h3 className="text-xl font-bold text-emerald-700 dark:text-emerald-400 mb-6 flex items-center gap-2">
-                <CheckCircle className="h-6 w-6" />
-                Designed for:
-              </h3>
-              <ul className="space-y-4">
-                <li className="flex items-start gap-3">
-                  <Building2 className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-gray-700 dark:text-gray-300">Agencies, Consulting, ITeS & Professional Services</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Users className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-gray-700 dark:text-gray-300">CEOs, CFOs, COOs, Managing Partners, and Client Leads</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
-                  <span className="text-gray-700 dark:text-gray-300">Firms where margin decisions are rarely supported by reliable data</span>
-                </li>
-              </ul>
-            </div>
-            <div className="bg-gray-100 dark:bg-gray-900 rounded-2xl p-8">
-              <h3 className="text-xl font-bold text-gray-500 dark:text-gray-400 mb-6 flex items-center gap-2">
-                <XCircle className="h-6 w-6" />
-                Not designed for:
-              </h3>
-              <ul className="space-y-4 text-gray-600 dark:text-gray-400">
-                <li className="flex items-start gap-3">
-                  <span className="text-gray-400">•</span>
-                  <span>Small teams where founders still see everything</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gray-400">•</span>
-                  <span>Productivity tracking or utilization management</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-gray-400">•</span>
-                  <span>Delivery optimization, task management, or dashboards</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How the Margin Risk Assessment works */}
-      <section className="py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
-            How the Margin Risk Assessment works
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="text-center">
-              <div className="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
-                1
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
-                You describe the intended structure & delivery complexity of an engagement objectively
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
-                2
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
-                MarginMix analyzes your inputs
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
-                3
-              </div>
-              <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
-                You receive a clear margin-risk verdict with decision guidance
-              </p>
-            </div>
-          </div>
-          <p className="text-center text-emerald-600 dark:text-emerald-400 mt-8 text-base md:text-lg font-bold">
-            This is an assessment of economic viability — not a delivery forecast.
-          </p>
-        </div>
-      </section>
-
       {/* Example Verdicts */}
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -586,6 +352,241 @@ export default function Landing() {
           </p>
         </div>
       </section>
+
+      {/* Pre vs Post MarginMix */}
+      <section className="py-20 bg-white dark:bg-gray-800">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-8">
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">Pre MarginMix</h3>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
+                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Pricing decisions rely on heuristics and experience</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
+                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Delivery complexity is discussed, not quantified</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
+                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Senior involvement is assumed</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
+                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Iteration risk emerges after work begins</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
+                  <span className="text-base md:text-lg text-gray-600 dark:text-gray-400">Margin outcomes are discovered late</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-8">
+              <h3 className="text-xl md:text-2xl font-bold text-emerald-700 dark:text-emerald-400 mb-6">Post MarginMix</h3>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Pricing decisions are supported by structured signals</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Delivery complexity is made explicit upfront</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Senior and coordination effort are visible early</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Iteration risk is flagged before commitment</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-base md:text-lg text-gray-700 dark:text-gray-300">Margin risk is known at the decision point</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* What MarginMix Does */}
+      <section className="py-20 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+              What MarginMix Does
+            </h2>
+            <p className="text-base md:text-xl text-gray-700 dark:text-gray-300 mb-12 text-center max-w-3xl mx-auto">
+              MarginMix acts as a pricing and margin assurance layer. It evaluates whether work is structurally viable based on how it will actually be staffed, governed, and reviewed — not how it looks on paper.
+            </p>
+            
+            <div className="space-y-10">
+              {/* What We Measure */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-emerald-500 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  What We Measure
+                </h3>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300">Senior attention required over time</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300">Coordination overhead as stakeholders multiply</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300">Likelihood of rework, refinement, and re-explanation</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300">Hidden cognitive and governance load</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* What MarginMix Is (and Isn't) */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-gray-400 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  What MarginMix Is (and Isn't)
+                </h3>
+                <div className="space-y-3 mb-6">
+                  <p className="text-gray-600 dark:text-gray-400">
+                    <XCircle className="h-4 w-4 text-gray-400 inline-block mr-2 align-middle" />
+                    <span>MarginMix is <span className="font-semibold">not</span> a productivity tool.</span>
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    <XCircle className="h-4 w-4 text-gray-400 inline-block mr-2 align-middle" />
+                    <span>It is <span className="font-semibold">not</span> a time-tracking system.</span>
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    <XCircle className="h-4 w-4 text-gray-400 inline-block mr-2 align-middle" />
+                    <span>It is <span className="font-semibold">not</span> a utilization dashboard.</span>
+                  </p>
+                </div>
+                <p className="text-emerald-600 dark:text-emerald-400 font-semibold text-lg">
+                  <CheckCircle className="h-5 w-5 inline-block mr-2 align-middle" />
+                  <span>It is a decision lens for pricing and margin assurance.</span>
+                </p>
+              </div>
+
+              {/* Outcome for Leaders */}
+              <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-emerald-500 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+                  Outcome for Leaders
+                </h3>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="flex items-start gap-3">
+                    <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300 font-medium">Clearer pricing decisions</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300 font-medium">Fewer surprises mid-delivery</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-gray-700 dark:text-gray-300 font-medium">More defensible margins — without adding process or friction</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Who this is designed for */}
+      <section className="py-20 bg-white dark:bg-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
+            Who this is designed for
+          </h2>
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-8">
+              <h3 className="text-xl font-bold text-emerald-700 dark:text-emerald-400 mb-6 flex items-center gap-2">
+                <CheckCircle className="h-6 w-6" />
+                Designed for:
+              </h3>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <Building2 className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-gray-700 dark:text-gray-300">Agencies, Consulting, ITeS & Professional Services</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Users className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-gray-700 dark:text-gray-300">CEOs, CFOs, COOs, Managing Partners, and Client Leads</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
+                  <span className="text-gray-700 dark:text-gray-300">Firms where margin decisions are rarely supported by reliable data</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-gray-100 dark:bg-gray-900 rounded-2xl p-8">
+              <h3 className="text-xl font-bold text-gray-500 dark:text-gray-400 mb-6 flex items-center gap-2">
+                <XCircle className="h-6 w-6" />
+                Not designed for:
+              </h3>
+              <ul className="space-y-4 text-gray-600 dark:text-gray-400">
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400">•</span>
+                  <span>Small teams where founders still see everything</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400">•</span>
+                  <span>Productivity tracking or utilization management</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-gray-400">•</span>
+                  <span>Delivery optimization, task management, or dashboards</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How the Margin Risk Assessment works */}
+      <section className="py-20 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-12 text-center">
+            How the Margin Risk Assessment works
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="text-center">
+              <div className="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+                1
+              </div>
+              <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
+                You describe the intended structure & delivery complexity of an engagement objectively
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+                2
+              </div>
+              <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
+                MarginMix analyzes your inputs
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">
+                3
+              </div>
+              <p className="text-gray-700 dark:text-gray-300 text-base md:text-lg">
+                You receive a clear margin-risk verdict with decision guidance
+              </p>
+            </div>
+          </div>
+          <p className="text-center text-emerald-600 dark:text-emerald-400 mt-8 text-base md:text-lg font-bold">
+            This is an assessment of economic viability — not a delivery forecast.
+          </p>
+        </div>
+      </section>
+
 
       {/* Why MarginMix exists */}
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
