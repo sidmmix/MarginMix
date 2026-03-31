@@ -18,28 +18,27 @@ export default function Landing() {
       <div className="h-16"></div>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-4 sm:pt-8 pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden pt-6 sm:pt-10 pb-16">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-xl sm:text-2xl md:text-2xl lg:text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-4 leading-tight lg:whitespace-nowrap">
-              Your Margins slowly bleed on every engagement - in Delivery
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-red-600 dark:text-red-400 mb-5 leading-tight">
+              MarginMix protects you from losing thousands — even millions — in margin to delivery complexity.
             </h1>
 
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-red-600 dark:text-red-400 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap font-semibold">
-              MarginMix protects you from losing thousands / millions in margin to delivery complexity!
+            <p className="text-base sm:text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-6 mx-auto leading-relaxed">
+              Don't rely on spreadsheets, gut feel & past experience. Every engagement carries unique delivery risks that erode margin silently.
             </p>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-700 dark:text-gray-300 mb-3 sm:mb-4 mx-auto leading-relaxed sm:whitespace-nowrap">
-              AI is reshaping how work gets delivered. Most pricing models haven't caught up.
+
+            <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-7 px-2 sm:px-0">
+              MarginMix is a deterministic decision infrastructure for{" "}
+              <span className="text-emerald-600 dark:text-emerald-400">pricing & margin risk</span>
+              {" — "}
+              <span className="text-red-600 dark:text-red-400">not a productivity tool.</span>
             </p>
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-red-600 dark:text-red-400 mb-6 sm:mb-8 mx-auto leading-relaxed font-semibold">
-              Don't just rely on spreadsheets, gut feel & past experience, every engagement has unique delivery risks.
-            </p>
-            <p className="text-sm sm:text-sm md:text-base text-gray-600 dark:text-gray-400 mb-4 px-2 sm:px-0">
-              Works across all commercial models: Time & Materials · Fixed Price · Outcome-based · Hybrid engagements
-            </p>
+
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl whitespace-normal"
                 data-testid="button-cta-hero"
                 onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
@@ -51,15 +50,11 @@ export default function Landing() {
                 className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-600 rounded-xl whitespace-normal"
                 onClick={() => window.location.href = '/quick-profiler'}
               >
-                Free Delivery Risk Check - 60 seconds!
+                Free Delivery Risk Check — 60 seconds!
               </Button>
             </div>
-            <p className="mt-5 sm:mt-6 text-lg sm:text-xl font-bold text-gray-900 dark:text-white px-2 sm:px-0">
-              MarginMix is a deterministic decision infrastructure for{" "}
-              <span className="text-emerald-600 dark:text-emerald-400">pricing & margin risk - </span>
-              <span className="text-red-600 dark:text-red-400">not a productivity tool!</span>
-            </p>
-            <p className="mt-3 text-sm sm:text-base text-gray-500 dark:text-gray-400 px-2 sm:px-0 tracking-wide">
+
+            <p className="mt-4 text-sm text-gray-400 dark:text-gray-500 px-2 sm:px-0 tracking-wide">
               Lightweight <span className="text-emerald-500 mx-1">›</span> Interactive <span className="text-emerald-500 mx-1">›</span> Insightful <span className="text-emerald-500 mx-1">›</span> API enabled
             </p>
           </div>
@@ -78,6 +73,33 @@ export default function Landing() {
           <p className="text-xs text-gray-400 dark:text-gray-500">
             Figures derived from publicly available data
           </p>
+        </div>
+      </section>
+
+      {/* Context Band — AI + Commercial Models */}
+      <section className="py-10 bg-gray-50 dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-start md:items-center justify-center">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                <Zap className="h-5 w-5 text-amber-500" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">AI is reshaping delivery</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">AI changes how work gets done. Most pricing models haven't caught up — creating a hidden margin gap.</p>
+              </div>
+            </div>
+            <div className="hidden md:block w-px h-12 bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                <Briefcase className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Works across all commercial models</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Time & Materials · Fixed Price · Outcome-based · Hybrid engagements</p>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -502,32 +524,81 @@ export default function Landing() {
 
       {/* Why MarginMix exists */}
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-              Why MarginMix exists
-            </h2>
-            <p className="text-base md:text-xl text-gray-700 dark:text-gray-300 mb-6">
-              MarginMix is built from lived agency and consulting experience — where margin loss isn't theoretical, it's experienced.
-            </p>
-            <p className="text-base md:text-xl text-emerald-600 dark:text-emerald-400 font-semibold">
-              It exists to surface economic truth early, while decisions can still be changed.
-            </p>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            {/* Text */}
+            <div>
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+                Why MarginMix exists
+              </h2>
+              <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
+                MarginMix is built from lived agency and consulting experience — where margin loss isn't theoretical, it's experienced.
+              </p>
+              <p className="text-base md:text-lg text-emerald-600 dark:text-emerald-400 font-semibold leading-relaxed">
+                It exists to surface economic truth early, while decisions can still be changed.
+              </p>
+            </div>
+            {/* Graphic: flow diagram */}
+            <div className="flex flex-col gap-3">
+              {[
+                { icon: AlertTriangle, color: "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800", iconColor: "text-red-500", label: "Engagement arrives", sub: "Complexity is unknown. Pricing is gut-feel." },
+                { icon: BarChart3, color: "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800", iconColor: "text-amber-500", label: "MarginMix assesses", sub: "6 structural dimensions evaluated in minutes." },
+                { icon: Shield, color: "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800", iconColor: "text-emerald-500", label: "Decision clarity", sub: "Proceed, reprice, or restructure — before it's too late." },
+              ].map((step, i) => (
+                <div key={i}>
+                  <div className={`flex items-start gap-4 rounded-xl border p-4 ${step.color}`}>
+                    <div className="flex-shrink-0 w-9 h-9 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center shadow-sm">
+                      <step.icon className={`h-4 w-4 ${step.iconColor}`} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-white">{step.label}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{step.sub}</p>
+                    </div>
+                  </div>
+                  {i < 2 && (
+                    <div className="flex justify-start ml-8 py-1">
+                      <div className="w-px h-3 bg-gray-300 dark:bg-gray-600" />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Final CTA */}
-      <section className="py-12 sm:py-20 bg-emerald-600 dark:bg-emerald-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative py-16 sm:py-24 bg-emerald-600 dark:bg-emerald-700 overflow-hidden">
+        {/* Background graphic elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+        </div>
+        {/* Decorative icons */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <TrendingUp className="absolute top-8 left-8 h-8 w-8 text-white/10 rotate-12" />
+          <Shield className="absolute top-12 right-12 h-10 w-10 text-white/10 -rotate-6" />
+          <BarChart3 className="absolute bottom-8 left-1/4 h-8 w-8 text-white/10 rotate-3" />
+          <Target className="absolute bottom-10 right-1/4 h-9 w-9 text-white/10 -rotate-12" />
+          <Users className="absolute top-1/2 left-6 h-7 w-7 text-white/10" />
+          <Zap className="absolute top-1/3 right-8 h-7 w-7 text-white/10 rotate-6" />
+        </div>
+        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
-              Assess Margin Risk & Price work Profitably!
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+              <Shield className="h-4 w-4 text-white" />
+              <span className="text-sm text-white font-medium">Deterministic · No AI in verdict logic</span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+              Assess Margin Risk & Price Work Profitably
             </h2>
+            <p className="text-emerald-100 mb-8 text-base sm:text-lg">
+              Get a clear, structural verdict on any engagement — before you commit.
+            </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button 
-                size="lg" 
-                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl whitespace-normal"
+              <Button
+                size="lg"
+                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-6 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl whitespace-normal"
                 data-testid="button-cta-footer"
                 onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
               >
@@ -535,14 +606,12 @@ export default function Landing() {
               </Button>
               <Button
                 size="lg"
-                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-4 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl whitespace-normal"
+                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-6 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 rounded-xl whitespace-normal"
                 onClick={() => window.location.href = '/quick-profiler'}
               >
-                Free Delivery Risk Check - 60 seconds!
+                Free Delivery Risk Check — 60 seconds!
               </Button>
             </div>
-            <p className="text-emerald-100 mt-4 text-sm">
-            </p>
           </div>
         </div>
       </section>
