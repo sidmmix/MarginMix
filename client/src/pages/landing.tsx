@@ -22,7 +22,7 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-red-600 dark:text-red-400 mb-5 leading-tight">
-              MarginMix protects you from losing thousands — even millions — in margin to delivery complexity.
+              MarginMix protects you from losing thousands / millions to delivery complexity
             </h1>
 
             <p className="text-base sm:text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-6 mx-auto leading-relaxed">
@@ -587,7 +587,7 @@ export default function Landing() {
           <div className="text-center">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
               <Shield className="h-4 w-4 text-white" />
-              <span className="text-sm text-white font-medium">Deterministic · No AI in verdict logic</span>
+              <span className="text-sm text-white font-medium">Deterministic · Proprietary risk logic</span>
             </div>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
               Assess Margin Risk & Price Work Profitably
