@@ -57,6 +57,9 @@ export default function Landing() {
             <p className="mt-4 text-sm text-gray-400 dark:text-gray-500 px-2 sm:px-0 tracking-wide">
               Lightweight <span className="text-emerald-500 mx-1">›</span> Interactive <span className="text-emerald-500 mx-1">›</span> Insightful <span className="text-emerald-500 mx-1">›</span> API enabled
             </p>
+            <p className="mt-2 text-sm text-gray-400 dark:text-gray-500 px-2 sm:px-0">
+              No ERP/CRM Integration required.
+            </p>
           </div>
         </div>
       </section>
