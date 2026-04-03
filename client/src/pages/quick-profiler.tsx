@@ -685,6 +685,7 @@ export default function QuickProfiler() {
                   value={currentMargin}
                   onChange={(e) => setCurrentMargin(e.target.value)}
                   placeholder="e.g. 18"
+                  autoFocus
                   className="text-center text-2xl sm:text-3xl py-5 sm:py-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/40 focus:border-white focus:bg-white/20 rounded-xl pr-14"
                 />
                 <span className="absolute right-5 top-1/2 -translate-y-1/2 text-white/60 text-2xl font-medium">%</span>
@@ -702,59 +703,59 @@ export default function QuickProfiler() {
     const currentValue = answers[question.id] || "";
 
     return (
-      <div className={`min-h-screen bg-gradient-to-br ${gradient} flex flex-col overflow-y-auto`}>
-        <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
+      <div className={`h-full bg-gradient-to-br ${gradient} flex flex-col overflow-y-auto`}>
+        <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-14 sm:pt-20 pb-20 sm:pb-20">
           <div className="w-full max-w-2xl">
-              <div className="mb-4 sm:mb-6">
-                <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm font-medium mb-2 sm:mb-3">
+              <div className="mb-3 sm:mb-5">
+                <span className="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm font-medium mb-1.5 sm:mb-2">
                   {question.section}
                 </span>
-                <div className="text-white/70 text-sm sm:text-lg font-medium">
+                <div className="text-white/70 text-xs sm:text-base font-medium">
                   Question {question.number} of {totalQuestions}
                 </div>
               </div>
 
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-3 sm:mb-4">
+              <h2 className="text-xl sm:text-3xl md:text-4xl font-bold text-white leading-tight mb-2 sm:mb-3">
                 {question.title}
               </h2>
 
               {question.subtitle && (
-                <p className="text-base sm:text-xl text-white/80 mb-3 sm:mb-4">
+                <p className="text-sm sm:text-lg text-white/80 mb-2 sm:mb-3">
                   {question.subtitle}
                 </p>
               )}
 
               {question.context && (
-                <p className="text-sm sm:text-base text-white/60 italic mb-6 sm:mb-8">
+                <p className="text-xs sm:text-sm text-white/60 italic mb-3 sm:mb-5">
                   Why this matters: {question.context}
                 </p>
               )}
 
-              <div className="mt-6 sm:mt-8">
-                <div className="space-y-2 sm:space-y-3">
+              <div className="mt-3 sm:mt-6">
+                <div className="space-y-1.5 sm:space-y-2.5">
                   {question.options.map((option, index) => (
                     <button
                       key={option.value}
                       type="button"
                       onClick={() => handleOptionSelect(question.id, option.value)}
-                      className={`w-full text-left px-4 sm:px-6 py-3 sm:py-5 rounded-xl border-2 transition-all duration-300 flex items-center gap-3 sm:gap-4 group ${
+                      className={`w-full text-left px-3 sm:px-5 py-2.5 sm:py-4 rounded-xl border-2 transition-all duration-200 flex items-center gap-2.5 sm:gap-4 group ${
                         currentValue === option.value
                           ? "bg-white text-gray-900 border-white shadow-lg scale-[1.02]"
                           : "bg-white/10 backdrop-blur-sm border-white/30 text-white hover:bg-white/20 hover:border-white/50"
                       }`}
                     >
-                      <span className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-lg text-xs sm:text-sm font-bold transition-colors ${
+                      <span className={`flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 rounded-lg text-xs font-bold transition-colors flex-shrink-0 ${
                         currentValue === option.value
                           ? "bg-emerald-500 text-white"
                           : "bg-white/20 text-white group-hover:bg-white/30"
                       }`}>
                         {String.fromCharCode(65 + index)}
                       </span>
-                      <span className="text-sm sm:text-lg font-medium flex-1">
+                      <span className="text-sm sm:text-base font-medium flex-1 leading-snug">
                         {option.label}
                       </span>
                       {currentValue === option.value && (
-                        <Check className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-500" />
+                        <Check className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500 flex-shrink-0" />
                       )}
                     </button>
                   ))}
@@ -972,8 +973,8 @@ export default function QuickProfiler() {
             transition={{ duration: 0.15 }}
             className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm sm:text-base"
           >
-            <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5" />
-            <span className="hidden sm:inline">Back</span>
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span>Back</span>
           </motion.button>
           <motion.button
             onClick={handleNext}
@@ -983,56 +984,42 @@ export default function QuickProfiler() {
             className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-emerald-700 rounded-full font-semibold hover:bg-emerald-50 transition-all text-sm sm:text-base shadow-lg"
           >
             Continue
-            <ArrowDown className="h-4 w-4 sm:h-5 sm:w-5" />
+            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
           </motion.button>
         </div>
       )}
 
       {/* Regular question nav — outside AnimatePresence */}
       {!isIntro && !isMarginQuestion && !showResult && (
-        <div className="fixed bottom-4 sm:bottom-8 left-0 right-0 z-[100] flex flex-col items-center gap-2 px-4 sm:px-6" style={{ pointerEvents: 'auto' }}>
-          {currentQuestion >= 0 && currentQuestion <= 1 && (
-            <div className="sm:hidden flex items-center gap-2 text-white/60 text-xs mb-1 animate-pulse">
-              <ChevronDown className="h-3 w-3 rotate-180" />
-              <span>Swipe up to continue</span>
-              <ChevronDown className="h-3 w-3 rotate-180" />
-            </div>
-          )}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="sm:hidden">
-              {renderRiskBadge()}
-            </div>
-          </div>
-          <div className="flex justify-center gap-3 sm:gap-4">
-            <motion.div
-              whileHover={shouldReduce ? {} : { scale: 1.04 }}
-              whileTap={shouldReduce ? {} : { scale: 0.97 }}
-              transition={{ duration: 0.15 }}
+        <div className="fixed bottom-4 sm:bottom-6 left-0 right-0 z-[100] flex items-center justify-between px-4 sm:px-8" style={{ pointerEvents: 'auto' }}>
+          <motion.div
+            whileHover={shouldReduce ? {} : { scale: 1.04 }}
+            whileTap={shouldReduce ? {} : { scale: 0.97 }}
+            transition={{ duration: 0.15 }}
+          >
+            <Button
+              variant="ghost"
+              onClick={handleBack}
+              disabled={currentQuestion <= 0}
+              className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
             >
-              <Button
-                variant="ghost"
-                onClick={handleBack}
-                disabled={currentQuestion <= 0}
-                className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
-              >
-                <ArrowUp className="mr-1 sm:mr-2 h-4 w-4" />
-                Back
-              </Button>
-            </motion.div>
-            <motion.div
-              whileHover={shouldReduce ? {} : { scale: 1.04 }}
-              whileTap={shouldReduce ? {} : { scale: 0.97 }}
-              transition={{ duration: 0.15 }}
+              <ArrowLeft className="mr-1 sm:mr-2 h-4 w-4" />
+              Back
+            </Button>
+          </motion.div>
+          <motion.div
+            whileHover={shouldReduce ? {} : { scale: 1.04 }}
+            whileTap={shouldReduce ? {} : { scale: 0.97 }}
+            transition={{ duration: 0.15 }}
+          >
+            <Button
+              onClick={handleNext}
+              className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
             >
-              <Button
-                onClick={handleNext}
-                className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
-              >
-                {currentQuestion === totalQuestions - 1 ? "See Result" : "Continue"}
-                <ArrowDown className="ml-1 sm:ml-2 h-4 w-4" />
-              </Button>
-            </motion.div>
-          </div>
+              {currentQuestion === totalQuestions - 1 ? "See Result" : "Continue"}
+              <ArrowRight className="ml-1 sm:ml-2 h-4 w-4" />
+            </Button>
+          </motion.div>
         </div>
       )}
     </div>
