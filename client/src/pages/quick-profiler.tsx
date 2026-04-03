@@ -776,8 +776,10 @@ export default function QuickProfiler() {
     const marginImpact = marginValue > 0 ? calculateMarginImpact(verdict, marginValue, dimensions) : null;
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-20 px-4 sm:px-6 overflow-y-auto">
-          <div className="max-w-2xl mx-auto text-center">
+      <div className="h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex flex-col">
+        {/* Scrollable content */}
+        <div className="flex-1 overflow-y-auto">
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 py-20 pb-4 text-center">
             <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
               <RiskIcon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               <span className="text-base sm:text-lg font-bold text-white">Margin Risk Profile</span>
@@ -855,25 +857,26 @@ export default function QuickProfiler() {
               </p>
             </div>
 
-            <div className="flex flex-col items-center">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-4 sm:py-5 px-8 sm:px-10 text-base sm:text-lg shadow-lg rounded-xl flex flex-col h-auto gap-1 items-center"
-                onClick={handleGoToFullAssessment}
-              >
-                <span className="flex items-center gap-2">
-                  Continue to Paid Assessment
-                  <ChevronRight className="h-5 w-5" />
-                </span>
-                <span className="text-xs text-emerald-100 font-normal">Payment at Submission</span>
-              </Button>
+        </div>
+        </div>
 
-              <p className="text-xs text-gray-500 mt-4 text-center">
-                Your answers carry forward — the full assessment will skip these questions.
-              </p>
-            </div>
+        {/* Sticky CTA — always visible at bottom */}
+        <div className="flex-shrink-0 bg-gray-900/95 backdrop-blur-md border-t border-white/10 px-4 sm:px-6 py-4 sm:py-5">
+          <div className="max-w-2xl mx-auto flex flex-col items-center gap-2">
+            <Button
+              size="lg"
+              className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-3.5 sm:py-4 px-8 sm:px-10 text-base sm:text-lg shadow-lg rounded-xl flex flex-col h-auto gap-0.5 items-center"
+              onClick={handleGoToFullAssessment}
+            >
+              <span className="flex items-center gap-2 font-semibold">
+                Continue to Paid Assessment
+                <ChevronRight className="h-5 w-5" />
+              </span>
+              <span className="text-xs text-emerald-100 font-normal">Your 7 answers carry forward · Payment at Submission</span>
+            </Button>
           </div>
         </div>
+      </div>
     );
   };
 

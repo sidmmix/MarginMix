@@ -74,7 +74,7 @@ export async function renderDecisionMemoPDF(
     doc.moveDown(0.5);
     if (fromProfiler) {
       doc.fontSize(9).fillColor(COLORS.gray).font("Helvetica").text(
-        "★  6 of 23 inputs were pre-answered via the Quick Margin Risk Profiler and carried forward into this assessment.",
+        "★  7 inputs (6 risk questions + current margin) were pre-answered via the Quick Margin Risk Profiler and carried forward into this assessment.",
         { align: "center" }
       );
     }
@@ -187,7 +187,7 @@ export async function renderAssessmentOutputPDF(
     doc.moveDown(0.5);
     if (fromProfiler) {
       doc.fontSize(9).fillColor(COLORS.gray).font("Helvetica").text(
-        "★  6 of 23 inputs were pre-answered via the Quick Margin Risk Profiler and carried forward into this assessment.",
+        "★  7 inputs (6 risk questions + current margin) were pre-answered via the Quick Margin Risk Profiler and carried forward into this assessment.",
         { align: "center" }
       );
     }

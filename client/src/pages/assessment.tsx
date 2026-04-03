@@ -626,7 +626,7 @@ export default function Assessment() {
       form.reset({ ...currentValues, ...profilerAnswers });
       toast({
         title: "Quick Profile Loaded",
-        description: `${Object.keys(profilerAnswers).length} answers carried over. Complete the remaining questions.`,
+        description: "7 inputs carried forward (6 risk questions + current margin). Complete the remaining questions.",
       });
       return;
     }
