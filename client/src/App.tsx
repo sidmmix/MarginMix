@@ -1,5 +1,6 @@
 import { Switch, Route, useLocation, Redirect } from "wouter";
 import { useEffect, lazy, Suspense } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -7,6 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Landing from "@/pages/landing";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { pageVariants } from "@/components/animations";
 
 const Home = lazy(() => import("@/pages/home"));
 const Dashboard = lazy(() => import("@/pages/dashboard"));
@@ -53,30 +55,42 @@ function ScrollToTop() {
   return null;
 }
 
-function Router() {
-  return (
-    <Suspense fallback={<PageLoader />}>
-      <Switch>
-        {/* Landing page loaded eagerly for fast first paint */}
-        <Route path="/" component={Landing} />
-        
-        {/* All other pages lazy-loaded */}
-        <Route path="/quick-profiler" component={QuickProfiler} />
-        <Route path="/assessment" component={Assessment} />
-        <Route path="/founder" component={Founder} />
-        <Route path="/why-choose" component={WhyChoose} />
-        <Route path="/auth" component={AuthPage} />
-        
-        <Route path="/pitch">
-          {() => <ProtectedRoute component={PitchDeck} />}
-        </Route>
+const NO_TRANSITION_ROUTES = ["/quick-profiler", "/assessment"];
 
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/home" component={Home} />
-        
-        <Route component={NotFound} />
-      </Switch>
-    </Suspense>
+function Router() {
+  const [location] = useLocation();
+  const skipTransition = NO_TRANSITION_ROUTES.some(r => location.startsWith(r));
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location}
+        variants={skipTransition ? undefined : pageVariants}
+        initial={skipTransition ? false : "initial"}
+        animate={skipTransition ? undefined : "animate"}
+        exit={skipTransition ? undefined : "exit"}
+      >
+        <Suspense fallback={<PageLoader />}>
+          <Switch>
+            <Route path="/" component={Landing} />
+            <Route path="/quick-profiler" component={QuickProfiler} />
+            <Route path="/assessment" component={Assessment} />
+            <Route path="/founder" component={Founder} />
+            <Route path="/why-choose" component={WhyChoose} />
+            <Route path="/auth" component={AuthPage} />
+            
+            <Route path="/pitch">
+              {() => <ProtectedRoute component={PitchDeck} />}
+            </Route>
+
+            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/home" component={Home} />
+            
+            <Route component={NotFound} />
+          </Switch>
+        </Suspense>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

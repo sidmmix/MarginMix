@@ -1,7 +1,9 @@
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, CheckCircle, XCircle, Users, Building2, Briefcase, Target, Shield, TrendingUp, BarChart3, Zap } from "lucide-react";
 import { Link } from "wouter";
 import { Header } from "@/components/header";
+import { AnimatedSection, staggerContainer, staggerItem } from "@/components/animations";
 
 export default function Landing() {
   return (
@@ -66,7 +68,7 @@ export default function Landing() {
 
       {/* Margin Gap Statement */}
       <section className="py-12 bg-white dark:bg-gray-800">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <AnimatedSection className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="italic text-gray-500 dark:text-gray-400 text-base sm:text-lg leading-relaxed mb-4">
             "Agencies benchmark 18–20% EBITDA. Most realize 13% or less. For a $25M agency, that gap is worth over $1.5M a year — not lost to bad clients, but to delivery complexity that was never priced in."
           </p>
@@ -76,12 +78,12 @@ export default function Landing() {
           <p className="text-xs text-gray-400 dark:text-gray-500">
             Figures derived from publicly available data
           </p>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* Context Band — AI + Commercial Models */}
       <section className="py-10 bg-gray-50 dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AnimatedSection className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-start md:items-center justify-center">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
@@ -103,23 +105,31 @@ export default function Landing() {
               </div>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* Example Verdicts */}
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 text-center">
-            What MarginMix tells you
-          </h2>
-          <p className="text-gray-500 dark:text-gray-400 text-center mb-12 text-sm sm:text-base">
-            Real verdict scenarios from the decision engine — every output is deterministic, not AI-generated
-          </p>
+          <AnimatedSection>
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 text-center">
+              What MarginMix tells you
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 text-center mb-12 text-sm sm:text-base">
+              Real verdict scenarios from the decision engine — every output is deterministic, not AI-generated
+            </p>
+          </AnimatedSection>
 
-          <div className="space-y-6 max-w-5xl mx-auto">
+          <motion.div
+            className="space-y-6 max-w-5xl mx-auto"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-60px" }}
+          >
 
             {/* Verdict 1: Structurally Safe */}
-            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+            <motion.div variants={staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
               <div className="p-6 sm:p-8">
                 <div className="rounded-xl border bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 p-5 sm:p-6 mb-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
@@ -179,10 +189,10 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Verdict 2: Price Sensitive */}
-            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+            <motion.div variants={staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
               <div className="p-6 sm:p-8">
                 <div className="rounded-xl border bg-gradient-to-br from-amber-500/20 to-amber-600/10 border-amber-500/30 p-5 sm:p-6 mb-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
@@ -242,10 +252,10 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Verdict 3: Structurally Fragile */}
-            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+            <motion.div variants={staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
               <div className="p-6 sm:p-8">
                 <div className="rounded-xl border bg-gradient-to-br from-red-500/20 to-red-600/10 border-red-500/30 p-5 sm:p-6 mb-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
@@ -305,10 +315,10 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Verdict 4: Do Not Proceed Without Repricing */}
-            <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+            <motion.div variants={staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
               <div className="p-6 sm:p-8">
                 <div className="rounded-xl border bg-gradient-to-br from-red-600/20 to-red-700/10 border-red-600/30 p-5 sm:p-6 mb-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
@@ -368,19 +378,21 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-          </div>
+          </motion.div>
 
-          <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-8">
-            These are illustrative scenarios showing actual verdict types from the MarginMix decision engine
-          </p>
+          <AnimatedSection delay={0.1}>
+            <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-8">
+              These are illustrative scenarios showing actual verdict types from the MarginMix decision engine
+            </p>
+          </AnimatedSection>
         </div>
       </section>
 
       {/* Pre vs Post MarginMix */}
       <section className="py-20 bg-white dark:bg-gray-800">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AnimatedSection className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-8">
               <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">Pre MarginMix</h3>
@@ -433,22 +445,25 @@ export default function Landing() {
               </ul>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* What MarginMix Does */}
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-              What MarginMix Does
-            </h2>
-            <p className="text-base md:text-xl text-gray-700 dark:text-gray-300 mb-12 text-center max-w-3xl mx-auto">
-              MarginMix acts as a pricing and margin assurance layer. It evaluates whether work is structurally viable based on how it will actually be staffed, governed, and reviewed — not how it looks on paper.
-            </p>
+            <AnimatedSection>
+              <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+                What MarginMix Does
+              </h2>
+              <p className="text-base md:text-xl text-gray-700 dark:text-gray-300 mb-12 text-center max-w-3xl mx-auto">
+                MarginMix acts as a pricing and margin assurance layer. It evaluates whether work is structurally viable based on how it will actually be staffed, governed, and reviewed — not how it looks on paper.
+              </p>
+            </AnimatedSection>
             
             <div className="space-y-10">
               {/* What We Measure */}
+              <AnimatedSection>
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-emerald-500 shadow-sm">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
                   What We Measure
@@ -472,8 +487,10 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
+              </AnimatedSection>
 
               {/* What MarginMix Is (and Isn't) */}
+              <AnimatedSection delay={0.05}>
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-gray-400 shadow-sm">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
                   What MarginMix Is (and Isn't)
@@ -497,8 +514,10 @@ export default function Landing() {
                   <span>It is a decision lens for pricing and margin assurance.</span>
                 </p>
               </div>
+              </AnimatedSection>
 
               {/* Outcome for Leaders */}
+              <AnimatedSection delay={0.05}>
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-emerald-500 shadow-sm">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
                   Outcome for Leaders
@@ -518,16 +537,15 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
+              </AnimatedSection>
             </div>
           </div>
         </div>
       </section>
 
-
-
       {/* Why MarginMix exists */}
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AnimatedSection className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Text */}
             <div>
@@ -567,7 +585,7 @@ export default function Landing() {
               ))}
             </div>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* Final CTA */}
@@ -586,7 +604,7 @@ export default function Landing() {
           <Users className="absolute top-1/2 left-6 h-7 w-7 text-white/10" />
           <Zap className="absolute top-1/3 right-8 h-7 w-7 text-white/10 rotate-6" />
         </div>
-        <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AnimatedSection className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
               <Shield className="h-4 w-4 text-white" />
@@ -616,7 +634,7 @@ export default function Landing() {
               </Button>
             </div>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* Footer */}

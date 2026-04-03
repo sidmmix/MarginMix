@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "framer-motion";
 
 export function AuthPage() {
   const handleGoogleLogin = () => {
@@ -15,7 +16,13 @@ export function AuthPage() {
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-200/30 dark:bg-teal-700/20 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-emerald-100/20 to-teal-100/20 dark:from-emerald-800/10 dark:to-teal-800/10 rounded-full blur-3xl"></div>
       </div>
-      <Card className="w-full max-w-md relative z-10 backdrop-blur-sm bg-white/90 dark:bg-gray-800/90 shadow-xl border-0">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full max-w-md relative z-10"
+      >
+      <Card className="w-full backdrop-blur-sm bg-white/90 dark:bg-gray-800/90 shadow-xl border-0">
         <CardHeader className="text-center">
           <div className="mb-4">
             <h1 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Margin Mix</h1>
@@ -46,6 +53,7 @@ export function AuthPage() {
           </div>
         </CardContent>
       </Card>
+      </motion.div>
     </div>
   );
 }

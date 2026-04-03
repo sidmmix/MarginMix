@@ -6,6 +6,7 @@ import founderPhoto from "@assets/1586921422945_1768559339757.jpeg";
 import advisorPhoto from "@assets/Screenshot_2026-01-21-08-12-37-88_254de13a4bc8758c9908fff1f73e_1768955128744.jpg";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { AnimatedSection } from "@/components/animations";
 
 export default function Founder() {
   useEffect(() => {
@@ -33,7 +34,7 @@ export default function Founder() {
 
       {/* The Silent Pattern */}
       <section className="py-12 sm:py-16 bg-white dark:bg-gray-800">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AnimatedSection className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-2 gap-4 mb-8">
             <Card className="bg-gray-50 dark:bg-gray-900 border-0">
               <CardContent className="p-6 text-center">
@@ -71,12 +72,12 @@ export default function Founder() {
           <p className="text-lg text-gray-600 dark:text-gray-400 text-center">
             This pattern shows up repeatedly — across retainers, fixed-fee projects, and complex transformation work — and it rarely surfaces early enough to act on.
           </p>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* The Pattern Behind the Problem */}
       <section className="py-12 sm:py-16 bg-emerald-50 dark:bg-emerald-900/10">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AnimatedSection className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center">
               <Eye className="h-6 w-6 text-white" />
@@ -122,12 +123,12 @@ export default function Founder() {
               </p>
             </CardContent>
           </Card>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* The Problem I Kept Seeing */}
       <section className="py-12 sm:py-16 bg-white dark:bg-gray-800">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AnimatedSection className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-12 h-12 bg-gray-900 dark:bg-gray-700 rounded-full flex items-center justify-center">
               <Target className="h-6 w-6 text-white" />
@@ -159,12 +160,12 @@ export default function Founder() {
           <p className="text-lg font-semibold text-gray-900 dark:text-white text-center">
             MarginMix is an attempt to make this visible before it becomes a problem.
           </p>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* What MarginMix Is (and Isn't) */}
       <section className="py-12 sm:py-16 bg-gray-100 dark:bg-gray-900">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AnimatedSection className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-8">
             <div className="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center">
               <Lightbulb className="h-6 w-6 text-white" />
@@ -206,12 +207,12 @@ export default function Founder() {
               The goal is to make better economic decisions about work.
             </p>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* Founder & Key Advisor */}
       <section className="py-12 sm:py-16 bg-gradient-to-br from-gray-900 to-emerald-900 text-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <AnimatedSection className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Two column layout on desktop, stacked on mobile */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Founder */}
@@ -285,12 +286,12 @@ export default function Founder() {
               It is a synthesis of patterns observed over years inside the system.
             </p>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       {/* CTA Section */}
       <section className="py-12 sm:py-16 bg-emerald-600">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <AnimatedSection className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Button 
               size="default" 
@@ -307,7 +308,7 @@ export default function Founder() {
               Free Delivery Risk Check - 60 seconds!
             </Button>
           </div>
-        </div>
+        </AnimatedSection>
       </section>
 
       <Footer />

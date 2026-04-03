@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -1036,11 +1037,10 @@ export default function Assessment() {
         <div className={`min-h-screen bg-gradient-to-br ${gradient} flex flex-col`}>
           {/* Question content */}
           <div className="flex-1 flex items-center justify-center pl-4 pr-8 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
-            <div 
-              className={`w-full max-w-2xl transition-all duration-500 ${
-                isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
-              style={{ transitionDelay: isActive ? "150ms" : "0ms" }}
+            <motion.div
+              className="w-full max-w-2xl"
+              animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 24 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: isActive ? 0.15 : 0 }}
             >
               {/* Section & Question number */}
               <div className="mb-4 sm:mb-6">
@@ -1156,7 +1156,7 @@ export default function Assessment() {
                   <span className="sm:hidden">Swipe up or tap Continue</span>
                 </div>
               )}
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>
@@ -1174,11 +1174,10 @@ export default function Assessment() {
       >
         <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex flex-col">
           <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
-            <div
-              className={`w-full max-w-2xl transition-all duration-500 ${
-                isActive ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-              }`}
-              style={{ transitionDelay: isActive ? "150ms" : "0ms" }}
+            <motion.div
+              className="w-full max-w-2xl"
+              animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 24 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: isActive ? 0.15 : 0 }}
             >
               <div className="mb-4 sm:mb-6">
                 <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm font-medium mb-2 sm:mb-3">
@@ -1213,7 +1212,7 @@ export default function Assessment() {
                   <span className="absolute right-5 top-1/2 -translate-y-1/2 text-white/60 text-2xl font-medium">%</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           <div className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 bg-black/30 backdrop-blur-md border-t border-white/10">
