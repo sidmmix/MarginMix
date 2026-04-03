@@ -71,22 +71,34 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 </span>
               </Link>
             ))}
-            <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer">
-              <Button 
-                size="sm" 
-                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
-              >
-                Book Demo
-              </Button>
-            </a>
-            <Link href="/quick-profiler" onClick={scrollToTop}>
-              <Button
-                size="sm"
-                className="bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-600 rounded-lg whitespace-nowrap"
-              >
-                Free Delivery Risk Check - 60 seconds!
-              </Button>
-            </Link>
+            <motion.div
+              whileHover={shouldReduce ? {} : { scale: 1.05 }}
+              whileTap={shouldReduce ? {} : { scale: 0.97 }}
+              transition={{ duration: 0.15 }}
+            >
+              <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer">
+                <Button 
+                  size="sm" 
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
+                >
+                  Book Demo
+                </Button>
+              </a>
+            </motion.div>
+            <motion.div
+              whileHover={shouldReduce ? {} : { scale: 1.04 }}
+              whileTap={shouldReduce ? {} : { scale: 0.97 }}
+              transition={{ duration: 0.15 }}
+            >
+              <Link href="/quick-profiler" onClick={scrollToTop}>
+                <Button
+                  size="sm"
+                  className="bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-600 rounded-lg whitespace-nowrap"
+                >
+                  Free Delivery Risk Check - 60 seconds!
+                </Button>
+              </Link>
+            </motion.div>
             {isAuthenticated && user ? (
               <div className="flex items-center space-x-3">
                 <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/20 rounded-full">
@@ -116,14 +128,20 @@ export function Header({ variant = "transparent" }: HeaderProps) {
 
           {/* Mobile Hamburger Button */}
           <div className="md:hidden flex items-center space-x-2">
-            <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer">
-              <Button 
-                size="sm" 
-                className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs px-2 py-1 h-7"
-              >
-                Book Demo
-              </Button>
-            </a>
+            <motion.div
+              whileHover={shouldReduce ? {} : { scale: 1.05 }}
+              whileTap={shouldReduce ? {} : { scale: 0.97 }}
+              transition={{ duration: 0.15 }}
+            >
+              <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer">
+                <Button 
+                  size="sm" 
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs px-2 py-1 h-7"
+                >
+                  Book Demo
+                </Button>
+              </a>
+            </motion.div>
             <Button
               variant="ghost"
               size="sm"
@@ -189,16 +207,28 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                   transition={{ delay: shouldReduce ? 0 : navLinks.length * 0.06, duration: 0.25 }}
                   className="pt-2 px-3 flex flex-col space-y-2"
                 >
-                  <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer" className="block">
-                    <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm">
-                      Book Demo
-                    </Button>
-                  </a>
-                  <Link href="/quick-profiler" onClick={scrollToTop} className="block">
-                    <Button className="w-full bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-600 text-sm">
-                      Free Delivery Risk Check - 60 seconds!
-                    </Button>
-                  </Link>
+                  <motion.div
+                    whileHover={shouldReduce ? {} : { scale: 1.02 }}
+                    whileTap={shouldReduce ? {} : { scale: 0.98 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer" className="block">
+                      <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm">
+                        Book Demo
+                      </Button>
+                    </a>
+                  </motion.div>
+                  <motion.div
+                    whileHover={shouldReduce ? {} : { scale: 1.02 }}
+                    whileTap={shouldReduce ? {} : { scale: 0.98 }}
+                    transition={{ duration: 0.15 }}
+                  >
+                    <Link href="/quick-profiler" onClick={scrollToTop} className="block">
+                      <Button className="w-full bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-600 text-sm">
+                        Free Delivery Risk Check - 60 seconds!
+                      </Button>
+                    </Link>
+                  </motion.div>
                 </motion.div>
                 {isAuthenticated && user ? (
                   <motion.div
