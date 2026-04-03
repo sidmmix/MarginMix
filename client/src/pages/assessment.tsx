@@ -1227,7 +1227,7 @@ export default function Assessment() {
               className="bg-white text-emerald-700 hover:bg-emerald-50 px-6 sm:px-12 py-4 sm:py-7 text-base sm:text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
             >
               Click / Enter / Return to continue
-              <ArrowDown className="ml-2 sm:ml-3 h-4 w-4 sm:h-6 sm:w-6" />
+              <ArrowRight className="ml-2 sm:ml-3 h-4 w-4 sm:h-6 sm:w-6" />
             </Button>
             
             <p className="mt-8 sm:mt-10 text-xs sm:text-sm text-emerald-200/80 px-4">
