@@ -898,23 +898,32 @@ export default function QuickProfiler() {
 
   return (
     <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
-      <AnimatePresence mode="wait" custom={direction}>
-        <motion.div
-          key={activePhaseKey}
-          custom={direction}
-          variants={questionVariants}
-          initial="enter"
-          animate="center"
-          exit="exit"
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-0"
-        >
+      {shouldReduce ? (
+        <div className="absolute inset-0">
           {isIntro && renderIntro()}
           {!isIntro && showResult && renderResult()}
           {!isIntro && !showResult && isMarginQuestion && renderMarginQuestion()}
           {!isIntro && !showResult && !isMarginQuestion && renderCard(currentQuestion)}
-        </motion.div>
-      </AnimatePresence>
+        </div>
+      ) : (
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={activePhaseKey}
+            custom={direction}
+            variants={questionVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0"
+          >
+            {isIntro && renderIntro()}
+            {!isIntro && showResult && renderResult()}
+            {!isIntro && !showResult && isMarginQuestion && renderMarginQuestion()}
+            {!isIntro && !showResult && !isMarginQuestion && renderCard(currentQuestion)}
+          </motion.div>
+        </AnimatePresence>
+      )}
 
       {/* Fixed header — outside AnimatePresence so it never slides */}
       <div className="fixed top-0 left-0 right-0 z-[100] bg-black/40 backdrop-blur-md" style={{ pointerEvents: 'auto' }}>
@@ -956,20 +965,26 @@ export default function QuickProfiler() {
       {/* Margin question nav — outside AnimatePresence */}
       {isMarginQuestion && (
         <div className="fixed bottom-0 left-0 right-0 z-[100] flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 bg-black/30 backdrop-blur-md border-t border-white/10" style={{ pointerEvents: 'auto' }}>
-          <button
+          <motion.button
             onClick={handleBack}
+            whileHover={shouldReduce ? {} : { scale: 1.06 }}
+            whileTap={shouldReduce ? {} : { scale: 0.96 }}
+            transition={{ duration: 0.15 }}
             className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm sm:text-base"
           >
             <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5" />
             <span className="hidden sm:inline">Back</span>
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={handleNext}
+            whileHover={shouldReduce ? {} : { scale: 1.04 }}
+            whileTap={shouldReduce ? {} : { scale: 0.97 }}
+            transition={{ duration: 0.15 }}
             className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-emerald-700 rounded-full font-semibold hover:bg-emerald-50 transition-all text-sm sm:text-base shadow-lg"
           >
             Continue
             <ArrowDown className="h-4 w-4 sm:h-5 sm:w-5" />
-          </button>
+          </motion.button>
         </div>
       )}
 
@@ -989,22 +1004,34 @@ export default function QuickProfiler() {
             </div>
           </div>
           <div className="flex justify-center gap-3 sm:gap-4">
-            <Button
-              variant="ghost"
-              onClick={handleBack}
-              disabled={currentQuestion <= 0}
-              className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+            <motion.div
+              whileHover={shouldReduce ? {} : { scale: 1.04 }}
+              whileTap={shouldReduce ? {} : { scale: 0.97 }}
+              transition={{ duration: 0.15 }}
             >
-              <ArrowUp className="mr-1 sm:mr-2 h-4 w-4" />
-              Back
-            </Button>
-            <Button
-              onClick={handleNext}
-              className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+              <Button
+                variant="ghost"
+                onClick={handleBack}
+                disabled={currentQuestion <= 0}
+                className="bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 border border-white/20 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+              >
+                <ArrowUp className="mr-1 sm:mr-2 h-4 w-4" />
+                Back
+              </Button>
+            </motion.div>
+            <motion.div
+              whileHover={shouldReduce ? {} : { scale: 1.04 }}
+              whileTap={shouldReduce ? {} : { scale: 0.97 }}
+              transition={{ duration: 0.15 }}
             >
-              {currentQuestion === totalQuestions - 1 ? "See Result" : "Continue"}
-              <ArrowDown className="ml-1 sm:ml-2 h-4 w-4" />
-            </Button>
+              <Button
+                onClick={handleNext}
+                className="bg-white text-gray-900 hover:bg-gray-100 shadow-lg px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base"
+              >
+                {currentQuestion === totalQuestions - 1 ? "See Result" : "Continue"}
+                <ArrowDown className="ml-1 sm:ml-2 h-4 w-4" />
+              </Button>
+            </motion.div>
           </div>
         </div>
       )}
