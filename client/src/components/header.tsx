@@ -232,8 +232,8 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 </motion.div>
                 {isAuthenticated && user ? (
                   <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
+                    initial={shouldReduce ? false : { opacity: 0 }}
+                    animate={shouldReduce ? undefined : { opacity: 1 }}
                     transition={{ delay: 0.25 }}
                     className="pt-3 border-t border-gray-200 dark:border-gray-700 mt-2"
                   >
