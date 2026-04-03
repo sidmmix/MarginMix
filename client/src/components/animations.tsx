@@ -1,6 +1,6 @@
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
-import type { ComponentPropsWithoutRef } from "react";
+import type { ButtonHTMLAttributes } from "react";
 
 export function AnimatedSection({
   children,
@@ -36,11 +36,21 @@ export function AnimatedSection({
   );
 }
 
+type MotionButtonProps = Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "onAnimationStart" | "onAnimationEnd" | "onDrag" | "onDragStart" | "onDragEnd"
+> & {
+  size?: "default" | "sm" | "lg" | "icon";
+  variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
+};
+
 export function MotionButton({
   className,
   children,
+  size: _size,
+  variant: _variant,
   ...props
-}: ComponentPropsWithoutRef<"button">) {
+}: MotionButtonProps) {
   const shouldReduce = useReducedMotion();
   return (
     <motion.button
@@ -48,39 +58,9 @@ export function MotionButton({
       whileHover={shouldReduce ? {} : { scale: 1.03 }}
       whileTap={shouldReduce ? {} : { scale: 0.97 }}
       transition={{ duration: 0.15, ease: "easeOut" }}
-      {...(props as Record<string, unknown>)}
+      {...props}
     >
       {children}
     </motion.button>
   );
 }
-
-export const pageVariants = {
-  initial: { opacity: 0, y: 8 },
-  animate: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
-  },
-  exit: {
-    opacity: 0,
-    y: -8,
-    transition: { duration: 0.22, ease: "easeIn" },
-  },
-};
-
-export const staggerContainer = {
-  hidden: {},
-  show: {
-    transition: { staggerChildren: 0.09 },
-  },
-};
-
-export const staggerItem = {
-  hidden: { opacity: 0, y: 24 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.48, ease: [0.22, 1, 0.36, 1] },
-  },
-};

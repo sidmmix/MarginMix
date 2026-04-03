@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X, User, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
@@ -14,6 +14,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
   const [location] = useLocation();
   const { user, isAuthenticated, logout, isLoggingOut } = useAuth();
   const { toast } = useToast();
+  const shouldReduce = useReducedMotion();
 
   const handleLogout = async () => {
     try {
@@ -133,9 +134,9 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 {isMenuOpen ? (
                   <motion.span
                     key="close"
-                    initial={{ rotate: -90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: 90, opacity: 0 }}
+                    initial={shouldReduce ? { opacity: 0 } : { rotate: -90, opacity: 0 }}
+                    animate={shouldReduce ? { opacity: 1 } : { rotate: 0, opacity: 1 }}
+                    exit={shouldReduce ? { opacity: 0 } : { rotate: 90, opacity: 0 }}
                     transition={{ duration: 0.18 }}
                   >
                     <X className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
@@ -143,9 +144,9 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 ) : (
                   <motion.span
                     key="menu"
-                    initial={{ rotate: 90, opacity: 0 }}
-                    animate={{ rotate: 0, opacity: 1 }}
-                    exit={{ rotate: -90, opacity: 0 }}
+                    initial={shouldReduce ? { opacity: 0 } : { rotate: 90, opacity: 0 }}
+                    animate={shouldReduce ? { opacity: 1 } : { rotate: 0, opacity: 1 }}
+                    exit={shouldReduce ? { opacity: 0 } : { rotate: -90, opacity: 0 }}
                     transition={{ duration: 0.18 }}
                   >
                     <Menu className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
@@ -161,9 +162,9 @@ export function Header({ variant = "transparent" }: HeaderProps) {
           {isMenuOpen && (
             <motion.div
               key="mobile-menu"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
+              initial={shouldReduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+              animate={shouldReduce ? { opacity: 1 } : { opacity: 1, height: "auto" }}
+              exit={shouldReduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               className="md:hidden overflow-hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700"
             >
@@ -171,9 +172,9 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 {navLinks.map((link, i) => (
                   <motion.div
                     key={link.href}
-                    initial={{ opacity: 0, x: -16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.06, duration: 0.25 }}
+                    initial={shouldReduce ? { opacity: 0 } : { opacity: 0, x: -16 }}
+                    animate={shouldReduce ? { opacity: 1 } : { opacity: 1, x: 0 }}
+                    transition={{ delay: shouldReduce ? 0 : i * 0.06, duration: 0.25 }}
                   >
                     <Link href={link.href} onClick={scrollToTop}>
                       <span className={`block text-gray-800 dark:text-gray-100 hover:text-emerald-700 dark:hover:text-emerald-300 text-base font-medium cursor-pointer py-3 px-3 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-900/20 ${isActive(link.href) ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 border-l-4 border-emerald-600' : ''}`}>
@@ -183,9 +184,9 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                   </motion.div>
                 ))}
                 <motion.div
-                  initial={{ opacity: 0, x: -16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: navLinks.length * 0.06, duration: 0.25 }}
+                  initial={shouldReduce ? { opacity: 0 } : { opacity: 0, x: -16 }}
+                  animate={shouldReduce ? { opacity: 1 } : { opacity: 1, x: 0 }}
+                  transition={{ delay: shouldReduce ? 0 : navLinks.length * 0.06, duration: 0.25 }}
                   className="pt-2 px-3 flex flex-col space-y-2"
                 >
                   <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer" className="block">

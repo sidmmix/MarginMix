@@ -1,9 +1,10 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, CheckCircle, XCircle, Users, Building2, Briefcase, Target, Shield, TrendingUp, BarChart3, Zap } from "lucide-react";
 import { Link } from "wouter";
 import { Header } from "@/components/header";
-import { AnimatedSection, MotionButton, staggerContainer, staggerItem } from "@/components/animations";
+import { AnimatedSection, MotionButton } from "@/components/animations";
+import { staggerContainer, staggerItem } from "@/components/motion-variants";
 
 const heroContainer = {
   hidden: {},
@@ -15,6 +16,7 @@ const heroItem = {
 };
 
 export default function Landing() {
+  const shouldReduce = useReducedMotion();
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-100 dark:from-gray-900 dark:via-gray-800 dark:to-emerald-900 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -33,26 +35,26 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             className="text-center"
-            variants={heroContainer}
-            initial="hidden"
-            animate="show"
+            variants={shouldReduce ? undefined : heroContainer}
+            initial={shouldReduce ? undefined : "hidden"}
+            animate={shouldReduce ? undefined : "show"}
           >
             <motion.h1
-              variants={heroItem}
+              variants={shouldReduce ? undefined : heroItem}
               className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-red-600 dark:text-red-400 mb-5 leading-tight"
             >
               MarginMix protects you from losing thousands / millions to delivery complexity
             </motion.h1>
 
             <motion.p
-              variants={heroItem}
+              variants={shouldReduce ? undefined : heroItem}
               className="text-base sm:text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-6 mx-auto leading-relaxed"
             >
               Don't rely on spreadsheets, gut feel & past experience. Every engagement carries unique delivery risks that erode margin silently.
             </motion.p>
 
             <motion.p
-              variants={heroItem}
+              variants={shouldReduce ? undefined : heroItem}
               className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-7 px-2 sm:px-0"
             >
               MarginMix is a deterministic decision infrastructure for{" "}
@@ -62,7 +64,7 @@ export default function Landing() {
             </motion.p>
 
             <motion.div
-              variants={heroItem}
+              variants={shouldReduce ? undefined : heroItem}
               className="flex flex-col sm:flex-row gap-3 justify-center items-center"
             >
               <MotionButton
@@ -81,13 +83,13 @@ export default function Landing() {
             </motion.div>
 
             <motion.p
-              variants={heroItem}
+              variants={shouldReduce ? undefined : heroItem}
               className="mt-4 text-base sm:text-lg text-gray-400 dark:text-gray-500 px-2 sm:px-0 tracking-wide"
             >
               Lightweight <span className="text-emerald-500 mx-1">›</span> Interactive <span className="text-emerald-500 mx-1">›</span> Insightful <span className="text-emerald-500 mx-1">›</span> API enabled
             </motion.p>
             <motion.p
-              variants={heroItem}
+              variants={shouldReduce ? undefined : heroItem}
               className="mt-2 text-base sm:text-lg italic text-gray-900 dark:text-white px-2 sm:px-0"
             >
               No ERP/CRM Integration required
@@ -152,14 +154,14 @@ export default function Landing() {
 
           <motion.div
             className="space-y-6 max-w-5xl mx-auto"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="show"
+            variants={shouldReduce ? undefined : staggerContainer}
+            initial={shouldReduce ? undefined : "hidden"}
+            whileInView={shouldReduce ? undefined : "show"}
             viewport={{ once: true, margin: "-60px" }}
           >
 
             {/* Verdict 1: Structurally Safe */}
-            <motion.div variants={staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+            <motion.div variants={shouldReduce ? undefined : staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
               <div className="p-6 sm:p-8">
                 <div className="rounded-xl border bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 p-5 sm:p-6 mb-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
@@ -222,7 +224,7 @@ export default function Landing() {
             </motion.div>
 
             {/* Verdict 2: Price Sensitive */}
-            <motion.div variants={staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+            <motion.div variants={shouldReduce ? undefined : staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
               <div className="p-6 sm:p-8">
                 <div className="rounded-xl border bg-gradient-to-br from-amber-500/20 to-amber-600/10 border-amber-500/30 p-5 sm:p-6 mb-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
@@ -285,7 +287,7 @@ export default function Landing() {
             </motion.div>
 
             {/* Verdict 3: Structurally Fragile */}
-            <motion.div variants={staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+            <motion.div variants={shouldReduce ? undefined : staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
               <div className="p-6 sm:p-8">
                 <div className="rounded-xl border bg-gradient-to-br from-red-500/20 to-red-600/10 border-red-500/30 p-5 sm:p-6 mb-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
@@ -348,7 +350,7 @@ export default function Landing() {
             </motion.div>
 
             {/* Verdict 4: Do Not Proceed Without Repricing */}
-            <motion.div variants={staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+            <motion.div variants={shouldReduce ? undefined : staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
               <div className="p-6 sm:p-8">
                 <div className="rounded-xl border bg-gradient-to-br from-red-600/20 to-red-700/10 border-red-600/30 p-5 sm:p-6 mb-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">

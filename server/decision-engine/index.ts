@@ -26,6 +26,8 @@ export interface AssessmentInput {
   roleTitle: string;
   organisationName: string;
   organisationSize: string;
+  industry?: string;
+  deliveryModel?: string;
   decisionType: string;
   specifyContext: string;
   engagementType: string;
@@ -43,6 +45,9 @@ export interface AssessmentInput {
   seniorOversightLoad: string;
   coordinationDecisionDrag: string;
   deliveryConfidence: string;
+  aiHumanHoursReplaced?: string;
+  aiCommercialImpactMeasured?: string;
+  aiAgenticFramework?: string;
   openSignal?: string;
   currentMargin?: number;
 }

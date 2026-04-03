@@ -1,8 +1,9 @@
 import { Shield, Gauge, Target, Lightbulb, Scale, Zap } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { AnimatedSection, MotionButton, staggerContainer, staggerItem } from "@/components/animations";
-import { motion } from "framer-motion";
+import { AnimatedSection, MotionButton } from "@/components/animations";
+import { staggerContainer, staggerItem } from "@/components/motion-variants";
+import { motion, useReducedMotion } from "framer-motion";
 
 const cards = [
   {
@@ -56,6 +57,7 @@ const cards = [
 ];
 
 export default function WhyChoose() {
+  const shouldReduce = useReducedMotion();
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-100 dark:from-gray-900 dark:via-gray-800 dark:to-emerald-900 relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -80,15 +82,15 @@ export default function WhyChoose() {
 
           <motion.div
             className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="show"
+            variants={shouldReduce ? undefined : staggerContainer}
+            initial={shouldReduce ? undefined : "hidden"}
+            whileInView={shouldReduce ? undefined : "show"}
             viewport={{ once: true, margin: "-80px" }}
           >
             {cards.map((c, i) => (
               <motion.div
                 key={i}
-                variants={staggerItem}
+                variants={shouldReduce ? undefined : staggerItem}
                 className={`bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 ${c.color} shadow-sm hover:shadow-md transition-shadow`}
               >
                 <div className="flex items-center gap-3 mb-4">

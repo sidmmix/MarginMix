@@ -141,7 +141,7 @@ export function mapQuestionsToSignals(input: AssessmentInput): Signals {
 
   const aiRiskPeak: Level =
     aiHoursRisk === "high" || aiImpactRisk === "high" || aiAgenticRisk === "high" ? "high" :
-    aiHoursRisk === "medium" || aiImpactRisk === "medium" || aiAgenticRisk === "medium" ? "medium" :
+    aiHoursRisk === "medium" ? "medium" :
     "low";
 
   const measurementMaturity: Level =
