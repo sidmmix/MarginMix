@@ -1,5 +1,6 @@
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { useRef } from "react";
+import type { ComponentPropsWithoutRef } from "react";
 
 export function AnimatedSection({
   children,
@@ -12,6 +13,15 @@ export function AnimatedSection({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-72px" });
+  const shouldReduce = useReducedMotion();
+
+  if (shouldReduce) {
+    return (
+      <div ref={ref} className={className}>
+        {children}
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -23,6 +33,25 @@ export function AnimatedSection({
     >
       {children}
     </motion.div>
+  );
+}
+
+export function MotionButton({
+  className,
+  children,
+  ...props
+}: ComponentPropsWithoutRef<"button">) {
+  const shouldReduce = useReducedMotion();
+  return (
+    <motion.button
+      className={className}
+      whileHover={shouldReduce ? {} : { scale: 1.03 }}
+      whileTap={shouldReduce ? {} : { scale: 0.97 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+      {...(props as Record<string, unknown>)}
+    >
+      {children}
+    </motion.button>
   );
 }
 

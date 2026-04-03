@@ -3,7 +3,16 @@ import { Button } from "@/components/ui/button";
 import { AlertTriangle, CheckCircle, XCircle, Users, Building2, Briefcase, Target, Shield, TrendingUp, BarChart3, Zap } from "lucide-react";
 import { Link } from "wouter";
 import { Header } from "@/components/header";
-import { AnimatedSection, staggerContainer, staggerItem } from "@/components/animations";
+import { AnimatedSection, MotionButton, staggerContainer, staggerItem } from "@/components/animations";
+
+const heroContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.13, delayChildren: 0.08 } },
+};
+const heroItem = {
+  hidden: { opacity: 0, y: 36 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
+};
 
 export default function Landing() {
   return (
@@ -22,47 +31,68 @@ export default function Landing() {
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-6 sm:pt-10 pb-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-red-600 dark:text-red-400 mb-5 leading-tight">
+          <motion.div
+            className="text-center"
+            variants={heroContainer}
+            initial="hidden"
+            animate="show"
+          >
+            <motion.h1
+              variants={heroItem}
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-red-600 dark:text-red-400 mb-5 leading-tight"
+            >
               MarginMix protects you from losing thousands / millions to delivery complexity
-            </h1>
+            </motion.h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-6 mx-auto leading-relaxed">
+            <motion.p
+              variants={heroItem}
+              className="text-base sm:text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-6 mx-auto leading-relaxed"
+            >
               Don't rely on spreadsheets, gut feel & past experience. Every engagement carries unique delivery risks that erode margin silently.
-            </p>
+            </motion.p>
 
-            <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-7 px-2 sm:px-0">
+            <motion.p
+              variants={heroItem}
+              className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-7 px-2 sm:px-0"
+            >
               MarginMix is a deterministic decision infrastructure for{" "}
               <span className="text-emerald-600 dark:text-emerald-400">pricing & margin risk</span>
               {" — "}
               <span className="text-red-600 dark:text-red-400">not a productivity tool.</span>
-            </p>
+            </motion.p>
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 rounded-xl whitespace-normal"
+            <motion.div
+              variants={heroItem}
+              className="flex flex-col sm:flex-row gap-3 justify-center items-center"
+            >
+              <MotionButton
                 data-testid="button-cta-hero"
                 onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
+                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl whitespace-normal font-semibold shadow"
               >
                 Book Demo
-              </Button>
-              <Button
-                size="lg"
-                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-600 rounded-xl whitespace-normal"
+              </MotionButton>
+              <MotionButton
                 onClick={() => window.location.href = '/quick-profiler'}
+                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-600 rounded-xl whitespace-normal font-semibold"
               >
                 Free Delivery Risk Check — 60 seconds!
-              </Button>
-            </div>
+              </MotionButton>
+            </motion.div>
 
-            <p className="mt-4 text-base sm:text-lg text-gray-400 dark:text-gray-500 px-2 sm:px-0 tracking-wide">
+            <motion.p
+              variants={heroItem}
+              className="mt-4 text-base sm:text-lg text-gray-400 dark:text-gray-500 px-2 sm:px-0 tracking-wide"
+            >
               Lightweight <span className="text-emerald-500 mx-1">›</span> Interactive <span className="text-emerald-500 mx-1">›</span> Insightful <span className="text-emerald-500 mx-1">›</span> API enabled
-            </p>
-            <p className="mt-2 text-base sm:text-lg italic text-gray-900 dark:text-white px-2 sm:px-0">
+            </motion.p>
+            <motion.p
+              variants={heroItem}
+              className="mt-2 text-base sm:text-lg italic text-gray-900 dark:text-white px-2 sm:px-0"
+            >
               No ERP/CRM Integration required
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
         </div>
       </section>
 

@@ -1,6 +1,6 @@
 import { Switch, Route, useLocation, Redirect } from "wouter";
 import { useEffect, lazy, Suspense } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -55,20 +55,18 @@ function ScrollToTop() {
   return null;
 }
 
-const NO_TRANSITION_ROUTES = ["/quick-profiler", "/assessment"];
-
 function Router() {
   const [location] = useLocation();
-  const skipTransition = NO_TRANSITION_ROUTES.some(r => location.startsWith(r));
+  const shouldReduce = useReducedMotion();
 
   return (
     <AnimatePresence mode="wait">
       <motion.div
         key={location}
-        variants={skipTransition ? undefined : pageVariants}
-        initial={skipTransition ? false : "initial"}
-        animate={skipTransition ? undefined : "animate"}
-        exit={skipTransition ? undefined : "exit"}
+        variants={shouldReduce ? undefined : pageVariants}
+        initial={shouldReduce ? false : "initial"}
+        animate={shouldReduce ? undefined : "animate"}
+        exit={shouldReduce ? undefined : "exit"}
       >
         <Suspense fallback={<PageLoader />}>
           <Switch>
