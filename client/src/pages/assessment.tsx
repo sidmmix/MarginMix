@@ -1235,9 +1235,6 @@ export default function Assessment() {
             </p>
           </div>
           
-          <div className="absolute bottom-4 sm:bottom-8 animate-bounce">
-            <ChevronDown className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-200/60" />
-          </div>
         </div>
     );
   };
