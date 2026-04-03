@@ -152,9 +152,9 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 {isMenuOpen ? (
                   <motion.span
                     key="close"
-                    initial={shouldReduce ? { opacity: 0 } : { rotate: -90, opacity: 0 }}
-                    animate={shouldReduce ? { opacity: 1 } : { rotate: 0, opacity: 1 }}
-                    exit={shouldReduce ? { opacity: 0 } : { rotate: 90, opacity: 0 }}
+                    initial={shouldReduce ? false : { rotate: -90, opacity: 0 }}
+                    animate={shouldReduce ? undefined : { rotate: 0, opacity: 1 }}
+                    exit={shouldReduce ? undefined : { rotate: 90, opacity: 0 }}
                     transition={{ duration: 0.18 }}
                   >
                     <X className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
@@ -162,9 +162,9 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 ) : (
                   <motion.span
                     key="menu"
-                    initial={shouldReduce ? { opacity: 0 } : { rotate: 90, opacity: 0 }}
-                    animate={shouldReduce ? { opacity: 1 } : { rotate: 0, opacity: 1 }}
-                    exit={shouldReduce ? { opacity: 0 } : { rotate: -90, opacity: 0 }}
+                    initial={shouldReduce ? false : { rotate: 90, opacity: 0 }}
+                    animate={shouldReduce ? undefined : { rotate: 0, opacity: 1 }}
+                    exit={shouldReduce ? undefined : { rotate: -90, opacity: 0 }}
                     transition={{ duration: 0.18 }}
                   >
                     <Menu className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
@@ -180,9 +180,9 @@ export function Header({ variant = "transparent" }: HeaderProps) {
           {isMenuOpen && (
             <motion.div
               key="mobile-menu"
-              initial={shouldReduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
-              animate={shouldReduce ? { opacity: 1 } : { opacity: 1, height: "auto" }}
-              exit={shouldReduce ? { opacity: 0 } : { opacity: 0, height: 0 }}
+              initial={shouldReduce ? false : { opacity: 0, height: 0 }}
+              animate={shouldReduce ? undefined : { opacity: 1, height: "auto" }}
+              exit={shouldReduce ? undefined : { opacity: 0, height: 0 }}
               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
               className="md:hidden overflow-hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700"
             >
@@ -190,8 +190,8 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 {navLinks.map((link, i) => (
                   <motion.div
                     key={link.href}
-                    initial={shouldReduce ? { opacity: 0 } : { opacity: 0, x: -16 }}
-                    animate={shouldReduce ? { opacity: 1 } : { opacity: 1, x: 0 }}
+                    initial={shouldReduce ? false : { opacity: 0, x: -16 }}
+                    animate={shouldReduce ? undefined : { opacity: 1, x: 0 }}
                     transition={{ delay: shouldReduce ? 0 : i * 0.06, duration: 0.25 }}
                   >
                     <Link href={link.href} onClick={scrollToTop}>
@@ -202,8 +202,8 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                   </motion.div>
                 ))}
                 <motion.div
-                  initial={shouldReduce ? { opacity: 0 } : { opacity: 0, x: -16 }}
-                  animate={shouldReduce ? { opacity: 1 } : { opacity: 1, x: 0 }}
+                  initial={shouldReduce ? false : { opacity: 0, x: -16 }}
+                  animate={shouldReduce ? undefined : { opacity: 1, x: 0 }}
                   transition={{ delay: shouldReduce ? 0 : navLinks.length * 0.06, duration: 0.25 }}
                   className="pt-2 px-3 flex flex-col space-y-2"
                 >
