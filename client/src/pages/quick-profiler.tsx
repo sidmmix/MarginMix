@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, useLocation } from "wouter";
@@ -367,9 +367,11 @@ export default function QuickProfiler() {
   const [currentMargin, setCurrentMargin] = useState<string>("");
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [direction, setDirection] = useState<1 | -1>(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [, setLocation] = useLocation();
+  const shouldReduce = useReducedMotion();
 
   const totalQuestions = profilerQuestions.length;
   const isIntro = currentQuestion === -2;
@@ -379,6 +381,7 @@ export default function QuickProfiler() {
 
   const scrollToQuestion = (index: number) => {
     if (isTransitioning) return;
+    setDirection(index >= currentQuestion ? 1 : -1);
     setIsTransitioning(true);
     if (index > totalQuestions - 1 && Object.keys(answers).length === totalQuestions) {
       setShowResult(true);
@@ -593,11 +596,8 @@ export default function QuickProfiler() {
   };
 
   const renderIntro = () => {
-    if (!isIntro || showResult) return null;
-
     return (
-      <div className="absolute inset-0 z-30">
-        <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
           <div className="max-w-2xl mx-auto text-center text-white">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/15 backdrop-blur-sm rounded-full mb-6">
               <Zap className="h-5 w-5 text-white" />
@@ -649,78 +649,46 @@ export default function QuickProfiler() {
             <ChevronDown className="h-6 w-6 sm:h-8 sm:w-8 text-emerald-200/60" />
           </div>
         </div>
-      </div>
     );
   };
 
   const renderMarginQuestion = () => {
-    const isActive = isMarginQuestion && !showResult;
-    if (!isActive && !isIntro) return null;
-
     return (
-      <div
-        className={`absolute inset-0 z-20 overflow-y-auto ${isActive ? "" : "pointer-events-none opacity-0"}`}
-      >
-        <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex flex-col">
-          <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
-            <motion.div
-              className="w-full max-w-2xl"
-              animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 24 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: isActive ? 0.15 : 0 }}
-            >
-              <div className="mb-4 sm:mb-6">
-                <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm font-medium mb-2 sm:mb-3">
-                  Margin Qualifier
-                </span>
+      <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex flex-col overflow-y-auto">
+        <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
+          <div className="w-full max-w-2xl">
+            <div className="mb-4 sm:mb-6">
+              <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm font-medium mb-2 sm:mb-3">
+                Margin Qualifier
+              </span>
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-2 sm:mb-3">
+              What's the current margin of the project/client/group of clients you are evaluating?
+            </h2>
+
+            <p className="text-sm sm:text-base text-white/50 italic mb-3 sm:mb-4">
+              Indicative required, if not actual
+            </p>
+
+            <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
+              Enter your margin % to see estimated impact on your results <span className="text-red-300">*</span>
+            </p>
+
+            <div className="w-full max-w-md mx-auto">
+              <div className="relative">
+                <Input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={currentMargin}
+                  onChange={(e) => setCurrentMargin(e.target.value)}
+                  placeholder="e.g. 18"
+                  className="text-center text-2xl sm:text-3xl py-5 sm:py-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/40 focus:border-white focus:bg-white/20 rounded-xl pr-14"
+                />
+                <span className="absolute right-5 top-1/2 -translate-y-1/2 text-white/60 text-2xl font-medium">%</span>
               </div>
-
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-2 sm:mb-3">
-                What's the current margin of the project/client/group of clients you are evaluating?
-              </h2>
-
-              <p className="text-sm sm:text-base text-white/50 italic mb-3 sm:mb-4">
-                Indicative required, if not actual
-              </p>
-
-              <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
-                Enter your margin % to see estimated impact on your results <span className="text-red-300">*</span>
-              </p>
-
-              <div className="w-full max-w-md mx-auto">
-                <div className="relative">
-                  <Input
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    value={currentMargin}
-                    onChange={(e) => setCurrentMargin(e.target.value)}
-                    placeholder="e.g. 18"
-                    className="text-center text-2xl sm:text-3xl py-5 sm:py-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/40 focus:border-white focus:bg-white/20 rounded-xl pr-14"
-                  />
-                  <span className="absolute right-5 top-1/2 -translate-y-1/2 text-white/60 text-2xl font-medium">%</span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
-          <div className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 bg-black/30 backdrop-blur-md border-t border-white/10">
-            <button
-              onClick={handleBack}
-              className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm sm:text-base"
-            >
-              <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5" />
-              <span className="hidden sm:inline">Back</span>
-            </button>
-
-            <div className="flex items-center gap-2 sm:gap-4">
-              <button
-                onClick={handleNext}
-                className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-emerald-700 rounded-full font-semibold hover:bg-emerald-50 transition-all text-sm sm:text-base shadow-lg"
-              >
-                Continue
-                <ArrowDown className="h-4 w-4 sm:h-5 sm:w-5" />
-              </button>
             </div>
           </div>
         </div>
@@ -730,26 +698,13 @@ export default function QuickProfiler() {
 
   const renderCard = (questionIndex: number) => {
     const question = profilerQuestions[questionIndex];
-    const isActive = currentQuestion === questionIndex && !showResult;
-
-    const distance = Math.abs(questionIndex - currentQuestion);
-    if (distance > 1 && !isIntro && !isMarginQuestion && !showResult) return null;
-
     const gradient = sectionGradients[question.sectionColor] || sectionGradients.emerald;
     const currentValue = answers[question.id] || "";
 
     return (
-      <div
-        key={question.id}
-        className={`absolute inset-0 z-20 overflow-y-auto ${isActive ? "" : "pointer-events-none opacity-0"}`}
-      >
-        <div className={`min-h-screen bg-gradient-to-br ${gradient} flex flex-col`}>
-          <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
-            <motion.div
-              className="w-full max-w-2xl"
-              animate={{ opacity: isActive ? 1 : 0, y: isActive ? 0 : 24 }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: isActive ? 0.15 : 0 }}
-            >
+      <div className={`min-h-screen bg-gradient-to-br ${gradient} flex flex-col overflow-y-auto`}>
+        <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
+          <div className="w-full max-w-2xl">
               <div className="mb-4 sm:mb-6">
                 <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm font-medium mb-2 sm:mb-3">
                   {question.section}
@@ -805,7 +760,6 @@ export default function QuickProfiler() {
                   ))}
                 </div>
               </div>
-            </motion.div>
           </div>
         </div>
       </div>
@@ -813,8 +767,6 @@ export default function QuickProfiler() {
   };
 
   const renderResult = () => {
-    if (!showResult) return null;
-
     const RiskIcon = risk.icon;
     const signals = deriveSignals(answers);
     const dimensions = deriveDimensions(signals);
@@ -823,8 +775,7 @@ export default function QuickProfiler() {
     const marginImpact = marginValue > 0 ? calculateMarginImpact(verdict, marginValue, dimensions) : null;
 
     return (
-      <div className="absolute inset-0 z-30 overflow-y-auto">
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-20 px-4 sm:px-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-20 px-4 sm:px-6 overflow-y-auto">
           <div className="max-w-2xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-6">
               <RiskIcon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
@@ -922,17 +873,50 @@ export default function QuickProfiler() {
             </div>
           </div>
         </div>
-      </div>
     );
+  };
+
+  const activePhaseKey = isIntro
+    ? "intro"
+    : showResult
+    ? "result"
+    : isMarginQuestion
+    ? "margin"
+    : `q-${currentQuestion}`;
+
+  const questionVariants = {
+    enter: (dir: number) => ({
+      x: shouldReduce ? 0 : dir > 0 ? "80%" : "-80%",
+      opacity: 0,
+    }),
+    center: { x: 0, opacity: 1 },
+    exit: (dir: number) => ({
+      x: shouldReduce ? 0 : dir > 0 ? "-80%" : "80%",
+      opacity: 0,
+    }),
   };
 
   return (
     <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
-      {renderIntro()}
-      {renderMarginQuestion()}
-      {profilerQuestions.map((_, index) => renderCard(index))}
-      {renderResult()}
+      <AnimatePresence mode="wait" custom={direction}>
+        <motion.div
+          key={activePhaseKey}
+          custom={direction}
+          variants={questionVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0"
+        >
+          {isIntro && renderIntro()}
+          {!isIntro && showResult && renderResult()}
+          {!isIntro && !showResult && isMarginQuestion && renderMarginQuestion()}
+          {!isIntro && !showResult && !isMarginQuestion && renderCard(currentQuestion)}
+        </motion.div>
+      </AnimatePresence>
 
+      {/* Fixed header — outside AnimatePresence so it never slides */}
       <div className="fixed top-0 left-0 right-0 z-[100] bg-black/40 backdrop-blur-md" style={{ pointerEvents: 'auto' }}>
         <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
           <Link href="/">
@@ -969,6 +953,27 @@ export default function QuickProfiler() {
         </div>
       </div>
 
+      {/* Margin question nav — outside AnimatePresence */}
+      {isMarginQuestion && (
+        <div className="fixed bottom-0 left-0 right-0 z-[100] flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 bg-black/30 backdrop-blur-md border-t border-white/10" style={{ pointerEvents: 'auto' }}>
+          <button
+            onClick={handleBack}
+            className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm sm:text-base"
+          >
+            <ArrowUp className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">Back</span>
+          </button>
+          <button
+            onClick={handleNext}
+            className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-emerald-700 rounded-full font-semibold hover:bg-emerald-50 transition-all text-sm sm:text-base shadow-lg"
+          >
+            Continue
+            <ArrowDown className="h-4 w-4 sm:h-5 sm:w-5" />
+          </button>
+        </div>
+      )}
+
+      {/* Regular question nav — outside AnimatePresence */}
       {!isIntro && !isMarginQuestion && !showResult && (
         <div className="fixed bottom-4 sm:bottom-8 left-0 right-0 z-[100] flex flex-col items-center gap-2 px-4 sm:px-6" style={{ pointerEvents: 'auto' }}>
           {currentQuestion >= 0 && currentQuestion <= 1 && (

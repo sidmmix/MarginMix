@@ -1,8 +1,7 @@
-import { Button } from "@/components/ui/button";
 import { Shield, Gauge, Target, Lightbulb, Scale, Zap } from "lucide-react";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { AnimatedSection, staggerContainer, staggerItem } from "@/components/animations";
+import { AnimatedSection, MotionButton, staggerContainer, staggerItem } from "@/components/animations";
 import { motion } from "framer-motion";
 
 const cards = [
@@ -112,20 +111,20 @@ export default function WhyChoose() {
               Assess Margin Risk & Price work Profitably!
             </h2>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button
+              <MotionButton
                 size="lg"
                 className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl whitespace-normal"
                 onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
               >
                 Book Demo
-              </Button>
-              <Button
+              </MotionButton>
+              <MotionButton
                 size="lg"
                 className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-4 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl whitespace-normal"
                 onClick={() => window.location.href = '/quick-profiler'}
               >
                 Free Delivery Risk Check - 60 seconds!
-              </Button>
+              </MotionButton>
             </div>
             <p className="text-emerald-100 mt-4 text-sm">
             </p>
