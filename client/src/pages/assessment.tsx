@@ -1226,7 +1226,7 @@ export default function Assessment() {
               size="lg"
               className="bg-white text-emerald-700 hover:bg-emerald-50 px-6 sm:px-12 py-4 sm:py-7 text-base sm:text-xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
             >
-              Start Paid Assessment
+              Click / Enter / Return to continue
               <ArrowDown className="ml-2 sm:ml-3 h-4 w-4 sm:h-6 sm:w-6" />
             </Button>
             
