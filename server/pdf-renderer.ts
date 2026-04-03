@@ -51,7 +51,8 @@ function addLogoToPage(doc: PDFKit.PDFDocument): void {
 
 export async function renderDecisionMemoPDF(
   decision: DecisionObject,
-  narrative: NarrativeOutput["decisionMemo"]
+  narrative: NarrativeOutput["decisionMemo"],
+  fromProfiler?: boolean
 ): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
@@ -70,7 +71,14 @@ export async function renderDecisionMemoPDF(
     doc.moveDown(3);
 
     doc.fontSize(24).fillColor(COLORS.primary).text("MarginMix – Decision Memo", { align: "center" });
-    doc.moveDown(2);
+    doc.moveDown(0.5);
+    if (fromProfiler) {
+      doc.fontSize(9).fillColor(COLORS.gray).font("Helvetica").text(
+        "★  6 of 23 inputs were pre-answered via the Quick Margin Risk Profiler and carried forward into this assessment.",
+        { align: "center" }
+      );
+    }
+    doc.moveDown(1.5);
 
     doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Decision Context");
     doc.moveDown(0.5);
@@ -156,7 +164,8 @@ export async function renderDecisionMemoPDF(
 export async function renderAssessmentOutputPDF(
   decision: DecisionObject,
   narrative: NarrativeOutput["assessmentOutput"],
-  openSignal: string | null
+  openSignal: string | null,
+  fromProfiler?: boolean
 ): Promise<Buffer> {
   return new Promise((resolve, reject) => {
     const chunks: Buffer[] = [];
@@ -175,7 +184,14 @@ export async function renderAssessmentOutputPDF(
     doc.moveDown(3);
 
     doc.fontSize(22).fillColor(COLORS.primary).text("MarginMix – Margin Risk Assessment Results", { align: "center" });
-    doc.moveDown(2);
+    doc.moveDown(0.5);
+    if (fromProfiler) {
+      doc.fontSize(9).fillColor(COLORS.gray).font("Helvetica").text(
+        "★  6 of 23 inputs were pre-answered via the Quick Margin Risk Profiler and carried forward into this assessment.",
+        { align: "center" }
+      );
+    }
+    doc.moveDown(1.5);
 
     doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Executive Snapshot");
     doc.moveDown(0.5);

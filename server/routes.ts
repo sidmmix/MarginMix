@@ -409,14 +409,16 @@ export function registerRoutes(app: Express): Server {
         };
       }
       
+      const fromProfiler = !!req.body.fromProfiler;
+
       // Generate PDFs
       let decisionMemoPdf: Buffer;
       let assessmentOutputPdf: Buffer;
       
       try {
         [decisionMemoPdf, assessmentOutputPdf] = await Promise.all([
-          renderDecisionMemoPDF(decisionObject, narrative.decisionMemo),
-          renderAssessmentOutputPDF(decisionObject, narrative.assessmentOutput, openSignal)
+          renderDecisionMemoPDF(decisionObject, narrative.decisionMemo, fromProfiler),
+          renderAssessmentOutputPDF(decisionObject, narrative.assessmentOutput, openSignal, fromProfiler)
         ]);
         console.log(`PDFs generated for: ${validatedData.organisationName}`);
       } catch (pdfError: any) {
@@ -446,6 +448,7 @@ export function registerRoutes(app: Express): Server {
           organisationSize: validatedData.organisationSize,
           openSignal,
           assessmentId: String(assessment.id),
+          fromProfiler,
         },
       });
 

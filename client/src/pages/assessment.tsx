@@ -156,7 +156,7 @@ const assessmentSchema = z.object({
   aiHumanHoursReplaced: z.string().min(1, "Please select"),
   aiCommercialImpactMeasured: z.string().min(1, "Please select"),
   aiAgenticFramework: z.string().min(1, "Please select"),
-  openSignal: z.string().optional(),
+  openSignal: z.string().min(1, "Please share your observations before proceeding"),
 });
 
 type AssessmentFormData = z.infer<typeof assessmentSchema>;
@@ -439,9 +439,9 @@ function getQuestionsForIndustry(industry: string): Question[] {
     },
     {
       id: "openSignal", title: "Is there anything about this client engagement that feels risky or unusual?",
-      subtitle: "This is optional - share any concerns or observations",
+      subtitle: "Share any concerns, gut-feel risks, or unusual factors — even if they don't fit neatly into a category",
       type: "textarea", placeholder: "Share any concerns or observations...",
-      required: false, section: "Open Signal", sectionColor: "violet"
+      required: true, section: "Open Signal", sectionColor: "violet"
     },
   ];
 
@@ -728,11 +728,10 @@ export default function Assessment() {
     }
   }, [currentQuestion]);
 
-  // Check if all mandatory questions (1-22) are answered
+  // Check if all questions are answered (Q23 / openSignal is now mandatory too)
   const areMandatoryQuestionsAnswered = () => {
     const values = form.getValues();
-    // Questions 0-21 (indices) are mandatory, question 22 (index) / Q23 is optional
-    for (let i = 0; i < totalQuestions - 1; i++) {
+    for (let i = 0; i < totalQuestions; i++) {
       const question = activeQuestions[i];
       const value = values[question.id as keyof typeof values];
       if (!value || value === "") {
@@ -742,12 +741,10 @@ export default function Assessment() {
     return true;
   };
 
-  // Check if current question is answered
+  // Check if current question is answered — all questions are mandatory including openSignal
   const isCurrentQuestionAnswered = () => {
     if (currentQuestion < 0 || currentQuestion >= totalQuestions) return true;
     const question = activeQuestions[currentQuestion];
-    // Q23 (last question) is optional
-    if (currentQuestion === totalQuestions - 1) return true;
     const values = form.getValues();
     const value = values[question.id as keyof typeof values];
     return value && value !== "";
@@ -831,7 +828,7 @@ export default function Assessment() {
       const response = await fetch("/api/assessments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, currentMargin: marginValue }),
+        body: JSON.stringify({ ...data, currentMargin: marginValue, fromProfiler: isFromProfiler }),
       });
 
       if (response.ok) {
