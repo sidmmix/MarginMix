@@ -156,7 +156,7 @@ const assessmentSchema = z.object({
   aiHumanHoursReplaced: z.string().min(1, "Please select"),
   aiCommercialImpactMeasured: z.string().min(1, "Please select"),
   aiAgenticFramework: z.string().min(1, "Please select"),
-  openSignal: z.string().min(1, "Please share your observations before proceeding"),
+  openSignal: z.string().optional(),
 });
 
 type AssessmentFormData = z.infer<typeof assessmentSchema>;
@@ -440,8 +440,8 @@ function getQuestionsForIndustry(industry: string): Question[] {
     {
       id: "openSignal", title: "Is there anything about this client engagement that feels risky or unusual?",
       subtitle: "Share any concerns, gut-feel risks, or unusual factors — even if they don't fit neatly into a category",
-      type: "textarea", placeholder: "Share any concerns or observations...",
-      required: true, section: "Open Signal", sectionColor: "violet"
+      type: "textarea", placeholder: "Share any concerns or observations... (optional)",
+      required: false, section: "Open Signal", sectionColor: "violet"
     },
   ];
 
@@ -728,11 +728,12 @@ export default function Assessment() {
     }
   }, [currentQuestion]);
 
-  // Check if all questions are answered (Q23 / openSignal is now mandatory too)
+  // Check if all mandatory questions are answered (openSignal is optional)
   const areMandatoryQuestionsAnswered = () => {
     const values = form.getValues();
     for (let i = 0; i < totalQuestions; i++) {
       const question = activeQuestions[i];
+      if (question.id === "openSignal") continue; // optional
       const value = values[question.id as keyof typeof values];
       if (!value || value === "") {
         return false;
@@ -741,10 +742,11 @@ export default function Assessment() {
     return true;
   };
 
-  // Check if current question is answered — all questions are mandatory including openSignal
+  // Check if current question is answered — openSignal is optional so always passes
   const isCurrentQuestionAnswered = () => {
     if (currentQuestion < 0 || currentQuestion >= totalQuestions) return true;
     const question = activeQuestions[currentQuestion];
+    if (question.id === "openSignal") return true; // optional
     const values = form.getValues();
     const value = values[question.id as keyof typeof values];
     return value && value !== "";
@@ -1241,8 +1243,8 @@ export default function Assessment() {
 
   const renderReview = () => {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-20 px-6 overflow-y-auto">
-          <div className="max-w-2xl mx-auto">
+      <div className="h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-y-auto">
+        <div className="max-w-2xl mx-auto py-20 px-4 sm:px-6">
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2">Review Your Answers</h2>
             <p className="text-gray-400 mb-8">Click any answer to edit it.</p>
             
@@ -1383,8 +1385,8 @@ export default function Assessment() {
     ];
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-16 sm:py-20 px-4 sm:px-6 overflow-y-auto">
-        <div className="max-w-3xl mx-auto">
+      <div className="h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-y-auto">
+        <div className="max-w-3xl mx-auto py-16 sm:py-20 px-4 sm:px-6">
 
             {/* Section 1 - Verdict Banner */}
             <div className={`rounded-2xl border bg-gradient-to-br ${verdictBgMap[d.marginRiskVerdict] || verdictBgMap["Structurally Safe"]} p-6 sm:p-8 mb-6`}>
