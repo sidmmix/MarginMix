@@ -875,7 +875,7 @@ export default function QuickProfiler() {
               onClick={handleGoToFullAssessment}
             >
               <span className="flex items-center gap-2 font-semibold">
-                Continue to Paid Assessment
+                Continue to Paid Assessment @ $89
                 <ChevronRight className="h-5 w-5" />
               </span>
               <span className="text-xs text-emerald-100 font-normal">Your 7 answers carry forward · Payment at Submission</span>
