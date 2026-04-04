@@ -1131,15 +1131,6 @@ export default function Assessment() {
                 </Form>
               </div>
 
-              {/* Continue hint for text inputs */}
-              {(question.type === "text" || question.type === "email") && (
-                <div className="mt-6 flex items-center gap-2 text-white/60 text-sm">
-                  <span className="hidden sm:inline">Press</span>
-                  <kbd className="hidden sm:inline px-2 py-1 bg-white/20 rounded text-xs font-mono">Enter ↵</kbd>
-                  <span className="hidden sm:inline">or use buttons to continue</span>
-                  <span className="sm:hidden">Swipe up or tap Continue</span>
-                </div>
-              )}
           </div>
         </div>
       </div>
