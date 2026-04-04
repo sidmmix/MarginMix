@@ -1230,8 +1230,12 @@ export default function Assessment() {
               Click / Enter / Return to continue
               <ArrowRight className="ml-2 sm:ml-3 h-4 w-4 sm:h-6 sm:w-6" />
             </Button>
+
+            <p className="mt-4 text-sm sm:text-base text-emerald-100 font-medium">
+              Assessments are at an introductory price of $89
+            </p>
             
-            <p className="mt-8 sm:mt-10 text-xs sm:text-sm text-emerald-200/80 px-4">
+            <p className="mt-4 sm:mt-6 text-xs sm:text-sm text-emerald-200/80 px-4">
               No financial data, timesheets, or individual performance information is required.
             </p>
           </div>
