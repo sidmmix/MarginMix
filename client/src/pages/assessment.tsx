@@ -464,6 +464,7 @@ export default function Assessment() {
   const [direction, setDirection] = useState<1 | -1>(1);
   const shouldReduce = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
+  const marginAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { toast } = useToast();
   const searchString = useSearch();
   const [, setLocation] = useLocation();
@@ -1170,7 +1171,14 @@ export default function Assessment() {
                   max="100"
                   step="0.1"
                   value={currentMargin}
-                  onChange={(e) => setCurrentMargin(e.target.value)}
+                  onChange={(e) => {
+                    setCurrentMargin(e.target.value);
+                    if (marginAdvanceTimer.current) clearTimeout(marginAdvanceTimer.current);
+                    const val = parseFloat(e.target.value);
+                    if (!isNaN(val) && val > 0 && val <= 100) {
+                      marginAdvanceTimer.current = setTimeout(() => handleNext(), 800);
+                    }
+                  }}
                   placeholder="e.g. 18"
                   autoFocus
                   className="text-center text-2xl sm:text-3xl py-5 sm:py-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/40 focus:border-white focus:bg-white/20 rounded-xl pr-14"
