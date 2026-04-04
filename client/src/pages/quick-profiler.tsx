@@ -757,6 +757,14 @@ export default function QuickProfiler() {
                     </button>
                   ))}
                 </div>
+
+                {/* Continue hint */}
+                <div className="mt-5 flex items-center gap-2 text-white/60 text-sm">
+                  <span className="hidden sm:inline">Press</span>
+                  <kbd className="hidden sm:inline px-2 py-1 bg-white/20 rounded text-xs font-mono">Enter ↵</kbd>
+                  <span className="hidden sm:inline">or use buttons to continue</span>
+                  <span className="sm:hidden">Tap an option or use buttons to continue</span>
+                </div>
               </div>
           </div>
         </div>
