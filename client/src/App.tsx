@@ -77,9 +77,7 @@ function Router() {
             <Route path="/why-choose" component={WhyChoose} />
             <Route path="/auth" component={AuthPage} />
             
-            <Route path="/pitch">
-              {() => <ProtectedRoute component={PitchDeck} />}
-            </Route>
+            <Route path="/pitch" component={PitchDeck} />
 
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/home" component={Home} />
