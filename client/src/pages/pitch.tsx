@@ -31,7 +31,7 @@ export default function PitchDeck() {
   }, [next, prev]);
 
   return (
-    <div className="relative w-full h-screen bg-slate-950 overflow-hidden font-sans select-none">
+    <div className="relative w-full h-screen bg-white overflow-hidden font-sans select-none">
 
       {/* Slide Container */}
       <div className="w-full h-full">
@@ -53,7 +53,7 @@ export default function PitchDeck() {
         <button
           onClick={prev}
           disabled={current === 0}
-          className="p-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-20 disabled:cursor-not-allowed transition-all text-white"
+          className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-slate-700"
         >
           <ChevronLeft className="h-5 w-5" />
         </button>
@@ -63,7 +63,7 @@ export default function PitchDeck() {
             <button
               key={i}
               onClick={() => setCurrent(i)}
-              className={`rounded-full transition-all ${i === current ? "w-6 h-2 bg-emerald-400" : "w-2 h-2 bg-white/30 hover:bg-white/50"}`}
+              className={`rounded-full transition-all ${i === current ? "w-6 h-2 bg-emerald-500" : "w-2 h-2 bg-slate-300 hover:bg-slate-400"}`}
             />
           ))}
         </div>
@@ -71,20 +71,20 @@ export default function PitchDeck() {
         <button
           onClick={next}
           disabled={current === slides.length - 1}
-          className="p-2 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-20 disabled:cursor-not-allowed transition-all text-white"
+          className="p-2 rounded-full bg-slate-100 hover:bg-slate-200 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-slate-700"
         >
           <ChevronRight className="h-5 w-5" />
         </button>
       </div>
 
       {/* Slide counter */}
-      <div className="absolute top-5 right-6 text-white/30 text-xs font-mono z-50">
+      <div className="absolute top-5 right-6 text-slate-400 text-xs font-mono z-50">
         {current + 1} / {slides.length}
       </div>
 
       {/* Keyboard hint */}
       {current === 0 && (
-        <div className="absolute bottom-16 left-0 right-0 text-center text-white/25 text-xs">
+        <div className="absolute bottom-16 left-0 right-0 text-center text-slate-400 text-xs">
           Use arrow keys or click to navigate
         </div>
       )}
@@ -102,7 +102,7 @@ function SlideWrapper({ children, className = "" }: { children: React.ReactNode;
 
 function Tag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-block text-xs font-semibold tracking-widest uppercase text-emerald-400 mb-4">
+    <span className="inline-block text-xs font-semibold tracking-widest uppercase text-emerald-600 mb-4">
       {children}
     </span>
   );
@@ -115,26 +115,26 @@ function Divider() {
 // ── SLIDE 1: COVER ────────────────────────────────────────────────────────────
 function SlideCover() {
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden">
-      {/* Background glow */}
-      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-3xl" />
+    <div className="w-full h-full flex flex-col items-center justify-center relative overflow-hidden bg-white">
+      {/* Subtle background glow */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white via-emerald-50/40 to-white" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-500/8 rounded-full blur-3xl" />
 
       <div className="relative z-10 text-center max-w-4xl">
-        <p className="text-emerald-400 text-sm font-semibold tracking-widest uppercase mb-6">Investor Presentation · 2026</p>
-        <h1 className="text-6xl md:text-7xl font-bold text-white mb-4 tracking-tight">MarginMix</h1>
-        <p className="text-xl md:text-2xl text-emerald-300 font-light mb-8">
+        <p className="text-emerald-600 text-sm font-semibold tracking-widest uppercase mb-6">Investor Presentation · 2026</p>
+        <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-4 tracking-tight">MarginMix</h1>
+        <p className="text-xl md:text-2xl text-emerald-700 font-light mb-8">
           The Financial Reasoning Engine for Professional Services
         </p>
         <div className="w-24 h-px bg-emerald-500 mx-auto mb-8" />
-        <p className="text-base md:text-lg text-slate-400 max-w-2xl mx-auto leading-relaxed">
+        <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
           Pricing and margin risk decisions — made before delivery begins,
           where the cost of being wrong is highest.
         </p>
         <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-slate-500 text-sm">
-          <span className="flex items-center gap-2"><Shield className="h-4 w-4 text-emerald-500" /> Deterministic Engine</span>
-          <span className="flex items-center gap-2"><Zap className="h-4 w-4 text-emerald-500" /> 60-Second Assessment</span>
-          <span className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-emerald-500" /> 90% Gross Margin</span>
+          <span className="flex items-center gap-2"><Shield className="h-4 w-4 text-emerald-600" /> Deterministic Engine</span>
+          <span className="flex items-center gap-2"><Zap className="h-4 w-4 text-emerald-600" /> 60-Second Assessment</span>
+          <span className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-emerald-600" /> 90% Gross Margin</span>
         </div>
       </div>
     </div>
@@ -151,10 +151,10 @@ function SlideProblem() {
     { icon: "👤", text: "Judgment lives in senior operators' heads, not in systems" },
   ];
   return (
-    <div className="w-full h-full flex flex-col lg:flex-row bg-gradient-to-br from-slate-950 to-slate-900">
+    <div className="w-full h-full flex flex-col lg:flex-row bg-white">
       <div className="flex-1 flex flex-col justify-center px-10 md:px-16 lg:px-20 pt-16 pb-8 lg:py-0">
         <Tag>The Problem</Tag>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight mb-4">
           Firms price work before they understand how it will be delivered.
         </h2>
         <Divider />
@@ -162,27 +162,27 @@ function SlideProblem() {
           {points.map((p, i) => (
             <div key={i} className="flex items-start gap-3">
               <span className="text-xl mt-0.5">{p.icon}</span>
-              <p className="text-slate-300 text-sm md:text-base">{p.text}</p>
+              <p className="text-slate-600 text-sm md:text-base">{p.text}</p>
             </div>
           ))}
         </div>
       </div>
-      <div className="flex-none lg:w-80 xl:w-96 bg-red-950/30 border-l border-red-900/30 flex items-center justify-center p-10">
+      <div className="flex-none lg:w-80 xl:w-96 bg-red-50 border-l border-red-200 flex items-center justify-center p-10">
         <div className="text-center">
-          <p className="text-red-400 text-xs font-semibold tracking-widest uppercase mb-6">The Result</p>
+          <p className="text-red-600 text-xs font-semibold tracking-widest uppercase mb-6">The Result</p>
           <div className="space-y-6">
             <div>
-              <p className="text-4xl font-bold text-white">$300K–$1M</p>
-              <p className="text-slate-400 text-sm mt-1">margin destroyed per year from 1–2 mispriced engagements</p>
+              <p className="text-4xl font-bold text-slate-900">$300K–$1M</p>
+              <p className="text-slate-500 text-sm mt-1">margin destroyed per year from 1–2 mispriced engagements</p>
             </div>
-            <div className="w-12 h-px bg-red-800 mx-auto" />
+            <div className="w-12 h-px bg-red-300 mx-auto" />
             <div>
-              <p className="text-2xl font-bold text-red-300">Discovered<br />too late</p>
-              <p className="text-slate-400 text-sm mt-2">Margin erosion is only visible after damage is done</p>
+              <p className="text-2xl font-bold text-red-600">Discovered<br />too late</p>
+              <p className="text-slate-500 text-sm mt-2">Margin erosion is only visible after damage is done</p>
             </div>
           </div>
-          <div className="mt-8 p-4 bg-red-900/20 border border-red-800/40 rounded-xl">
-            <p className="text-red-300 text-sm font-medium italic">
+          <div className="mt-8 p-4 bg-red-50 border border-red-200 rounded-xl">
+            <p className="text-red-600 text-sm font-medium italic">
               "This is not a margin leakage problem.<br />It is a pricing and commitment risk problem."
             </p>
           </div>
@@ -208,44 +208,44 @@ function SlideSolution() {
     "Does not replace finance systems",
   ];
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-950 via-emerald-950/20 to-slate-900 flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
+    <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
       <div className="max-w-6xl mx-auto w-full">
         <Tag>The Solution</Tag>
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
           One question. One verdict. Before commitment is locked.
         </h2>
-        <p className="text-emerald-300 text-lg italic mb-8">
+        <p className="text-emerald-700 text-lg italic mb-8">
           "Given how this engagement will actually be delivered, is the pricing economically viable?"
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-            <p className="text-emerald-400 text-xs font-bold tracking-widest uppercase mb-4">What MarginMix Outputs</p>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-4">What MarginMix Outputs</p>
             <div className="space-y-3">
               {outputs.map((o, i) => (
                 <div key={i} className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
                   </div>
-                  <p className="text-slate-300 text-sm">{o}</p>
+                  <p className="text-slate-600 text-sm">{o}</p>
                 </div>
               ))}
             </div>
           </div>
           <div className="space-y-4">
-            <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6">
-              <p className="text-slate-400 text-xs font-bold tracking-widest uppercase mb-4">What It Is Not</p>
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+              <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-4">What It Is Not</p>
               <div className="space-y-2">
                 {notThis.map((n, i) => (
                   <div key={i} className="flex items-start gap-2">
-                    <span className="text-slate-500 text-sm">—</span>
-                    <p className="text-slate-400 text-sm">{n}</p>
+                    <span className="text-slate-400 text-sm">—</span>
+                    <p className="text-slate-500 text-sm">{n}</p>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="bg-emerald-900/30 border border-emerald-700/40 rounded-2xl p-6">
-              <p className="text-emerald-300 text-xs font-bold tracking-widest uppercase mb-3">The Engine</p>
-              <p className="text-white text-sm leading-relaxed">
+            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
+              <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-3">The Engine</p>
+              <p className="text-slate-800 text-sm leading-relaxed">
                 Deterministic. Rule-based. No ML. No AI in verdict logic.
                 Encodes expert judgment into a <strong>repeatable, auditable decision system</strong> that gives the same answer to identical inputs — every time.
               </p>
@@ -282,16 +282,16 @@ function SlideWhyNow() {
     },
   ];
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-950 to-slate-900 flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
+    <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
       <div className="max-w-5xl mx-auto w-full">
         <Tag>Why Now</Tag>
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">Four forces converging — right now.</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Four forces converging — right now.</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {reasons.map((r, i) => (
-            <div key={i} className="bg-white/5 border border-white/10 hover:border-emerald-500/30 transition-colors rounded-2xl p-6">
-              <div className="text-emerald-400 mb-3">{r.icon}</div>
-              <p className="text-white font-semibold mb-2">{r.title}</p>
-              <p className="text-slate-400 text-sm leading-relaxed">{r.body}</p>
+            <div key={i} className="bg-white border border-slate-200 hover:border-emerald-400 transition-colors rounded-2xl p-6 shadow-sm">
+              <div className="text-emerald-600 mb-3">{r.icon}</div>
+              <p className="text-slate-900 font-semibold mb-2">{r.title}</p>
+              <p className="text-slate-500 text-sm leading-relaxed">{r.body}</p>
             </div>
           ))}
         </div>
@@ -316,42 +316,42 @@ function SlideCustomer() {
     "Fewer decisions = higher stakes per decision",
   ];
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-950 to-slate-900 flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
+    <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
       <div className="max-w-6xl mx-auto w-full">
         <Tag>Target Customer</Tag>
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">Phase 1 Wedge: Mid-tier Professional Services</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Phase 1 Wedge: Mid-tier Professional Services</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-            <p className="text-emerald-400 text-xs font-bold tracking-widest uppercase mb-4">Firm Profile</p>
-            <p className="text-2xl font-bold text-white mb-1">200–2,000</p>
-            <p className="text-slate-400 text-sm mb-5">employees</p>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-4">Firm Profile</p>
+            <p className="text-2xl font-bold text-slate-900 mb-1">200–2,000</p>
+            <p className="text-slate-500 text-sm mb-5">employees</p>
             <div className="space-y-2">
               {firmTypes.map((f, i) => (
                 <div key={i} className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
-                  <p className="text-slate-300 text-sm">{f}</p>
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                  <p className="text-slate-600 text-sm">{f}</p>
                 </div>
               ))}
             </div>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-            <p className="text-emerald-400 text-xs font-bold tracking-widest uppercase mb-4">Key Buyers</p>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-4">Key Buyers</p>
             <div className="space-y-4">
               {buyers.map((b, i) => (
-                <div key={i} className="border-b border-white/5 pb-3 last:border-0 last:pb-0">
-                  <p className="text-white font-semibold">{b.title}</p>
-                  <p className="text-slate-400 text-sm">{b.desc}</p>
+                <div key={i} className="border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                  <p className="text-slate-900 font-semibold">{b.title}</p>
+                  <p className="text-slate-500 text-sm">{b.desc}</p>
                 </div>
               ))}
             </div>
           </div>
-          <div className="bg-emerald-900/20 border border-emerald-700/30 rounded-2xl p-6">
-            <p className="text-emerald-400 text-xs font-bold tracking-widest uppercase mb-4">Why These Firms</p>
+          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
+            <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-4">Why These Firms</p>
             <div className="space-y-3">
               {whyThem.map((w, i) => (
                 <div key={i} className="flex items-start gap-2">
-                  <ArrowRight className="h-3.5 w-3.5 text-emerald-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-slate-300 text-sm">{w}</p>
+                  <ArrowRight className="h-3.5 w-3.5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-slate-600 text-sm">{w}</p>
                 </div>
               ))}
             </div>
@@ -365,47 +365,47 @@ function SlideCustomer() {
 // ── SLIDE 6: REVENUE MODEL ────────────────────────────────────────────────────
 function SlideRevenue() {
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-950 to-slate-900 flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
+    <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
       <div className="max-w-5xl mx-auto w-full">
         <Tag>Revenue Model</Tag>
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Value-based. Decision-anchored. Not seat-based.</h2>
-        <p className="text-slate-400 text-sm mb-8">Pricing reflects the value of the decision being protected — not the number of users.</p>
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">Value-based. Decision-anchored. Not seat-based.</h2>
+        <p className="text-slate-500 text-sm mb-8">Pricing reflects the value of the decision being protected — not the number of users.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-            <p className="text-slate-400 text-xs font-bold tracking-widest uppercase mb-3">Entry / Assessment</p>
-            <p className="text-4xl font-bold text-white mb-1">$1,899</p>
-            <p className="text-slate-400 text-sm mb-4">per submission</p>
-            <div className="space-y-2 text-sm text-slate-300">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Entry / Assessment</p>
+            <p className="text-4xl font-bold text-slate-900 mb-1">$1,899</p>
+            <p className="text-slate-500 text-sm mb-4">per submission</p>
+            <div className="space-y-2 text-sm text-slate-600">
               <p>— Instant output</p>
               <p>— No free trial</p>
               <p>— Decision memo + PDF</p>
             </div>
           </div>
-          <div className="bg-emerald-900/30 border border-emerald-500/40 rounded-2xl p-6 relative">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-slate-950 text-xs font-bold px-3 py-1 rounded-full">Phase 1 Core</div>
-            <p className="text-emerald-300 text-xs font-bold tracking-widest uppercase mb-3">Subscription</p>
-            <p className="text-4xl font-bold text-white mb-1">$1,250<span className="text-xl text-slate-400">/mo</span></p>
-            <p className="text-slate-400 text-sm mb-4">~$15K ACV</p>
-            <div className="space-y-2 text-sm text-slate-300">
+          <div className="bg-emerald-50 border-2 border-emerald-400 rounded-2xl p-6 relative">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full">Phase 1 Core</div>
+            <p className="text-emerald-700 text-xs font-bold tracking-widest uppercase mb-3">Subscription</p>
+            <p className="text-4xl font-bold text-slate-900 mb-1">$1,250<span className="text-xl text-slate-400">/mo</span></p>
+            <p className="text-slate-500 text-sm mb-4">~$15K ACV</p>
+            <div className="space-y-2 text-sm text-slate-600">
               <p>— Unlimited submissions</p>
               <p>— Portfolio-level views</p>
               <p>— Deal desk workflows</p>
               <p>— AI ROI simulation</p>
             </div>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-            <p className="text-slate-400 text-xs font-bold tracking-widest uppercase mb-3">Phase 2 Expansion</p>
-            <p className="text-4xl font-bold text-white mb-1">$2,100<span className="text-xl text-slate-400">/mo</span></p>
-            <p className="text-slate-400 text-sm mb-4">~$25K ACV</p>
-            <div className="space-y-2 text-sm text-slate-300">
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Phase 2 Expansion</p>
+            <p className="text-4xl font-bold text-slate-900 mb-1">$2,100<span className="text-xl text-slate-400">/mo</span></p>
+            <p className="text-slate-500 text-sm mb-4">~$25K ACV</p>
+            <div className="space-y-2 text-sm text-slate-600">
               <p>— Everything in Phase 1</p>
               <p>— Engineering / SI firms</p>
               <p>— Full expansion tier</p>
             </div>
           </div>
         </div>
-        <div className="mt-5 p-4 bg-white/3 border border-white/8 rounded-xl text-sm text-slate-400">
-          <strong className="text-slate-300">Trigger for subscription launch:</strong> 300 paying customers within 6 months of launch. Assessment-tier revenue funds this.
+        <div className="mt-5 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-500">
+          <strong className="text-slate-700">Trigger for subscription launch:</strong> 300 paying customers within 6 months of launch. Assessment-tier revenue funds this.
         </div>
       </div>
     </div>
@@ -415,37 +415,37 @@ function SlideRevenue() {
 // ── SLIDE 7: MARKET ───────────────────────────────────────────────────────────
 function SlideMarket() {
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-950 to-slate-900 flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
+    <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
       <div className="max-w-5xl mx-auto w-full">
         <Tag>Market Opportunity</Tag>
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">Large, underserved, and structured for expansion.</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Large, underserved, and structured for expansion.</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-            <p className="text-slate-400 text-xs font-bold tracking-widest uppercase mb-2">TAM</p>
-            <p className="text-3xl font-bold text-white mb-1">$600M–$1B</p>
-            <p className="text-slate-400 text-sm">~40K firms globally (developed markets + Brazil, South Africa) — 200+ employee agencies, consulting, SIs, ITeS at $15K–$25K ACV</p>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-2">TAM</p>
+            <p className="text-3xl font-bold text-slate-900 mb-1">$600M–$1B</p>
+            <p className="text-slate-500 text-sm">~40K firms globally (developed markets + Brazil, South Africa) — 200+ employee agencies, consulting, SIs, ITeS at $15K–$25K ACV</p>
           </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-            <p className="text-slate-400 text-xs font-bold tracking-widest uppercase mb-2">SAM · Phase 1</p>
-            <p className="text-3xl font-bold text-emerald-300 mb-1">$213M</p>
-            <p className="text-slate-400 text-sm">14,200 agencies & consulting firms across 13 core markets at $15K ACV. 2–3 year horizon.</p>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-2">SAM · Phase 1</p>
+            <p className="text-3xl font-bold text-emerald-700 mb-1">$213M</p>
+            <p className="text-slate-500 text-sm">14,200 agencies & consulting firms across 13 core markets at $15K ACV. 2–3 year horizon.</p>
           </div>
-          <div className="bg-emerald-900/30 border border-emerald-500/30 rounded-2xl p-6">
-            <p className="text-emerald-400 text-xs font-bold tracking-widest uppercase mb-2">SOM · 3 Years</p>
-            <p className="text-3xl font-bold text-emerald-400 mb-1">$7.5M ARR</p>
-            <p className="text-slate-300 text-sm">500 firms in top 13 markets at $15K ACV. Establishes "Margin Risk Clarity" as the decision-support standard.</p>
+          <div className="bg-emerald-50 border border-emerald-300 rounded-2xl p-6">
+            <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-2">SOM · 3 Years</p>
+            <p className="text-3xl font-bold text-emerald-700 mb-1">$7.5M ARR</p>
+            <p className="text-slate-600 text-sm">500 firms in top 13 markets at $15K ACV. Establishes "Margin Risk Clarity" as the decision-support standard.</p>
           </div>
         </div>
-        <div className="bg-white/5 border border-white/8 rounded-2xl p-5">
+        <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <p className="text-emerald-400 text-xs font-bold tracking-widest uppercase mb-2">Phase 2 · 5–7 Years</p>
-              <p className="text-2xl font-bold text-white">$25M ARR</p>
-              <p className="text-slate-400 text-sm mt-1">27,090 firms (adding Engineering / SIs) at $24K ACV. 2.5% of TAM capture.</p>
+              <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-2">Phase 2 · 5–7 Years</p>
+              <p className="text-2xl font-bold text-slate-900">$25M ARR</p>
+              <p className="text-slate-500 text-sm mt-1">27,090 firms (adding Engineering / SIs) at $24K ACV. 2.5% of TAM capture.</p>
             </div>
             <div>
-              <p className="text-slate-400 text-xs font-bold tracking-widest uppercase mb-2">Strategic Transition</p>
-              <p className="text-white text-sm leading-relaxed">From boutique advisory tool → <strong className="text-emerald-300">essential operational guardrail</strong> — the 5-minute AI Deal Desk utility embedded in every pricing decision.</p>
+              <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-2">Strategic Transition</p>
+              <p className="text-slate-700 text-sm leading-relaxed">From boutique advisory tool → <strong className="text-emerald-700">essential operational guardrail</strong> — the 5-minute AI Deal Desk utility embedded in every pricing decision.</p>
             </div>
           </div>
         </div>
@@ -457,25 +457,25 @@ function SlideMarket() {
 // ── SLIDE 8: UNIT ECONOMICS ───────────────────────────────────────────────────
 function SlideUnitEconomics() {
   const metrics = [
-    { label: "Gross Margin", value: "90%", sub: "Minimal COGS — LLM narration + infra only", color: "text-emerald-400" },
-    { label: "CAC", value: "Low", sub: "Founder-led sales initially. No channel cost in early stage", color: "text-blue-400" },
-    { label: "Onboarding Cost", value: "$0", sub: "No integrations. No implementation. Instant assessment output", color: "text-purple-400" },
-    { label: "ACV", value: "~$15K", sub: "Even one avoided bad engagement justifies multiple years of subscription", color: "text-amber-400" },
-    { label: "Decision Frequency", value: "70–80/yr", sub: "Typical mid-tier firm pricing decisions — episodic, high-stakes", color: "text-red-400" },
-    { label: "Payback", value: "< 1 deal", sub: "A single flagged engagement typically saves more than the annual fee", color: "text-emerald-400" },
+    { label: "Gross Margin", value: "90%", sub: "Minimal COGS — LLM narration + infra only", color: "text-emerald-600" },
+    { label: "CAC", value: "Low", sub: "Founder-led sales initially. No channel cost in early stage", color: "text-blue-600" },
+    { label: "Onboarding Cost", value: "$0", sub: "No integrations. No implementation. Instant assessment output", color: "text-purple-600" },
+    { label: "ACV", value: "~$15K", sub: "Even one avoided bad engagement justifies multiple years of subscription", color: "text-amber-600" },
+    { label: "Decision Frequency", value: "70–80/yr", sub: "Typical mid-tier firm pricing decisions — episodic, high-stakes", color: "text-red-600" },
+    { label: "Payback", value: "< 1 deal", sub: "A single flagged engagement typically saves more than the annual fee", color: "text-emerald-600" },
   ];
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-950 to-slate-900 flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
+    <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
       <div className="max-w-5xl mx-auto w-full">
         <Tag>Unit Economics</Tag>
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">High-margin decision product. Not services-heavy SaaS.</h2>
-        <p className="text-slate-400 text-sm mb-8">The cost structure is built for scale. The value proposition is built for retention.</p>
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">High-margin decision product. Not services-heavy SaaS.</h2>
+        <p className="text-slate-500 text-sm mb-8">The cost structure is built for scale. The value proposition is built for retention.</p>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {metrics.map((m, i) => (
-            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-5">
+            <div key={i} className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
               <p className={`text-2xl md:text-3xl font-bold mb-1 ${m.color}`}>{m.value}</p>
-              <p className="text-white text-sm font-medium mb-2">{m.label}</p>
-              <p className="text-slate-400 text-xs leading-relaxed">{m.sub}</p>
+              <p className="text-slate-900 text-sm font-medium mb-2">{m.label}</p>
+              <p className="text-slate-500 text-xs leading-relaxed">{m.sub}</p>
             </div>
           ))}
         </div>
@@ -494,21 +494,21 @@ function SlideScalability() {
     { title: "Decision infrastructure, not software", body: "Customers don't churn from decision infrastructure. Once embedded in the pricing process, switching cost is high." },
   ];
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-950 to-slate-900 flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
+    <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
       <div className="max-w-5xl mx-auto w-full">
         <Tag>Why This Scales</Tag>
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-8">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">
           Decision infrastructure compounds. It doesn't erode.
         </h2>
         <div className="space-y-3">
           {reasons.map((r, i) => (
-            <div key={i} className="flex items-start gap-5 bg-white/4 border border-white/8 rounded-xl px-5 py-4 hover:border-emerald-500/20 transition-colors">
-              <div className="w-7 h-7 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div key={i} className="flex items-start gap-5 bg-slate-50 border border-slate-200 rounded-xl px-5 py-4 hover:border-emerald-400 transition-colors">
+              <div className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
                 {i + 1}
               </div>
               <div>
-                <p className="text-white font-semibold text-sm mb-0.5">{r.title}</p>
-                <p className="text-slate-400 text-sm">{r.body}</p>
+                <p className="text-slate-900 font-semibold text-sm mb-0.5">{r.title}</p>
+                <p className="text-slate-500 text-sm">{r.body}</p>
               </div>
             </div>
           ))}
@@ -528,25 +528,25 @@ function SlideFounder() {
     "Category creator advantage: defined the problem space before the market named it",
   ];
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/20 flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
+    <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
       <div className="max-w-4xl mx-auto w-full">
         <Tag>Founder Advantage</Tag>
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-3">
           The insight can't be reverse-engineered without the experience.
         </h2>
-        <p className="text-slate-400 text-sm mb-8">
+        <p className="text-slate-500 text-sm mb-8">
           MarginMix exists because of a specific, hard-won operating perspective — one that took years of front-line pricing decisions to develop.
         </p>
         <div className="space-y-3 mb-8">
           {advantages.map((a, i) => (
             <div key={i} className="flex items-start gap-4">
-              <div className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0 mt-2" />
-              <p className="text-slate-300 text-sm md:text-base leading-relaxed">{a}</p>
+              <div className="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0 mt-2" />
+              <p className="text-slate-600 text-sm md:text-base leading-relaxed">{a}</p>
             </div>
           ))}
         </div>
-        <div className="bg-emerald-900/20 border border-emerald-700/30 rounded-2xl p-6">
-          <p className="text-emerald-200 text-base md:text-lg italic leading-relaxed">
+        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
+          <p className="text-emerald-800 text-base md:text-lg italic leading-relaxed">
             "MarginMix helps professional services firms price work with confidence by systematising margin risk decisions before delivery begins — where mistakes are most expensive."
           </p>
         </div>
@@ -563,43 +563,43 @@ function SlideAsk() {
     { phase: "18–36 mo", goal: "500 subscription firms", metric: "$625K MRR / $7.5M ARR" },
   ];
   return (
-    <div className="w-full h-full bg-gradient-to-br from-slate-950 via-emerald-950/10 to-slate-900 flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
+    <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
       <div className="max-w-5xl mx-auto w-full">
         <Tag>The Opportunity</Tag>
-        <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
           A category-defining product at the right moment.
         </h2>
-        <p className="text-slate-400 text-sm mb-8">
+        <p className="text-slate-500 text-sm mb-8">
           The pre-commitment margin risk window is open, unoccupied, and structurally important to every professional services firm.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {milestones.map((m, i) => (
-            <div key={i} className="bg-white/5 border border-white/10 rounded-2xl p-5 relative overflow-hidden">
+            <div key={i} className="bg-white border border-slate-200 rounded-2xl p-5 relative overflow-hidden shadow-sm">
               <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 to-transparent" />
-              <p className="text-emerald-400 text-xs font-bold tracking-widest uppercase mb-2">{m.phase}</p>
-              <p className="text-white text-sm font-semibold mb-2">{m.goal}</p>
-              <p className="text-slate-400 text-xs">{m.metric}</p>
+              <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-2">{m.phase}</p>
+              <p className="text-slate-900 text-sm font-semibold mb-2">{m.goal}</p>
+              <p className="text-slate-500 text-xs">{m.metric}</p>
             </div>
           ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-            <p className="text-slate-400 text-xs font-bold tracking-widest uppercase mb-3">Use of Funds</p>
+          <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Use of Funds</p>
             <div className="space-y-2 text-sm">
-              <div className="flex justify-between"><span className="text-slate-300">Product & Engineering</span><span className="text-white font-medium">40%</span></div>
-              <div className="flex justify-between"><span className="text-slate-300">GTM & Founder-led Sales</span><span className="text-white font-medium">35%</span></div>
-              <div className="flex justify-between"><span className="text-slate-300">Infrastructure & Ops</span><span className="text-white font-medium">15%</span></div>
-              <div className="flex justify-between"><span className="text-slate-300">Reserve</span><span className="text-white font-medium">10%</span></div>
+              <div className="flex justify-between"><span className="text-slate-600">Product & Engineering</span><span className="text-slate-900 font-medium">40%</span></div>
+              <div className="flex justify-between"><span className="text-slate-600">GTM & Founder-led Sales</span><span className="text-slate-900 font-medium">35%</span></div>
+              <div className="flex justify-between"><span className="text-slate-600">Infrastructure & Ops</span><span className="text-slate-900 font-medium">15%</span></div>
+              <div className="flex justify-between"><span className="text-slate-600">Reserve</span><span className="text-slate-900 font-medium">10%</span></div>
             </div>
           </div>
-          <div className="bg-emerald-900/30 border border-emerald-500/30 rounded-2xl p-6 flex flex-col justify-between">
+          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 flex flex-col justify-between">
             <div>
-              <p className="text-emerald-300 text-xs font-bold tracking-widest uppercase mb-3">Why MarginMix Wins</p>
-              <p className="text-slate-300 text-sm leading-relaxed">
+              <p className="text-emerald-700 text-xs font-bold tracking-widest uppercase mb-3">Why MarginMix Wins</p>
+              <p className="text-slate-600 text-sm leading-relaxed">
                 First mover. Proprietary framework. Deterministic engine. No integration cost. High gross margin. Founder with operating insight the market hasn't yet systemised.
               </p>
             </div>
-            <div className="mt-4 flex items-center gap-2 text-emerald-300 text-sm font-medium">
+            <div className="mt-4 flex items-center gap-2 text-emerald-700 text-sm font-medium">
               <Rocket className="h-4 w-4" />
               <span>marginmix.ai</span>
             </div>
