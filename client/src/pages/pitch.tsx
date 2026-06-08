@@ -369,7 +369,7 @@ function SlideRevenue() {
       <div className="max-w-5xl mx-auto w-full">
         <Tag>Revenue Model</Tag>
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">Value-based. Decision-anchored. Not seat-based.</h2>
-        <p className="text-slate-500 text-sm mb-8">Pricing reflects the value of the decision being protected — not the number of users.</p>
+        <p className="text-slate-500 text-sm mb-8">Pricing reflects the value of the decision being protected — not the number of users. Insurance for protecting margins.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Entry / Assessment</p>
@@ -379,33 +379,35 @@ function SlideRevenue() {
               <p>— Instant output</p>
               <p>— No free trial</p>
               <p>— Decision memo + PDF</p>
+              <p>— Low friction entry</p>
             </div>
           </div>
-          <div className="bg-emerald-50 border-2 border-emerald-400 rounded-2xl p-6 relative">
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full">Phase 1 Core</div>
+          <div className="bg-emerald-50 border-2 border-emerald-400 rounded-2xl p-6">
             <p className="text-emerald-700 text-xs font-bold tracking-widest uppercase mb-3">Subscription</p>
-            <p className="text-4xl font-bold text-slate-900 mb-1">$1,250<span className="text-xl text-slate-400">/mo</span></p>
-            <p className="text-slate-500 text-sm mb-4">~$15K ACV</p>
+            <p className="text-4xl font-bold text-slate-900 mb-1">$5,000<span className="text-xl text-slate-400">/mo</span></p>
+            <p className="text-slate-500 text-sm mb-4">60K ACV</p>
             <div className="space-y-2 text-sm text-slate-600">
               <p>— Unlimited submissions</p>
               <p>— Portfolio-level views</p>
               <p>— Deal desk workflows</p>
               <p>— AI ROI simulation</p>
+              <p>— Primary revenue driver</p>
             </div>
           </div>
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Phase 2 Expansion</p>
-            <p className="text-4xl font-bold text-slate-900 mb-1">$2,100<span className="text-xl text-slate-400">/mo</span></p>
-            <p className="text-slate-500 text-sm mb-4">~$25K ACV</p>
+            <p className="text-4xl font-bold text-slate-900 mb-1">$7,500<span className="text-xl text-slate-400">/mo</span></p>
+            <p className="text-slate-500 text-sm mb-4">90K ACV</p>
             <div className="space-y-2 text-sm text-slate-600">
               <p>— Everything in Phase 1</p>
               <p>— Engineering / SI firms</p>
               <p>— Full expansion tier</p>
+              <p>— Year 2+ upsell</p>
             </div>
           </div>
         </div>
         <div className="mt-5 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-500">
-          <strong className="text-slate-700">Trigger for subscription launch:</strong> 300 paying customers within 6 months of launch. Assessment-tier revenue funds this.
+          Subscription launches after 300 paying assessment customers (target: within 6 months).
         </div>
       </div>
     </div>
@@ -422,32 +424,24 @@ function SlideMarket() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-2">TAM</p>
-            <p className="text-3xl font-bold text-slate-900 mb-1">$600M–$1B</p>
-            <p className="text-slate-500 text-sm">~40K firms globally (developed markets + Brazil, South Africa) — 200+ employee agencies, consulting, SIs, ITeS at $15K–$25K ACV</p>
+            <p className="text-3xl font-bold text-slate-900 mb-1">$100B</p>
+            <p className="text-slate-500 text-sm">~40K firms globally · Agencies, consulting, SIs</p>
           </div>
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-2">SAM · Phase 1</p>
-            <p className="text-3xl font-bold text-emerald-700 mb-1">$213M</p>
-            <p className="text-slate-500 text-sm">14,200 agencies & consulting firms across 13 core markets at $15K ACV. 2–3 year horizon.</p>
+            <p className="text-3xl font-bold text-emerald-700 mb-1">$800M–$900M</p>
+            <p className="text-slate-500 text-sm">14,200 firms · 13 core markets · $60K ACV · 2–3 year horizon</p>
           </div>
           <div className="bg-emerald-50 border border-emerald-300 rounded-2xl p-6">
-            <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-2">SOM · 3 Years</p>
-            <p className="text-3xl font-bold text-emerald-700 mb-1">$7.5M ARR</p>
-            <p className="text-slate-600 text-sm">500 firms in top 13 markets at $15K ACV. Establishes "Margin Risk Clarity" as the decision-support standard.</p>
+            <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-2">SOM · 5 to 7 Years</p>
+            <p className="text-3xl font-bold text-emerald-700 mb-1">$150M ARR</p>
+            <p className="text-slate-600 text-sm">2,000 firms · top 13 markets · $75K ACV</p>
           </div>
         </div>
         <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-2">Phase 2 · 5–7 Years</p>
-              <p className="text-2xl font-bold text-slate-900">$25M ARR</p>
-              <p className="text-slate-500 text-sm mt-1">27,090 firms (adding Engineering / SIs) at $24K ACV. 2.5% of TAM capture.</p>
-            </div>
-            <div>
-              <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-2">Strategic Transition</p>
-              <p className="text-slate-700 text-sm leading-relaxed">From boutique advisory tool → <strong className="text-emerald-700">essential operational guardrail</strong> — the 5-minute AI Deal Desk utility embedded in every pricing decision.</p>
-            </div>
-          </div>
+          <p className="text-slate-700 text-sm leading-relaxed text-center">
+            Transition to the <strong className="text-emerald-700">Financial Engine for the Services economy</strong>
+          </p>
         </div>
       </div>
     </div>
