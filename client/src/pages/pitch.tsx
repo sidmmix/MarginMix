@@ -373,7 +373,7 @@ function SlideRevenue() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
             <p className="text-slate-400 text-xs font-bold tracking-widest uppercase mb-3">Entry / Assessment</p>
-            <p className="text-4xl font-bold text-white mb-1">$89</p>
+            <p className="text-4xl font-bold text-white mb-1">$1,899</p>
             <p className="text-slate-400 text-sm mb-4">per submission</p>
             <div className="space-y-2 text-sm text-slate-300">
               <p>— Instant output</p>
@@ -558,7 +558,7 @@ function SlideFounder() {
 // ── SLIDE 11: THE ASK ─────────────────────────────────────────────────────────
 function SlideAsk() {
   const milestones = [
-    { phase: "0–6 mo", goal: "300 paying assessment customers", metric: "$89 × 300 = $26.7K MRR run-rate" },
+    { phase: "0–6 mo", goal: "300 paying assessment customers", metric: "$1,899 × 300 = $569.7K MRR run-rate" },
     { phase: "6–18 mo", goal: "Subscription launch + 50 firms", metric: "$62.5K MRR / $750K ARR" },
     { phase: "18–36 mo", goal: "500 subscription firms", metric: "$625K MRR / $7.5M ARR" },
   ];

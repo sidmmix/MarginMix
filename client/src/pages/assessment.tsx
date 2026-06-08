@@ -1232,7 +1232,7 @@ export default function Assessment() {
             </Button>
 
             <p className="mt-4 text-sm sm:text-base text-emerald-100 font-medium">
-              Assessments are at an introductory price of $89
+              Assessments are $1,899 per assessment
             </p>
             
             <p className="mt-4 sm:mt-6 text-xs sm:text-sm text-emerald-200/80 px-4">
@@ -1433,14 +1433,14 @@ export default function Assessment() {
                     </div>
                     <h3 className="text-base sm:text-xl font-bold text-white mb-2">Your Full Margin Risk Report</h3>
                     <p className="text-gray-400 text-xs sm:text-sm mb-4 sm:mb-6 leading-relaxed">
-                      Pay $89 to access the complete risk breakdown, effort allocation, structural signals, and download your Decision Memo &amp; Assessment PDFs.
+                      Pay $1,899 to access the complete risk breakdown, effort allocation, structural signals, and download your Decision Memo &amp; Assessment PDFs.
                     </p>
                     <Button
                       size="lg"
                       className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold shadow-lg flex flex-col h-auto gap-1 px-3"
                       onClick={() => checkoutUrl && (window.location.href = checkoutUrl)}
                     >
-                      <span className="leading-snug">Pay $89 — Unlock Full Report &amp; PDFs</span>
+                      <span className="leading-snug">Pay $1,899 — Unlock Full Report &amp; PDFs</span>
                       <span className="text-xs text-emerald-100 font-normal leading-snug">Decision Memo + Assessment Results included</span>
                     </Button>
                   </div>

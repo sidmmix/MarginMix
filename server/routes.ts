@@ -25,7 +25,7 @@ const openai = new OpenAI({
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-09-30.clover" });
-const STRIPE_PRICE_ID = "price_1TA0pJ6bE2gY9hpWcNUokblM";
+const STRIPE_PRICE_ID = "price_1Tfzu16bE2gY9hpWWdHnZydf";
 
 // Session configuration
 const pgStore = connectPg(session);
