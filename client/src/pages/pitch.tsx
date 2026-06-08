@@ -454,7 +454,7 @@ function SlideUnitEconomics() {
     { label: "Gross Margin", value: "90%", sub: "Minimal COGS — LLM narration + infra only", color: "text-emerald-600" },
     { label: "CAC", value: "Low", sub: "Founder-led sales initially. No channel cost in early stage", color: "text-blue-600" },
     { label: "Onboarding Cost", value: "$0", sub: "No integrations. No implementation. Instant assessment output", color: "text-purple-600" },
-    { label: "ACV", value: "~$15K", sub: "Even one avoided bad engagement justifies multiple years of subscription", color: "text-amber-600" },
+    { label: "ACV", value: "$60K", sub: "Even one avoided bad engagement justifies multiple years of subscription", color: "text-amber-600" },
     { label: "Decision Frequency", value: "70–80/yr", sub: "Typical mid-tier firm pricing decisions — episodic, high-stakes", color: "text-red-600" },
     { label: "Payback", value: "< 1 deal", sub: "A single flagged engagement typically saves more than the annual fee", color: "text-emerald-600" },
   ];
