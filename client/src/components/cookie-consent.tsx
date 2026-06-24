@@ -1,19 +1,22 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Cookie, X } from "lucide-react";
+import { getStoredConsent, CONSENT_KEY } from "@/lib/consent";
 
-const CONSENT_KEY = "marginmix_cookie_consent";
+declare function gtag(...args: unknown[]): void;
 
-export type ConsentValue = "accepted" | "declined" | null;
-
-export function getStoredConsent(): ConsentValue {
+function pushConsentUpdate(granted: boolean) {
   try {
-    const v = localStorage.getItem(CONSENT_KEY);
-    if (v === "accepted" || v === "declined") return v;
-    return null;
-  } catch {
-    return null;
-  }
+    if (typeof gtag !== "undefined") {
+      const state = granted ? "granted" : "denied";
+      gtag("consent", "update", {
+        analytics_storage:  state,
+        ad_storage:         state,
+        ad_user_data:       state,
+        ad_personalization: state,
+      });
+    }
+  } catch {}
 }
 
 export function CookieConsent() {
@@ -30,6 +33,7 @@ export function CookieConsent() {
     try {
       localStorage.setItem(CONSENT_KEY, choice);
     } catch {}
+    pushConsentUpdate(choice === "accepted");
     setVisible(false);
   };
 

@@ -1,15 +1,12 @@
-import { getStoredConsent } from "@/components/cookie-consent";
-
+// analytics.ts — all events are consent-gated by Google Consent Mode v2 at the gtag layer
 declare function gtag(...args: unknown[]): void;
 
 function track(eventName: string, params: Record<string, unknown> = {}) {
   try {
-    if (getStoredConsent() !== "accepted") return;
     if (typeof gtag !== "undefined") {
       gtag("event", eventName, params);
     }
-  } catch {
-  }
+  } catch {}
 }
 
 export const analytics = {
