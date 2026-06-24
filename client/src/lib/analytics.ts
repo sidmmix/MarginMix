@@ -1,7 +1,10 @@
+import { getStoredConsent } from "@/components/cookie-consent";
+
 declare function gtag(...args: unknown[]): void;
 
 function track(eventName: string, params: Record<string, unknown> = {}) {
   try {
+    if (getStoredConsent() !== "accepted") return;
     if (typeof gtag !== "undefined") {
       gtag("event", eventName, params);
     }
