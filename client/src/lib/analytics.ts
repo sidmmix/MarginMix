@@ -1,17 +1,20 @@
-// analytics.ts — all events are consent-gated by Google Consent Mode v2 at the gtag layer
-declare function gtag(...args: unknown[]): void;
+// GTM dataLayer-based analytics — events are consent-gated by Consent Mode v2 at the GTM layer.
+// GTM reads these pushes natively. In GTM, set up one GA4 Event tag triggered by
+// "Custom Event — All Events" to capture everything below.
 
-function track(eventName: string, params: Record<string, unknown> = {}) {
+declare const dataLayer: Record<string, unknown>[];
+
+function push(event: string, params: Record<string, unknown> = {}) {
   try {
-    if (typeof gtag !== "undefined") {
-      gtag("event", eventName, params);
+    if (typeof dataLayer !== "undefined") {
+      dataLayer.push({ event, ...params });
     }
   } catch {}
 }
 
 export const analytics = {
   questionView(source: "assessment" | "profiler", questionNumber: number, questionId: string, section: string) {
-    track("question_view", {
+    push("question_view", {
       event_category: source,
       question_number: questionNumber,
       question_id: questionId,
@@ -20,7 +23,7 @@ export const analytics = {
   },
 
   questionAnswered(source: "assessment" | "profiler", questionNumber: number, questionId: string, section: string, answer: string) {
-    track("question_answered", {
+    push("question_answered", {
       event_category: source,
       question_number: questionNumber,
       question_id: questionId,
@@ -30,33 +33,33 @@ export const analytics = {
   },
 
   marginEntered(source: "assessment" | "profiler", margin: string) {
-    track("margin_entered", {
+    push("margin_entered", {
       event_category: source,
       margin_value: margin,
     });
   },
 
   assessmentStarted() {
-    track("assessment_started", { event_category: "assessment" });
+    push("assessment_started", { event_category: "assessment" });
   },
 
   reviewReached(totalQuestions: number) {
-    track("review_reached", { event_category: "assessment", total_questions: totalQuestions });
+    push("review_reached", { event_category: "assessment", total_questions: totalQuestions });
   },
 
   assessmentSubmitted() {
-    track("assessment_submitted", { event_category: "assessment" });
+    push("assessment_submitted", { event_category: "assessment" });
   },
 
   profilerStarted() {
-    track("profiler_started", { event_category: "profiler" });
+    push("profiler_started", { event_category: "profiler" });
   },
 
   profilerCompleted(verdict: string) {
-    track("profiler_completed", { event_category: "profiler", verdict });
+    push("profiler_completed", { event_category: "profiler", verdict });
   },
 
   profilerContinuedToAssessment() {
-    track("profiler_continued_to_assessment", { event_category: "profiler" });
+    push("profiler_continued_to_assessment", { event_category: "profiler" });
   },
 };
