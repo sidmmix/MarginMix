@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { analytics } from "@/lib/analytics";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -393,6 +394,11 @@ export default function QuickProfiler() {
 
   const handleOptionSelect = (questionId: string, value: string) => {
     setAnswers(prev => ({ ...prev, [questionId]: value }));
+    const question = profilerQuestions.find(q => q.id === questionId);
+    if (question) {
+      const label = question.options?.find((o: { value: string }) => o.value === value)?.label ?? value;
+      analytics.questionAnswered("profiler", question.number, question.id, question.section ?? "", label);
+    }
     setTimeout(() => {
       const currentIdx = profilerQuestions.findIndex(q => q.id === questionId);
       if (currentIdx < totalQuestions - 1) {
@@ -460,6 +466,24 @@ export default function QuickProfiler() {
     localStorage.setItem(PROFILER_STORAGE_KEY, JSON.stringify(profilerData));
     setLocation("/assessment?from=profiler");
   };
+
+  useEffect(() => {
+    if (currentQuestion >= 0 && currentQuestion < profilerQuestions.length) {
+      const q = profilerQuestions[currentQuestion];
+      analytics.questionView("profiler", q.number, q.id, q.section ?? "");
+    }
+    if (currentQuestion === -1) {
+      analytics.profilerStarted();
+    }
+  }, [currentQuestion]);
+
+  useEffect(() => {
+    if (showResult) {
+      const stored = localStorage.getItem("marginmix_profiler_answers");
+      const verdict = stored ? JSON.parse(stored)._verdict ?? "unknown" : "unknown";
+      analytics.profilerCompleted(verdict);
+    }
+  }, [showResult]);
 
   const isCurrentQuestionAnswered = () => {
     if (currentQuestion < 0 || currentQuestion >= totalQuestions) return true;

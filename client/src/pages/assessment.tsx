@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { analytics } from "@/lib/analytics";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -902,6 +903,7 @@ export default function Assessment() {
 
   const handleNext = () => {
     if (isIntro) {
+      analytics.assessmentStarted();
       if (isFromProfiler) {
         scrollToQuestion(0);
       } else {
@@ -911,6 +913,7 @@ export default function Assessment() {
     }
 
     if (isMarginQuestion) {
+      analytics.marginEntered("assessment", currentMargin);
       scrollToQuestion(0);
       return;
     }
@@ -927,6 +930,7 @@ export default function Assessment() {
     // On last question (Q23), only allow going to review if Q1-Q22 are answered
     if (currentQuestion === totalQuestions - 1) {
       if (areMandatoryQuestionsAnswered()) {
+        analytics.reviewReached(totalQuestions);
         scrollToQuestion(currentQuestion + 1);
       }
       return;
@@ -958,8 +962,17 @@ export default function Assessment() {
   const handleOptionSelect = (value: string) => {
     const question = activeQuestions[currentQuestion];
     form.setValue(question.id, value);
+    const label = question.options?.find(o => o.value === value)?.label ?? value;
+    analytics.questionAnswered("assessment", question.number, question.id, question.section ?? "", label);
     setTimeout(() => handleNext(), 400);
   };
+
+  useEffect(() => {
+    if (currentQuestion >= 0 && currentQuestion < activeQuestions.length) {
+      const q = activeQuestions[currentQuestion];
+      analytics.questionView("assessment", q.number, q.id, q.section ?? "");
+    }
+  }, [currentQuestion]);
 
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
