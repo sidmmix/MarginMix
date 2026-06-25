@@ -45,21 +45,21 @@ export function CookieConsent() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 32, opacity: 0 }}
           transition={{ type: "spring", stiffness: 280, damping: 28 }}
-          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] w-[calc(100vw-2rem)] max-w-lg"
+          className="fixed bottom-3 left-2 right-2 sm:bottom-6 sm:left-1/2 sm:right-auto sm:-translate-x-1/2 sm:w-[calc(100vw-2rem)] sm:max-w-lg z-[9999]"
         >
-          <div className="relative bg-white border border-slate-200 rounded-2xl shadow-2xl shadow-slate-200/60 px-6 py-5">
+          <div className="relative bg-white border border-slate-200 rounded-xl sm:rounded-2xl shadow-2xl shadow-slate-200/60 px-4 py-4 sm:px-6 sm:py-5">
 
             {/* Dismiss */}
             <button
               onClick={() => respond("declined")}
-              className="absolute top-3.5 right-3.5 p-1 rounded-full text-slate-300 hover:text-slate-500 hover:bg-slate-100 transition-colors"
+              className="absolute top-3 right-3 p-1.5 rounded-full text-slate-300 hover:text-slate-500 hover:bg-slate-100 transition-colors"
               aria-label="Dismiss"
             >
-              <X className="h-3.5 w-3.5" />
+              <X className="h-4 w-4" />
             </button>
 
             {/* Icon + heading */}
-            <div className="flex items-start gap-3 mb-3">
+            <div className="flex items-start gap-3 mb-3 pr-6">
               <div className="mt-0.5 flex-shrink-0 w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center">
                 <Cookie className="h-4 w-4 text-emerald-600" />
               </div>
@@ -72,16 +72,16 @@ export function CookieConsent() {
             </div>
 
             {/* Actions */}
-            <div className="flex items-center gap-2 justify-end mt-4">
+            <div className="flex items-center gap-2 justify-end mt-3 sm:mt-4">
               <button
                 onClick={() => respond("declined")}
-                className="text-xs text-slate-400 hover:text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
+                className="text-xs text-slate-400 hover:text-slate-600 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors min-h-[36px]"
               >
                 Decline
               </button>
               <button
                 onClick={() => respond("accepted")}
-                className="text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-1.5 rounded-lg transition-colors shadow-sm"
+                className="text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg transition-colors shadow-sm min-h-[36px]"
               >
                 Accept all
               </button>
