@@ -335,7 +335,7 @@ const cw6 = (W - PAD * 2 - 24) / 3;
 const plans = [
   {
     label: "ENTRY / ASSESSMENT",
-    price: "$89",
+    price: "$18.99",
     unit: "per submission",
     items: ["Instant output", "No free trial", "Decision memo + PDF"],
     tinted: false,
@@ -514,7 +514,7 @@ caption("The pre-commitment margin risk window is open, unoccupied, and structur
 rule(PAD + 10, 188, W - PAD * 2 - 10);
 
 const milestones = [
-  { phase: "0 – 6 months",  goal: "300 paying assessment customers", metric: "$89 × 300 = $26.7K MRR run-rate" },
+  { phase: "0 – 6 months",  goal: "300 paying assessment customers", metric: "$18.99 × 300 = $5.7K MRR run-rate" },
   { phase: "6 – 18 months", goal: "Subscription launch + 50 firms",  metric: "$62.5K MRR  ·  $750K ARR" },
   { phase: "18 – 36 months",goal: "500 subscription firms",           metric: "$625K MRR  ·  $7.5M ARR" },
 ];
