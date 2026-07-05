@@ -266,12 +266,12 @@ export function registerRoutes(app: Express): Server {
         // Send notification email to Sid
         try {
           await sendFeedbackNotificationEmail(fullName, userEmail, feedbackResponse);
-          console.log(`Feedback notification sent: ${feedbackResponse} from ${fullName} (${userEmail})`);
+          console.log(`Feedback notification sent: ${feedbackResponse}`);
         } catch (notifyError: any) {
           console.error("Failed to send feedback notification:", notifyError.message);
         }
       } else {
-        console.log(`Duplicate feedback ignored for: ${userEmail}`);
+        console.log("Duplicate feedback ignored");
       }
       
       // Return a thank you page
@@ -463,7 +463,7 @@ export function registerRoutes(app: Express): Server {
             { filename: assessmentOutputFilename, content: assessmentOutputPdf },
           ];
           await sendAssessmentEmail(decisionObject as any, openSignal, pdfAttachments);
-          console.log(`[DEV] Assessment email sent to: ${validatedData.workEmail}`);
+          console.log(`[DEV] Assessment email sent for assessment ${assessment.id}`);
         } catch (emailError: any) {
           console.error("[DEV] Failed to send assessment email:", emailError.message);
         }

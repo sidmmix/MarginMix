@@ -15,12 +15,15 @@ app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 app.use((req, res, next) => {
   // CORS headers for development/production
   const allowedOrigins = process.env.NODE_ENV === 'production' 
-    ? ['https://yourbrief.co', 'https://www.yourbrief.co']
+    ? ['https://marginmix.ai', 'https://www.marginmix.ai']
     : ['http://localhost:5000', 'http://127.0.0.1:5000'];
   
   const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin as string)) {
-    res.setHeader('Access-Control-Allow-Origin', origin as string);
+  // Only ever reflect a literal, pre-approved origin from the allow-list above — never
+  // echo arbitrary request input back into the CORS header.
+  const matchedOrigin = allowedOrigins.find((allowed) => allowed === origin);
+  if (matchedOrigin) {
+    res.setHeader('Access-Control-Allow-Origin', matchedOrigin);
   }
   
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');

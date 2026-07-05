@@ -271,25 +271,28 @@ export class DatabaseStorage implements IStorage {
     limit: number = 10
   ): Promise<Array<CpmBenchmark & { similarity: number }>> {
     const embeddingStr = `[${embedding.join(',')}]`;
-    
-    let queryText = `
+
+    const conditions = [];
+    if (filters?.platform) conditions.push(drizzleSql`platform = ${filters.platform}`);
+    if (filters?.geo) conditions.push(drizzleSql`geo = ${filters.geo}`);
+
+    const whereClause = conditions.length > 0
+      ? drizzleSql`WHERE ${drizzleSql.join(conditions, drizzleSql` AND `)}`
+      : drizzleSql``;
+
+    // All dynamic values are bound as parameters via Drizzle's sql tagged template
+    // (never string-concatenated) to prevent SQL injection.
+    const query = drizzleSql`
       SELECT 
         id, industry, platform, objective, targeting, cpm, cpa, geo, metadata, created_at, updated_at,
-        1 - (embedding <=> '${embeddingStr}'::vector) as similarity
+        1 - (embedding <=> ${embeddingStr}::vector) as similarity
       FROM cpm_benchmarks
+      ${whereClause}
+      ORDER BY embedding <=> ${embeddingStr}::vector
+      LIMIT ${limit}
     `;
-    
-    if (filters?.platform && filters?.geo) {
-      queryText += ` WHERE platform = '${filters.platform}' AND geo = '${filters.geo}'`;
-    } else if (filters?.platform) {
-      queryText += ` WHERE platform = '${filters.platform}'`;
-    } else if (filters?.geo) {
-      queryText += ` WHERE geo = '${filters.geo}'`;
-    }
-    
-    queryText += ` ORDER BY embedding <=> '${embeddingStr}'::vector LIMIT ${limit}`;
-    
-    const result = await db.execute(drizzleSql.raw(queryText));
+
+    const result = await db.execute(query);
     return result.rows as any;
   }
 
