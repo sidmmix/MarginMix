@@ -1257,9 +1257,6 @@ export default function Assessment() {
                 <p className="text-sm sm:text-base text-yellow-300 font-semibold">
                   🎁 Demo access — No payment required
                 </p>
-                <p className="mt-1.5 text-xs text-emerald-200/70">
-                  Paid assessments are $18.99 during our Founder's Promo — offer closes 31 July, returns to $49.99 on 1 August
-                </p>
               </div>
             ) : (
               <div className="mt-4 text-center">
