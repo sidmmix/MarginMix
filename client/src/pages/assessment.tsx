@@ -468,8 +468,9 @@ export default function Assessment() {
   const marginAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { toast } = useToast();
   const searchString = useSearch();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const isFromProfiler = searchString.includes("from=profiler");
+  const isDemo = location === '/demo';
 
   const [profilerAnswers, setProfilerAnswers] = useState<Record<string, string>>({});
   const [selectedIndustry, setSelectedIndustry] = useState("marketing-advertising");
@@ -832,7 +833,7 @@ export default function Assessment() {
       const response = await fetch("/api/assessments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, currentMargin: marginValue, fromProfiler: isFromProfiler }),
+        body: JSON.stringify({ ...data, currentMargin: marginValue, fromProfiler: isFromProfiler, isDemo }),
       });
 
       if (response.ok) {
@@ -1235,6 +1236,13 @@ export default function Assessment() {
               </div>
             </div>
 
+            {isDemo && (
+              <div className="mb-4 inline-flex items-center gap-2 bg-white/20 border border-white/30 text-white text-sm font-semibold px-4 py-2 rounded-full">
+                <Zap className="h-4 w-4 text-yellow-300" />
+                Demo Mode — Full assessment, completely free
+              </div>
+            )}
+
             <Button
               onClick={handleNext}
               size="lg"
@@ -1244,9 +1252,15 @@ export default function Assessment() {
               <ArrowRight className="ml-2 sm:ml-3 h-4 w-4 sm:h-6 sm:w-6" />
             </Button>
 
-            <p className="mt-4 text-sm sm:text-base text-emerald-100 font-medium">
-              Assessments are $18.99 per assessment
-            </p>
+            {isDemo ? (
+              <p className="mt-4 text-sm sm:text-base text-yellow-300 font-semibold">
+                🎁 Demo access — No payment required
+              </p>
+            ) : (
+              <p className="mt-4 text-sm sm:text-base text-emerald-100 font-medium">
+                Assessments are $18.99 per assessment
+              </p>
+            )}
             
             <p className="mt-4 sm:mt-6 text-xs sm:text-sm text-emerald-200/80 px-4">
               No financial data, timesheets, or individual performance information is required.

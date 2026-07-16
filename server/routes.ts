@@ -452,6 +452,30 @@ export function registerRoutes(app: Express): Server {
         },
       });
 
+      // DEMO BYPASS: skip Stripe when request comes from /demo route
+      if (req.body.isDemo === true) {
+        console.log(`[DEMO] Payment bypassed for ${validatedData.organisationName} — demo mode`);
+        try {
+          const pdfAttachments: PDFAttachment[] = [
+            { filename: decisionMemoFilename,     content: decisionMemoPdf },
+            { filename: assessmentOutputFilename, content: assessmentOutputPdf },
+          ];
+          await sendAssessmentEmail(decisionObject as any, openSignal, pdfAttachments);
+        } catch (emailError: any) {
+          console.error("[DEMO] Failed to send assessment email:", emailError.message);
+        }
+        return res.status(201).json({
+          success: true,
+          requiresPayment: false,
+          pdfs: {
+            decisionMemo:     { filename: decisionMemoFilename,     data: decisionMemoPdf.toString("base64") },
+            assessmentOutput: { filename: assessmentOutputFilename, data: assessmentOutputPdf.toString("base64") },
+          },
+          decisionObject,
+          assessmentId: assessment.id,
+        });
+      }
+
       // DEV / STAGING BYPASS: skip Stripe in non-production so the full flow can be tested
       if (process.env.NODE_ENV !== "production") {
         console.log(`[DEV] Payment bypassed for ${validatedData.organisationName} — sending email and returning result directly`);

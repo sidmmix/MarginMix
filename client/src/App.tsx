@@ -74,6 +74,7 @@ function Router() {
             <Route path="/" component={Landing} />
             <Route path="/quick-profiler" component={QuickProfiler} />
             <Route path="/assessment" component={Assessment} />
+            <Route path="/demo" component={Assessment} />
             <Route path="/founder" component={Founder} />
             <Route path="/why-choose" component={WhyChoose} />
             <Route path="/auth" component={AuthPage} />
