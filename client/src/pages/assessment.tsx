@@ -1253,13 +1253,25 @@ export default function Assessment() {
             </Button>
 
             {isDemo ? (
-              <p className="mt-4 text-sm sm:text-base text-yellow-300 font-semibold">
-                🎁 Demo access — No payment required
-              </p>
+              <div className="mt-4 text-center">
+                <p className="text-sm sm:text-base text-yellow-300 font-semibold">
+                  🎁 Demo access — No payment required
+                </p>
+                <p className="mt-1.5 text-xs text-emerald-200/70">
+                  Paid assessments are $18.99 during our Founder's Promo — offer closes 31 July, returns to $49.99 on 1 August
+                </p>
+              </div>
             ) : (
-              <p className="mt-4 text-sm sm:text-base text-emerald-100 font-medium">
-                Assessments are $18.99 per assessment
-              </p>
+              <div className="mt-4 text-center">
+                <div className="inline-block bg-white/10 border border-white/20 rounded-xl px-5 py-3">
+                  <p className="text-white font-bold text-base sm:text-lg tracking-tight">
+                    $18.99 &nbsp;·&nbsp; Founder's Promo Rate
+                  </p>
+                  <p className="text-emerald-200 text-xs sm:text-sm mt-0.5">
+                    Offer closes 31 July &nbsp;·&nbsp; Returns to $49.99 on 1 August
+                  </p>
+                </div>
+              </div>
             )}
             
             <p className="mt-4 sm:mt-6 text-xs sm:text-sm text-emerald-200/80 px-4">
