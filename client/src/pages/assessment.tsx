@@ -461,6 +461,8 @@ export default function Assessment() {
   const [submittedUserInfo, setSubmittedUserInfo] = useState<{fullName: string; workEmail: string; roleTitle: string; organisationName: string; organisationSize: string} | null>(null);
   const [consentChecked, setConsentChecked] = useState(false);
   const [currentMargin, setCurrentMargin] = useState<string>("");
+  const [accountName, setAccountName] = useState<string>("");
+  const [isAccountNameStep, setIsAccountNameStep] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [direction, setDirection] = useState<1 | -1>(1);
   const shouldReduce = useReducedMotion();
@@ -570,7 +572,7 @@ export default function Assessment() {
   };
 
   const totalQuestions = activeQuestions.length;
-  const isIntro = currentQuestion === -2;
+  const isIntro = currentQuestion === -2 && !isAccountNameStep;
   const isMarginQuestion = currentQuestion === -1;
   const isReviewScreen = currentQuestion === totalQuestions;
 
@@ -833,7 +835,7 @@ export default function Assessment() {
       const response = await fetch("/api/assessments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, currentMargin: marginValue, fromProfiler: isFromProfiler, isDemo }),
+        body: JSON.stringify({ ...data, accountName, currentMargin: marginValue, fromProfiler: isFromProfiler, isDemo }),
       });
 
       if (response.ok) {
@@ -908,8 +910,17 @@ export default function Assessment() {
       if (isFromProfiler) {
         scrollToQuestion(0);
       } else {
-        scrollToQuestion(-1);
+        setDirection(1);
+        setIsTransitioning(true);
+        setIsAccountNameStep(true);
+        setTimeout(() => setIsTransitioning(false), 500);
       }
+      return;
+    }
+
+    if (isAccountNameStep) {
+      setIsAccountNameStep(false);
+      scrollToQuestion(-1);
       return;
     }
 
@@ -944,6 +955,12 @@ export default function Assessment() {
 
   const handleBack = () => {
     if (isMarginQuestion) {
+      setIsAccountNameStep(true);
+      scrollToQuestion(-2);
+      return;
+    }
+    if (isAccountNameStep) {
+      setIsAccountNameStep(false);
       scrollToQuestion(-2);
       return;
     }
@@ -979,7 +996,7 @@ export default function Assessment() {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
       if (isTransitioning) return;
       if (e.key === "Enter" && !e.shiftKey) {
-        if (isIntro || isMarginQuestion) {
+        if (isIntro || isAccountNameStep || isMarginQuestion) {
           e.preventDefault();
           handleNext();
           return;
@@ -1012,7 +1029,7 @@ export default function Assessment() {
     };
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [currentQuestion, isIntro, isMarginQuestion, currentMargin, isFromProfiler, isTransitioning]);
+  }, [currentQuestion, isIntro, isAccountNameStep, isMarginQuestion, accountName, currentMargin, isFromProfiler, isTransitioning]);
 
   const calculateProgress = () => {
     if (isIntro) return 0;
@@ -1146,6 +1163,45 @@ export default function Assessment() {
                 </Form>
               </div>
 
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderAccountNameQuestion = () => {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex flex-col overflow-y-auto">
+        <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
+          <div className="w-full max-w-2xl">
+            <div className="mb-4 sm:mb-6">
+              <span className="inline-block px-3 sm:px-4 py-1 sm:py-1.5 bg-white/20 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm font-medium mb-2 sm:mb-3">
+                Account Context
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-2 sm:mb-3">
+              Name of Account
+            </h2>
+            <p className="text-base sm:text-xl text-white/80 mb-6 sm:mb-8">
+              Which account or client are you evaluating?
+            </p>
+            <div className="w-full max-w-md mx-auto">
+              <Input
+                type="text"
+                value={accountName}
+                onChange={(e) => setAccountName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && accountName.trim()) {
+                    e.preventDefault();
+                    handleNext();
+                  }
+                }}
+                placeholder="e.g. Acme Corp"
+                autoFocus
+                className="text-center text-2xl sm:text-3xl py-5 sm:py-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/40 focus:border-white focus:bg-white/20 rounded-xl"
+              />
+            </div>
+            <p className="text-white/50 text-sm mt-4 text-center">Press Enter to continue</p>
           </div>
         </div>
       </div>
@@ -1853,6 +1909,8 @@ export default function Assessment() {
 
   const activePhaseKey = isIntro
     ? "intro"
+    : isAccountNameStep
+    ? "accountName"
     : showDecisionPage
     ? "decision"
     : isReviewScreen
@@ -1878,10 +1936,11 @@ export default function Assessment() {
       {shouldReduce ? (
         <div className="absolute inset-0">
           {isIntro && renderIntro()}
-          {!isIntro && showDecisionPage && decisionResult && renderDecisionPage()}
-          {!isIntro && !showDecisionPage && isReviewScreen && renderReview()}
-          {!isIntro && !showDecisionPage && !isReviewScreen && isMarginQuestion && !isFromProfiler && renderMarginQuestion()}
-          {!isIntro && !showDecisionPage && !isReviewScreen && !isMarginQuestion && renderCard(currentQuestion)}
+          {isAccountNameStep && renderAccountNameQuestion()}
+          {!isIntro && !isAccountNameStep && showDecisionPage && decisionResult && renderDecisionPage()}
+          {!isIntro && !isAccountNameStep && !showDecisionPage && isReviewScreen && renderReview()}
+          {!isIntro && !isAccountNameStep && !showDecisionPage && !isReviewScreen && isMarginQuestion && !isFromProfiler && renderMarginQuestion()}
+          {!isIntro && !isAccountNameStep && !showDecisionPage && !isReviewScreen && !isMarginQuestion && renderCard(currentQuestion)}
         </div>
       ) : (
         <AnimatePresence mode="wait" custom={direction}>
@@ -1896,10 +1955,11 @@ export default function Assessment() {
             className="absolute inset-0"
           >
             {isIntro && renderIntro()}
-            {!isIntro && showDecisionPage && decisionResult && renderDecisionPage()}
-            {!isIntro && !showDecisionPage && isReviewScreen && renderReview()}
-            {!isIntro && !showDecisionPage && !isReviewScreen && isMarginQuestion && !isFromProfiler && renderMarginQuestion()}
-            {!isIntro && !showDecisionPage && !isReviewScreen && !isMarginQuestion && renderCard(currentQuestion)}
+            {isAccountNameStep && renderAccountNameQuestion()}
+            {!isIntro && !isAccountNameStep && showDecisionPage && decisionResult && renderDecisionPage()}
+            {!isIntro && !isAccountNameStep && !showDecisionPage && isReviewScreen && renderReview()}
+            {!isIntro && !isAccountNameStep && !showDecisionPage && !isReviewScreen && isMarginQuestion && !isFromProfiler && renderMarginQuestion()}
+            {!isIntro && !isAccountNameStep && !showDecisionPage && !isReviewScreen && !isMarginQuestion && renderCard(currentQuestion)}
           </motion.div>
         </AnimatePresence>
       )}
@@ -1917,7 +1977,7 @@ export default function Assessment() {
             {!isIntro && !showDecisionPage && (
               <>
                 <span className="text-xs sm:text-sm text-white/80 font-medium">
-                  {isReviewScreen ? "Review" : isMarginQuestion ? "Margin" : `${currentQuestion + 1}/${totalQuestions}`}
+                  {isReviewScreen ? "Review" : isAccountNameStep ? "Account" : isMarginQuestion ? "Margin" : `${currentQuestion + 1}/${totalQuestions}`}
                 </span>
                 <div className="w-16 sm:w-24 md:w-32">
                   <Progress value={calculateProgress()} className="h-1.5 bg-white/20" />
@@ -1986,6 +2046,33 @@ export default function Assessment() {
         </div>
       )}
 
+      {/* Account name navigation - outside AnimatePresence */}
+      {isAccountNameStep && (
+        <div className="fixed bottom-0 left-0 right-0 z-[100] flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 bg-black/30 backdrop-blur-md border-t border-white/10" style={{ pointerEvents: 'auto' }}>
+          <motion.button
+            onClick={handleBack}
+            whileHover={shouldReduce ? {} : { scale: 1.06 }}
+            whileTap={shouldReduce ? {} : { scale: 0.96 }}
+            transition={{ duration: 0.15 }}
+            className="flex items-center gap-2 text-white/70 hover:text-white transition-colors text-sm sm:text-base"
+          >
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span>Back</span>
+          </motion.button>
+          <motion.button
+            onClick={handleNext}
+            disabled={!accountName.trim()}
+            whileHover={!accountName.trim() || shouldReduce ? {} : { scale: 1.04 }}
+            whileTap={!accountName.trim() || shouldReduce ? {} : { scale: 0.97 }}
+            transition={{ duration: 0.15 }}
+            className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 bg-white text-emerald-700 rounded-full font-semibold hover:bg-emerald-50 transition-all text-sm sm:text-base shadow-lg disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Continue
+            <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+          </motion.button>
+        </div>
+      )}
+
       {/* Margin question navigation - outside AnimatePresence */}
       {isMarginQuestion && !isFromProfiler && (
         <div className="fixed bottom-0 left-0 right-0 z-[100] flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 bg-black/30 backdrop-blur-md border-t border-white/10" style={{ pointerEvents: 'auto' }}>
@@ -2015,7 +2102,7 @@ export default function Assessment() {
       )}
 
       {/* Navigation buttons - rendered after content to be on top */}
-      {!isIntro && !isMarginQuestion && !isReviewScreen && !showDecisionPage && (
+      {!isIntro && !isAccountNameStep && !isMarginQuestion && !isReviewScreen && !showDecisionPage && (
         <div className="fixed bottom-4 sm:bottom-6 left-0 right-0 z-[100] flex items-center justify-between px-4 sm:px-8" style={{ pointerEvents: 'auto' }}>
           <motion.div
             whileHover={shouldReduce ? {} : { scale: 1.04 }}
