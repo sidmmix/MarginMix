@@ -1494,8 +1494,8 @@ export default function Assessment() {
             {/* Section 1 - Verdict Banner */}
             <div className={`rounded-2xl border bg-gradient-to-br ${verdictBgMap[d.marginRiskVerdict] || verdictBgMap["Structurally Safe"]} p-6 sm:p-8 mb-6`}>
               {accountName && (
-                <p className="text-white/60 text-xs sm:text-sm uppercase tracking-widest font-medium mb-3">
-                  {accountName}
+                <p className="text-white/60 text-xs sm:text-sm font-medium mb-3">
+                  Account: <span className="uppercase tracking-widest">{accountName}</span>
                 </p>
               )}
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
