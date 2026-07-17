@@ -1106,6 +1106,7 @@ export default function Assessment() {
                               type={question.type}
                               placeholder={question.placeholder}
                               key={`input-${question.id}-${questionIndex}`}
+                              autoFocus
                               className="text-base sm:text-xl py-4 sm:py-6 px-4 sm:px-6 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/50 focus:border-white focus:bg-white/20 rounded-xl"
                             />
                           </FormControl>
@@ -1124,6 +1125,7 @@ export default function Assessment() {
                               {...field}
                               placeholder={question.placeholder}
                               key={`textarea-${question.id}-${questionIndex}`}
+                              autoFocus
                               className="text-base sm:text-lg py-3 sm:py-4 px-4 sm:px-6 min-h-[120px] sm:min-h-[150px] bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white placeholder:text-white/50 focus:border-white focus:bg-white/20 rounded-xl"
                             />
                           </FormControl>
