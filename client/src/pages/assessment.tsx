@@ -412,7 +412,7 @@ function getQuestionsForIndustry(industry: string): Question[] {
       required: true, section: "Value, Load & Confidence", sectionColor: "amber"
     },
     {
-      id: "aiAgenticFramework", title: "Are you using AI or an Agentic framework and what kind of projects are they being deployed on?",
+      id: "aiAgenticFramework", title: "Are you using AI or an Agentic framework for delivery?",
       context: "Agentic deployments in billable workflows directly affect pricing integrity and delivery accountability.",
       type: "select",
       options: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }, { value: "na", label: "NA" }],
