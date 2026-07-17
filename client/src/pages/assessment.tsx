@@ -939,11 +939,17 @@ export default function Assessment() {
       return;
     }
     
-    // On last question (Q23), only allow going to review if Q1-Q22 are answered
+    // On last question, only allow going to review if mandatory questions are answered
     if (currentQuestion === totalQuestions - 1) {
       if (areMandatoryQuestionsAnswered()) {
         analytics.reviewReached(totalQuestions);
-        scrollToQuestion(currentQuestion + 1);
+        if (isDemo) {
+          // Skip review screen in demo — auto-submit directly
+          setConsentChecked(true);
+          setTimeout(() => form.handleSubmit(onSubmit)(), 100);
+        } else {
+          scrollToQuestion(currentQuestion + 1);
+        }
       }
       return;
     }
@@ -1485,6 +1491,11 @@ export default function Assessment() {
 
             {/* Section 1 - Verdict Banner */}
             <div className={`rounded-2xl border bg-gradient-to-br ${verdictBgMap[d.marginRiskVerdict] || verdictBgMap["Structurally Safe"]} p-6 sm:p-8 mb-6`}>
+              {accountName && (
+                <p className="text-white/60 text-xs sm:text-sm uppercase tracking-widest font-medium mb-3">
+                  {accountName}
+                </p>
+              )}
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
                 <h1 className={`text-2xl sm:text-3xl md:text-4xl font-bold ${verdictColorMap[d.marginRiskVerdict] || "text-white"}`}>
                   {d.marginRiskVerdict}
@@ -1512,6 +1523,17 @@ export default function Assessment() {
                   </div>
                 </div>
               </div>
+              {storedPdfData && (
+                <div className="mt-5 pt-5 border-t border-white/10">
+                  <Button
+                    onClick={handleRedownload}
+                    className="w-full sm:w-auto bg-white/15 hover:bg-white/25 text-white border border-white/30 rounded-xl py-3 px-6 font-semibold flex items-center justify-center gap-2 transition-all"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download PDFs
+                  </Button>
+                </div>
+              )}
             </div>
 
             {/* Pay-gate: everything below the verdict banner */}
