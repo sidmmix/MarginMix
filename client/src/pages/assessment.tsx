@@ -1532,7 +1532,7 @@ export default function Assessment() {
                     className="w-full sm:w-auto bg-white/15 hover:bg-white/25 text-white border border-white/30 rounded-xl py-3 px-6 font-semibold flex items-center justify-center gap-2 transition-all"
                   >
                     <Download className="h-4 w-4" />
-                    Download PDFs
+                    Download PDF
                   </Button>
                 </div>
               )}
@@ -1895,7 +1895,7 @@ export default function Assessment() {
                   className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-6 text-base shadow-lg rounded-xl flex-1"
                 >
                   <Download className="mr-2 h-5 w-5" />
-                  Download PDFs Again
+                  Download PDF
                 </Button>
               )}
               <Link href="/" className="flex-1">
