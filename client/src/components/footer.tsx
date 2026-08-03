@@ -15,14 +15,8 @@ export function Footer() {
           <p className="text-gray-300 mb-6">
             Contact: <a href="mailto:sid@marginmix.ai" className="text-emerald-400 hover:text-emerald-300">sid@marginmix.ai</a>
           </p>
-          <p className="text-gray-400 text-sm mb-2">
-            MarginMix is a Digital Lexicon Corp brand.
-          </p>
-          <p className="text-gray-400 text-sm mb-2">
-            Digital Lexicon, Delaware, DE
-          </p>
           <p className="text-gray-400 text-sm">
-            © 2026 Digital Lexicon. All rights reserved.
+            © 2026 MarginMix/Headroom. All rights reserved.
           </p>
         </div>
       </div>
