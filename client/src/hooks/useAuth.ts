@@ -8,9 +8,9 @@ export function useAuth() {
   const { data: user, isLoading, error } = useQuery({
     queryKey: ["/api/auth/me"],
     retry: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 60 * 1000, // 1 minute
     refetchInterval: false,
-    refetchOnMount: false,
+    refetchOnMount: true,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     enabled: true,
@@ -64,6 +64,7 @@ export function useAuth() {
     mutationFn: async () => {
       const response = await fetch("/api/auth/logout", {
         method: "POST",
+        credentials: "include",
       });
       
       if (!response.ok) {

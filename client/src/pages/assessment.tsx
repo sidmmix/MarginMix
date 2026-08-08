@@ -503,15 +503,24 @@ export default function Assessment() {
     setIsVerifyingPayment(true);
 
     fetch(`/api/checkout-complete?session_id=${stripeSession}`)
-      .then(r => r.json())
+      .then(async r => {
+        if (!r.ok) {
+          let msg = "Could not verify payment";
+          try { msg = (await r.json()).message || msg; } catch (_) {}
+          throw new Error(msg);
+        }
+        return r.json();
+      })
       .then(result => {
         if (result.success) {
-          if (result.pdfs) {
-            setStoredPdfData(result.pdfs);
-            setTimeout(() => downloadPDF(result.pdfs.decisionMemo.filename, result.pdfs.decisionMemo.data), 300);
-            setTimeout(() => downloadPDF(result.pdfs.assessmentOutput.filename, result.pdfs.assessmentOutput.data), 700);
+          const pdfs = result.pdfs;
+          if (pdfs?.decisionMemo?.filename && pdfs?.decisionMemo?.data) {
+            setStoredPdfData(pdfs);
+            setTimeout(() => downloadPDF(pdfs.decisionMemo.filename, pdfs.decisionMemo.data), 300);
+            if (pdfs?.assessmentOutput?.filename && pdfs?.assessmentOutput?.data) {
+              setTimeout(() => downloadPDF(pdfs.assessmentOutput.filename, pdfs.assessmentOutput.data), 700);
+            }
           }
-          // If we don't already have the decision result (e.g. page was refreshed), set it
           if (result.decisionObject) {
             setDecisionResult(result.decisionObject);
           }
@@ -523,8 +532,8 @@ export default function Assessment() {
           toast({ title: "Could not verify payment", description: result.message || "Please contact support.", variant: "destructive" });
         }
       })
-      .catch(() => {
-        toast({ title: "Verification error", description: "Could not confirm your payment. Please contact support.", variant: "destructive" });
+      .catch((err: Error) => {
+        toast({ title: "Verification error", description: err.message || "Could not confirm your payment. Please contact support.", variant: "destructive" });
       })
       .finally(() => {
         setIsVerifyingPayment(false);
@@ -843,8 +852,9 @@ export default function Assessment() {
 
         // DEV/staging bypass — result returned directly without payment
         if (!result.requiresPayment && result.pdfs) {
-          setStoredPdfData(result.pdfs);
-          setDecisionResult(result.decisionObject);
+          const pdfs = result.pdfs;
+          setStoredPdfData(pdfs);
+          if (result.decisionObject) setDecisionResult(result.decisionObject);
           setIsPaid(true);
           setSubmittedUserInfo({
             fullName: data.fullName,
@@ -855,8 +865,12 @@ export default function Assessment() {
           });
           setShowDecisionPage(true);
           try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
-          setTimeout(() => downloadPDF(result.pdfs.decisionMemo.filename, result.pdfs.decisionMemo.data), 300);
-          setTimeout(() => downloadPDF(result.pdfs.assessmentOutput.filename, result.pdfs.assessmentOutput.data), 700);
+          if (pdfs?.decisionMemo?.filename && pdfs?.decisionMemo?.data) {
+            setTimeout(() => downloadPDF(pdfs.decisionMemo.filename, pdfs.decisionMemo.data), 300);
+          }
+          if (pdfs?.assessmentOutput?.filename && pdfs?.assessmentOutput?.data) {
+            setTimeout(() => downloadPDF(pdfs.assessmentOutput.filename, pdfs.assessmentOutput.data), 700);
+          }
           return;
         }
 
@@ -877,10 +891,11 @@ export default function Assessment() {
           return;
         }
       } else {
-        const error = await response.json();
+        let errorMsg = "Please try again.";
+        try { errorMsg = (await response.json()).message || errorMsg; } catch (_) {}
         toast({
           title: "Submission Failed",
-          description: error.message || "Please try again.",
+          description: errorMsg,
           variant: "destructive",
         });
       }

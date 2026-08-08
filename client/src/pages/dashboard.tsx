@@ -39,7 +39,13 @@ export default function Dashboard() {
     
     if (storedBrief) {
       try {
-        setBrandBrief(JSON.parse(storedBrief));
+        const parsed = JSON.parse(storedBrief);
+        // Validate minimum required shape before storing
+        if (parsed && typeof parsed === 'object' && typeof parsed.brand_name === 'string') {
+          if (!Array.isArray(parsed.top_3_usps)) parsed.top_3_usps = [];
+          if (typeof parsed.complexity_score !== 'number') parsed.complexity_score = 0;
+          setBrandBrief(parsed);
+        }
       } catch (e) {
         console.error('Failed to parse brand brief:', e);
       }

@@ -2,6 +2,21 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+// Validate required environment variables at startup
+const REQUIRED_ENV_VARS = ["SESSION_SECRET", "NEON_DATABASE_URL"] as const;
+const WARNED_ENV_VARS = ["OPENAI_API_KEY", "STRIPE_SECRET_KEY", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"] as const;
+
+for (const v of REQUIRED_ENV_VARS) {
+  if (!process.env[v]) {
+    throw new Error(`Missing required environment variable: ${v}`);
+  }
+}
+for (const v of WARNED_ENV_VARS) {
+  if (!process.env[v]) {
+    console.warn(`[startup] Warning: ${v} is not set — related features will be unavailable`);
+  }
+}
+
 const app = express();
 
 // Health check — must be first, before all middleware, so it responds instantly
