@@ -1,12 +1,10 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { z } from "zod";
-import session from "express-session";
-import connectPg from "connect-pg-simple";
+import { getAuth } from "@clerk/express";
 import OpenAI from "openai";
 import Stripe from "stripe";
 import { storage } from "./storage";
-import { setupOAuth } from "./oauth";
 import { 
   insertCampaignBriefSchema,
   insertMarginAssessmentSchema
@@ -27,15 +25,6 @@ const openai = new OpenAI({
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-09-30.clover" });
 const STRIPE_PRICE_ID = "price_1Tfzu16bE2gY9hpWWdHnZydf";
 
-// Session configuration
-const pgStore = connectPg(session);
-const sessionStore = new pgStore({
-  conString: process.env.DATABASE_URL,
-  createTableIfMissing: false,
-  ttl: 2 * 60 * 60, // 2 hours - sessions expire quickly
-  tableName: "sessions",
-});
-
 // Security: Enhanced authentication middleware with rate limiting
 const authAttempts = new Map<string, { count: number; lastAttempt: number }>();
 
@@ -49,10 +38,12 @@ const requireAuth = (req: any, res: any, next: any) => {
     return res.status(429).json({ message: "Too many authentication attempts. Try again later." });
   }
 
-  // Check for Passport.js authenticated user (OAuth flow) or session userId (legacy)
-  if (req.user || req.session?.userId) {
+  const auth = getAuth(req);
+  const userId = auth?.sessionClaims?.userId || auth?.userId;
+  if (userId) {
     // Clear failed attempts on successful auth
     authAttempts.delete(clientIP);
+    req.userId = userId;
     return next();
   }
   
@@ -68,119 +59,6 @@ const requireAuth = (req: any, res: any, next: any) => {
 };
 
 export function registerRoutes(app: Express): Server {
-  // Session middleware
-  // Security: Fail fast if session secret is missing
-  if (!process.env.SESSION_SECRET) {
-    throw new Error("SESSION_SECRET environment variable is required");
-  }
-
-  app.use(session({
-    store: sessionStore,
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      // Removed maxAge - sessions now expire when browser closes
-      sameSite: 'strict' // CSRF protection
-    },
-  }));
-
-  // Setup OAuth authentication
-  setupOAuth(app);
-
-  // Email/password authentication routes
-  app.post("/api/auth/register", async (req, res) => {
-    try {
-      const { email, password, firstName, lastName, company } = req.body;
-      if (!email || !password) {
-        return res.status(400).json({ message: "Email and password are required" });
-      }
-      const existing = await storage.getUserByEmail(email);
-      if (existing) {
-        return res.status(409).json({ message: "An account with this email already exists" });
-      }
-      const passwordHash = await storage.hashPassword(password);
-      const user = await storage.createUser({
-        email,
-        passwordHash,
-        firstName: firstName || null,
-        lastName: lastName || null,
-        company: company || null,
-        authProvider: "email",
-        consentGiven: true,
-      });
-      (req.session as any).userId = user.id;
-      return res.status(201).json({
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      });
-    } catch (error: any) {
-      console.error("Registration error:", error);
-      return res.status(500).json({ message: "Registration failed" });
-    }
-  });
-
-  app.post("/api/auth/login", async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      if (!email || !password) {
-        return res.status(400).json({ message: "Email and password are required" });
-      }
-      const user = await storage.getUserByEmail(email);
-      if (!user || !user.passwordHash) {
-        return res.status(401).json({ message: "Invalid email or password" });
-      }
-      const valid = await storage.comparePassword(password, user.passwordHash);
-      if (!valid) {
-        return res.status(401).json({ message: "Invalid email or password" });
-      }
-      (req.session as any).userId = user.id;
-      return res.json({
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-      });
-    } catch (error: any) {
-      console.error("Login error:", error);
-      return res.status(500).json({ message: "Login failed" });
-    }
-  });
-
-  app.get("/api/auth/me", requireAuth, async (req, res) => {
-    try {
-      // For OAuth users, req.user is already populated by Passport
-      // For legacy session users, fetch from storage
-      let user = (req as any).user;
-      
-      if (!user && (req.session as any)?.userId) {
-        user = await storage.getUser((req.session as any).userId);
-      }
-      
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      res.json({ 
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        company: user.company,
-        isEmailVerified: user.isEmailVerified,
-        consentGiven: user.consentGiven,
-        marketingConsent: user.marketingConsent,
-      });
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Internal server error" });
-    }
-  });
-
   // Legacy campaign brief routes removed - old questionnaire flow deprecated
 
   // Benchmark search endpoint - hybrid semantic + exact filters

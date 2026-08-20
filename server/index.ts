@@ -1,9 +1,17 @@
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors";
+import { clerkMiddleware } from "@clerk/express";
+import { publishableKeyFromHost } from "@clerk/shared/keys";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import {
+  CLERK_PROXY_PATH,
+  clerkProxyMiddleware,
+  getClerkProxyHost,
+} from "./middlewares/clerkProxyMiddleware";
 
 // Validate required environment variables at startup
-const REQUIRED_ENV_VARS = ["SESSION_SECRET", "NEON_DATABASE_URL"] as const;
+const REQUIRED_ENV_VARS = ["NEON_DATABASE_URL"] as const;
 const WARNED_ENV_VARS = ["OPENAI_API_KEY", "STRIPE_SECRET_KEY", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"] as const;
 
 for (const v of REQUIRED_ENV_VARS) {
@@ -22,29 +30,32 @@ const app = express();
 // Health check — must be first, before all middleware, so it responds instantly
 app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));
 
+// Must be mounted before body parsers because the proxy streams raw bytes.
+app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+const allowedOrigins = process.env.NODE_ENV === "production"
+  ? ["https://marginmix.ai", "https://www.marginmix.ai"]
+  : ["http://localhost:5000", "http://127.0.0.1:5000"];
+app.use(cors({
+  credentials: true,
+  origin(origin, callback) {
+    callback(null, !origin || allowedOrigins.includes(origin));
+  },
+}));
+app.use(
+  clerkMiddleware((req) => ({
+    publishableKey: publishableKeyFromHost(
+      getClerkProxyHost(req) ?? "",
+      process.env.CLERK_PUBLISHABLE_KEY,
+    ),
+  })),
+);
+
 // Security: Add request size limits to prevent DoS
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // Security: Add CORS and security headers
 app.use((req, res, next) => {
-  // CORS headers for development/production
-  const allowedOrigins = process.env.NODE_ENV === 'production' 
-    ? ['https://marginmix.ai', 'https://www.marginmix.ai']
-    : ['http://localhost:5000', 'http://127.0.0.1:5000'];
-  
-  const origin = req.headers.origin;
-  // Only ever reflect a literal, pre-approved origin from the allow-list above — never
-  // echo arbitrary request input back into the CORS header.
-  const matchedOrigin = allowedOrigins.find((allowed) => allowed === origin);
-  if (matchedOrigin) {
-    res.setHeader('Access-Control-Allow-Origin', matchedOrigin);
-  }
-  
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  
   // Security headers
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
@@ -61,12 +72,6 @@ app.use((req, res, next) => {
     res.setHeader('Expires', '0');
   } else if (req.path.match(/\.(js|css|woff2?|ttf|eot|ico|svg|png|jpg|jpeg|gif|webp)$/)) {
     res.setHeader('Cache-Control', 'public, max-age=3600');
-  }
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-    return;
   }
   
   next();

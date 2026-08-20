@@ -105,10 +105,10 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                   <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                   <div className="flex flex-col">
                     <span className="text-sm font-medium text-gray-900 dark:text-white" data-testid="text-username">
-                      {String((user as Record<string, unknown>).firstName || '')} {String((user as Record<string, unknown>).lastName || '')}
+                      {user.firstName || ""} {user.lastName || ""}
                     </span>
                     <span className="text-xs text-gray-600 dark:text-gray-400" data-testid="text-email">
-                      {String((user as Record<string, unknown>).email || '')}
+                      {user.primaryEmailAddress?.emailAddress || ""}
                     </span>
                   </div>
                 </div>
@@ -240,7 +240,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                     <div className="flex items-center space-x-2 px-3 py-2">
                       <User className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                       <span className="text-sm font-medium text-gray-900 dark:text-white">
-                        {String((user as Record<string, unknown>).firstName || '')} {String((user as Record<string, unknown>).lastName || '')}
+                        {user.firstName || ""} {user.lastName || ""}
                       </span>
                     </div>
                     <Button 

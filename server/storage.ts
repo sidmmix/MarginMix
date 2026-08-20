@@ -15,7 +15,6 @@ import type {
   InsertMarginAssessment,
   PendingAssessmentResult
 } from "@shared/schema";
-import bcrypt from "bcryptjs";
 
 export interface IStorage {
   // User operations
@@ -54,9 +53,6 @@ export interface IStorage {
   updatePendingResultStripeSession(id: string, stripeSessionId: string): Promise<void>;
   claimPendingResult(id: string): Promise<void>;
   
-  // Authentication helpers
-  hashPassword(password: string): Promise<string>;
-  comparePassword(password: string, hashedPassword: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -347,13 +343,6 @@ export class DatabaseStorage implements IStorage {
       .where(eq(pendingAssessmentResults.id, id));
   }
 
-  async hashPassword(password: string): Promise<string> {
-    return await bcrypt.hash(password, 12);
-  }
-
-  async comparePassword(password: string, hashedPassword: string): Promise<boolean> {
-    return await bcrypt.compare(password, hashedPassword);
-  }
 }
 
 export const storage = new DatabaseStorage();
