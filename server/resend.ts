@@ -813,7 +813,7 @@ export async function sendContactRequestEmail(contact: {
     from: "MarginMix Contact <sid@marginmix.ai>",
     to: ["sid@marginmix.ai"],
     replyTo: contact.email,
-    subject: `MarginMix Logic integration inquiry from ${contact.companyName}`,
+    subject: `${contact.name} from Company Name ${contact.companyName} is interested in the MarginMix Logic`,
     html: htmlContent,
   });
 }

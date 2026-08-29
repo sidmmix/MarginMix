@@ -459,6 +459,7 @@ export default function Assessment() {
   const [contactForm, setContactForm] = useState({ name: "", email: "", companyName: "" });
   const [isContactSubmitting, setIsContactSubmitting] = useState(false);
   const [contactSubmitted, setContactSubmitted] = useState(false);
+  const [isContactSuccessOpen, setIsContactSuccessOpen] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
   const [currentMargin, setCurrentMargin] = useState<string>("");
   const [accountName, setAccountName] = useState<string>("");
@@ -851,6 +852,7 @@ export default function Assessment() {
       }
 
       setContactSubmitted(true);
+      setIsContactSuccessOpen(true);
       setContactForm({ name: "", email: "", companyName: "" });
       toast({
         title: "Thanks for getting in touch",
@@ -2147,6 +2149,20 @@ export default function Assessment() {
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
                 <p className="text-gray-600">Give us a minute - Please stay on this page.</p>
               </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
+
+      {/* Contact form success dialog */}
+      <Dialog open={isContactSuccessOpen} onOpenChange={setIsContactSuccessOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-emerald-600">
+              Thank you!
+            </DialogTitle>
+            <DialogDescription className="text-center text-base pt-3">
+              Thank you for filling up the form, we will respond to you within 24 hours.
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
