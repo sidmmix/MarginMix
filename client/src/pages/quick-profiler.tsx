@@ -899,14 +899,11 @@ export default function QuickProfiler() {
               onClick={handleGoToFullAssessment}
             >
               <span className="flex items-center gap-2 font-semibold">
-                Get Full Margin Risk Decision Clarity — $18.99
+                Continue to Full Margin Risk Assessment
                 <ChevronRight className="h-5 w-5" />
               </span>
-              <span className="text-xs text-emerald-100 font-normal">Your 7 answers carry forward · Payment at Submission</span>
+              <span className="text-xs text-emerald-100 font-normal">Your 7 answers carry forward · Results available immediately</span>
             </Button>
-            <p className="text-xs text-amber-400 font-medium text-center">
-              Founder's Promo Rate — offer closes 31 July · Returns to $49.99 on 1 August
-            </p>
           </div>
         </div>
       </div>

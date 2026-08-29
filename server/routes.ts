@@ -3,7 +3,6 @@ import { createServer, type Server } from "http";
 import { z } from "zod";
 import { getAuth } from "@clerk/express";
 import OpenAI from "openai";
-import Stripe from "stripe";
 import { storage } from "./storage";
 import { 
   insertCampaignBriefSchema,
@@ -20,10 +19,6 @@ import { renderDecisionMemoPDF, renderAssessmentOutputPDF, generatePDFFilename }
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-
-// Initialize Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: "2025-09-30.clover" });
-const STRIPE_PRICE_ID = "price_1Tfzu16bE2gY9hpWWdHnZydf";
 
 // Security: Enhanced authentication middleware with rate limiting
 const authAttempts = new Map<string, { count: number; lastAttempt: number }>();
@@ -397,100 +392,25 @@ export function registerRoutes(app: Express): Server {
       const decisionMemoFilename = generatePDFFilename("decision_memo", validatedData.fullName, validatedData.organisationName);
       const assessmentOutputFilename = generatePDFFilename("assessment_results", validatedData.fullName, validatedData.organisationName);
 
-      // Store the processed result — released only after payment is confirmed
-      const pending = await storage.createPendingResult({
-        assessmentId: String(assessment.id),
-        decisionObject,
+      // Reports are available immediately. Email delivery is best effort so a
+      // mail-provider issue never blocks the in-browser result or PDF download.
+      try {
+        const pdfAttachments: PDFAttachment[] = [
+          { filename: decisionMemoFilename, content: decisionMemoPdf },
+          { filename: assessmentOutputFilename, content: assessmentOutputPdf },
+        ];
+        await sendAssessmentEmail(decisionObject as any, openSignal, pdfAttachments);
+        console.log(`Assessment email sent for assessment ${assessment.id}`);
+      } catch (emailError: any) {
+        console.error("Failed to send assessment email:", emailError.message);
+      }
+
+      res.status(201).json({
+        success: true,
         pdfs: {
           decisionMemo: { filename: decisionMemoFilename, data: decisionMemoPdf.toString("base64") },
           assessmentOutput: { filename: assessmentOutputFilename, data: assessmentOutputPdf.toString("base64") },
         },
-        formData: {
-          fullName: validatedData.fullName,
-          workEmail: validatedData.workEmail,
-          roleTitle: validatedData.roleTitle,
-          organisationName: validatedData.organisationName,
-          organisationSize: validatedData.organisationSize,
-          openSignal,
-          assessmentId: String(assessment.id),
-          fromProfiler,
-        },
-      });
-
-      // DEMO BYPASS: skip Stripe when request comes from /demo route
-      if (req.body.isDemo === true) {
-        console.log(`[DEMO] Payment bypassed for ${validatedData.organisationName} — demo mode`);
-        try {
-          const pdfAttachments: PDFAttachment[] = [
-            { filename: decisionMemoFilename,     content: decisionMemoPdf },
-            { filename: assessmentOutputFilename, content: assessmentOutputPdf },
-          ];
-          await sendAssessmentEmail(decisionObject as any, openSignal, pdfAttachments);
-        } catch (emailError: any) {
-          console.error("[DEMO] Failed to send assessment email:", emailError.message);
-        }
-        return res.status(201).json({
-          success: true,
-          requiresPayment: false,
-          pdfs: {
-            decisionMemo:     { filename: decisionMemoFilename,     data: decisionMemoPdf.toString("base64") },
-            assessmentOutput: { filename: assessmentOutputFilename, data: assessmentOutputPdf.toString("base64") },
-          },
-          decisionObject,
-          assessmentId: assessment.id,
-        });
-      }
-
-      // DEV / STAGING BYPASS: skip Stripe in non-production so the full flow can be tested
-      if (process.env.NODE_ENV !== "production") {
-        console.log(`[DEV] Payment bypassed for ${validatedData.organisationName} — sending email and returning result directly`);
-
-        // Send email with PDF attachments (same as production post-payment)
-        try {
-          const pdfAttachments: PDFAttachment[] = [
-            { filename: decisionMemoFilename,     content: decisionMemoPdf },
-            { filename: assessmentOutputFilename, content: assessmentOutputPdf },
-          ];
-          await sendAssessmentEmail(decisionObject as any, openSignal, pdfAttachments);
-          console.log(`[DEV] Assessment email sent for assessment ${assessment.id}`);
-        } catch (emailError: any) {
-          console.error("[DEV] Failed to send assessment email:", emailError.message);
-        }
-
-        return res.status(201).json({
-          success: true,
-          requiresPayment: false,
-          pdfs: {
-            decisionMemo:     { filename: decisionMemoFilename,     data: decisionMemoPdf.toString("base64") },
-            assessmentOutput: { filename: assessmentOutputFilename, data: assessmentOutputPdf.toString("base64") },
-          },
-          decisionObject,
-          assessmentId: assessment.id,
-        });
-      }
-
-      // Create Stripe Checkout session
-      const origin = `${req.protocol}://${req.get("host")}`;
-      const checkoutSession = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
-        mode: "payment",
-        customer_email: validatedData.workEmail,
-        client_reference_id: pending.id,
-        success_url: `${origin}/assessment?stripe_session={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/assessment?payment_cancelled=true`,
-        metadata: { pendingId: pending.id, organisation: validatedData.organisationName },
-      });
-
-      // Persist the Stripe session ID
-      await storage.updatePendingResultStripeSession(pending.id, checkoutSession.id);
-
-      console.log(`Stripe checkout created for ${validatedData.organisationName}: ${checkoutSession.id}`);
-
-      res.status(201).json({
-        success: true,
-        requiresPayment: true,
-        checkoutUrl: checkoutSession.url,
         assessmentId: assessment.id,
         decisionObject,
       });
@@ -507,67 +427,6 @@ export function registerRoutes(app: Express): Server {
         success: false, 
         message: "Failed to submit assessment" 
       });
-    }
-  });
-
-  // ── Stripe: complete checkout and release PDFs ──────────────────────────────
-  app.get("/api/checkout-complete", async (req, res) => {
-    try {
-      const { session_id } = req.query as { session_id?: string };
-      if (!session_id) {
-        return res.status(400).json({ success: false, message: "Missing session_id" });
-      }
-
-      // Verify payment with Stripe
-      const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
-      if (checkoutSession.payment_status !== "paid") {
-        return res.status(402).json({ success: false, message: "Payment not completed" });
-      }
-
-      // Retrieve the pending result using client_reference_id
-      const pendingId = checkoutSession.client_reference_id;
-      if (!pendingId) {
-        return res.status(404).json({ success: false, message: "No pending result linked to this session" });
-      }
-
-      const pending = await storage.getPendingResult(pendingId);
-      if (!pending) {
-        return res.status(404).json({ success: false, message: "Pending result not found" });
-      }
-
-      const formData = pending.formData as any;
-      const pdfsData = pending.pdfs as any;
-
-      // Prevent replay attacks — send emails only on first claim
-      if (!pending.claimed) {
-        await storage.claimPendingResult(pendingId);
-
-        const openSignal = formData.openSignal || null;
-        const decisionMemoBuffer = Buffer.from(pdfsData.decisionMemo.data, "base64");
-        const assessmentOutputBuffer = Buffer.from(pdfsData.assessmentOutput.data, "base64");
-        const pdfAttachments: PDFAttachment[] = [
-          { filename: pdfsData.decisionMemo.filename, content: decisionMemoBuffer },
-          { filename: pdfsData.assessmentOutput.filename, content: assessmentOutputBuffer },
-        ];
-
-        try {
-          await sendAssessmentEmail(pending.decisionObject as any, openSignal, pdfAttachments);
-          console.log(`Assessment email sent after payment for: ${formData.organisationName}`);
-        } catch (emailError: any) {
-          console.error("Failed to send assessment email:", emailError.message);
-        }
-
-      }
-
-      return res.json({
-        success: true,
-        decisionObject: pending.decisionObject,
-        pdfs: pdfsData,
-        assessmentId: pending.assessmentId,
-      });
-    } catch (error: any) {
-      console.error("Checkout complete error:", error);
-      res.status(500).json({ success: false, message: "Failed to retrieve assessment result" });
     }
   });
 

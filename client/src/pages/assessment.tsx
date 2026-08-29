@@ -452,9 +452,6 @@ function getQuestionsForIndustry(industry: string): Question[] {
 export default function Assessment() {
   const [currentQuestion, setCurrentQuestion] = useState(-2); // -2 = intro, -1 = margin question
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isVerifyingPayment, setIsVerifyingPayment] = useState(false);
-  const [isPaid, setIsPaid] = useState(false);
-  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null);
   const [decisionResult, setDecisionResult] = useState<any>(null);
   const [showDecisionPage, setShowDecisionPage] = useState(false);
   const [storedPdfData, setStoredPdfData] = useState<any>(null);
@@ -470,7 +467,7 @@ export default function Assessment() {
   const marginAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { toast } = useToast();
   const searchString = useSearch();
-  const [location, setLocation] = useLocation();
+  const [location] = useLocation();
   const isFromProfiler = searchString.includes("from=profiler");
   const isDemo = location === '/demo';
 
@@ -493,65 +490,6 @@ export default function Assessment() {
       }
     }
   }, [isFromProfiler]);
-
-  // Handle return from Stripe Checkout — verify payment and release PDFs
-  useEffect(() => {
-    const params = new URLSearchParams(searchString);
-    const stripeSession = params.get("stripe_session");
-    if (!stripeSession) return;
-
-    setIsVerifyingPayment(true);
-
-    fetch(`/api/checkout-complete?session_id=${stripeSession}`)
-      .then(async r => {
-        if (!r.ok) {
-          let msg = "Could not verify payment";
-          try { msg = (await r.json()).message || msg; } catch (_) {}
-          throw new Error(msg);
-        }
-        return r.json();
-      })
-      .then(result => {
-        if (result.success) {
-          const pdfs = result.pdfs;
-          if (pdfs?.decisionMemo?.filename && pdfs?.decisionMemo?.data) {
-            setStoredPdfData(pdfs);
-            setTimeout(() => downloadPDF(pdfs.decisionMemo.filename, pdfs.decisionMemo.data), 300);
-            if (pdfs?.assessmentOutput?.filename && pdfs?.assessmentOutput?.data) {
-              setTimeout(() => downloadPDF(pdfs.assessmentOutput.filename, pdfs.assessmentOutput.data), 700);
-            }
-          }
-          if (result.decisionObject) {
-            setDecisionResult(result.decisionObject);
-          }
-          setIsPaid(true);
-          setShowDecisionPage(true);
-          try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
-          toast({ title: "Payment confirmed", description: "Your PDFs are downloading and your report has been emailed to you." });
-        } else {
-          toast({ title: "Could not verify payment", description: result.message || "Please contact support.", variant: "destructive" });
-        }
-      })
-      .catch((err: Error) => {
-        toast({ title: "Verification error", description: err.message || "Could not confirm your payment. Please contact support.", variant: "destructive" });
-      })
-      .finally(() => {
-        setIsVerifyingPayment(false);
-        // Clean up URL params
-        setLocation("/assessment");
-      });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Handle cancellation return from Stripe
-  useEffect(() => {
-    const params = new URLSearchParams(searchString);
-    if (params.get("payment_cancelled") === "true") {
-      toast({ title: "Payment cancelled", description: "No charge was made. You can resubmit when ready.", variant: "destructive" });
-      setLocation("/assessment");
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const industryQuestions = getQuestionsForIndustry(selectedIndustry);
   const activeQuestions = isFromProfiler
@@ -850,12 +788,11 @@ export default function Assessment() {
       if (response.ok) {
         const result = await response.json();
 
-        // DEV/staging bypass — result returned directly without payment
-        if (!result.requiresPayment && result.pdfs) {
+        // Results and PDFs are available immediately after a successful assessment.
+        if (result.pdfs) {
           const pdfs = result.pdfs;
           setStoredPdfData(pdfs);
           if (result.decisionObject) setDecisionResult(result.decisionObject);
-          setIsPaid(true);
           setSubmittedUserInfo({
             fullName: data.fullName,
             workEmail: data.workEmail,
@@ -871,23 +808,6 @@ export default function Assessment() {
           if (pdfs?.assessmentOutput?.filename && pdfs?.assessmentOutput?.data) {
             setTimeout(() => downloadPDF(pdfs.assessmentOutput.filename, pdfs.assessmentOutput.data), 700);
           }
-          return;
-        }
-
-        // Show blurred decision page — payment required to unlock PDFs
-        if (result.requiresPayment && result.checkoutUrl) {
-          setCheckoutUrl(result.checkoutUrl);
-          setDecisionResult(result.decisionObject);
-          setIsPaid(false);
-          setSubmittedUserInfo({
-            fullName: data.fullName,
-            workEmail: data.workEmail,
-            roleTitle: data.roleTitle,
-            organisationName: data.organisationName,
-            organisationSize: data.organisationSize,
-          });
-          setShowDecisionPage(true);
-          try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
           return;
         }
       } else {
@@ -1331,25 +1251,6 @@ export default function Assessment() {
               <ArrowRight className="ml-2 sm:ml-3 h-4 w-4 sm:h-6 sm:w-6" />
             </Button>
 
-            {isDemo ? (
-              <div className="mt-4 text-center">
-                <p className="text-sm sm:text-base text-yellow-300 font-semibold">
-                  🎁 Demo access — No payment required
-                </p>
-              </div>
-            ) : (
-              <div className="mt-4 text-center">
-                <div className="inline-block bg-white/10 border border-white/20 rounded-xl px-5 py-3">
-                  <p className="text-white font-bold text-base sm:text-lg tracking-tight">
-                    $18.99 &nbsp;·&nbsp; Founder's Promo Rate
-                  </p>
-                  <p className="text-emerald-200 text-xs sm:text-sm mt-0.5">
-                    Offer closes 31 July &nbsp;·&nbsp; Returns to $49.99 on 1 August
-                  </p>
-                </div>
-              </div>
-            )}
-            
             <p className="mt-4 sm:mt-6 text-xs sm:text-sm text-emerald-200/80 px-4">
               No financial data, timesheets, or individual performance information is required.
             </p>
@@ -1524,7 +1425,7 @@ export default function Assessment() {
               <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">
                 {d.verdictReason}
               </p>
-              <div className={`flex items-center gap-4 ${!isPaid ? "blur-sm select-none" : ""}`}>
+              <div className="flex items-center gap-4">
                 <div className="flex-1">
                   <div className="flex justify-between text-xs text-gray-400 mb-1">
                     <span>Composite Risk Score</span>
@@ -1552,34 +1453,6 @@ export default function Assessment() {
                 </div>
               )}
             </div>
-
-            {/* Pay-gate: everything below the verdict banner */}
-            <div className="relative">
-              {/* Blur overlay when not paid */}
-              {!isPaid && (
-                <div className="absolute inset-0 z-20 flex items-start justify-center pt-10 sm:pt-16 px-3 sm:px-4">
-                  <div className="text-center bg-gray-900/95 backdrop-blur-sm rounded-2xl p-5 sm:p-8 border border-white/20 shadow-2xl max-w-sm w-full">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center mx-auto mb-3 sm:mb-4">
-                      <Shield className="h-5 w-5 sm:h-6 sm:w-6 text-emerald-400" />
-                    </div>
-                    <h3 className="text-base sm:text-xl font-bold text-white mb-2">Your Full Margin Risk Report</h3>
-                    <p className="text-gray-400 text-xs sm:text-sm mb-4 sm:mb-6 leading-relaxed">
-                      Pay $18.99 to access the complete risk breakdown, effort allocation, structural signals, and download your Decision Memo &amp; Assessment PDFs.
-                    </p>
-                    <Button
-                      size="lg"
-                      className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-4 sm:py-6 rounded-xl text-sm sm:text-base font-semibold shadow-lg flex flex-col h-auto gap-1 px-3"
-                      onClick={() => checkoutUrl && (window.location.href = checkoutUrl)}
-                    >
-                      <span className="leading-snug">Pay $18.99 — Unlock Full Report &amp; PDFs</span>
-                      <span className="text-xs text-emerald-100 font-normal leading-snug">Decision Memo + Assessment Results included</span>
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Content — blurred until paid */}
-              <div className={!isPaid ? "blur-md select-none pointer-events-none" : ""}>
 
             {/* Margin Impact Section */}
             {d.marginImpact && (
@@ -1923,28 +1796,11 @@ export default function Assessment() {
               </Link>
             </div>
 
-              </div>{/* end blurred content */}
-            </div>{/* end pay-gate relative wrapper */}
-
           </div>
           <Footer />
         </div>
     );
   };
-
-  if (isVerifyingPayment) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-900 via-teal-800 to-emerald-900 flex items-center justify-center">
-        <div className="text-center px-6">
-          <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-6" />
-          <h2 className="text-2xl font-bold text-white mb-3">Confirming your payment…</h2>
-          <p className="text-white/70 text-base max-w-sm mx-auto">
-            Please wait while we verify your payment and prepare your assessment results.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   const activePhaseKey = isIntro
     ? "intro"

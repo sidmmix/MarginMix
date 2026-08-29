@@ -12,7 +12,7 @@ import {
 
 // Validate required environment variables at startup
 const REQUIRED_ENV_VARS = ["NEON_DATABASE_URL"] as const;
-const WARNED_ENV_VARS = ["OPENAI_API_KEY", "STRIPE_SECRET_KEY", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"] as const;
+const WARNED_ENV_VARS = ["OPENAI_API_KEY", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"] as const;
 
 for (const v of REQUIRED_ENV_VARS) {
   if (!process.env[v]) {
