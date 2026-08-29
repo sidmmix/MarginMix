@@ -335,9 +335,9 @@ const cw6 = (W - PAD * 2 - 24) / 3;
 const plans = [
   {
     label: "ENTRY / ASSESSMENT",
-    price: "$18.99",
-    unit: "per submission",
-    items: ["Instant output", "No free trial", "Decision memo + PDF"],
+    price: "FREE",
+    unit: "for every submission",
+    items: ["Instant output", "No commitment", "Decision memo + PDF"],
     tinted: false,
   },
   {
@@ -377,7 +377,7 @@ plans.forEach((p, i) => {
 
 doc.rect(PAD + 10, 440, W - PAD * 2 - 10, 34).fill(LABEL_BG).stroke(RULE);
 doc.fontSize(8.5).fillColor(BODY).font("Helvetica")
-  .text("Subscription launches after 300 paying assessment customers (target: within 6 months). Assessment-tier revenue funds this transition.", PAD + 22, 449, { width: W - PAD * 2 - 34 });
+  .text("Subscription launches after 300 assessment customers (target: within 6 months). Assessment usage validates demand and builds the qualified pipeline.", PAD + 22, 449, { width: W - PAD * 2 - 34 });
 
 // ── SLIDE 7: MARKET OPPORTUNITY ───────────────────────────────────────────────
 newSlide();
@@ -514,7 +514,7 @@ caption("The pre-commitment margin risk window is open, unoccupied, and structur
 rule(PAD + 10, 188, W - PAD * 2 - 10);
 
 const milestones = [
-  { phase: "0 – 6 months",  goal: "300 paying assessment customers", metric: "$18.99 × 300 = $5.7K MRR run-rate" },
+  { phase: "0 – 6 months",  goal: "300 assessment customers", metric: "Usage validation and qualified subscription pipeline" },
   { phase: "6 – 18 months", goal: "Subscription launch + 50 firms",  metric: "$62.5K MRR  ·  $750K ARR" },
   { phase: "18 – 36 months",goal: "500 subscription firms",           metric: "$625K MRR  ·  $7.5M ARR" },
 ];

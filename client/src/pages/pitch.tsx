@@ -373,11 +373,11 @@ function SlideRevenue() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Entry / Assessment</p>
-            <p className="text-4xl font-bold text-slate-900 mb-1">$18.99</p>
-            <p className="text-slate-500 text-sm mb-4">per submission</p>
+            <p className="text-4xl font-bold text-slate-900 mb-1">Free</p>
+            <p className="text-slate-500 text-sm mb-4">for every submission</p>
             <div className="space-y-2 text-sm text-slate-600">
               <p>— Instant output</p>
-              <p>— No free trial</p>
+              <p>— No commitment</p>
               <p>— Decision memo + PDF</p>
               <p>— Low friction entry</p>
             </div>
@@ -407,7 +407,7 @@ function SlideRevenue() {
           </div>
         </div>
         <div className="mt-5 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-500">
-          Subscription launches after 300 paying assessment customers (target: within 6 months).
+          Subscription launches after 300 assessment customers (target: within 6 months).
         </div>
       </div>
     </div>
@@ -552,7 +552,7 @@ function SlideFounder() {
 // ── SLIDE 11: THE ASK ─────────────────────────────────────────────────────────
 function SlideAsk() {
   const milestones = [
-    { phase: "0–6 mo", goal: "300 paying assessment customers", metric: "$18.99 × 300 = $5.7K MRR run-rate" },
+    { phase: "0–6 mo", goal: "300 assessment customers", metric: "Usage validation and qualified subscription pipeline" },
     { phase: "6–18 mo", goal: "Subscription launch + 50 firms", metric: "$62.5K MRR / $750K ARR" },
     { phase: "18–36 mo", goal: "500 subscription firms", metric: "$625K MRR / $7.5M ARR" },
   ];
