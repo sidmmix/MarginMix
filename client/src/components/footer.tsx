@@ -16,7 +16,7 @@ export function Footer() {
             Contact: <a href="mailto:sid@marginmix.ai" className="text-emerald-400 hover:text-emerald-300">sid@marginmix.ai</a>
           </p>
           <p className="text-gray-400 text-sm">
-            © 2026 MarginMix/Headroom. All rights reserved.
+            MarginMix-Headroom. All rights reserved.
           </p>
         </div>
       </div>
