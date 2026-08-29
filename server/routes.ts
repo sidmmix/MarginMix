@@ -10,7 +10,7 @@ import {
 } from "@shared/schema";
 
 import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
-import { sendAssessmentEmail, sendFeedbackNotificationEmail, PDFAttachment } from "./resend";
+import { sendAssessmentEmail, sendFeedbackNotificationEmail, sendContactRequestEmail, PDFAttachment } from "./resend";
 import { executeDecisionEngine, DecisionObject } from "./decision-engine";
 import { generateNarrative } from "./narrative-generator";
 import { renderDecisionMemoPDF, renderAssessmentOutputPDF, generatePDFFilename } from "./pdf-renderer";
@@ -272,6 +272,33 @@ export function registerRoutes(app: Express): Server {
         </body>
         </html>
       `);
+    }
+  });
+
+  app.post("/api/contact", async (req, res) => {
+    const contactSchema = z.object({
+      name: z.string().trim().min(1, "Name is required").max(200),
+      email: z.string().trim().email("A valid email is required").max(320),
+      companyName: z.string().trim().min(1, "Company name is required").max(200),
+    });
+
+    try {
+      const contact = contactSchema.parse(req.body);
+      await sendContactRequestEmail(contact);
+      console.log(`Contact request received from ${contact.companyName}`);
+      res.status(200).json({ success: true });
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        return res.status(400).json({
+          success: false,
+          message: error.errors?.[0]?.message || "Please check the form fields.",
+        });
+      }
+      console.error("Contact request error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Unable to send your message right now. Please try again.",
+      });
     }
   });
 

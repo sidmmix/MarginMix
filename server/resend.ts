@@ -758,3 +758,62 @@ export async function sendFeedbackNotificationEmail(
 
   return result;
 }
+
+export async function sendContactRequestEmail(contact: {
+  name: string;
+  email: string;
+  companyName: string;
+}) {
+  const escapeHtml = (value: string) =>
+    value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+
+  const name = escapeHtml(contact.name);
+  const email = escapeHtml(contact.email);
+  const companyName = escapeHtml(contact.companyName);
+
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>MarginMix Logic Integration Inquiry</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f3f4f6;">
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; margin: 0 auto;">
+        <tr>
+          <td style="padding: 20px;">
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+              <tr>
+                <td style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%); padding: 25px; text-align: center; border-radius: 8px 8px 0 0;">
+                  <h1 style="color: white; margin: 0; font-size: 26px;">MarginMix</h1>
+                  <p style="color: #d1fae5; margin: 5px 0 0 0; font-style: italic;">Logic Integration Inquiry</p>
+                </td>
+              </tr>
+            </table>
+            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: #ffffff; border: 1px solid #e5e7eb; border-top: none;">
+              <tr>
+                <td style="padding: 30px;">
+                  <h2 style="color: #374151; margin: 0 0 20px 0; font-size: 18px;">New contact request</h2>
+                  <p style="margin: 10px 0;"><strong>Name:</strong> ${name}</p>
+                  <p style="margin: 10px 0;"><strong>Email:</strong> ${email}</p>
+                  <p style="margin: 10px 0;"><strong>Company:</strong> ${companyName}</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
+  return resend.emails.send({
+    from: "MarginMix Contact <sid@marginmix.ai>",
+    to: ["sid@marginmix.ai"],
+    replyTo: contact.email,
+    subject: `MarginMix Logic integration inquiry from ${contact.companyName}`,
+    html: htmlContent,
+  });
+}

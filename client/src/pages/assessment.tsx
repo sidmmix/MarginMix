@@ -456,6 +456,9 @@ export default function Assessment() {
   const [showDecisionPage, setShowDecisionPage] = useState(false);
   const [storedPdfData, setStoredPdfData] = useState<any>(null);
   const [submittedUserInfo, setSubmittedUserInfo] = useState<{fullName: string; workEmail: string; roleTitle: string; organisationName: string; organisationSize: string} | null>(null);
+  const [contactForm, setContactForm] = useState({ name: "", email: "", companyName: "" });
+  const [isContactSubmitting, setIsContactSubmitting] = useState(false);
+  const [contactSubmitted, setContactSubmitted] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
   const [currentMargin, setCurrentMargin] = useState<string>("");
   const [accountName, setAccountName] = useState<string>("");
@@ -828,6 +831,39 @@ export default function Assessment() {
       });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleContactSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsContactSubmitting(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(contactForm),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Unable to send your message.");
+      }
+
+      setContactSubmitted(true);
+      setContactForm({ name: "", email: "", companyName: "" });
+      toast({
+        title: "Thanks for getting in touch",
+        description: "We’ll be in contact with you soon.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Could not send your message",
+        description: error.message || "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsContactSubmitting(false);
     }
   };
 
@@ -1794,6 +1830,75 @@ export default function Assessment() {
                   Return to Home
                 </Button>
               </Link>
+            </div>
+
+            <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 sm:p-6 mb-8">
+              <h2 className="text-lg sm:text-xl font-semibold text-white mb-2">
+                Want to incorporate MarginMix Logic on your data? Get in touch -
+              </h2>
+              <p className="text-sm text-gray-400 mb-5">
+                Tell us a little about your organization and how you would like to use MarginMix.
+              </p>
+              {contactSubmitted ? (
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-300">
+                  Thanks — your details have been sent. We’ll be in touch soon.
+                </div>
+              ) : (
+                <form onSubmit={handleContactSubmit} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div>
+                    <label htmlFor="contact-name" className="block text-xs font-medium text-gray-400 mb-1.5">
+                      Name
+                    </label>
+                    <Input
+                      id="contact-name"
+                      name="name"
+                      value={contactForm.name}
+                      onChange={(event) => setContactForm({ ...contactForm, name: event.target.value })}
+                      required
+                      placeholder="Your name"
+                      className="bg-white/5 border-white/15 text-white placeholder:text-gray-600"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="contact-email" className="block text-xs font-medium text-gray-400 mb-1.5">
+                      Email
+                    </label>
+                    <Input
+                      id="contact-email"
+                      name="email"
+                      type="email"
+                      value={contactForm.email}
+                      onChange={(event) => setContactForm({ ...contactForm, email: event.target.value })}
+                      required
+                      placeholder="you@company.com"
+                      className="bg-white/5 border-white/15 text-white placeholder:text-gray-600"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="contact-company" className="block text-xs font-medium text-gray-400 mb-1.5">
+                      Company Name
+                    </label>
+                    <Input
+                      id="contact-company"
+                      name="companyName"
+                      value={contactForm.companyName}
+                      onChange={(event) => setContactForm({ ...contactForm, companyName: event.target.value })}
+                      required
+                      placeholder="Your company"
+                      className="bg-white/5 border-white/15 text-white placeholder:text-gray-600"
+                    />
+                  </div>
+                  <div className="sm:col-span-3">
+                    <Button
+                      type="submit"
+                      disabled={isContactSubmitting}
+                      className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-6"
+                    >
+                      {isContactSubmitting ? "Sending..." : "Get in touch"}
+                    </Button>
+                  </div>
+                </form>
+              )}
             </div>
 
           </div>
