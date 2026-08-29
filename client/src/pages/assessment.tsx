@@ -1838,9 +1838,6 @@ export default function Assessment() {
               <h2 className="text-lg sm:text-xl font-semibold text-white mb-2">
                 Want to incorporate MarginMix Logic on your data? Get in touch -
               </h2>
-              <p className="text-sm text-gray-400 mb-5">
-                Tell us a little about your organization and how you would like to use MarginMix.
-              </p>
               {contactSubmitted ? (
                 <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-300">
                   Thanks — your details have been sent. We’ll be in touch soon.
@@ -1848,7 +1845,7 @@ export default function Assessment() {
               ) : (
                 <form onSubmit={handleContactSubmit} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
-                    <label htmlFor="contact-name" className="block text-xs font-medium text-gray-400 mb-1.5">
+                     <label htmlFor="contact-name" className="block text-sm font-semibold text-gray-300 mb-1.5">
                       Name
                     </label>
                     <Input
@@ -1862,7 +1859,7 @@ export default function Assessment() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="contact-email" className="block text-xs font-medium text-gray-400 mb-1.5">
+                     <label htmlFor="contact-email" className="block text-sm font-semibold text-gray-300 mb-1.5">
                       Email
                     </label>
                     <Input
@@ -1877,7 +1874,7 @@ export default function Assessment() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="contact-company" className="block text-xs font-medium text-gray-400 mb-1.5">
+                     <label htmlFor="contact-company" className="block text-sm font-semibold text-gray-300 mb-1.5">
                       Company Name
                     </label>
                     <Input
@@ -1891,6 +1888,9 @@ export default function Assessment() {
                     />
                   </div>
                   <div className="sm:col-span-3">
+                     <p className="mb-4 text-xs leading-relaxed text-gray-400">
+                       By submitting this form, you consent to MarginMix processing your professional and company information to respond to your inquiry, in accordance with GDPR and CCPA.
+                     </p>
                     <Button
                       type="submit"
                       disabled={isContactSubmitting}
