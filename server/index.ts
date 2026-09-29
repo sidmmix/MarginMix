@@ -26,6 +26,9 @@ for (const v of WARNED_ENV_VARS) {
 }
 
 const app = express();
+// The app is served behind Replit's reverse proxy. Use the closest forwarded
+// client address for per-client limits; global limits still cap spoofed traffic.
+app.set("trust proxy", 1);
 
 // Health check — must be first, before all middleware, so it responds instantly
 app.get("/health", (_req, res) => res.status(200).json({ status: "ok" }));

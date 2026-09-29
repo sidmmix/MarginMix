@@ -1,0 +1,1 @@
+- [Development dependency audit boundary](dependency-audit-boundary.md) — distinguish production advisories from dev-tool advisories; never force unsupported esbuild overrides just to clear npm audit.
