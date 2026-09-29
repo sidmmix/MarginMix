@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { z } from "zod";
 import { DecisionObject } from "./decision-engine";
 
 const openai = new OpenAI({
@@ -31,6 +32,40 @@ export interface NarrativeOutput {
     overrideConditions: string;
   };
 }
+
+const narrativeText = z.string();
+const narrativeTextList = z.array(narrativeText);
+const narrativeDimension = z.object({
+  level: z.enum(["Low", "Medium", "High"]),
+  description: narrativeText,
+}).strict();
+
+const NarrativeOutputSchema = z.object({
+  decisionMemo: z.object({
+    decisionContext: narrativeText,
+    marginRiskVerdict: narrativeText,
+    primaryDriversOfRisk: narrativeTextList,
+    pricingGovernanceImplications: narrativeText,
+    whatWouldNeedToChange: narrativeTextList,
+    recommendation: narrativeText,
+  }).strict(),
+  assessmentOutput: z.object({
+    executiveSnapshot: narrativeText,
+    riskDimensionSummary: z.object({
+      workforceIntensity: narrativeDimension,
+      coordinationEntropy: narrativeDimension,
+      commercialExposure: narrativeDimension,
+      volatilityControl: narrativeDimension,
+    }).strict(),
+    effortBandsAllocation: z.object({
+      senior: z.object({ percentage: narrativeText, rationale: narrativeText }).strict(),
+      midLevel: z.object({ percentage: narrativeText, rationale: narrativeText }).strict(),
+      execution: z.object({ percentage: narrativeText, rationale: narrativeText }).strict(),
+    }).strict(),
+    structuralRiskSignals: narrativeTextList,
+    overrideConditions: narrativeText,
+  }).strict(),
+}).strict();
 
 export async function generateNarrative(
   decision: DecisionObject,
@@ -167,14 +202,14 @@ Respond in this exact JSON structure:
       response_format: { type: "json_object" },
       temperature: 0.5,
       max_tokens: 3500
-    });
+    }, { timeout: 20_000 });
 
     const content = completion.choices[0]?.message?.content;
     if (!content) {
       throw new Error("No narrative content generated");
     }
 
-    return JSON.parse(content) as NarrativeOutput;
+    return NarrativeOutputSchema.parse(JSON.parse(content));
   } catch (error) {
     console.error("Narrative generation failed, using fallback:", error);
     return generateFallbackNarrative(decision);

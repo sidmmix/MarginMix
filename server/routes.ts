@@ -1,6 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { z } from "zod";
+import { publicRateLimit } from "./rate-limit";
+import { verifyFeedbackToken } from "./feedback-token";
 import { getAuth } from "@clerk/express";
 import OpenAI from "openai";
 import { storage } from "./storage";
@@ -10,6 +12,7 @@ import {
 } from "@shared/schema";
 
 import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
+import { assertSafePublicUrl, UnsafeUrlError } from "./url-safety";
 import { sendAssessmentEmail, sendFeedbackNotificationEmail, sendContactRequestEmail, PDFAttachment } from "./resend";
 import { executeDecisionEngine, DecisionObject } from "./decision-engine";
 import { generateNarrative } from "./narrative-generator";
@@ -98,10 +101,7 @@ export function registerRoutes(app: Express): Server {
       });
     } catch (error: any) {
       console.error("Error searching benchmarks:", error);
-      res.status(500).json({ 
-        message: "Error searching benchmarks", 
-        error: error.message 
-      });
+      res.status(500).json({ message: "Error searching benchmarks" });
     }
   });
 
@@ -134,34 +134,22 @@ export function registerRoutes(app: Express): Server {
         });
       }
 
-      // Validate URL format and block SSRF targets (private/loopback IPs)
-      let parsedUrl: URL;
-      try {
-        parsedUrl = new URL(url);
-      } catch {
+      // Validate the URL and all resolved destination addresses before scraping.
+      if (typeof url !== "string") {
         return res.status(400).json({ 
           success: false,
           message: "Invalid URL format",
           brief: null
         });
       }
-
-      const hostname = parsedUrl.hostname.toLowerCase();
-      const ssrfPatterns = [
-        /^localhost$/i,
-        /^127\./,
-        /^0\.0\.0\.0$/,
-        /^10\./,
-        /^192\.168\./,
-        /^172\.(1[6-9]|2[0-9]|3[01])\./,
-        /^::1$/,
-        /^fc00:/i,
-        /^fe80:/i,
-      ];
-      if (ssrfPatterns.some(p => p.test(hostname)) || !["http:", "https:"].includes(parsedUrl.protocol)) {
+      try {
+        await assertSafePublicUrl(url);
+      } catch (error) {
         return res.status(400).json({ 
           success: false,
-          message: "URL not allowed",
+          message: error instanceof UnsafeUrlError && error.message === "Invalid URL format"
+            ? "Invalid URL format"
+            : "URL not allowed",
           brief: null
         });
       }
@@ -182,7 +170,6 @@ export function registerRoutes(app: Express): Server {
       res.status(500).json({ 
         success: false,
         message: "Error generating Brand Brief",
-        error: error.message,
         brief: null
       });
     }
@@ -192,11 +179,19 @@ export function registerRoutes(app: Express): Server {
   const processedFeedback = new Set<string>();
 
   // Feedback response endpoint - handles Yes/No clicks from feedback email
-  app.get("/api/feedback", async (req, res) => {
+  app.get("/api/feedback", publicRateLimit(12, 15 * 60_000, 300), async (req, res) => {
     try {
       const { response, name, email, token } = req.query;
       
-      if (!response || !name || !email) {
+      if (
+        (response !== "yes" && response !== "no") ||
+        typeof name !== "string" ||
+        typeof email !== "string" ||
+        typeof token !== "string" ||
+        name.length > 255 ||
+        email.length > 255 ||
+        token.length > 2048
+      ) {
         return res.status(400).send(`
           <!DOCTYPE html>
           <html>
@@ -209,12 +204,16 @@ export function registerRoutes(app: Express): Server {
         `);
       }
       
-      const feedbackResponse = response === 'yes' ? 'yes' : 'no';
-      const fullName = decodeURIComponent(name as string);
-      const userEmail = decodeURIComponent(email as string);
+      const payload = verifyFeedbackToken(token);
+      if (!payload || payload.name !== name || payload.email !== email) {
+        return res.status(400).send("Invalid or expired feedback link.");
+      }
+      const feedbackResponse = response;
+      const fullName = payload.name;
+      const userEmail = payload.email;
       
       // Create unique key to prevent duplicate processing
-      const feedbackKey = `${userEmail}:${token || Date.now()}`;
+      const feedbackKey = token;
       
       // Only send notification if not already processed
       if (!processedFeedback.has(feedbackKey)) {
@@ -225,7 +224,9 @@ export function registerRoutes(app: Express): Server {
           await sendFeedbackNotificationEmail(fullName, userEmail, feedbackResponse);
           console.log(`Feedback notification sent: ${feedbackResponse}`);
         } catch (notifyError: any) {
+          processedFeedback.delete(feedbackKey);
           console.error("Failed to send feedback notification:", notifyError.message);
+          throw notifyError;
         }
       } else {
         console.log("Duplicate feedback ignored");
@@ -275,7 +276,7 @@ export function registerRoutes(app: Express): Server {
     }
   });
 
-  app.post("/api/contact", async (req, res) => {
+  app.post("/api/contact", publicRateLimit(5, 15 * 60_000, 100), async (req, res) => {
     const contactSchema = z.object({
       name: z.string().trim().min(1, "Name is required").max(200),
       email: z.string().trim().email("A valid email is required").max(320),
@@ -303,9 +304,16 @@ export function registerRoutes(app: Express): Server {
   });
 
   // Margin Risk Assessment endpoint
-  app.post("/api/assessments", async (req, res) => {
+  const assessmentInputSchema = insertMarginAssessmentSchema.extend({
+    fullName: z.string().trim().min(1).max(255),
+    workEmail: z.string().trim().email().max(255),
+    roleTitle: z.string().trim().min(1).max(255),
+    organisationName: z.string().trim().min(1).max(255),
+    openSignal: z.string().max(4000).optional(),
+  });
+  app.post("/api/assessments", publicRateLimit(6, 15 * 60_000, 120), async (req, res) => {
     try {
-      const validatedData = insertMarginAssessmentSchema.parse(req.body);
+      const validatedData = assessmentInputSchema.parse(req.body);
       const assessment = await storage.createMarginAssessment(validatedData);
       
       // Execute the deterministic decision engine

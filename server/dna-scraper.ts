@@ -1,6 +1,7 @@
 import { chromium, Browser, Page } from 'playwright';
 import * as cheerio from 'cheerio';
 import OpenAI from 'openai';
+import { assertSafePublicUrl, UnsafeUrlError } from './url-safety';
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -83,8 +84,34 @@ async function scrapeWebsite(url: string): Promise<ScrapedData> {
     });
     
     const context = await browser.newContext({
-      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+      serviceWorkers: 'block'
     });
+
+    // Validate every browser request, including redirects, scripts, and requests
+    // initiated by linked pages. DNS resolution failures are rejected by the
+    // validator rather than allowed to fall through.
+    await context.route('**/*', async route => {
+      try {
+        await assertSafePublicUrl(route.request().url());
+        await route.continue();
+      } catch (error) {
+        try {
+          await route.abort('blockedbyclient');
+        } catch {
+          // The request may already have completed while it was being checked.
+        }
+        if (!(error instanceof UnsafeUrlError)) {
+          console.error('[DNA_Scraper] Request validation failed:', error);
+        }
+      }
+    });
+    // Playwright's HTTP routing does not provide the same destination controls
+    // for WebSockets; scraping does not require them, so fail closed.
+    await context.routeWebSocket('**/*', route => route.close({
+      code: 1008,
+      reason: 'WebSocket access disabled during scraping'
+    }));
     
     const page: Page = await context.newPage();
     
@@ -231,6 +258,7 @@ async function scrapeWebsite(url: string): Promise<ScrapedData> {
         if (aboutHref) {
           try {
             const aboutUrl = new URL(aboutHref, url).toString();
+            await assertSafePublicUrl(aboutUrl);
             await page.goto(aboutUrl, { waitUntil: 'networkidle', timeout: 15000 });
             await page.waitForTimeout(1000);
             const aboutHtml = await page.content();
@@ -474,9 +502,12 @@ export async function scrapeBrandDNA(url: string): Promise<BrandBrief> {
   
   // Validate URL
   try {
-    new URL(url);
-  } catch {
+    await assertSafePublicUrl(url);
+  } catch (error) {
     console.error(`[Insight_Hunter] Invalid URL: ${url}`);
+    if (error instanceof UnsafeUrlError) {
+      return { ...GENERIC_BRIEF, brand_name: "Invalid URL" };
+    }
     return { ...GENERIC_BRIEF, brand_name: "Invalid URL" };
   }
   

@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 import { DecisionObject } from './decision-engine';
+import { generateFeedbackToken } from './feedback-token';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -22,6 +23,26 @@ function getAppUrl(): string {
 }
 
 const APP_URL = getAppUrl();
+
+function escapeHtml(value: string | number | null | undefined): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function safePercent(value: string | number | null | undefined): number {
+  const parsed = typeof value === 'number' ? value : Number.parseFloat(String(value ?? ''));
+  return Number.isFinite(parsed) ? Math.max(0, Math.min(parsed, 100)) : 0;
+}
+
+function throwIfResendError(result: { error?: { message?: string } | null }) {
+  if (result.error) {
+    throw new Error(result.error.message || 'Resend failed to send email');
+  }
+}
 
 function getVerdictColor(verdict: string): { bg: string; text: string; border: string; gradientFrom: string; gradientTo: string } {
   switch (verdict) {
@@ -169,8 +190,8 @@ export async function sendAssessmentEmail(
       <td width="33.33%" style="padding: 4px; vertical-align: top;">
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: ${colors.bg}; border: 1px solid ${colors.border}; border-radius: 8px;">
           <tr><td style="padding: 12px;">
-            <p style="color: #9ca3af; margin: 0 0 4px 0; font-size: 11px;">${dim.name}</p>
-            <p style="color: ${colors.text}; margin: 0; font-weight: 600; font-size: 13px;">${getDimensionLabel(dim.level || "low")}</p>
+            <p style="color: #9ca3af; margin: 0 0 4px 0; font-size: 11px;">${escapeHtml(dim.name)}</p>
+            <p style="color: ${colors.text}; margin: 0; font-weight: 600; font-size: 13px;">${escapeHtml(getDimensionLabel(dim.level || "low"))}</p>
           </td></tr>
         </table>
       </td>`;
@@ -185,9 +206,9 @@ export async function sendAssessmentEmail(
         <td colspan="3" style="padding: 10px 0 2px 0;">
           <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
             <tr>
-              <td style="color: #d1d5db; font-size: 13px;">${formatBucketLabel(key)}</td>
-              <td style="text-align: right; color: #6b7280; font-size: 12px;">${band} &nbsp;
-                <span style="color: white; font-weight: 700; font-family: monospace;">${score}</span>
+              <td style="color: #d1d5db; font-size: 13px;">${escapeHtml(formatBucketLabel(key))}</td>
+              <td style="text-align: right; color: #6b7280; font-size: 12px;">${escapeHtml(band)} &nbsp;
+                <span style="color: white; font-weight: 700; font-family: monospace;">${escapeHtml(score)}</span>
               </td>
             </tr>
           </table>
@@ -196,7 +217,7 @@ export async function sendAssessmentEmail(
       <tr>
         <td colspan="3" style="padding: 0 0 8px 0;">
           <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
-            <div style="width: ${score}%; height: 8px; background: ${barColor}; border-radius: 4px;"></div>
+            <div style="width: ${safePercent(score)}%; height: 8px; background: ${barColor}; border-radius: 4px;"></div>
           </div>
         </td>
       </tr>`;
@@ -216,7 +237,7 @@ export async function sendAssessmentEmail(
             <td width="12" style="vertical-align: middle;">
               <div style="width: 8px; height: 8px; border-radius: 50%; background: ${flag.value ? '#ef4444' : '#10b981'};"></div>
             </td>
-            <td style="padding-left: 8px; color: #d1d5db; font-size: 13px;">${flag.label}</td>
+            <td style="padding-left: 8px; color: #d1d5db; font-size: 13px;">${escapeHtml(flag.label)}</td>
             <td style="text-align: right; font-size: 12px; font-weight: 600; color: ${flag.value ? '#fca5a5' : '#6ee7b7'};">${flag.value ? 'Yes' : 'No'}</td>
           </tr>
         </table>
@@ -240,7 +261,7 @@ export async function sendAssessmentEmail(
               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: ${flagBg}; border: 1px solid ${flagBorder}; border-radius: 8px; margin-bottom: 6px;">
                 <tr>
                   <td style="padding: 10px 12px;">
-                    <p style="color: #e5e7eb; margin: 0 0 2px 0; font-size: 13px;">${flag.description}</p>
+                    <p style="color: #e5e7eb; margin: 0 0 2px 0; font-size: 13px;">${escapeHtml(flag.description)}</p>
                     <p style="color: ${flagColor}; margin: 0; font-size: 11px; font-weight: 600;">${flagLabel}</p>
                   </td>
                 </tr>
@@ -259,7 +280,7 @@ export async function sendAssessmentEmail(
             <td width="28" style="padding: 10px 0 10px 12px; vertical-align: top;">
               <div style="width: 20px; height: 20px; border-radius: 50%; background: rgba(16,185,129,0.2); color: #6ee7b7; font-size: 11px; font-weight: 700; text-align: center; line-height: 20px;">${i + 1}</div>
             </td>
-            <td style="padding: 10px 12px 10px 8px; color: #d1d5db; font-size: 13px;">${rec}</td>
+            <td style="padding: 10px 12px 10px 8px; color: #d1d5db; font-size: 13px;">${escapeHtml(rec)}</td>
           </tr>
         </table>
       </td>
@@ -308,20 +329,20 @@ export async function sendAssessmentEmail(
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: ${verdictColors.gradientFrom}; border: 1px solid ${verdictColors.border}; border-radius: 12px; margin-bottom: 16px;">
                     <tr>
                       <td style="padding: 20px 24px;">
-                        <h2 style="color: ${verdictColors.text}; margin: 0 0 6px 0; font-size: 24px;">${decision.marginRiskVerdict}</h2>
+                        <h2 style="color: ${verdictColors.text}; margin: 0 0 6px 0; font-size: 24px;">${escapeHtml(decision.marginRiskVerdict)}</h2>
                         <p style="margin: 0 0 12px 0;">
-                          <span style="background: ${riskBandColor}20; color: ${riskBandColor}; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid ${riskBandColor}; display: inline-block;">${decision.riskBand} Risk</span>
+                          <span style="background: ${riskBandColor}20; color: ${riskBandColor}; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid ${riskBandColor}; display: inline-block;">${escapeHtml(decision.riskBand)} Risk</span>
                         </p>
-                        <p style="color: #d1d5db; margin: 0 0 16px 0; font-size: 14px; line-height: 1.5;">${decision.verdictReason}</p>
+                        <p style="color: #d1d5db; margin: 0 0 16px 0; font-size: 14px; line-height: 1.5;">${escapeHtml(decision.verdictReason)}</p>
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                           <tr>
                             <td style="color: #9ca3af; font-size: 12px;">Composite Risk Score</td>
-                            <td style="text-align: right; color: white; font-weight: 700; font-family: monospace; font-size: 12px;">${decision.compositeRiskScore}/100</td>
+                            <td style="text-align: right; color: white; font-weight: 700; font-family: monospace; font-size: 12px;">${escapeHtml(decision.compositeRiskScore)}/100</td>
                           </tr>
                           <tr>
                             <td colspan="2" style="padding-top: 4px;">
                               <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden;">
-                                <div style="width: ${decision.compositeRiskScore}%; height: 10px; background: ${compositeBarColor}; border-radius: 5px;"></div>
+                                <div style="width: ${safePercent(decision.compositeRiskScore)}%; height: 10px; background: ${compositeBarColor}; border-radius: 5px;"></div>
                               </div>
                             </td>
                           </tr>
@@ -340,15 +361,15 @@ export async function sendAssessmentEmail(
                           <tr>
                             <td width="33%" style="text-align: center; padding: 8px 4px;">
                               <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 11px;">Current Margin</p>
-                              <p style="color: white; margin: 0; font-size: 22px; font-weight: 700;">${decision.marginImpact.currentMargin}%</p>
+                              <p style="color: white; margin: 0; font-size: 22px; font-weight: 700;">${escapeHtml(decision.marginImpact.currentMargin)}%</p>
                             </td>
                             <td width="33%" style="text-align: center; padding: 8px 4px;">
                               <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 11px;">Estimated Margin Erosion</p>
-                              <p style="color: ${decision.marginImpact.impactColor === 'emerald' ? '#6ee7b7' : decision.marginImpact.impactColor === 'amber' ? '#fcd34d' : '#fca5a5'}; margin: 0; font-size: 22px; font-weight: 700;">${decision.marginImpact.estimatedLoss > 0 ? `-${decision.marginImpact.estimatedLoss}%` : '0%'}</p>
+                              <p style="color: ${decision.marginImpact.impactColor === 'emerald' ? '#6ee7b7' : decision.marginImpact.impactColor === 'amber' ? '#fcd34d' : '#fca5a5'}; margin: 0; font-size: 22px; font-weight: 700;">${escapeHtml(decision.marginImpact.estimatedLoss > 0 ? `-${decision.marginImpact.estimatedLoss}%` : '0%')}</p>
                             </td>
                             <td width="33%" style="text-align: center; padding: 8px 4px;">
                               <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 11px;">Effective Margin</p>
-                              <p style="color: ${decision.marginImpact.effectiveMargin >= decision.marginImpact.currentMargin * 0.7 ? '#6ee7b7' : decision.marginImpact.effectiveMargin >= decision.marginImpact.currentMargin * 0.5 ? '#fcd34d' : '#fca5a5'}; margin: 0; font-size: 22px; font-weight: 700;">${decision.marginImpact.effectiveMargin}%</p>
+                              <p style="color: ${decision.marginImpact.effectiveMargin >= decision.marginImpact.currentMargin * 0.7 ? '#6ee7b7' : decision.marginImpact.effectiveMargin >= decision.marginImpact.currentMargin * 0.5 ? '#fcd34d' : '#fca5a5'}; margin: 0; font-size: 22px; font-weight: 700;">${escapeHtml(decision.marginImpact.effectiveMargin)}%</p>
                             </td>
                           </tr>
                           <tr>
@@ -360,7 +381,7 @@ export async function sendAssessmentEmail(
                           </tr>
                           <tr>
                             <td colspan="3" style="text-align: center; padding: 8px 0 0 0;">
-                              <span style="background: ${decision.marginImpact.impactColor === 'emerald' ? 'rgba(16,185,129,0.2)' : decision.marginImpact.impactColor === 'amber' ? 'rgba(245,158,11,0.2)' : 'rgba(239,68,68,0.2)'}; color: ${decision.marginImpact.impactColor === 'emerald' ? '#6ee7b7' : decision.marginImpact.impactColor === 'amber' ? '#fcd34d' : '#fca5a5'}; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid ${decision.marginImpact.impactColor === 'emerald' ? '#10b981' : decision.marginImpact.impactColor === 'amber' ? '#f59e0b' : '#ef4444'}; display: inline-block;">${decision.marginImpact.impactLabel}</span>
+                              <span style="background: ${decision.marginImpact.impactColor === 'emerald' ? 'rgba(16,185,129,0.2)' : decision.marginImpact.impactColor === 'amber' ? 'rgba(245,158,11,0.2)' : 'rgba(239,68,68,0.2)'}; color: ${decision.marginImpact.impactColor === 'emerald' ? '#6ee7b7' : decision.marginImpact.impactColor === 'amber' ? '#fcd34d' : '#fca5a5'}; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid ${decision.marginImpact.impactColor === 'emerald' ? '#10b981' : decision.marginImpact.impactColor === 'amber' ? '#f59e0b' : '#ef4444'}; display: inline-block;">${escapeHtml(decision.marginImpact.impactLabel)}</span>
                             </td>
                           </tr>
                         </table>
@@ -378,27 +399,27 @@ export async function sendAssessmentEmail(
                           <tr>
                             <td width="50%" style="padding: 6px 8px 6px 0; vertical-align: top;">
                               <p style="color: #6b7280; margin: 0; font-size: 11px;">Name</p>
-                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500; word-wrap: break-word;">${decision.engagementContext.fullName}</p>
+                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500; word-wrap: break-word;">${escapeHtml(decision.engagementContext.fullName)}</p>
                             </td>
                             <td width="50%" style="padding: 6px 0 6px 8px; vertical-align: top;">
                               <p style="color: #6b7280; margin: 0; font-size: 11px;">Email</p>
-                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500; word-wrap: break-word;">${decision.engagementContext.workEmail}</p>
+                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500; word-wrap: break-word;">${escapeHtml(decision.engagementContext.workEmail)}</p>
                             </td>
                           </tr>
                           <tr>
                             <td width="50%" style="padding: 6px 8px 6px 0; vertical-align: top;">
                               <p style="color: #6b7280; margin: 0; font-size: 11px;">Role / Title</p>
-                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500; word-wrap: break-word;">${decision.engagementContext.roleTitle}</p>
+                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500; word-wrap: break-word;">${escapeHtml(decision.engagementContext.roleTitle)}</p>
                             </td>
                             <td width="50%" style="padding: 6px 0 6px 8px; vertical-align: top;">
                               <p style="color: #6b7280; margin: 0; font-size: 11px;">Organisation</p>
-                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500; word-wrap: break-word;">${decision.engagementContext.organisationName}</p>
+                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500; word-wrap: break-word;">${escapeHtml(decision.engagementContext.organisationName)}</p>
                             </td>
                           </tr>
                           <tr>
                             <td colspan="2" style="padding: 6px 0;">
                               <p style="color: #6b7280; margin: 0; font-size: 11px;">Organisation Size</p>
-                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500;">${decision.engagementContext.organisationSize} employees</p>
+                              <p style="color: white; margin: 2px 0 0 0; font-size: 13px; font-weight: 500;">${escapeHtml(decision.engagementContext.organisationSize)} employees</p>
                             </td>
                           </tr>
                         </table>
@@ -436,7 +457,7 @@ export async function sendAssessmentEmail(
                     <tr>
                       <td style="padding: 16px 20px;">
                         <h3 style="color: white; margin: 0 0 4px 0; font-size: 16px;">👥 Effort Allocation</h3>
-                        <p style="margin: 0 0 12px 0;"><span style="background: rgba(255,255,255,0.1); color: #d1d5db; padding: 2px 8px; border-radius: 4px; font-size: 12px;">${decision.effortBand}</span></p>
+                        <p style="margin: 0 0 12px 0;"><span style="background: rgba(255,255,255,0.1); color: #d1d5db; padding: 2px 8px; border-radius: 4px; font-size: 12px;">${escapeHtml(decision.effortBand)}</span></p>
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                           ${[
                             { label: "Senior", value: decision.effortPercentages.senior, alloc: decision.effortAllocation?.senior },
@@ -447,8 +468,8 @@ export async function sendAssessmentEmail(
                               <td style="padding: 4px 0 1px 0;">
                                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                                   <tr>
-                                    <td style="color: #d1d5db; font-size: 13px;">${item.label}</td>
-                                    <td style="text-align: right; color: white; font-weight: 700; font-family: monospace; font-size: 13px;">${item.value}</td>
+                                    <td style="color: #d1d5db; font-size: 13px;">${escapeHtml(item.label)}</td>
+                                    <td style="text-align: right; color: white; font-weight: 700; font-family: monospace; font-size: 13px;">${escapeHtml(item.value)}</td>
                                   </tr>
                                 </table>
                               </td>
@@ -456,11 +477,11 @@ export async function sendAssessmentEmail(
                             <tr>
                               <td style="padding: 0 0 ${item.alloc != null ? '0' : '8'}px 0;">
                                 <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
-                                  <div style="width: ${item.value || '0%'}; height: 8px; background: #06b6d4; border-radius: 4px;"></div>
+                                  <div style="width: ${safePercent(item.value)}%; height: 8px; background: #06b6d4; border-radius: 4px;"></div>
                                 </div>
                               </td>
                             </tr>
-                            ${item.alloc != null ? `<tr><td style="padding: 0 0 8px 0; color: #6b7280; font-size: 11px;">Allocation: ${item.alloc}%</td></tr>` : ''}
+                            ${item.alloc != null ? `<tr><td style="padding: 0 0 8px 0; color: #6b7280; font-size: 11px;">Allocation: ${escapeHtml(item.alloc)}%</td></tr>` : ''}
                           `).join('')}
                         </table>
                       </td>
@@ -477,7 +498,7 @@ export async function sendAssessmentEmail(
                           ${decision.dominantDrivers.map(driver => `
                             <tr>
                               <td style="padding: 3px 0;">
-                                <span style="display: inline-block; background: rgba(245,158,11,0.2); color: #fcd34d; padding: 4px 12px; border-radius: 16px; font-size: 13px; font-weight: 500; border: 1px solid rgba(245,158,11,0.3);">▸ ${driver}</span>
+                                <span style="display: inline-block; background: rgba(245,158,11,0.2); color: #fcd34d; padding: 4px 12px; border-radius: 16px; font-size: 13px; font-weight: 500; border: 1px solid rgba(245,158,11,0.3);">▸ ${escapeHtml(driver)}</span>
                               </td>
                             </tr>
                           `).join('')}
@@ -501,7 +522,7 @@ export async function sendAssessmentEmail(
                               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.03); border-radius: 8px;">
                                 <tr><td style="padding: 10px;">
                                   <p style="color: #6b7280; margin: 0 0 2px 0; font-size: 11px;">AI Effort Shift</p>
-                                  <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${decision.aiImpactClassification}</p>
+                                  <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${escapeHtml(decision.aiImpactClassification)}</p>
                                 </td></tr>
                               </table>
                             </td>
@@ -509,7 +530,7 @@ export async function sendAssessmentEmail(
                               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.03); border-radius: 8px;">
                                 <tr><td style="padding: 10px;">
                                   <p style="color: #6b7280; margin: 0 0 2px 0; font-size: 11px;">Risk Source</p>
-                                  <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${decision.riskSource}</p>
+                                  <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${escapeHtml(decision.riskSource)}</p>
                                 </td></tr>
                               </table>
                             </td>
@@ -517,7 +538,7 @@ export async function sendAssessmentEmail(
                               <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.03); border-radius: 8px;">
                                 <tr><td style="padding: 10px;">
                                   <p style="color: #6b7280; margin: 0 0 2px 0; font-size: 11px;">Correctability</p>
-                                  <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${decision.correctability}</p>
+                                  <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${escapeHtml(decision.correctability)}</p>
                                 </td></tr>
                               </table>
                             </td>
@@ -544,7 +565,7 @@ export async function sendAssessmentEmail(
 
                   <!-- Decision ID & Timestamp -->
                   <p style="text-align: center; color: #6b7280; font-size: 11px; margin: 16px 0 0 0;">
-                    Decision ID: ${decision.id} · Generated: ${new Date(decision.createdAt).toLocaleString()}
+                    Decision ID: ${escapeHtml(decision.id)} · Generated: ${escapeHtml(new Date(decision.createdAt).toLocaleString())}
                   </p>
                 </td>
               </tr>
@@ -580,6 +601,7 @@ export async function sendAssessmentEmail(
     attachments: emailAttachments
   });
 
+  throwIfResendError(result);
   return result;
 }
 
@@ -588,7 +610,11 @@ export async function sendFeedbackRequestEmail(
   email: string,
   assessmentId: number
 ) {
-  const feedbackToken = Buffer.from(`${assessmentId}:${email}:${Date.now()}`).toString('base64');
+  const feedbackToken = generateFeedbackToken({
+    assessmentId,
+    name: fullName,
+    email,
+  });
   
   const yesUrl = `${APP_URL}/api/feedback?response=yes&token=${encodeURIComponent(feedbackToken)}&name=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}`;
   const noUrl = `${APP_URL}/api/feedback?response=no&token=${encodeURIComponent(feedbackToken)}&name=${encodeURIComponent(fullName)}&email=${encodeURIComponent(email)}`;
@@ -619,7 +645,7 @@ export async function sendFeedbackRequestEmail(
             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: #f9fafb; border: 1px solid #e5e7eb; border-top: none;">
               <tr>
                 <td style="padding: 30px;">
-                  <p style="font-size: 16px; color: #374151; margin: 0;">Dear ${fullName},</p>
+                  <p style="font-size: 16px; color: #374151; margin: 0;">Dear ${escapeHtml(fullName)},</p>
                   
                   <p style="font-size: 16px; color: #374151; margin: 20px 0;">
                     Thank you for using MarginMix. Would you be open to paying a small fee for future usage?
@@ -632,10 +658,10 @@ export async function sendFeedbackRequestEmail(
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0">
                           <tr>
                             <td style="padding-right: 10px; padding-bottom: 10px;">
-                              <a href="${yesUrl}" style="display: inline-block; background: #059669; color: white; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">Yes</a>
+                              <a href="${escapeHtml(yesUrl)}" style="display: inline-block; background: #059669; color: white; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">Yes</a>
                             </td>
                             <td style="padding-left: 10px; padding-bottom: 10px;">
-                              <a href="${noUrl}" style="display: inline-block; background: #dc2626; color: white; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">No</a>
+                              <a href="${escapeHtml(noUrl)}" style="display: inline-block; background: #dc2626; color: white; padding: 14px 40px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">No</a>
                             </td>
                           </tr>
                         </table>
@@ -673,6 +699,7 @@ export async function sendFeedbackRequestEmail(
     html: htmlContent
   });
 
+  throwIfResendError(result);
   return result;
 }
 
@@ -715,11 +742,11 @@ export async function sendFeedbackNotificationEmail(
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                     <tr>
                       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: 600; width: 30%;">Name:</td>
-                      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; word-wrap: break-word;">${fullName}</td>
+                      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; word-wrap: break-word;">${escapeHtml(fullName)}</td>
                     </tr>
                     <tr>
                       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Email:</td>
-                      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; word-wrap: break-word;">${email}</td>
+                      <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; word-wrap: break-word;">${escapeHtml(email)}</td>
                     </tr>
                     <tr>
                       <td style="padding: 12px; border-bottom: 1px solid #e5e7eb; font-weight: 600;">Response:</td>
@@ -756,6 +783,7 @@ export async function sendFeedbackNotificationEmail(
     html: htmlContent
   });
 
+  throwIfResendError(result);
   return result;
 }
 
@@ -764,10 +792,6 @@ export async function sendContactRequestEmail(contact: {
   email: string;
   companyName: string;
 }) {
-  const escapeHtml = (value: string) =>
-    value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-
   const name = escapeHtml(contact.name);
   const email = escapeHtml(contact.email);
   const companyName = escapeHtml(contact.companyName);
@@ -809,11 +833,13 @@ export async function sendContactRequestEmail(contact: {
     </html>
   `;
 
-  return resend.emails.send({
+  const result = await resend.emails.send({
     from: "MarginMix Contact <sid@marginmix.ai>",
     to: ["sid@marginmix.ai"],
     replyTo: contact.email,
     subject: `${contact.name} from Company Name ${contact.companyName} is interested in the MarginMix Logic`,
     html: htmlContent,
   });
+  throwIfResendError(result);
+  return result;
 }
