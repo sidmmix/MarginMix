@@ -14,3 +14,9 @@ The newer Drizzle Kit pre-release removes the deprecated loader but expects an O
 **Why:** The newer CLI failed even for its version command against the stable ORM. Replacing the deprecated loader with a local stub also made npm report an invalid dependency tree while misleadingly clearing the audit.
 
 **How to apply:** Do not treat an audit count of zero as success unless `npm ls` and the CLI both work. Get informed consent before changing the ORM major version to solve a development-tool advisory.
+
+When the ORM and CLI are migrated together to the pre-release line, keep the schema adapter in step and pin all three rather than allowing independent pre-release updates. Generated validation schemas use Zod 4 types, even if unrelated client validators still use Zod 3.
+
+**Why:** A matching CLI and ORM alone left the old adapter with an invalid peer tree; the newer adapter's generated schemas did not type-check against Zod 3 extensions.
+
+**How to apply:** Check the complete dependency tree and keep shared generated schemas and server extensions on the same Zod major. Re-run schema generation offline before applying any database changes.

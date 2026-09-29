@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { z } from "zod";
+import { z } from "zod/v4";
 import { publicRateLimit } from "./rate-limit";
 import { verifyFeedbackToken } from "./feedback-token";
 import { getAuth } from "@clerk/express";
@@ -292,7 +292,7 @@ export function registerRoutes(app: Express): Server {
       if (error.name === "ZodError") {
         return res.status(400).json({
           success: false,
-          message: error.errors?.[0]?.message || "Please check the form fields.",
+          message: error.issues?.[0]?.message || "Please check the form fields.",
         });
       }
       console.error("Contact request error:", error);
@@ -455,7 +455,7 @@ export function registerRoutes(app: Express): Server {
         return res.status(400).json({ 
           success: false, 
           message: "Validation error", 
-          errors: error.errors 
+          errors: error.issues
         });
       }
       res.status(500).json({ 
