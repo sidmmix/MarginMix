@@ -113,12 +113,10 @@ export default function AuditQuestions() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [restored, setRestored] = useState(false);
   const [submissionId, setSubmissionId] = useState("");
-  const [autoAdvanceQuestionId, setAutoAdvanceQuestionId] = useState<string | null>(null);
   const inputRef = useRef<HTMLElement | null>(null);
   const errorRef = useRef<HTMLDivElement | null>(null);
   const questionHeadingRef = useRef<HTMLHeadingElement | null>(null);
   const reviewHeadingRef = useRef<HTMLHeadingElement | null>(null);
-  const autoAdvanceRef = useRef<number | null>(null);
 
   const visibleQuestions = useMemo(() => getOrderedVisibleQuestions(answers), [answers]);
   const activeIndex = Math.max(0, visibleQuestions.findIndex((question) => question.id === activeId));
@@ -191,7 +189,7 @@ export default function AuditQuestions() {
         if (reviewing) reviewHeadingRef.current?.focus();
         else if (inputRef.current?.isConnected) inputRef.current.focus();
         else questionHeadingRef.current?.focus();
-      }, reducedMotion ? 0 : 180);
+      }, reducedMotion ? 220 : 260);
       return () => window.clearTimeout(timer);
     }
   }, [activeId, reviewing, submitted, reducedMotion, activeQuestion]);
@@ -199,14 +197,12 @@ export default function AuditQuestions() {
   const setAnswer = useCallback((id: string, value: AuditAnswers[string]) => {
     if (isSubmitting) return;
     setAnswers((previous) => ({ ...previous, [id]: value }));
-    setAutoAdvanceQuestionId(id === activeId ? id : null);
     setSubmissionId("");
     setError("");
-  }, [activeId, isSubmitting]);
+  }, [isSubmitting]);
 
   const goToQuestion = useCallback((question: AuditQuestion) => {
     if (isSubmitting) return;
-    setAutoAdvanceQuestionId(null);
     setReviewing(false);
     setActiveId(question.id);
     setError("");
@@ -224,8 +220,6 @@ export default function AuditQuestions() {
 
   const next = () => {
     if (isSubmitting) return;
-    if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
-    setAutoAdvanceQuestionId(null);
     if (!activeQuestion || !validateOne(activeQuestion)) return;
     const updatedVisible = getOrderedVisibleQuestions(answers);
     const index = updatedVisible.findIndex((question) => question.id === activeQuestion.id);
@@ -239,8 +233,6 @@ export default function AuditQuestions() {
 
   const previous = () => {
     if (isSubmitting) return;
-    if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
-    setAutoAdvanceQuestionId(null);
     const index = visibleQuestions.findIndex((question) => question.id === activeId);
     if (index > 0) setActiveId(visibleQuestions[index - 1].id);
     else setReviewing(false);
@@ -255,7 +247,6 @@ export default function AuditQuestions() {
 
   const beginReview = () => {
     if (isSubmitting) return;
-    setAutoAdvanceQuestionId(null);
     const firstInvalid = visibleQuestions.find((question) => validateAuditAnswer(question, answers[question.id]));
     if (firstInvalid) {
       setActiveId(firstInvalid.id);
@@ -270,8 +261,6 @@ export default function AuditQuestions() {
 
   const jumpToQuestion = (question: AuditQuestion) => {
     if (isSubmitting) return;
-    if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
-    setAutoAdvanceQuestionId(null);
     const targetIndex = visibleQuestions.findIndex((item) => item.id === question.id);
     const unansweredBeforeTarget = visibleQuestions.slice(0, targetIndex + 1)
       .find((item) => validateAuditAnswer(item, answers[item.id]));
@@ -317,28 +306,8 @@ export default function AuditQuestions() {
     }
   };
 
-  useEffect(() => {
-    if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
-    if (!restored || reviewing || submitted || isSubmitting || !activeQuestion) return;
-    if (autoAdvanceQuestionId !== activeQuestion.id) return;
-    if (validateAuditAnswer(activeQuestion, answers[activeQuestion.id])) return;
-    // The final response stays put so users can review answers and press Submit.
-    if (activeIndex === visibleQuestions.length - 1) return;
-    const delay = 2000;
-    const questionId = activeQuestion.id;
-    autoAdvanceRef.current = window.setTimeout(() => {
-      if (activeId === questionId) next();
-    }, delay);
-    return () => {
-      if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
-    };
-  // The auto-step is intentionally driven by valid answer changes and a two-second pause.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeId, answers, activeIndex, visibleQuestions.length, activeQuestion, autoAdvanceQuestionId, restored, reviewing, submitted, isSubmitting]);
-
   const clearDraft = () => {
     if (isSubmitting) return;
-    setAutoAdvanceQuestionId(null);
     setAnswers({});
     setSubmissionId("");
     setActiveId(getOrderedVisibleQuestions({})[0]?.id ?? auditQuestions[0]?.id ?? null);
@@ -354,7 +323,7 @@ export default function AuditQuestions() {
   };
 
   const keyAdvance = (event: ReactKeyboardEvent) => {
-    if (event.key === "Enter" && !event.shiftKey && activeQuestion?.type !== "textarea" && activeQuestion?.type !== "table") {
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       next();
     }
@@ -538,7 +507,9 @@ export default function AuditQuestions() {
                       <p className="mb-2 text-xs font-semibold uppercase tracking-[0.17em] text-[#568475]">{activeSection} <span className="px-1 text-[#b9b7aa]">/</span> {activeIndex + 1} of {visibleQuestions.length}</p>
                       <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#98998d]">Engagement assumptions</p>
                     </div>
-                    {activeIndex < visibleQuestions.length - 1 && <div className="text-[11px] text-[#78867b]">Moves on automatically after your answer</div>}
+                    <button type="button" disabled={isSubmitting} onClick={next} className="text-right text-xs font-semibold text-[#28796a] underline decoration-[#a7c7b8] underline-offset-4 hover:text-[#1c5d50] disabled:opacity-50">
+                      {activeIndex === visibleQuestions.length - 1 ? "Press Enter or Click here to submit" : "Press Enter or Click here to continue"}
+                    </button>
                   </div>
                   <div className="max-w-3xl">
                     <h1 ref={questionHeadingRef} tabIndex={-1} id="question-title" className="font-serif text-[34px] leading-[1.13] tracking-[-0.035em] text-[#24423c] focus:outline-none sm:text-[46px]">{activeQuestion.title}</h1>
@@ -554,7 +525,10 @@ export default function AuditQuestions() {
                     {error && <div ref={errorRef} tabIndex={-1} role="alert" className="mt-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-800 shadow-sm">{error}</div>}
                     <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#deddd2] pt-5 sm:flex-row sm:items-center sm:justify-between">
                       <button type="button" disabled={isSubmitting || activeIndex === 0} onClick={previous} className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-[#64716a] hover:bg-[#ebeae1] disabled:opacity-40"><ArrowLeft size={16} /> Back</button>
-                      {activeIndex === visibleQuestions.length - 1 && <button type="button" disabled={isSubmitting} onClick={submit} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#28796a] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#216657] disabled:cursor-wait disabled:opacity-60">{isSubmitting ? "Submitting & emailing PDF…" : "Submit"}<Send size={16} /></button>}
+                      <button type="button" disabled={isSubmitting} onClick={next} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#28796a] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#216657] disabled:cursor-wait disabled:opacity-60">
+                        {activeIndex === visibleQuestions.length - 1 ? (isSubmitting ? "Submitting & emailing PDF…" : "Press Enter or Click here to submit") : "Press Enter or Click here to continue"}
+                        {activeIndex === visibleQuestions.length - 1 ? <Send size={16} /> : <ArrowRight size={16} />}
+                      </button>
                     </div>
                     {activeIndex === visibleQuestions.length - 1 && <p className="mt-3 text-xs leading-6 text-[#777d73]">Submitting stores your responses with MarginMix and emails a PDF copy to your supplied address and sid@dilexicon.com. You can review all answers before submitting.</p>}
                   </div>

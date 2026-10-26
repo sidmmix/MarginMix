@@ -3,8 +3,8 @@ name: Audit navigation preferences
 description: User expectations for automatic movement through the agency audit.
 ---
 
-Contact details must flow automatically just like the other audit questions. Do not display “No need to press Continue.”
+Audit questions advance manually. Show “Press Enter or Click here to continue” at the top-right and bottom-right of the question view, and focus the active answer field when a question opens.
 
-**Why:** The user explicitly repeated that automatic progression includes the contact details and requested removal of this wording.
+**Why:** The user changed the questionnaire navigation to avoid automatic progression and asked for explicit keyboard and click-to-continue guidance.
 
-**How to apply:** Preserve automatic progression for name, email and agency name when changing intake navigation. Avoid reintroducing the removed instruction text.
+**How to apply:** Keep Enter and the visible continue control subject to required-answer validation. Preserve autofocus for the active answer field.
