@@ -324,9 +324,7 @@ export default function AuditQuestions() {
     if (validateAuditAnswer(activeQuestion, answers[activeQuestion.id])) return;
     // The final response stays put so users can review answers and press Submit.
     if (activeIndex === visibleQuestions.length - 1) return;
-    const delay = activeQuestion.type === "multi" ? 1800
-      : activeQuestion.type === "textarea" ? 2500
-      : activeQuestion.type === "table" ? 1100 : 900;
+    const delay = 4000;
     const questionId = activeQuestion.id;
     autoAdvanceRef.current = window.setTimeout(() => {
       if (activeId === questionId) next();
@@ -334,7 +332,7 @@ export default function AuditQuestions() {
     return () => {
       if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
     };
-  // The auto-step is intentionally driven by valid answer changes and a short pause.
+  // The auto-step is intentionally driven by valid answer changes and a four-second pause.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeId, answers, activeIndex, visibleQuestions.length, activeQuestion, autoAdvanceQuestionId, restored, reviewing, submitted, isSubmitting]);
 
