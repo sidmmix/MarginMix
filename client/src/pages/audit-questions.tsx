@@ -154,7 +154,9 @@ export default function AuditQuestions() {
         if (typeof draft.submissionId === "string") setSubmissionId(draft.submissionId);
         const visible = getOrderedVisibleQuestions(loaded);
         const restoredActive = typeof draft.activeId === "string" && visible.some((question) => question.id === draft.activeId) ? draft.activeId : visible[0]?.id ?? null;
-        setActiveId(restoredActive);
+        const restoredIndex = visible.findIndex((question) => question.id === restoredActive);
+        const firstGap = visible.slice(0, restoredIndex).find((question) => validateAuditAnswer(question, loaded[question.id]));
+        setActiveId(firstGap?.id ?? restoredActive);
         const canRestoreReview = draft.reviewing === true && visible.every((question) => !validateAuditAnswer(question, loaded[question.id]));
         setReviewing(canRestoreReview);
       } else {
@@ -253,6 +255,7 @@ export default function AuditQuestions() {
 
   const beginReview = () => {
     if (isSubmitting) return;
+    setAutoAdvanceQuestionId(null);
     const firstInvalid = visibleQuestions.find((question) => validateAuditAnswer(question, answers[question.id]));
     if (firstInvalid) {
       setActiveId(firstInvalid.id);
@@ -337,6 +340,7 @@ export default function AuditQuestions() {
 
   const clearDraft = () => {
     if (isSubmitting) return;
+    setAutoAdvanceQuestionId(null);
     setAnswers({});
     setSubmissionId("");
     setActiveId(getOrderedVisibleQuestions({})[0]?.id ?? auditQuestions[0]?.id ?? null);
@@ -540,6 +544,7 @@ export default function AuditQuestions() {
                   </div>
                   <div className="max-w-3xl">
                     <h1 ref={questionHeadingRef} tabIndex={-1} id="question-title" className="font-serif text-[34px] leading-[1.13] tracking-[-0.035em] text-[#24423c] focus:outline-none sm:text-[46px]">{activeQuestion.title}</h1>
+                    <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-[#65796d]">Required · Every applicable question needs a response</p>
                     {activeQuestion.description && <p className="mt-4 max-w-2xl text-[15px] leading-7 text-[#737b72]">{activeQuestion.description}</p>}
                     <div className="mt-8">{renderField(activeQuestion)}</div>
                     {activeQuestion.allowUnknown && !activeQuestion.contact && !["name", "email", "agency"].includes(activeQuestion.id) && (
