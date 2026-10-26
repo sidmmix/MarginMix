@@ -113,10 +113,12 @@ export default function AuditQuestions() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [restored, setRestored] = useState(false);
   const [submissionId, setSubmissionId] = useState("");
+  const [autoAdvanceQuestionId, setAutoAdvanceQuestionId] = useState<string | null>(null);
   const inputRef = useRef<HTMLElement | null>(null);
   const errorRef = useRef<HTMLDivElement | null>(null);
   const questionHeadingRef = useRef<HTMLHeadingElement | null>(null);
   const reviewHeadingRef = useRef<HTMLHeadingElement | null>(null);
+  const autoAdvanceRef = useRef<number | null>(null);
 
   const visibleQuestions = useMemo(() => getOrderedVisibleQuestions(answers), [answers]);
   const activeIndex = Math.max(0, visibleQuestions.findIndex((question) => question.id === activeId));
@@ -195,12 +197,14 @@ export default function AuditQuestions() {
   const setAnswer = useCallback((id: string, value: AuditAnswers[string]) => {
     if (isSubmitting) return;
     setAnswers((previous) => ({ ...previous, [id]: value }));
+    setAutoAdvanceQuestionId(id === activeId ? id : null);
     setSubmissionId("");
     setError("");
-  }, [isSubmitting]);
+  }, [activeId, isSubmitting]);
 
   const goToQuestion = useCallback((question: AuditQuestion) => {
     if (isSubmitting) return;
+    setAutoAdvanceQuestionId(null);
     setReviewing(false);
     setActiveId(question.id);
     setError("");
@@ -218,6 +222,8 @@ export default function AuditQuestions() {
 
   const next = () => {
     if (isSubmitting) return;
+    if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
+    setAutoAdvanceQuestionId(null);
     if (!activeQuestion || !validateOne(activeQuestion)) return;
     const updatedVisible = getOrderedVisibleQuestions(answers);
     const index = updatedVisible.findIndex((question) => question.id === activeQuestion.id);
@@ -231,6 +237,8 @@ export default function AuditQuestions() {
 
   const previous = () => {
     if (isSubmitting) return;
+    if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
+    setAutoAdvanceQuestionId(null);
     const index = visibleQuestions.findIndex((question) => question.id === activeId);
     if (index > 0) setActiveId(visibleQuestions[index - 1].id);
     else setReviewing(false);
@@ -240,13 +248,38 @@ export default function AuditQuestions() {
   const jumpSection = (sectionId: string) => {
     if (isSubmitting) return;
     const first = visibleQuestions.find((question) => question.section === sectionId);
-    if (first) goToQuestion(first);
+    if (first) jumpToQuestion(first);
   };
 
   const beginReview = () => {
     if (isSubmitting) return;
+    const firstInvalid = visibleQuestions.find((question) => validateAuditAnswer(question, answers[question.id]));
+    if (firstInvalid) {
+      setActiveId(firstInvalid.id);
+      setReviewing(false);
+      setError(`Please answer this question before reviewing the rest: ${firstInvalid.title}`);
+      requestAnimationFrame(() => errorRef.current?.focus());
+      return;
+    }
     setReviewing(true);
     setError("");
+  };
+
+  const jumpToQuestion = (question: AuditQuestion) => {
+    if (isSubmitting) return;
+    if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
+    setAutoAdvanceQuestionId(null);
+    const targetIndex = visibleQuestions.findIndex((item) => item.id === question.id);
+    const unansweredBeforeTarget = visibleQuestions.slice(0, targetIndex + 1)
+      .find((item) => validateAuditAnswer(item, answers[item.id]));
+    if (unansweredBeforeTarget) {
+      setReviewing(false);
+      setActiveId(unansweredBeforeTarget.id);
+      setError(`Please answer this question before moving on: ${unansweredBeforeTarget.title}`);
+      requestAnimationFrame(() => errorRef.current?.focus());
+      return;
+    }
+    goToQuestion(question);
   };
 
   const submit = async () => {
@@ -280,6 +313,27 @@ export default function AuditQuestions() {
       setIsSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
+    if (!restored || reviewing || submitted || isSubmitting || !activeQuestion) return;
+    if (autoAdvanceQuestionId !== activeQuestion.id) return;
+    if (validateAuditAnswer(activeQuestion, answers[activeQuestion.id])) return;
+    // The final response stays put so users can review answers and press Submit.
+    if (activeIndex === visibleQuestions.length - 1) return;
+    const delay = activeQuestion.type === "multi" ? 1800
+      : activeQuestion.type === "textarea" ? 2500
+      : activeQuestion.type === "table" ? 1100 : 900;
+    const questionId = activeQuestion.id;
+    autoAdvanceRef.current = window.setTimeout(() => {
+      if (activeId === questionId) next();
+    }, delay);
+    return () => {
+      if (autoAdvanceRef.current !== null) window.clearTimeout(autoAdvanceRef.current);
+    };
+  // The auto-step is intentionally driven by valid answer changes and a short pause.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeId, answers, activeIndex, visibleQuestions.length, activeQuestion, autoAdvanceQuestionId, restored, reviewing, submitted, isSubmitting]);
 
   const clearDraft = () => {
     if (isSubmitting) return;
@@ -459,7 +513,7 @@ export default function AuditQuestions() {
                         <div className="divide-y divide-[#e5e2d9]">
                           {questions.map((question) => {
                             const status = getAnswerStatus(question, answers[question.id]);
-                            return <button key={question.id} type="button" disabled={isSubmitting} onClick={() => goToQuestion(question)} className="flex w-full items-start justify-between gap-4 py-4 text-left hover:bg-[#ebece3]/70 disabled:pointer-events-none disabled:opacity-60">
+                            return <button key={question.id} type="button" disabled={isSubmitting} onClick={() => jumpToQuestion(question)} className="flex w-full items-start justify-between gap-4 py-4 text-left hover:bg-[#ebece3]/70 disabled:pointer-events-none disabled:opacity-60">
                               <span><span className="block text-sm font-medium text-[#344b45]">{question.title}</span><span className="mt-1 block text-sm leading-6 text-[#788077]">{safeLabel(question, answers[question.id])}</span></span>
                               <span className={`mt-0.5 shrink-0 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide ${statusStyle[status]}`}>{statusCopy[status]}</span>
                             </button>;
@@ -482,7 +536,7 @@ export default function AuditQuestions() {
                       <p className="mb-2 text-xs font-semibold uppercase tracking-[0.17em] text-[#568475]">{activeSection} <span className="px-1 text-[#b9b7aa]">/</span> {activeIndex + 1} of {visibleQuestions.length}</p>
                       <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#98998d]">Engagement assumptions</p>
                     </div>
-                    <div className="flex items-center gap-1.5 text-[11px] text-[#93958b]"><span className="rounded border border-[#deddd2] px-1.5 py-0.5 font-mono">Enter</span> to continue</div>
+                    {activeIndex < visibleQuestions.length - 1 && <div className="text-[11px] text-[#78867b]">Moves on automatically after your answer</div>}
                   </div>
                   <div className="max-w-3xl">
                     <h1 ref={questionHeadingRef} tabIndex={-1} id="question-title" className="font-serif text-[34px] leading-[1.13] tracking-[-0.035em] text-[#24423c] focus:outline-none sm:text-[46px]">{activeQuestion.title}</h1>
@@ -491,16 +545,15 @@ export default function AuditQuestions() {
                     {activeQuestion.allowUnknown && !activeQuestion.contact && !["name", "email", "agency"].includes(activeQuestion.id) && (
                       <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl border border-dashed border-[#c9cbc0] px-4 py-3.5 text-sm text-[#6f776f] hover:border-[#8caaa1] hover:bg-[#fbfcf8]">
                       <input type="checkbox" disabled={isSubmitting} checked={answers[activeQuestion.id] === UNKNOWN} onChange={(event) => setAnswer(activeQuestion.id, event.target.checked ? UNKNOWN : "")} className="mt-0.5 h-4 w-4 accent-[#28796a]" />
-                        <span><span className="block font-semibold text-[#53645c]">I don’t know yet</span><span className="mt-0.5 block text-xs leading-5 text-[#899087]">Mark this assumption as unknown rather than guessing.</span></span>
+                        <span><span className="block font-semibold text-[#53645c]">I don’t know yet</span><span className="mt-0.5 block text-xs leading-5 text-[#899087]">This records an explicit unknown response; unanswered questions cannot be skipped.</span></span>
                       </label>
                     )}
-                    {error && <div ref={errorRef} tabIndex={-1} role="alert" className="mt-4 rounded-xl border border-[#d49b87] bg-[#fbefea] px-4 py-3 text-sm text-[#8b493b]">{error}</div>}
+                    {error && <div ref={errorRef} tabIndex={-1} role="alert" className="mt-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-800 shadow-sm">{error}</div>}
                     <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#deddd2] pt-5 sm:flex-row sm:items-center sm:justify-between">
-                      <button type="button" disabled={isSubmitting} onClick={previous} className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-[#64716a] hover:bg-[#ebeae1] disabled:opacity-50"><ArrowLeft size={16} /> Back</button>
-                      <button type="button" disabled={isSubmitting} onClick={next} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#28796a] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#216657] disabled:opacity-50">
-                        {isSubmitting ? "Submitting & emailing PDF…" : activeIndex === visibleQuestions.length - 1 ? "Submit" : "Continue"}
-                        {activeIndex === visibleQuestions.length - 1 ? <Send size={16} /> : <ArrowRight size={16} />}
-                      </button>
+                      <button type="button" disabled={isSubmitting || activeIndex === 0} onClick={previous} className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-[#64716a] hover:bg-[#ebeae1] disabled:opacity-40"><ArrowLeft size={16} /> Back</button>
+                      {activeIndex === visibleQuestions.length - 1
+                        ? <button type="button" disabled={isSubmitting} onClick={submit} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#28796a] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#216657] disabled:cursor-wait disabled:opacity-60">{isSubmitting ? "Submitting & emailing PDF…" : "Submit"}<Send size={16} /></button>
+                        : <p className="self-center text-xs text-[#78867b]">No need to press Continue</p>}
                     </div>
                     {activeIndex === visibleQuestions.length - 1 && <p className="mt-3 text-xs leading-6 text-[#777d73]">Submitting stores your responses with MarginMix and emails a PDF copy to your supplied address and sid@dilexicon.com. You can review all answers before submitting.</p>}
                   </div>
@@ -549,7 +602,7 @@ export default function AuditQuestions() {
                   <div className="grid grid-cols-6 gap-1.5 sm:grid-cols-8 lg:grid-cols-6">
                     {sectionQuestions.map((question) => {
                       const status = getAnswerStatus(question, answers[question.id]);
-                      return <button key={question.id} type="button" disabled={isSubmitting} onClick={() => goToQuestion(question)} aria-label={`${question.title}: ${statusCopy[status]}`} title={`${question.title} — ${statusCopy[status]}`} className={`grid aspect-square min-h-8 place-items-center rounded-md text-[10px] font-bold transition hover:ring-2 hover:ring-[#28796a]/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#28796a] disabled:opacity-50 ${statusStyle[status]} ${activeId === question.id && !reviewing ? "ring-2 ring-[#24423c] ring-offset-1" : ""}`}><span>{sectionQuestions.indexOf(question) + 1}</span></button>;
+                      return <button key={question.id} type="button" disabled={isSubmitting} onClick={() => jumpToQuestion(question)} aria-label={`${question.title}: ${statusCopy[status]}`} title={`${question.title} — ${statusCopy[status]}`} className={`grid aspect-square min-h-8 place-items-center rounded-md text-[10px] font-bold transition hover:ring-2 hover:ring-[#28796a]/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#28796a] disabled:opacity-50 ${statusStyle[status]} ${activeId === question.id && !reviewing ? "ring-2 ring-[#24423c] ring-offset-1" : ""}`}><span>{sectionQuestions.indexOf(question) + 1}</span></button>;
                     })}
                   </div>
                 </div>;

@@ -27,45 +27,57 @@ try {
   await page.goto(`${base}/audit-questions`);
   await page.getByRole("heading", { name: "First, what’s your name?" }).waitFor();
   if (await page.getByRole("button", { name: "Decline", exact: true }).isVisible()) await page.getByRole("button", { name: "Decline", exact: true }).click();
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
-  await page.getByRole("alert").filter({ hasText: "Please answer" }).waitFor();
+  await page.getByRole("button", { name: /Financial baseline/ }).click();
+  const skipped = page.getByRole("alert").filter({ hasText: "Please answer this question before moving on" });
+  await skipped.waitFor();
+  assert.match(await skipped.getAttribute("class") || "", /bg-red-50/);
+  await page.getByRole("heading", { name: "First, what’s your name?" }).waitFor();
   await page.getByRole("textbox", { name: "First, what’s your name?" }).fill("Synthetic Audit Test");
-  await page.getByRole("textbox", { name: "First, what’s your name?" }).press("Enter");
+  await page.getByRole("textbox", { name: "What’s your email address?" }).waitFor();
   await page.getByRole("textbox", { name: "What’s your email address?" }).fill("not-an-email");
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("textbox", { name: "What’s your email address?" }).press("Enter");
   await page.getByRole("alert").filter({ hasText: "valid email" }).waitFor();
   await page.getByRole("textbox", { name: "What’s your email address?" }).fill("audit-smoke@example.invalid");
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("textbox", { name: "What’s your agency’s name?" }).waitFor();
   await page.getByRole("textbox", { name: "What’s your agency’s name?" }).fill("Synthetic Agency");
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("textbox", { name: "What should we call this engagement?" }).waitFor();
   await page.getByRole("textbox", { name: "What should we call this engagement?" }).fill("Synthetic smoke engagement");
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByLabel("Marketing, creative or media", { exact: true }).waitFor();
   await page.getByLabel("Marketing, creative or media", { exact: true }).check();
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByLabel("Fixed fee / fixed price", { exact: true }).waitFor();
   await page.getByLabel("Fixed fee / fixed price", { exact: true }).check();
   await page.getByLabel("Retainer", { exact: true }).check();
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByLabel("Reviewing an active engagement", { exact: true }).waitFor();
   await page.getByLabel("Reviewing an active engagement", { exact: true }).check();
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await page.getByRole("button", { name: "Add row", exact: true }).waitFor();
   await page.getByRole("button", { name: "Add row", exact: true }).click();
   await page.getByLabel("Engagement start, row 1", { exact: true }).fill("2026-01-01");
   await page.getByLabel("Expected end / next review, row 1", { exact: true }).fill("2026-12-31");
   await page.getByLabel("Assessment period start, row 1", { exact: true }).fill("2026-10-01");
   await page.getByLabel("Assessment period end, row 1", { exact: true }).fill("2026-10-31");
+  await page.getByRole("heading", { name: "What currency should we use?" }).waitFor({ timeout: 7000 }).catch(async () => {
+    console.error("Auto-advance diagnostic", {
+      question: await page.locator("#question-title").textContent(),
+      alert: await page.getByRole("alert").allTextContents(),
+      currentUrl: page.url(),
+    });
+    throw new Error("A complete table response did not auto-advance");
+  });
   await page.waitForTimeout(400); // debounce draft write, not a server-readiness poll
   await page.reload();
-  await page.getByRole("heading", { name: "What period should we assess?" }).waitFor();
-  assert.equal(await page.getByLabel("Engagement start, row 1", { exact: true }).inputValue(), "2026-01-01");
+  await page.getByRole("heading", { name: "What currency should we use?" }).waitFor();
+  assert.ok(await page.getByRole("button", { name: /What period should we assess\?: Complete/ }).isVisible());
   assert.equal(await page.getByRole("button", { name: /First, what’s your name\?:/ }).count(), 0, "Contact question must not be a heatmap cell");
   await page.getByRole("button", { name: /How do your commercial components interact\?:/ }).click();
-  await page.getByRole("heading", { name: "How do your commercial components interact?" }).waitFor();
-  await page.getByLabel(/I don’t know yet/).check();
-  await page.getByRole("button", { name: /How do your commercial components interact\?: Unknown/ }).waitFor();
+  await page.getByRole("heading", { name: "What currency should we use?" }).waitFor();
+  await page.getByRole("alert").filter({ hasText: "Please answer this question before moving on" }).waitFor();
+  assert.match(await page.getByRole("alert").getAttribute("class") || "", /bg-red-50/);
   await page.getByRole("button", { name: "Review all answers", exact: true }).click();
-  await page.getByRole("heading", { name: "Review the assumptions." }).waitFor();
+  await page.getByRole("alert").filter({ hasText: "Please answer this question before reviewing" }).waitFor();
+  assert.ok(await page.getByRole("heading", { name: "What currency should we use?" }).isVisible());
   await page.getByRole("button", { name: "Submit audit", exact: true }).click();
   await page.getByRole("alert").waitFor();
-  console.log("PASS contact order, validation, keyboard, branching, table editing, resume, heatmap and incomplete-submit guard");
+  console.log("PASS automatic progression, required answers, red skip alerts, contact order, validation, branching, tables, resume and heatmap");
 
   // Real validation/PDF/database persistence, with the external mail transport
   // replaced in this test only. Never send synthetic financial messages to Sid.
