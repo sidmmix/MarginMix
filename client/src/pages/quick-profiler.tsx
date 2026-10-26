@@ -862,16 +862,6 @@ export default function QuickProfiler() {
               })}
             </div>
 
-            <div className="p-4 sm:p-6 rounded-2xl bg-white/5 border border-white/10 mb-8 text-left">
-              <p className="text-sm sm:text-base text-gray-300 leading-relaxed">
-                {risk.level === "critical" || risk.level === "high"
-                  ? "This quick profile indicates significant margin risk. A full assessment will provide detailed dimension analysis, effort allocation recommendations, and a Decision Memo."
-                  : risk.level === "elevated" || risk.level === "moderate"
-                  ? "Some risk signals are present. A full assessment will break down each risk dimension and provide actionable recommendations to protect your margins."
-                  : "Your initial profile looks positive. A full assessment will validate this across all risk dimensions and provide a comprehensive Decision Memo."}
-              </p>
-            </div>
-
         </div>
         </div>
 
