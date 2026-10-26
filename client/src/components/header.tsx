@@ -8,13 +8,11 @@ import { useToast } from "@/hooks/use-toast";
 interface HeaderProps {
   variant?: "transparent" | "solid";
   hideDemoButton?: boolean;
-  hideAssessmentLink?: boolean;
 }
 
 export function Header({
   variant = "transparent",
   hideDemoButton = false,
-  hideAssessmentLink = false,
 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [location] = useLocation();
@@ -46,8 +44,7 @@ export function Header({
   const navLinks = [
     { href: "/founder", label: "Why We Exist", mobileLabel: "Why We Exist" },
     { href: "/why-choose", label: "Why Choose Us", mobileLabel: "Why Choose Us" },
-    { href: "/assessment", label: "Free Assessment", mobileLabel: "Free Assessment" },
-  ].filter((link) => !hideAssessmentLink || link.href !== "/assessment");
+  ];
 
   const isActive = (href: string) => location === href;
 

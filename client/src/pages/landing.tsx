@@ -25,7 +25,7 @@ export default function Landing() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-emerald-100/20 to-teal-100/20 dark:from-emerald-800/10 dark:to-teal-800/10 rounded-full blur-3xl"></div>
       </div>
 
-      <Header hideDemoButton hideAssessmentLink />
+      <Header hideDemoButton />
 
       {/* Spacer for fixed header */}
       <div className="h-16"></div>
