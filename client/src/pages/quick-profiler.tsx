@@ -3,9 +3,9 @@ import { analytics } from "@/lib/analytics";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { Progress } from "@/components/ui/progress";
-import { ArrowRight, ArrowDown, ArrowUp, ArrowLeft, Zap, AlertTriangle, ShieldCheck, ShieldAlert, Shield, ChevronRight, ChevronDown, Check, Home } from "lucide-react";
+import { ArrowRight, ArrowDown, ArrowUp, ArrowLeft, Zap, AlertTriangle, ShieldCheck, ShieldAlert, Shield, ChevronDown, Check, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const PROFILER_STORAGE_KEY = "marginmix_profiler_answers";
@@ -372,7 +372,6 @@ export default function QuickProfiler() {
   const containerRef = useRef<HTMLDivElement>(null);
   const marginAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { toast } = useToast();
-  const [, setLocation] = useLocation();
   const shouldReduce = useReducedMotion();
 
   const totalQuestions = profilerQuestions.length;
@@ -451,20 +450,6 @@ export default function QuickProfiler() {
     } else if (isMarginQuestion) {
       scrollToQuestion(-2);
     }
-  };
-
-  const handleGoToFullAssessment = () => {
-    const profilerData: Record<string, string> = {};
-    for (const q of profilerQuestions) {
-      if (answers[q.id]) {
-        profilerData[q.fieldKey] = answers[q.id];
-      }
-    }
-    if (currentMargin) {
-      profilerData._currentMargin = currentMargin;
-    }
-    localStorage.setItem(PROFILER_STORAGE_KEY, JSON.stringify(profilerData));
-    setLocation("/assessment?from=profiler");
   };
 
   useEffect(() => {
@@ -896,13 +881,11 @@ export default function QuickProfiler() {
             <Button
               size="lg"
               className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-3.5 sm:py-4 px-8 sm:px-10 text-base sm:text-lg shadow-lg rounded-xl flex flex-col h-auto gap-0.5 items-center"
-              onClick={handleGoToFullAssessment}
+              onClick={() => window.open("https://calendly.com/sid-marginmix/30min", "_blank", "noopener,noreferrer")}
             >
               <span className="flex items-center gap-2 font-semibold">
-                Continue to Full Margin Risk Assessment
-                <ChevronRight className="h-5 w-5" />
+                Book a Meeting - Get started with Full Audit
               </span>
-              <span className="text-xs text-emerald-100 font-normal">Your 7 answers carry forward · Results available immediately</span>
             </Button>
           </div>
         </div>

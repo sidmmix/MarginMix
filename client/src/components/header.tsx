@@ -7,9 +7,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 interface HeaderProps {
   variant?: "transparent" | "solid";
+  hideDemoButton?: boolean;
 }
 
-export function Header({ variant = "transparent" }: HeaderProps) {
+export function Header({ variant = "transparent", hideDemoButton = false }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [location] = useLocation();
   const { user, isAuthenticated, logout, isLoggingOut } = useAuth();
@@ -71,7 +72,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                 </span>
               </Link>
             ))}
-            <motion.div
+            {!hideDemoButton && <motion.div
               whileHover={shouldReduce ? {} : { scale: 1.05 }}
               whileTap={shouldReduce ? {} : { scale: 0.97 }}
               transition={{ duration: 0.15 }}
@@ -84,7 +85,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                   Book Demo
                 </Button>
               </a>
-            </motion.div>
+            </motion.div>}
             <motion.div
               whileHover={shouldReduce ? {} : { scale: 1.04 }}
               whileTap={shouldReduce ? {} : { scale: 0.97 }}
@@ -128,7 +129,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
 
           {/* Mobile Hamburger Button */}
           <div className="md:hidden flex items-center space-x-2">
-            <motion.div
+            {!hideDemoButton && <motion.div
               whileHover={shouldReduce ? {} : { scale: 1.05 }}
               whileTap={shouldReduce ? {} : { scale: 0.97 }}
               transition={{ duration: 0.15 }}
@@ -141,7 +142,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                   Book Demo
                 </Button>
               </a>
-            </motion.div>
+            </motion.div>}
             <Button
               variant="ghost"
               size="sm"
@@ -207,7 +208,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                   transition={{ delay: shouldReduce ? 0 : navLinks.length * 0.06, duration: 0.25 }}
                   className="pt-2 px-3 flex flex-col space-y-2"
                 >
-                  <motion.div
+                  {!hideDemoButton && <motion.div
                     whileHover={shouldReduce ? {} : { scale: 1.02 }}
                     whileTap={shouldReduce ? {} : { scale: 0.98 }}
                     transition={{ duration: 0.15 }}
@@ -217,7 +218,7 @@ export function Header({ variant = "transparent" }: HeaderProps) {
                         Book Demo
                       </Button>
                     </a>
-                  </motion.div>
+                  </motion.div>}
                   <motion.div
                     whileHover={shouldReduce ? {} : { scale: 1.02 }}
                     whileTap={shouldReduce ? {} : { scale: 0.98 }}

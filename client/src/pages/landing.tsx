@@ -25,7 +25,7 @@ export default function Landing() {
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-emerald-100/20 to-teal-100/20 dark:from-emerald-800/10 dark:to-teal-800/10 rounded-full blur-3xl"></div>
       </div>
 
-      <Header />
+      <Header hideDemoButton />
 
       {/* Spacer for fixed header */}
       <div className="h-16"></div>
@@ -67,13 +67,6 @@ export default function Landing() {
               variants={shouldReduce ? undefined : heroItem}
               className="flex flex-col sm:flex-row gap-3 justify-center items-center"
             >
-              <MotionButton
-                data-testid="button-cta-hero"
-                onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
-                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl whitespace-normal font-semibold shadow"
-              >
-                Book Demo
-              </MotionButton>
               <MotionButton
                 onClick={() => window.location.href = '/quick-profiler'}
                 className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-600 rounded-xl whitespace-normal font-semibold"
@@ -649,14 +642,6 @@ export default function Landing() {
               Get a clear, structural verdict on any engagement — before you commit.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-6 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl whitespace-normal"
-                data-testid="button-cta-footer"
-                onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
-              >
-                Book Demo
-              </Button>
               <Button
                 size="lg"
                 className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-6 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 rounded-xl whitespace-normal"
