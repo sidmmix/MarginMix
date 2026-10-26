@@ -23,6 +23,7 @@ const Home = lazy(() => import("@/pages/home"));
 const Dashboard = lazy(() => import("@/pages/dashboard"));
 const Assessment = lazy(() => import("@/pages/assessment"));
 const QuickProfiler = lazy(() => import("@/pages/quick-profiler"));
+const AuditQuestions = lazy(() => import("@/pages/audit-questions"));
 const Founder = lazy(() => import("@/pages/founder"));
 const WhyChoose = lazy(() => import("@/pages/why-choose"));
 const PitchDeck = lazy(() => import("@/pages/pitch"));
@@ -182,6 +183,7 @@ function Router() {
           <Switch>
             <Route path="/" component={HomeRedirect} />
             <Route path="/quick-profiler" component={QuickProfiler} />
+            <Route path="/audit-questions" component={AuditQuestions} />
             <Route path="/assessment" component={Assessment} />
             <Route path="/demo" component={Assessment} />
             <Route path="/founder" component={Founder} />

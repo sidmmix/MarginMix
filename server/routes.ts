@@ -2,6 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { z } from "zod/v4";
 import { publicRateLimit } from "./rate-limit";
+import { registerAuditRoutes } from "./audit-intake";
+import { saveAuditSubmission, deliverAuditSubmission } from "./audit-storage";
 import { verifyFeedbackToken } from "./feedback-token";
 import { getAuth } from "@clerk/express";
 import OpenAI from "openai";
@@ -57,6 +59,7 @@ const requireAuth = (req: any, res: any, next: any) => {
 };
 
 export function registerRoutes(app: Express): Server {
+  registerAuditRoutes(app, saveAuditSubmission, deliverAuditSubmission);
   // Legacy campaign brief routes removed - old questionnaire flow deprecated
 
   // Benchmark search endpoint - hybrid semantic + exact filters

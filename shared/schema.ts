@@ -271,3 +271,14 @@ export const pendingAssessmentResults = pgTable("pending_assessment_results", {
 });
 
 export type PendingAssessmentResult = typeof pendingAssessmentResults.$inferSelect;
+
+// Private financial intake records. No public read/list endpoint is exposed.
+export const auditSubmissions = pgTable("audit_submissions", {
+  id: varchar("id", { length: 100 }).primaryKey(),
+  version: integer("version").notNull().default(1),
+  answers: jsonb("answers").notNull(),
+  payloadHash: varchar("payload_hash", { length: 64 }).notNull(),
+  submittedAt: timestamp("submitted_at", { withTimezone: true }).notNull().defaultNow(),
+  emailSentAt: timestamp("email_sent_at", { withTimezone: true }),
+  emailId: varchar("email_id", { length: 100 }),
+});

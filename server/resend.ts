@@ -1,8 +1,16 @@
 import { Resend } from 'resend';
 import { DecisionObject } from './decision-engine';
 import { generateFeedbackToken } from './feedback-token';
+import { buildAuditQuestionnaireEmail } from "./audit-email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function sendAuditQuestionnaireEmail(input: { id: string; name: string; email: string; pdf: Buffer }): Promise<string> {
+  const result = await resend.emails.send(buildAuditQuestionnaireEmail(input), { idempotencyKey: `audit-questionnaire/${input.id}` });
+  throwIfResendError(result);
+  if (!result.data?.id) throw new Error("Resend did not acknowledge the questionnaire email");
+  return result.data.id;
+}
 
 // Determine the correct app URL based on environment
 function getAppUrl(): string {
