@@ -556,9 +556,7 @@ export default function AuditQuestions() {
                     {error && <div ref={errorRef} tabIndex={-1} role="alert" className="mt-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm font-medium text-red-800 shadow-sm">{error}</div>}
                     <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#deddd2] pt-5 sm:flex-row sm:items-center sm:justify-between">
                       <button type="button" disabled={isSubmitting || activeIndex === 0} onClick={previous} className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-[#64716a] hover:bg-[#ebeae1] disabled:opacity-40"><ArrowLeft size={16} /> Back</button>
-                      {activeIndex === visibleQuestions.length - 1
-                        ? <button type="button" disabled={isSubmitting} onClick={submit} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#28796a] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#216657] disabled:cursor-wait disabled:opacity-60">{isSubmitting ? "Submitting & emailing PDF…" : "Submit"}<Send size={16} /></button>
-                        : <p className="self-center text-xs text-[#78867b]">No need to press Continue</p>}
+                      {activeIndex === visibleQuestions.length - 1 && <button type="button" disabled={isSubmitting} onClick={submit} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#28796a] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#216657] disabled:cursor-wait disabled:opacity-60">{isSubmitting ? "Submitting & emailing PDF…" : "Submit"}<Send size={16} /></button>}
                     </div>
                     {activeIndex === visibleQuestions.length - 1 && <p className="mt-3 text-xs leading-6 text-[#777d73]">Submitting stores your responses with MarginMix and emails a PDF copy to your supplied address and sid@dilexicon.com. You can review all answers before submitting.</p>}
                   </div>
