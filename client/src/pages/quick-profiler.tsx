@@ -623,7 +623,7 @@ export default function QuickProfiler() {
 
             <p className="text-sm sm:text-base md:text-lg text-emerald-50 mb-6 sm:mb-10 leading-relaxed max-w-xl mx-auto px-2">
               Answer 6 rapid-fire questions. Watch your risk heatmap build in real time.
-              Get an instant margin risk indication before committing to the full assessment.
+              Get an instant margin risk indication for this engagement.
             </p>
 
             <div className="flex flex-wrap justify-center gap-2 sm:gap-6 mb-6 sm:mb-8 text-emerald-100 text-xs sm:text-base">

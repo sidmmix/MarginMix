@@ -407,16 +407,14 @@ export function registerRoutes(app: Express): Server {
         };
       }
       
-      const fromProfiler = !!req.body.fromProfiler;
-
       // Generate PDFs
       let decisionMemoPdf: Buffer;
       let assessmentOutputPdf: Buffer;
       
       try {
         [decisionMemoPdf, assessmentOutputPdf] = await Promise.all([
-          renderDecisionMemoPDF(decisionObject, narrative.decisionMemo, fromProfiler),
-          renderAssessmentOutputPDF(decisionObject, narrative.assessmentOutput, openSignal, fromProfiler)
+          renderDecisionMemoPDF(decisionObject, narrative.decisionMemo),
+          renderAssessmentOutputPDF(decisionObject, narrative.assessmentOutput, openSignal)
         ]);
         console.log(`PDFs generated for: ${validatedData.organisationName}`);
       } catch (pdfError: any) {

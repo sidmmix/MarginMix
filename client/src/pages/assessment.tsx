@@ -21,23 +21,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Link, useSearch, useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Send, Check, ChevronDown, Save, Home, Shield, ShieldCheck, ShieldAlert, AlertTriangle, TrendingUp, BarChart3, Users, Zap, Target, AlertCircle, Info, Download, ChevronRight, Mail, Building2, Briefcase } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Footer } from "@/components/footer";
 
 const STORAGE_KEY = "marginmix_assessment_progress";
-const PROFILER_STORAGE_KEY = "marginmix_profiler_answers";
-
-const PROFILER_FIELD_KEYS = [
-  "decisionEvaluating",
-  "engagementClassification",
-  "clientVolatility",
-  "seniorLeadershipInvolvement",
-  "executionThinkingMix",
-  "aiEffortShift",
-];
 
 const questionRiskMapping: Record<string, Record<string, "low" | "medium" | "high">> = {
   organisationSize: { "50-500": "low", "500-1000": "medium", "1000-1500": "high", "1500-2000": "high" },
@@ -470,35 +460,13 @@ export default function Assessment() {
   const containerRef = useRef<HTMLDivElement>(null);
   const marginAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { toast } = useToast();
-  const searchString = useSearch();
   const [location] = useLocation();
-  const isFromProfiler = searchString.includes("from=profiler");
   const isDemo = location === '/demo';
 
-  const [profilerAnswers, setProfilerAnswers] = useState<Record<string, string>>({});
   const [selectedIndustry, setSelectedIndustry] = useState("marketing-advertising");
 
-  useEffect(() => {
-    if (isFromProfiler) {
-      try {
-        const stored = localStorage.getItem(PROFILER_STORAGE_KEY);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          setProfilerAnswers(parsed);
-          if (parsed._currentMargin) {
-            setCurrentMargin(parsed._currentMargin);
-          }
-        }
-      } catch (e) {
-        console.error("Error loading profiler answers:", e);
-      }
-    }
-  }, [isFromProfiler]);
-
   const industryQuestions = getQuestionsForIndustry(selectedIndustry);
-  const activeQuestions = isFromProfiler
-    ? industryQuestions.filter(q => !PROFILER_FIELD_KEYS.includes(q.id)).map((q, idx) => ({ ...q, number: idx + 1 }))
-    : industryQuestions;
+  const activeQuestions = industryQuestions;
 
   const saveProgress = () => {
     try {
@@ -577,15 +545,6 @@ export default function Assessment() {
   }, [watchedIndustry]);
 
   useEffect(() => {
-    if (isFromProfiler && Object.keys(profilerAnswers).length > 0) {
-      const currentValues = form.getValues();
-      form.reset({ ...currentValues, ...profilerAnswers });
-      toast({
-        title: "Quick Profile Loaded",
-        description: "7 inputs carried forward (6 risk questions + current margin). Complete the remaining questions.",
-      });
-      return;
-    }
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
@@ -602,7 +561,7 @@ export default function Assessment() {
     } catch (e) {
       console.error("Error loading saved progress:", e);
     }
-  }, [profilerAnswers]);
+  }, []);
 
   const watchedValues = form.watch();
 
@@ -732,7 +691,7 @@ export default function Assessment() {
       container.addEventListener('wheel', handleWheel, { passive: true });
       return () => container.removeEventListener('wheel', handleWheel);
     }
-  }, [currentQuestion, isIntro, isMarginQuestion, currentMargin, isFromProfiler, isReviewScreen, isTransitioning, isSubmitting, totalQuestions, showDecisionPage]);
+  }, [currentQuestion, isIntro, isMarginQuestion, currentMargin, isReviewScreen, isTransitioning, isSubmitting, totalQuestions, showDecisionPage]);
 
   // Touch swipe for mobile navigation
   useEffect(() => {
@@ -768,7 +727,7 @@ export default function Assessment() {
         container.removeEventListener('touchend', handleTouchEnd);
       };
     }
-  }, [currentQuestion, isIntro, isMarginQuestion, currentMargin, isFromProfiler, isReviewScreen, isTransitioning, isSubmitting, totalQuestions, showDecisionPage]);
+  }, [currentQuestion, isIntro, isMarginQuestion, currentMargin, isReviewScreen, isTransitioning, isSubmitting, totalQuestions, showDecisionPage]);
 
   const downloadPDF = (filename: string, base64Data: string) => {
     const link = document.createElement('a');
@@ -786,7 +745,7 @@ export default function Assessment() {
       const response = await fetch("/api/assessments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, accountName, currentMargin: marginValue, fromProfiler: isFromProfiler, isDemo }),
+        body: JSON.stringify({ ...data, accountName, currentMargin: marginValue, isDemo }),
       });
 
       if (response.ok) {
@@ -880,14 +839,10 @@ export default function Assessment() {
   const handleNext = () => {
     if (isIntro) {
       analytics.assessmentStarted();
-      if (isFromProfiler) {
-        scrollToQuestion(0);
-      } else {
-        setDirection(1);
-        setIsTransitioning(true);
-        setIsAccountNameStep(true);
-        setTimeout(() => setIsTransitioning(false), 500);
-      }
+      setDirection(1);
+      setIsTransitioning(true);
+      setIsAccountNameStep(true);
+      setTimeout(() => setIsTransitioning(false), 500);
       return;
     }
 
@@ -944,11 +899,7 @@ export default function Assessment() {
       return;
     }
     if (currentQuestion === 0) {
-      if (isFromProfiler) {
-        scrollToQuestion(-2);
-      } else {
-        scrollToQuestion(-1);
-      }
+      scrollToQuestion(-1);
       return;
     }
     if (currentQuestion > 0) {
@@ -1008,7 +959,7 @@ export default function Assessment() {
     };
     window.addEventListener('keydown', handleGlobalKeyDown);
     return () => window.removeEventListener('keydown', handleGlobalKeyDown);
-  }, [currentQuestion, isIntro, isAccountNameStep, isMarginQuestion, accountName, currentMargin, isFromProfiler, isTransitioning]);
+  }, [currentQuestion, isIntro, isAccountNameStep, isMarginQuestion, accountName, currentMargin, isTransitioning]);
 
   const calculateProgress = () => {
     if (isIntro) return 0;
@@ -1190,8 +1141,6 @@ export default function Assessment() {
   };
 
   const renderMarginQuestion = () => {
-    if (isFromProfiler) return null;
-
     return (
       <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex flex-col overflow-y-auto">
         <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
@@ -1253,9 +1202,7 @@ export default function Assessment() {
             </p>
             
             <p className="text-sm sm:text-base md:text-lg text-emerald-50 mb-6 sm:mb-10 leading-relaxed max-w-xl mx-auto px-2">
-              {isFromProfiler
-                ? "Your Quick Risk Profile answers have been carried over. Complete the remaining questions for full Decision Clarity with a detailed Margin Risk Decision Memo."
-                : "You're about to assess margin risk before it gets priced into a decision. This assessment helps leaders evaluate whether a client engagement is priced in line with its true delivery complexity."}
+              You're about to assess margin risk before it gets priced into a decision. This assessment helps leaders evaluate whether a client engagement is priced in line with its true delivery complexity.
             </p>
             
             <div className="flex flex-wrap justify-center gap-2 sm:gap-6 mb-6 sm:mb-8 text-emerald-100 text-xs sm:text-base">
@@ -1917,7 +1864,7 @@ export default function Assessment() {
     ? "decision"
     : isReviewScreen
     ? "review"
-    : isMarginQuestion && !isFromProfiler
+    : isMarginQuestion
     ? "margin"
     : `q-${currentQuestion}`;
 
@@ -1941,7 +1888,7 @@ export default function Assessment() {
           {isAccountNameStep && renderAccountNameQuestion()}
           {!isIntro && !isAccountNameStep && showDecisionPage && decisionResult && renderDecisionPage()}
           {!isIntro && !isAccountNameStep && !showDecisionPage && isReviewScreen && renderReview()}
-          {!isIntro && !isAccountNameStep && !showDecisionPage && !isReviewScreen && isMarginQuestion && !isFromProfiler && renderMarginQuestion()}
+          {!isIntro && !isAccountNameStep && !showDecisionPage && !isReviewScreen && isMarginQuestion && renderMarginQuestion()}
           {!isIntro && !isAccountNameStep && !showDecisionPage && !isReviewScreen && !isMarginQuestion && renderCard(currentQuestion)}
         </div>
       ) : (
@@ -1960,7 +1907,7 @@ export default function Assessment() {
             {isAccountNameStep && renderAccountNameQuestion()}
             {!isIntro && !isAccountNameStep && showDecisionPage && decisionResult && renderDecisionPage()}
             {!isIntro && !isAccountNameStep && !showDecisionPage && isReviewScreen && renderReview()}
-            {!isIntro && !isAccountNameStep && !showDecisionPage && !isReviewScreen && isMarginQuestion && !isFromProfiler && renderMarginQuestion()}
+            {!isIntro && !isAccountNameStep && !showDecisionPage && !isReviewScreen && isMarginQuestion && renderMarginQuestion()}
             {!isIntro && !isAccountNameStep && !showDecisionPage && !isReviewScreen && !isMarginQuestion && renderCard(currentQuestion)}
           </motion.div>
         </AnimatePresence>
@@ -2076,7 +2023,7 @@ export default function Assessment() {
       )}
 
       {/* Margin question navigation - outside AnimatePresence */}
-      {isMarginQuestion && !isFromProfiler && (
+      {isMarginQuestion && (
         <div className="fixed bottom-0 left-0 right-0 z-[100] flex items-center justify-between px-4 sm:px-8 py-4 sm:py-5 bg-black/30 backdrop-blur-md border-t border-white/10" style={{ pointerEvents: 'auto' }}>
           <motion.button
             onClick={handleBack}
