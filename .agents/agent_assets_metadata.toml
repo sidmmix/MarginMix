@@ -6,9 +6,25 @@ id = "pxlW93aqhjRaPqcRJQwL6"
 uri = "file://assessment-questions.pdf"
 type = "pdf"
 title = "MarginMix — Full Assessment Questions"
+logical_id = "7f318d49-cf93-4750-a4cd-cb7553ddfd47"
 
 [[outputs]]
 id = "biKnits26f_fJ5xVp4DTc"
 uri = "file://MarginMix_Risk_Logic_Reference.pdf"
 type = "pdf"
 title = "MarginMix Risk Logic Reference"
+logical_id = "a5a8f6bc-bc8c-4d89-a3f3-8bda93874072"
+
+[[outputs]]
+id = "xz1TRiHM78IngDP-SlNCs"
+uri = "file://MarginMix_Assessment_Questions.pdf"
+type = "pdf"
+title = "MarginMix Assessment Questions"
+description = "Complete question and option reference PDF."
+logical_id = "674d20bd-6b4c-46bb-b672-4d8cff49219d"
+content_hash = "sha256:d3543849cacac935dba2a031fe6c01d8b702fc2e30f7ff3c2b1cc18eeace756c"
+size = 5977
+mtime_ms = 1771235927586
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/674d20bd-6b4c-46bb-b672-4d8cff49219d/5c519baa-7d94-4224-ac53-0d9a8b691be1"
+storage_version_token = "1793147961865526"
+content_type = "application/pdf"
