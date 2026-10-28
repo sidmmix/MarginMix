@@ -28,3 +28,17 @@ mtime_ms = 1771235927586
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/674d20bd-6b4c-46bb-b672-4d8cff49219d/5c519baa-7d94-4224-ac53-0d9a8b691be1"
 storage_version_token = "1793147961865526"
 content_type = "application/pdf"
+
+[[outputs]]
+id = "DzFIUdNSZNFZUv8Z75k-3"
+uri = "file://MarginMix_Audit_Questions.pdf"
+type = "pdf"
+title = "MarginMix Agency Audit Questions"
+description = "Printable 18-page PDF with all 67 audit questions, options, guidance, and conditional branches."
+logical_id = "0fc99d6e-0e67-4873-818d-7da7ece4b817"
+content_hash = "sha256:36b285326da4e5dc93a079ac697f7a148dde5cd29af42053dd07aa995108a7ce"
+size = 27499
+mtime_ms = 1793148634072
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/0fc99d6e-0e67-4873-818d-7da7ece4b817/7a203637-dbde-41c3-b998-94365f4748a2"
+storage_version_token = "1793148661425056"
+content_type = "application/pdf"
