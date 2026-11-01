@@ -15,8 +15,8 @@
     "@clerk/react": "^6.14.4",
     "@clerk/shared": "^4.29.2",
     "@clerk/themes": "^2.4.57",
-    "@grpc/grpc-js": "^1.14.4",
-    "@hookform/resolvers": "^3.10.0",
+    "@grpc/grpc-js": "^1.14.7",
+    "@hookform/resolvers": "^5.9.2",
     "@jridgewell/trace-mapping": "^0.3.25",
     "@neondatabase/serverless": "^0.10.4",
     "@radix-ui/react-accordion": "^1.2.4",
@@ -59,7 +59,7 @@
     "@uppy/file-input": "^4.2.2",
     "@uppy/progress-bar": "^4.3.2",
     "@uppy/react": "^4.5.2",
-    "axios": "^1.20.0",
+    "axios": "^1.21.0",
     "cheerio": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -69,7 +69,7 @@
     "drizzle-orm": "1.0.0-rc.4",
     "drizzle-zod": "1.0.0-beta.14-a36c63d",
     "embla-carousel-react": "^8.6.0",
-    "express": "^4.21.2",
+    "express": "^4.22.3",
     "framer-motion": "^11.13.1",
     "http-proxy-middleware": "^3.0.7",
     "input-otp": "^1.4.2",
@@ -88,7 +88,7 @@
     "react-icons": "^5.5.0",
     "react-resizable-panels": "^2.1.7",
     "recharts": "^2.15.2",
-    "resend": "^4.0.0",
+    "resend": "^6.37.0",
     "stripe": "^19.0.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
@@ -96,8 +96,8 @@
     "vaul": "^1.1.2",
     "wouter": "^3.3.5",
     "ws": "^8.22.0",
-    "zod": "^3.24.2",
-    "zod-validation-error": "^3.4.0"
+    "zod": "^4.6.7",
+    "zod-validation-error": "^5.0.0"
   },
   "devDependencies": {
     "@replit/vite-plugin-cartographer": "^0.2.8",
@@ -113,21 +113,27 @@
     "autoprefixer": "^10.4.20",
     "drizzle-kit": "1.0.0-rc.4",
     "esbuild": "^0.25.0",
-    "postcss": "^8.5.28",
+    "postcss": "^8.5.32",
     "tailwindcss": "^3.4.17",
     "tsx": "^4.19.1",
     "typescript": "5.6.3",
-    "vite": "^6.4.3"
+    "vite": "^6.4.5"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8"
   },
   "overrides": {
     "@babel/core": "^7.29.7",
-    "body-parser": "^1.20.8",
+    "body-parser": "^1.20.9",
     "browserslist": "^4.29.2",
+    "follow-redirects": "^1.16.2",
     "lodash": "^4.18.1",
-    "qs": "^6.16.0",
+    "postcss-selector-parser": "^6.1.5",
+    "proxy-addr": "^2.0.8",
+    "qs": "^6.17.1",
+    "resend": {
+      "@react-email/render": "^2.2.0"
+    },
     "shell-quote": "^1.11.0",
     "tinyglobby": {
       "picomatch": "^4.0.7"
@@ -135,6 +141,6 @@
     "tsx": {
       "esbuild": "^0.28.2"
     },
-    "undici": "^7.30.0"
+    "undici": "^7.30.1"
   }
 }

@@ -20,3 +20,9 @@ When the ORM and CLI are migrated together to the pre-release line, keep the sch
 **Why:** A matching CLI and ORM alone left the old adapter with an invalid peer tree; the newer adapter's generated schemas did not type-check against Zod 3 extensions.
 
 **How to apply:** Check the complete dependency tree and keep shared generated schemas and server extensions on the same Zod major. Re-run schema generation offline before applying any database changes.
+
+An upstream change from a required dependency to an optional peer does not guarantee that npm removes the old vulnerable package from an existing lockfile.
+
+**Why:** A parent upgrade retained its previous renderer as an optional peer, including the vulnerable merge library beneath it, even though the parent's new direct dependencies no longer included that renderer.
+
+**How to apply:** Audit the resolved lockfile and installed tree after parent upgrades, not just the parent's published dependency list. If the optional peer remains installed, ensure its version and its own dependencies are safe and compatible.
