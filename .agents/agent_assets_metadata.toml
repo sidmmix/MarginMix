@@ -13,7 +13,14 @@ id = "biKnits26f_fJ5xVp4DTc"
 uri = "file://MarginMix_Risk_Logic_Reference.pdf"
 type = "pdf"
 title = "MarginMix Risk Logic Reference"
+description = "Updated assessment questions and Model1 point mappings, with the standalone assessment kept separate from the quick profiler."
 logical_id = "a5a8f6bc-bc8c-4d89-a3f3-8bda93874072"
+content_hash = "sha256:70c633d665d894c7ebbd4d587c3e285458d69bf3540437bd9f19ed02632d08c8"
+size = 25512
+mtime_ms = 1793505724196
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/a5a8f6bc-bc8c-4d89-a3f3-8bda93874072/81642800-9c42-46e1-93a1-f533fd45a1cf"
+storage_version_token = "1793505819640319"
+content_type = "application/pdf"
 
 [[outputs]]
 id = "xz1TRiHM78IngDP-SlNCs"
@@ -41,4 +48,18 @@ size = 27499
 mtime_ms = 1793148634072
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/0fc99d6e-0e67-4873-818d-7da7ece4b817/7a203637-dbde-41c3-b998-94365f4748a2"
 storage_version_token = "1793148661425056"
+content_type = "application/pdf"
+
+[[outputs]]
+id = "rCzFql0O9bg6TCPFSAAW9"
+uri = "file://client/public/MarginMix-Scoring-Logic.pdf"
+type = "pdf"
+title = "Model1 Scoring Logic"
+description = "Updated answer points, signal aggregation, dimension means, weights, overrides and the illustrative 51.7 computation."
+logical_id = "a31b6997-7f47-41ba-aa76-13a7aacc985c"
+content_hash = "sha256:e56fcdc903512c4dd970832214525d7cd44376f767c47af69d18e3d0d80d7980"
+size = 11468
+mtime_ms = 1793505722101
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/a31b6997-7f47-41ba-aa76-13a7aacc985c/51c739c0-b508-44bc-85e0-e0a3e652ac44"
+storage_version_token = "1793505818403427"
 content_type = "application/pdf"

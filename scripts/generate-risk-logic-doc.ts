@@ -89,7 +89,7 @@ const fullAssessmentQuestions: QuestionDef[] = [
     number: "Q8", id: "specifyContext", title: "Specify Context",
     section: "Client Engagement Context",
     context: "Multi-client assessments carry compounding coordination risk.",
-    signal: "Context modifier",
+    signal: "Context only — not in the Model1 composite",
     options: [
       { label: "Single client",                    risk: "low"    },
       { label: "Group of clients – Org level",     risk: "medium" },
@@ -112,8 +112,8 @@ const fullAssessmentQuestions: QuestionDef[] = [
     number: "Q10", id: "engagementType", title: "What's the engagement type?",
     section: "Client Engagement Context",
     context: "Fixed-fee models absorb scope creep risk that retainers can pass through.",
-    signal: "PricingRigidity → ResourcingFlex", dimension: "Commercial Exposure",
-    note: "Options are industry-specific. High PricingRigidity → low ResourcingFlex → elevates Commercial Exposure.",
+    signal: "PricingRigidity", dimension: "Commercial Exposure",
+    note: "Options are industry-specific. Retainer scores 0; hybrid/T&M/managed services 50; fixed fee/commission/outcome-based 100.",
     options: [
       { label: "[Marketing & Advertising] Commission",                         risk: "high"   },
       { label: "[Marketing & Advertising] Fixed Fees",                         risk: "low"    },
@@ -251,7 +251,7 @@ const fullAssessmentQuestions: QuestionDef[] = [
     number: "Q19", id: "aiEffortShift", title: "Where is AI primarily expected to substitute effort?",
     section: "Delivery Dynamics",
     context: "The layer where AI replaces human effort determines whether it reduces cost or increases oversight burden.",
-    signal: "AILeverage / MeasurementMaturity modifier", dimension: "Measurement Maturity",
+    signal: "AILeverage", dimension: "Measurement Maturity",
     options: [
       { label: "Junior execution",              risk: "low"    },
       { label: "Mid-level production",          risk: "medium" },
@@ -297,7 +297,7 @@ const fullAssessmentQuestions: QuestionDef[] = [
     number: "Q23", id: "deliveryConfidence", title: "Delivery Confidence — How confident are you in the delivery model for this engagement?",
     section: "Value, Load & Confidence",
     context: "Low confidence often signals structural issues that pricing alone cannot fix.",
-    signal: "DeliveryConfidence → Confidence Signal", dimension: "HARD OVERRIDE if LOW",
+    signal: "DeliveryConfidence — Confidence Signal", dimension: "HARD OVERRIDE if LOW",
     note: "LOW confidence fires as a hard override BEFORE weighted scoring and unconditionally returns: Do Not Proceed Without Repricing.",
     options: [
       { label: "High confidence",  risk: "low"    },
@@ -309,7 +309,7 @@ const fullAssessmentQuestions: QuestionDef[] = [
     number: "Q24", id: "aiAgenticFramework", title: "Are you using AI or an Agentic framework and what kind of projects are they being deployed on?",
     section: "AI Risk",
     context: "Agentic deployments in billable workflows directly affect pricing integrity and delivery accountability.",
-    signal: "MeasurementMaturity modifier", dimension: "Measurement Maturity",
+    signal: "AIRiskPeak (MAX of Q24, Q25, Q26)", dimension: "Measurement Maturity",
     options: [
       { label: "Yes", risk: "high" },
       { label: "No",  risk: "low"  },
@@ -320,7 +320,7 @@ const fullAssessmentQuestions: QuestionDef[] = [
     number: "Q25", id: "aiHumanHoursReplaced", title: "How many human hours will you replace / augment with an AI agent in delivery workflows?",
     section: "AI Risk",
     context: "The scale of AI substitution determines whether cost savings flow to margin or create oversight overhead.",
-    signal: "MeasurementMaturity modifier", dimension: "Measurement Maturity",
+    signal: "AIRiskPeak (MAX of Q24, Q25, Q26)", dimension: "Measurement Maturity",
     options: [
       { label: "0–25%",     risk: "low"    },
       { label: "25–50%",    risk: "medium" },
@@ -333,7 +333,7 @@ const fullAssessmentQuestions: QuestionDef[] = [
     number: "Q26", id: "aiCommercialImpactMeasured", title: "Have you measured the commercial impact of using AI agents?",
     section: "AI Risk",
     context: "Unmeasured AI impact means you cannot price its contribution or account for its risks.",
-    signal: "MeasurementMaturity modifier", dimension: "Measurement Maturity",
+    signal: "AIRiskPeak (MAX of Q24, Q25, Q26)", dimension: "Measurement Maturity",
     options: [
       { label: "Yes", risk: "low"  },
       { label: "No",  risk: "high" },
@@ -344,7 +344,7 @@ const fullAssessmentQuestions: QuestionDef[] = [
     number: "Q27", id: "openSignal", title: "Is there anything about this engagement that feels risky or unusual?",
     section: "Open Signal",
     isNarrative: true,
-    note: "Free-text. Passed to GPT-4.1 for PDF narrative generation only. No effect on weighted score or verdict.",
+    note: "Free-text for narrative generation only. No effect on weighted score or verdict; AI cannot introduce numerical claims.",
   },
 ];
 
@@ -356,7 +356,7 @@ const profilerQuestions: QuestionDef[] = [
     section: "Quick Risk Profiler",
     context: "The type of decision shapes how much pricing flexibility remains.",
     signal: "EngagementState", dimension: "Commercial Exposure",
-    note: "Corresponds to Q7 of full assessment. Answers carry over; Q7 is skipped in the full flow.",
+    note: "Topic overlaps full-assessment Q7; answers are not transferred between flows.",
     options: [
       { label: "New client win / pitch acceptance",           risk: "low"    },
       { label: "Renewal / contract extension",                risk: "low"    },
@@ -371,7 +371,7 @@ const profilerQuestions: QuestionDef[] = [
     section: "Quick Risk Profiler",
     context: "Engagement maturity affects how predictable the delivery effort will be.",
     signal: "EngagementState", dimension: "Commercial Exposure",
-    note: "Corresponds to Q9. Answers carry over.",
+    note: "Topic overlaps full-assessment Q9; answers are not transferred between flows.",
     options: [
       { label: "New (pre-kickoff / onboarding phase)",             risk: "medium" },
       { label: "Ongoing (in delivery < 6 months)",                 risk: "medium" },
@@ -385,7 +385,7 @@ const profilerQuestions: QuestionDef[] = [
     section: "Quick Risk Profiler",
     context: "Client stability directly impacts coordination cost and rework risk.",
     signal: "ClientVolatility", dimension: "Volatility Control",
-    note: "Corresponds to Q11. Answers carry over.",
+    note: "Topic overlaps full-assessment Q11; answers are not transferred between flows.",
     options: [
       { label: "Low (stable stakeholders, clear expectations)",      risk: "low"    },
       { label: "Medium",                                              risk: "medium" },
@@ -397,7 +397,7 @@ const profilerQuestions: QuestionDef[] = [
     section: "Quick Risk Profiler",
     context: "Senior involvement in delivery signals that junior/mid teams cannot carry the engagement.",
     signal: "SeniorDependency", dimension: "Workforce Intensity",
-    note: "Corresponds to Q13. Answers carry over.",
+    note: "Topic overlaps full-assessment Q13; answers are not transferred between flows.",
     options: [
       { label: "Minimal (oversight only)",  risk: "low"    },
       { label: "Periodic (key moments)",    risk: "medium" },
@@ -410,7 +410,7 @@ const profilerQuestions: QuestionDef[] = [
     section: "Quick Risk Profiler",
     context: "Thinking-heavy work is harder to scope, price, and delegate.",
     signal: "IterationLoad proxy", dimension: "Workforce Intensity",
-    note: "Corresponds to Q15. Profiler uses standard 3 options only (no industry variants). Answers carry over.",
+    note: "Topic overlaps full-assessment Q15; profiler options are separate and answers are not transferred.",
     options: [
       { label: "Execution-heavy", risk: "low"    },
       { label: "Balanced",        risk: "medium" },
@@ -422,7 +422,7 @@ const profilerQuestions: QuestionDef[] = [
     section: "Quick Risk Profiler",
     context: "The layer where AI replaces human effort determines whether it reduces cost or increases oversight burden.",
     signal: "AILeverage", dimension: "Measurement Maturity",
-    note: "Corresponds to Q19. Answers carry over.",
+    note: "Topic overlaps full-assessment Q19; answers are not transferred between flows.",
     options: [
       { label: "Junior execution",          risk: "low"    },
       { label: "Mid-level production",      risk: "medium" },
@@ -582,7 +582,9 @@ function drawQuestion(doc: PDFKit.PDFDocument, q: QuestionDef, isFullAssessment 
     doc.moveDown(0.2);
 
     q.options.forEach((opt) => {
-      maybeAddPage(doc, 16);
+      doc.fontSize(8).font("Helvetica");
+      const rowHeight = Math.max(12, doc.heightOfString(opt.label, { width: optW - 4, lineGap: 1 })) + 6;
+      maybeAddPage(doc, rowHeight);
       const rowY = doc.y;
       doc.fontSize(8).font("Helvetica").fillColor(T.dark).text(opt.label, titleX, rowY, { width: optW - 4, lineGap: 1 });
       const rLabel = isFullAssessment ? scorecardPoints(q, opt.label) : riskText(opt.risk);
@@ -590,7 +592,7 @@ function drawQuestion(doc: PDFKit.PDFDocument, q: QuestionDef, isFullAssessment 
         ? rLabel === "OVERRIDE" || rLabel === "100" ? "#dc2626" : rLabel === "50" ? "#b45309" : "#059669"
         : opt.risk === "high" ? "#dc2626" : opt.risk === "medium" ? "#b45309" : opt.risk === "low" ? "#059669" : T.light;
       doc.fontSize(8).font("Helvetica-Bold").fillColor(rColor).text(rLabel, riskColX, rowY, { width: riskColW });
-      doc.moveDown(0.5);
+      doc.y = rowY + rowHeight;
     });
   }
 
@@ -650,7 +652,7 @@ function buildPdf() {
   doc.moveDown(0.5);
   doc.fontSize(8.5).font("Helvetica").fillColor(T.gray)
     .text(
-      "The standalone assessment uses deterministic Model1 arithmetic: answer points → named signals → dimension means → weighted composite. The quick profiler is independent.",
+      "The standalone assessment uses deterministic Model1 arithmetic: answer points, named signals, dimension means, then the weighted composite. The quick profiler is independent.",
       50, doc.y, { width: pageW, lineGap: 2 }
     );
   doc.moveDown(0.8);
@@ -665,11 +667,13 @@ function buildPdf() {
   // Dimensions table
   hRule(doc);
   doc.moveDown(0.3);
+  const dimensionHeaderY = doc.y;
   doc.fontSize(7.5).font("Helvetica-Bold").fillColor(T.light)
-    .text("DIMENSION",          50,  doc.y, { width: 140 })
-    .text("WEIGHT",            194,  doc.y, { width: 38,  align: "right" })
-    .text("SIGNAL GROUPS",     242,  doc.y, { width: 125 })
-    .text("DIMENSION MEAN",    372,  doc.y, { width: pageW - 322 });
+    .text("DIMENSION",          50,  dimensionHeaderY, { width: 140 })
+    .text("WEIGHT",            194,  dimensionHeaderY, { width: 38,  align: "right" })
+    .text("SIGNAL GROUPS",     242,  dimensionHeaderY, { width: 125 })
+    .text("DIMENSION MEAN",    372,  dimensionHeaderY, { width: pageW - 322 });
+  doc.y = dimensionHeaderY + 16;
   doc.moveDown(0.3);
   hRule(doc);
   doc.moveDown(0.3);
@@ -682,11 +686,19 @@ function buildPdf() {
     { d: "Measurement Maturity",  w: "10%", qs: "Q19; MAX(Q24,Q25,Q26)",         r: "Mean of 2 signals" },
   ];
   dims.forEach(d => {
-    doc.fontSize(8.5).font("Helvetica-Bold").fillColor(T.black).text(d.d, 50, doc.y, { width: 140 });
+    const rowY = doc.y;
+    doc.fontSize(8.5).font("Helvetica");
+    const rowHeight = Math.max(
+      doc.heightOfString(d.qs, { width: 125 }),
+      doc.heightOfString(d.r, { width: pageW - 322 }),
+      doc.heightOfString(d.d, { width: 140 }),
+    ) + 8;
+    doc.fontSize(8.5).font("Helvetica-Bold").fillColor(T.black).text(d.d, 50, rowY, { width: 140 });
     doc.fontSize(8.5).font("Helvetica").fillColor(T.mid)
-      .text(d.w,  194, doc.y - 11, { width: 38,  align: "right" })
-      .text(d.qs, 242, doc.y - 11, { width: 125 })
-      .text(d.r,  372, doc.y - 11, { width: pageW - 322 });
+      .text(d.w,  194, rowY, { width: 38,  align: "right" })
+      .text(d.qs, 242, rowY, { width: 125 })
+      .text(d.r,  372, rowY, { width: pageW - 322 });
+    doc.y = rowY + rowHeight;
     doc.moveDown(0.5);
     hRule(doc);
     doc.moveDown(0.3);
@@ -699,32 +711,43 @@ function buildPdf() {
     "Score answers as 0, 50 or 100. Use MAX for grouped signals, then take the arithmetic mean of each dimension's signals. Multiply each mean by its weight / 100 and sum the five contributions. Preserve raw precision for verdict selection; round only the displayed score to one decimal place.",
     50, doc.y, { width: pageW, lineGap: 2 }
   );
+  doc.moveDown(0.8);
   // Thresholds table
   doc.fontSize(10).font("Helvetica-Bold").fillColor(T.black).text("Score Thresholds (0–100)", 50, doc.y);
   doc.moveDown(0.4);
   hRule(doc);
   doc.moveDown(0.3);
+  const thresholdHeaderY = doc.y;
   doc.fontSize(7.5).font("Helvetica-Bold").fillColor(T.light)
-    .text("SCORE RANGE", 50,  doc.y, { width: 80 })
-    .text("VERDICT",     134, doc.y, { width: pageW - 84 });
+    .text("SCORE RANGE", 50, thresholdHeaderY, { width: 80 })
+    .text("VERDICT", 134, thresholdHeaderY, { width: pageW - 84 });
+  doc.y = thresholdHeaderY + 14;
   doc.moveDown(0.3);
   hRule(doc);
   doc.moveDown(0.3);
 
   const thresholds = [
-    { range: "0 ≤ score < 20",   verdict: "Structurally Safe"                    },
-    { range: "20 ≤ score < 40",  verdict: "Execution Heavy"                      },
-    { range: "40 ≤ score < 60",  verdict: "Price Sensitive"                      },
-    { range: "60 ≤ score < 80",  verdict: "Structurally Fragile"                 },
-    { range: "score ≥ 80",       verdict: "Do Not Proceed Without Repricing"     },
+    { range: "0 to <20",   verdict: "Structurally Safe"                    },
+    { range: "20 to <40",  verdict: "Execution Heavy"                      },
+    { range: "40 to <60",  verdict: "Price Sensitive"                      },
+    { range: "60 to <80",  verdict: "Structurally Fragile"                 },
+    { range: "80 to 100",  verdict: "Do Not Proceed Without Repricing"     },
   ];
   thresholds.forEach(t => {
-    doc.fontSize(8.5).font("Helvetica").fillColor(T.mid).text(t.range,   50,  doc.y, { width: 80 });
-    doc.fontSize(8.5).font("Helvetica-Bold").fillColor(T.black).text(t.verdict, 134, doc.y - 11, { width: pageW - 84 });
+    const rowY = doc.y;
+    doc.fontSize(8.5).font("Helvetica").fillColor(T.mid).text(t.range, 50, rowY, { width: 80 });
+    doc.fontSize(8.5).font("Helvetica-Bold").fillColor(T.black).text(t.verdict, 134, rowY, { width: pageW - 84 });
+    doc.y = rowY + 14;
     doc.moveDown(0.5);
     hRule(doc);
     doc.moveDown(0.3);
   });
+
+  doc.moveDown(0.6);
+  doc.fontSize(8.5).font("Helvetica").fillColor(T.mid).text(
+    "Example only: dimension means 62.5, 50, 33.333..., 25 and 100 give contributions 18.75 + 12.5 + 6.666... + 3.75 + 10 = 51.666..., displayed as 51.7. Different answers produce different scores. AI cannot supply numbers or alter the deterministic verdict. No margin-loss forecast or staffing percentages are inferred.",
+    50, doc.y, { width: pageW, lineGap: 2 }
+  );
 
   // ── 2. Quick Risk Profiler ────────────────────────────────────────────────
   doc.addPage();
@@ -762,62 +785,71 @@ function buildPdf() {
 
   // ── 4. Signal → Dimension Routing ────────────────────────────────────────
   doc.addPage();
-  doc.fontSize(13).font("Helvetica-Bold").fillColor(T.black).text("4.  Signal → Dimension Routing", 50, doc.y);
+  doc.fontSize(13).font("Helvetica-Bold").fillColor(T.black).text("4.  Signal to Dimension Routing", 50, doc.y);
   doc.moveDown(0.5);
 
   hRule(doc);
   doc.moveDown(0.3);
+  const routingHeaderY = doc.y;
   doc.fontSize(7.5).font("Helvetica-Bold").fillColor(T.light)
-    .text("SIGNAL",         50,  doc.y, { width: 118 })
-    .text("QUESTIONS",      172, doc.y, { width: 68  })
-    .text("DIMENSION",      244, doc.y, { width: 110 })
-    .text("ROUTING RULE",   358, doc.y, { width: pageW - 308 });
+    .text("SIGNAL",         50, routingHeaderY, { width: 118 })
+    .text("QUESTIONS",     172, routingHeaderY, { width: 68  })
+    .text("DIMENSION",     244, routingHeaderY, { width: 110 })
+    .text("ROUTING RULE",  358, routingHeaderY, { width: pageW - 308 });
+  doc.y = routingHeaderY + 14;
   doc.moveDown(0.3);
   hRule(doc);
   doc.moveDown(0.3);
 
   const routing = [
-    { s: "ClientVolatility",        qs: "Q11, P3",       d: "Volatility Control",      r: "Direct: low/medium/high" },
-    { s: "StakeholderLoad",         qs: "Q12",           d: "Volatility Control",      r: "Direct: low/medium/high" },
-    { s: "SeniorDependency",        qs: "Q13, Q21, P4",  d: "Workforce Intensity",     r: "Either HIGH → high; either MEDIUM → medium; else low" },
-    { s: "CoordinationIntensity",   qs: "Q14",           d: "Coordination Entropy",    r: "Direct: low/medium/high" },
-    { s: "IterationLoad (proxy)",   qs: "Q15, P5",       d: "Workforce Intensity",     r: "execution=low, balanced=medium, thinking/advisory/strategy=high, technical-impl=medium" },
-    { s: "IterationLoad",           qs: "Q16",           d: "Workforce Intensity",     r: "Direct: low/medium/high" },
-    { s: "ScopeElasticity",         qs: "Q17",           d: "Commercial Exposure",     r: "Direct: low/medium/high" },
-    { s: "CoordinationLoad",        qs: "Q18, Q22",      d: "Coordination Entropy",    r: "Either HIGH → high; either MEDIUM → medium; else low" },
-    { s: "AILeverage",              qs: "Q19, P6",       d: "Measurement Maturity",    r: "junior=low, mid=medium, senior/no-sub=high" },
-    { s: "GovernanceStrength",      qs: "Q20",           d: "Workforce Intensity",     r: "significant=high, some=medium, minimal/none=low" },
+    { s: "ClientVolatility",        qs: "Q11",           d: "Volatility Control",      r: "Answer points: low 0; medium 50; high 100" },
+    { s: "StakeholderLoad",         qs: "Q12",           d: "Volatility Control",      r: "Answer points: low 0; medium 50; high 100" },
+    { s: "SeniorDependency",        qs: "Q13, Q21",      d: "Workforce Intensity",     r: "MAX of both answer point values" },
+    { s: "CoordinationIntensity",   qs: "Q14",           d: "Coordination Entropy",    r: "Answer points: low 0; medium 50; high 100" },
+    { s: "IterationLoad proxy",     qs: "Q15",           d: "Workforce Intensity",     r: "Execution 0; balanced/technical 50; thinking/advisory/strategy 100" },
+    { s: "IterationLoad",           qs: "Q16",           d: "Workforce Intensity",     r: "Answer points: low 0; medium 50; high 100" },
+    { s: "ScopeElasticity",         qs: "Q17",           d: "Commercial Exposure",     r: "Answer points: low 0; medium 50; high 100" },
+    { s: "CoordinationLoad",        qs: "Q18, Q22",      d: "Coordination Entropy",    r: "MAX of both answer point values" },
+    { s: "AILeverage",              qs: "Q19",           d: "Measurement Maturity",    r: "Junior 0; mid-level 50; senior/no substitution 100" },
+    { s: "GovernanceStrength",      qs: "Q20",           d: "Workforce Intensity",     r: "Significant 0; some 50; minimal/none 100" },
     { s: "PricingRigidity",         qs: "Q10",           d: "Commercial Exposure",     r: "Retainer 0; hybrid/T&M/managed/SaaS 50; fixed/commission/outcome 100" },
-    { s: "DeliveryConfidence",      qs: "Q23",           d: "HARD OVERRIDE",           r: "low=Negative→DNP override; some_concerns=neutral; high=positive" },
-    { s: "MeasurementMaturity",     qs: "Q19,Q24,Q25,Q26",d: "Measurement Maturity",  r: "aiRiskPeak: high hours OR no measurement OR agentic = high modifier" },
-    { s: "EngagementState",         qs: "Q7, Q9",        d: "Commercial Exposure",     r: "scope-expansion/escalation=high; strategic-exception/new/renewal=medium; stable=low" },
+    { s: "Confidence Signal",       qs: "Q20, Q23",      d: "HARD OVERRIDE",           r: "Negative triggers override; no points added" },
+    { s: "AIRiskPeak",              qs: "Q24,Q25,Q26",   d: "Measurement Maturity",    r: "MAX of three AI risk point values" },
+    { s: "EngagementState",         qs: "Q7, Q9",        d: "Commercial Exposure",     r: "MAX of both answer point values" },
   ];
 
   routing.forEach(row => {
-    maybeAddPage(doc, 20);
+    doc.fontSize(8).font("Helvetica");
+    const rowHeight = Math.max(
+      doc.heightOfString(row.s, { width: 118 }),
+      doc.heightOfString(row.qs, { width: 68 }),
+      doc.heightOfString(row.d, { width: 110 }),
+      doc.heightOfString(row.r, { width: pageW - 308, lineGap: 1 }),
+    ) + 8;
+    maybeAddPage(doc, rowHeight);
     const rowY = doc.y;
     const isOverride = row.d === "HARD OVERRIDE";
     doc.fontSize(8).font("Helvetica-Bold").fillColor(T.dark)  .text(row.s,  50,  rowY, { width: 118 });
     doc.fontSize(8).font("Helvetica").fillColor(T.gray)        .text(row.qs, 172, rowY, { width: 68  });
     doc.fontSize(8).font("Helvetica").fillColor(isOverride ? "#dc2626" : T.dark).text(row.d,  244, rowY, { width: 110 });
     doc.fontSize(7.5).font("Helvetica").fillColor(T.gray)      .text(row.r,  358, rowY, { width: pageW - 308, lineGap: 1 });
-    doc.moveDown(0.5);
+    doc.y = rowY + rowHeight;
     hRule(doc);
     doc.moveDown(0.3);
   });
 
   // ── Risk Level Legend ─────────────────────────────────────────────────────
   doc.moveDown(0.6);
-  doc.fontSize(10).font("Helvetica-Bold").fillColor(T.black).text("Risk Level Legend", 50, doc.y);
+  doc.fontSize(10).font("Helvetica-Bold").fillColor(T.black).text("Model1 Point Legend", 50, doc.y);
   doc.moveDown(0.4);
   hRule(doc);
   doc.moveDown(0.4);
 
   const legend = [
-    { label: "Low",    color: "#059669", desc: "Within normal operating risk tolerance." },
-    { label: "Medium", color: "#b45309", desc: "Elevated — monitor and manage; margin pressure possible." },
-    { label: "High",   color: "#dc2626", desc: "Critical — direct contributor to margin erosion or verdict escalation." },
-    { label: "—",      color: T.light,   desc: "Identifier fields (Q1–Q4, Q6) — context only, no risk score." },
+    { label: "0",      color: "#059669", desc: "Zero answer risk points." },
+    { label: "50",     color: "#b45309", desc: "Fifty answer risk points." },
+    { label: "100",    color: "#dc2626", desc: "One hundred answer risk points." },
+    { label: "—",      color: T.light,   desc: "Outside the numeric composite: context, override or narrative." },
   ];
   legend.forEach(l => {
     doc.fontSize(8.5).font("Helvetica-Bold").fillColor(l.color).text(l.label, 50, doc.y, { width: 52, continued: false });
@@ -830,11 +862,14 @@ function buildPdf() {
   for (let i = 0; i < total; i++) {
     doc.switchToPage(i);
     if (i === 0) continue;
+    const bottomMargin = doc.page.margins.bottom;
+    doc.page.margins.bottom = 0; // Footer must not create an extra blank page.
     doc.fontSize(7).font("Helvetica").fillColor(T.light)
       .text(
         `MarginMix Risk Logic Reference  ·  Page ${i + 1} of ${total}`,
         50, doc.page.height - 38, { width: pageW, align: "center" }
       );
+    doc.page.margins.bottom = bottomMargin;
   }
 
   doc.end();

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { test } from "node:test";
 import { executeDecisionEngine, type AssessmentInput } from "./index";
 import { buildComputationTrace, WEIGHTS } from "./scorecard";
@@ -7,6 +8,13 @@ import { decideVerdict } from "./decisionTable";
 import { generateFallbackNarrative, validateGeneratedNarrative } from "../narrative-generator";
 import { renderAssessmentOutputPDF, renderDecisionMemoPDF } from "../pdf-renderer";
 import { buildAssessmentEmail } from "../resend";
+
+test("obsolete main-engine scorers and invented-output helpers stay retired", () => {
+  for (const file of ["scoring", "buckets", "rules", "verdict", "decisionObject", "marginImpactCalculator", "effortAllocator"]) {
+    assert.equal(existsSync(new URL(`./${file}.ts`, import.meta.url)), false,
+      `${file} must not be restored alongside the authoritative Model1 scorer`);
+  }
+});
 
 /** Exactly the eighteen scored answers in the supplied document/Model1 workbook.
  * Q25's "25 percent" is the workbook's 25–50% band (50 points).

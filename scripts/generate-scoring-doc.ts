@@ -17,7 +17,7 @@ const ROW_ALT = "#F9FAFB";
 const PAGE_W  = 485; // usable width (595 - 2*55)
 const LEFT    = 55;
 const RIGHT   = LEFT + PAGE_W;
-const BOTTOM_MARGIN = 790; // trigger new page before this y
+const BOTTOM_MARGIN = 775; // Keep table rows inside the PDF's text margins.
 
 // ─── TEXT HEIGHT ESTIMATOR ────────────────────────────────────────────────────
 // Estimates how many points tall a block of text will be given a column width
@@ -74,8 +74,9 @@ function drawTable(
   // ── data rows ──
   rows.forEach((row, rowIdx) => {
     // Measure each cell to find the tallest
+    doc.font("Helvetica").fontSize(fontSize);
     const cellHeights = row.map((cell, ci) =>
-      estimateTextHeight(cell, colWidths[ci], fontSize)
+      doc.heightOfString(cell, { width: colWidths[ci] - 10, lineGap: 1.5 })
     );
     const rowH = Math.max(...cellHeights) + PAD_V * 2;
 
@@ -191,11 +192,11 @@ body("This reference documents the standalone full assessment's deterministic Mo
 divider();
 
 // ─── LAYER 1 ─────────────────────────────────────────────────────────────────
-h1("Layer 1 — Questions → Signals");
+h1("Layer 1 — Questions to Signals");
 body("The scorecard assigns points to 18 answers. Q1–Q6 are identifiers/context and are not in the composite. Q23 is a confidence override, not a numeric dimension input. Q27 is narrative-only. The full assessment is independent of the homepage quick profiler; answers are not prefilled or skipped.");
 
-h3("Identifier Questions (Q1–Q5) — No Signal Produced");
-note("Q1 Full Name  ·  Q2 Work Email  ·  Q3 Role / Title  ·  Q4 Organisation Name  ·  Q5 Organisation Size");
+h3("Context Questions — Not in the Composite");
+note("Q1 Full Name · Q2 Work Email · Q3 Role / Title · Q4 Organisation Name · Q5 Organisation Size · Q6 Industry · Q8 Context · conditional Q10b Delivery Model");
 
 h3("Model1 Scored Answers");
 drawTable(
@@ -205,10 +206,12 @@ drawTable(
     ["Q9", "Stage: new / under 6 months / renewal-expansion; 6–12 months / 12+ months", "50 / 0"],
     ["Q10", "Retainer; hybrid / T&M / managed; fixed fee / commission / outcome-based", "0 / 50 / 100"],
     ["Q11, Q12, Q14, Q16, Q17, Q18", "Low / medium / high", "0 / 50 / 100"],
-    ["Q13, Q21", "Q13: minimal / periodic / frequent / continuous; Q21: less / same / more", "0 / 50 / 100"],
-    ["Q15", "Execution-heavy / balanced / thinking-heavy; technical implementation", "0 / 50 / 100; 50"],
+    ["Q13", "Minimal / periodic / frequent / continuous senior involvement", "0 / 50 / 100 / 100"],
+    ["Q15", "Execution / balanced / thinking; advisory or strategy; technical implementation", "0 / 50 / 100; 100; 50"],
     ["Q19", "Junior execution / mid-level production / senior thinking / no clear path", "0 / 50 / 100 / 100"],
     ["Q20", "Significant / some / minimal / no meaningful additional value", "0 / 50 / 100 / 100"],
+    ["Q21", "Less than usual / about the same / more than usual senior oversight", "0 / 50 / 100"],
+    ["Q22", "Minimal / moderate / heavy coordination drag", "0 / 50 / 100"],
     ["Q24", "Agentic framework: no / yes / NA", "0 / 100 / 0"],
     ["Q25", "AI hours replaced: 0–25% / 25–50% / 50–75% / 75–100% / NA", "0 / 50 / 100 / 100 / 0"],
     ["Q26", "Commercial AI impact measured: yes / no / NA", "0 / 100 / 0"],
@@ -218,10 +221,10 @@ drawTable(
 );
 
 h3("Scorecard interpretation");
-note("Points are risk points on a 0–100 scale, not Low/Medium/High ratings. For hybrid engagements, score each applicable component using its answer mapping; a fixed-fee answer scores 100 across industries. Missing or NA follow-ups are not silently replaced with an AI estimate.");
+note("Points are risk points, not dimension bands. Hybrid pricing is one answer worth 50 points; it is not separately decomposed into components. Fixed fee scores 100 across industries. Optional missing AI follow-ups use the existing NA mapping (0); unsupported answers fail explicitly rather than receiving invented points.");
 
 // ─── LAYER 2 ─────────────────────────────────────────────────────────────────
-h1("Layer 2 — Signals → Numeric Dimensions");
+h1("Layer 2 — Signals to Numeric Dimensions");
 body("Each named signal is first scored from its mapped answer. Signals joined by MAX use the highest point value. Each dimension is the arithmetic mean of its listed signal scores; no categorical dimension conversion is used for scoring.");
 
 drawTable(
@@ -247,7 +250,7 @@ drawTable(
 );
 
 // ─── LAYER 3 ─────────────────────────────────────────────────────────────────
-h1("Layer 3 — Dimensions → Verdict (Weighted Scoring Model)");
+h1("Layer 3 — Dimensions to Verdict");
 body("The raw composite is the sum of each numeric dimension mean multiplied by its unchanged weight. Preserve full precision through verdict selection; round only the displayed composite to one decimal place. The sample 51.7 is a fixture, not a score to impose on other answer sets.");
 
 h3("Step 1 — Hard Override (fires before scoring)");
@@ -286,21 +289,21 @@ drawTable(
     ["Commercial Exposure", "33.333…", "20%", "6.666…"],
     ["Volatility Control", "25", "15%", "3.75"],
     ["Measurement Maturity", "100", "10%", "10"],
-    ["Raw total", "", "", "51.666… → display 51.7"],
+    ["Raw total", "", "", "51.666…; display 51.7"],
   ],
   [150, 88, 75, 172]
 );
 note("Those values come from one fixed answer fixture. Other answers must produce their own signal scores, means and weighted contributions.");
 
-h3("Score → Verdict Thresholds");
+h3("Score to Verdict Thresholds");
 drawTable(
   ["Score Range", "Verdict", "Trigger Code"],
   [
-    ["0 – 19",  "Structurally Safe",                   "WEIGHTED_SCORE_SAFE"],
-    ["20 – 39", "Execution Heavy",                      "WEIGHTED_SCORE_EXECUTION_HEAVY"],
-    ["40 – 59", "Price Sensitive",                      "WEIGHTED_SCORE_PRICE_SENSITIVE"],
-    ["60 – 79", "Structurally Fragile",                 "WEIGHTED_SCORE_FRAGILE"],
-    ["80 – 100","Do Not Proceed Without Repricing",      "WEIGHTED_SCORE_CRITICAL"],
+    ["0 to <20",  "Structurally Safe",                   "WEIGHTED_SCORE_SAFE"],
+    ["20 to <40", "Execution Heavy",                      "WEIGHTED_SCORE_EXECUTION_HEAVY"],
+    ["40 to <60", "Price Sensitive",                      "WEIGHTED_SCORE_PRICE_SENSITIVE"],
+    ["60 to <80", "Structurally Fragile",                 "WEIGHTED_SCORE_FRAGILE"],
+    ["80 to 100","Do Not Proceed Without Repricing",      "WEIGHTED_SCORE_CRITICAL"],
   ],
   [75, 200, 210]
 );
@@ -312,7 +315,7 @@ bullet("Price Sensitive", "High scope elasticity or pricing rigidity creates com
 bullet("Structurally Fragile", "High workforce intensity combined with high coordination entropy creates unsustainable margin pressure. Structural changes required.");
 bullet("Do Not Proceed Without Repricing", "Pricing or delivery confidence is insufficient to proceed safely. Engagement requires repricing or structural changes before commitment.");
 
-note("Important: Rule 1 (Negative Confidence Signal) always fires before Rule 2 (Structural Overload). A negative confidence signal overrides even a full structural overload scenario.");
+note("The confidence override takes priority over every weighted-score band. There is no separate first-match structural-overload verdict rule.");
 
 // ─── PRINCIPLES ──────────────────────────────────────────────────────────────
 h1("Core Design Principles");
