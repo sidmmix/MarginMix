@@ -63,3 +63,31 @@ mtime_ms = 1793505722101
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/a31b6997-7f47-41ba-aa76-13a7aacc985c/51c739c0-b508-44bc-85e0-e0a3e652ac44"
 storage_version_token = "1793505818403427"
 content_type = "application/pdf"
+
+[[outputs]]
+id = "S4abPBnlLR3UgAShVrhyz"
+uri = "file://generated-artifacts/assessment-exports/ytx-2026-11-01-assessment-results.pdf"
+type = "pdf"
+title = "Latest Assessment — Results"
+description = "ytx · 1 November 2026 · Regenerated from saved responses using the scorecard. Score: 55/100, Moderate risk."
+logical_id = "8edabd18-d18d-408e-9748-0d9ad6133c4a"
+content_hash = "sha256:d3f1cd8c5813e8b43193c7b779fc2dc98ae98a440539b4479aea25196b275d4e"
+size = 13610
+mtime_ms = 1793507366673
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/8edabd18-d18d-408e-9748-0d9ad6133c4a/e4ae65bc-b3f2-41d5-bc93-d1506edad5fd"
+storage_version_token = "1793507376105076"
+content_type = "application/pdf"
+
+[[outputs]]
+id = "mlA9dConqDmPkugG9500w"
+uri = "file://generated-artifacts/assessment-exports/ytx-2026-11-01-decision-memo.pdf"
+type = "pdf"
+title = "Latest Assessment — Decision Memo"
+description = "ytx · 1 November 2026 · Regenerated decision memo based on the saved assessment responses."
+logical_id = "0f23a70c-012c-4904-a873-c51ea9bf4bdd"
+content_hash = "sha256:1ca6f029762a7ef9214f6126f780d75d1da18281396933759ec49f3e2b18a12f"
+size = 11799
+mtime_ms = 1793507366677
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/0f23a70c-012c-4904-a873-c51ea9bf4bdd/58e93f55-9a54-4cb0-933f-325314699094"
+storage_version_token = "1793507377310267"
+content_type = "application/pdf"
