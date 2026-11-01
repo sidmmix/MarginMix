@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { analytics } from "@/lib/analytics";
+import { downloadPdf, prepareAssessmentDownloads, releaseAssessmentDownloads, type AssessmentDownloads } from "@/lib/pdf-download";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -444,7 +445,10 @@ export default function Assessment() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [decisionResult, setDecisionResult] = useState<any>(null);
   const [showDecisionPage, setShowDecisionPage] = useState(false);
-  const [storedPdfData, setStoredPdfData] = useState<any>(null);
+  const [storedPdfData, setStoredPdfData] = useState<AssessmentDownloads | null>(null);
+  useEffect(() => {
+    return () => { if (storedPdfData) releaseAssessmentDownloads(storedPdfData); };
+  }, [storedPdfData]);
   const [submittedUserInfo, setSubmittedUserInfo] = useState<{fullName: string; workEmail: string; roleTitle: string; organisationName: string; organisationSize: string} | null>(null);
   const [contactForm, setContactForm] = useState({ name: "", email: "", companyName: "" });
   const [isContactSubmitting, setIsContactSubmitting] = useState(false);
@@ -729,15 +733,6 @@ export default function Assessment() {
     }
   }, [currentQuestion, isIntro, isMarginQuestion, currentMargin, isReviewScreen, isTransitioning, isSubmitting, totalQuestions, showDecisionPage]);
 
-  const downloadPDF = (filename: string, base64Data: string) => {
-    const link = document.createElement('a');
-    link.href = `data:application/pdf;base64,${base64Data}`;
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   const onSubmit = async (data: AssessmentFormData) => {
     setIsSubmitting(true);
     try {
@@ -752,8 +747,8 @@ export default function Assessment() {
         const result = await response.json();
 
         // Results and PDFs are available immediately after a successful assessment.
-        if (result.pdfs) {
-          const pdfs = result.pdfs;
+        if (result.pdfs && result.decisionObject) {
+          const pdfs = prepareAssessmentDownloads(result.pdfs);
           setStoredPdfData(pdfs);
           if (result.decisionObject) setDecisionResult(result.decisionObject);
           setSubmittedUserInfo({
@@ -765,14 +760,12 @@ export default function Assessment() {
           });
           setShowDecisionPage(true);
           try { localStorage.removeItem(STORAGE_KEY); } catch (_) {}
-          if (pdfs?.decisionMemo?.filename && pdfs?.decisionMemo?.data) {
-            setTimeout(() => downloadPDF(pdfs.decisionMemo.filename, pdfs.decisionMemo.data), 300);
-          }
-          if (pdfs?.assessmentOutput?.filename && pdfs?.assessmentOutput?.data) {
-            setTimeout(() => downloadPDF(pdfs.assessmentOutput.filename, pdfs.assessmentOutput.data), 700);
-          }
+          // Browsers can limit automatic downloads; keep direct links available.
+          downloadPdf(pdfs.assessmentOutput);
+          downloadPdf(pdfs.decisionMemo);
           return;
         }
+        throw new Error("Your PDF reports were not returned. Please submit again.");
       } else {
         let errorMsg = "Please try again.";
         try { errorMsg = (await response.json()).message || errorMsg; } catch (_) {}
@@ -786,7 +779,7 @@ export default function Assessment() {
       console.error("Failed to submit assessment:", error);
       toast({
         title: "Submission Failed",
-        description: "An error occurred. Please try again.",
+        description: error instanceof Error ? error.message : "An error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -1316,7 +1309,7 @@ export default function Assessment() {
             </Form>
             
             <p className="text-sm text-gray-500 text-center mt-4">
-              Your margin risk assessment & decision memo will be delivered to your email & a copy of the files will be auto downloaded on this device.
+              Your assessment and decision memo will be emailed to you and available to download on the results page. If your browser blocks automatic downloads, use the individual download buttons.
             </p>
           </div>
           
@@ -1371,13 +1364,20 @@ export default function Assessment() {
 
     const recommendations = getVerdictRecommendations(d.marginRiskVerdict);
 
-    const handleRedownload = () => {
-      if (storedPdfData) {
-        setTimeout(() => downloadPDF(storedPdfData.decisionMemo.filename, storedPdfData.decisionMemo.data), 100);
-        setTimeout(() => downloadPDF(storedPdfData.assessmentOutput.filename, storedPdfData.assessmentOutput.data), 500);
-        toast({ title: "PDFs Downloading", description: "Your assessment files are being downloaded." });
-      }
-    };
+    const renderDownloadLinks = () => storedPdfData && (
+      <>
+        <Button asChild className="bg-white/15 hover:bg-white/25 text-white border border-white/30 rounded-xl py-3 px-5">
+          <a href={storedPdfData.assessmentOutput.url} download={storedPdfData.assessmentOutput.filename}>
+            <Download className="mr-2 h-4 w-4" />Download Assessment PDF
+          </a>
+        </Button>
+        <Button asChild className="bg-white/15 hover:bg-white/25 text-white border border-white/30 rounded-xl py-3 px-5">
+          <a href={storedPdfData.decisionMemo.url} download={storedPdfData.decisionMemo.filename}>
+            <Download className="mr-2 h-4 w-4" />Download Decision Memo
+          </a>
+        </Button>
+      </>
+    );
 
     const dimensionCards = [
       { name: "Workforce Intensity", level: d.dimensions?.workforceIntensity, score: d.bucketScores?.WI, icon: Users },
@@ -1428,13 +1428,10 @@ export default function Assessment() {
               </div>
               {storedPdfData && (
                 <div className="mt-5 pt-5 border-t border-white/10">
-                  <Button
-                    onClick={handleRedownload}
-                    className="w-full sm:w-auto bg-white/15 hover:bg-white/25 text-white border border-white/30 rounded-xl py-3 px-6 font-semibold flex items-center justify-center gap-2 transition-all"
-                  >
-                    <Download className="h-4 w-4" />
-                    Download PDF
-                  </Button>
+                  <p className="text-sm text-gray-300 mb-3">
+                    Your PDFs are ready. If they did not download automatically, download each report below.
+                  </p>
+                  <div className="flex flex-col sm:flex-row flex-wrap gap-3">{renderDownloadLinks()}</div>
                 </div>
               )}
             </div>
@@ -1669,15 +1666,7 @@ export default function Assessment() {
 
             {/* Section 9 - CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 pt-4 pb-8">
-              {storedPdfData && (
-                <Button
-                  onClick={handleRedownload}
-                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-6 text-base shadow-lg rounded-xl flex-1"
-                >
-                  <Download className="mr-2 h-5 w-5" />
-                  Download PDF
-                </Button>
-              )}
+              {renderDownloadLinks()}
               <Link href="/" className="flex-1">
                 <Button
                   className="w-full border border-white/20 bg-transparent text-white hover:bg-white/10 py-6 text-base rounded-xl"
