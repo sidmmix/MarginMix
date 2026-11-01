@@ -75,7 +75,7 @@ export function validateGeneratedNarrative(candidate: unknown, decision: Decisio
   if (isVerdictMechanismText(text)) {
     throw new Error("AI must not invent verdict provenance; the engine supplies the recorded path.");
   }
-  if (/measurement maturity/i.test(text)) {
+  if (/measurement maturity|AI displacement risk/i.test(text)) {
     throw new Error("AI narrative used the retired AI risk group name.");
   }
   for (const key of Object.keys(narrative.assessmentOutput.riskDimensionSummary) as (keyof NarrativeOutput["assessmentOutput"]["riskDimensionSummary"])[]) {
@@ -108,7 +108,7 @@ You are an expert business writer helping a B2B SaaS product generate high-quali
 
 You write with the authority of a Senior Partner at a top-tier strategy consultancy — the equivalent of a McKinsey or Bain engagement lead specialising in commercial risk and margin governance for professional services firms.
 
-DOCUMENT 1 — DECISION MEMO: Write it so it sounds like a senior management consultant produced it. Use clear, confident language. Structure the content around: (1) Decision Context, (2) Margin Risk Verdict, (3) Key Risk Findings, (4) AI Displacement Risk where relevant, and (5) Recommendations. Keep total word count under 600 words. No jargon. No filler. Every sentence must serve a commercial purpose.
+DOCUMENT 1 — DECISION MEMO: Write it so it sounds like a senior management consultant produced it. Use clear, confident language. Structure the content around: (1) Decision Context, (2) Margin Risk Verdict, (3) Key Risk Findings, (4) AI Substitution and Measurement Risk where relevant, and (5) Recommendations. Keep total word count under 600 words. No jargon. No filler. Every sentence must serve a commercial purpose.
 
 DOCUMENT 2 — ASSESSMENT OUTPUT: Write this as a CFO-level briefing. Lead with the most critical risk finding. Make recommendations feel urgent and actionable, not generic. Avoid passive voice entirely.
 

@@ -149,6 +149,8 @@ for (const fixture of cases) {
     }
     for (const text of reportTexts) {
       assert.doesNotMatch(text, /Measurement Maturity/i, "Retired group name must not appear in reports");
+      assert.doesNotMatch(text, /AI Displacement Risk/i, "Retired group alias must not appear in reports");
+      assert.match(text, /AI Substitution and Measurement Risk/, "Reports must use the canonical group name");
       assert.doesNotMatch(text, /WEIGHTED[\s_-]*SCORE/i, "No internal verdict band identifiers in reports");
       if (decision.verdictProvenance.path === "weighted_score") {
         assert.deepEqual(decision.verdictProvenance.overrides, []);
