@@ -9,11 +9,19 @@
  * - Confidence Signal
  * - Measurement Maturity
  * 
- * Uses explicit if-then promotion rules ONLY.
- * No averages, no math, no ML.
+ * Legacy descriptive levels retained for narrative compatibility only.
+ * These are not scoring inputs: Model1 numeric means and contributions live in scorecard.ts.
  */
 
 import { Signals, Dimensions, Level, Confidence } from "./types";
+
+export function mapConfidenceSignal(s: Signals): Confidence {
+  return s.pricingConfidence === "negative" || s.deliveryConfidence === "negative"
+    ? "negative"
+    : s.pricingConfidence === "positive" && s.deliveryConfidence === "positive"
+    ? "positive"
+    : "neutral";
+}
 
 export function mapDimensions(s: Signals): Dimensions {
   const workforceIntensity: Level =
@@ -35,12 +43,7 @@ export function mapDimensions(s: Signals): Dimensions {
     s.clientVolatility === "high" ? "high" :
     s.clientVolatility === "medium" ? "medium" : "low";
 
-  const confidenceSignal: Confidence =
-    s.pricingConfidence === "negative" || s.deliveryConfidence === "negative"
-      ? "negative"
-      : s.pricingConfidence === "positive" && s.deliveryConfidence === "positive"
-      ? "positive"
-      : "neutral";
+  const confidenceSignal = mapConfidenceSignal(s);
 
   return {
     workforceIntensity,

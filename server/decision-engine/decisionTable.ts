@@ -26,32 +26,8 @@
  */
 
 import { Dimensions, Verdict, VerdictResult } from "./types";
-
-const WEIGHTS = {
-  workforceIntensity:  30,
-  coordinationEntropy: 25,
-  commercialExposure:  20,
-  volatilityControl:   15,
-  measurementMaturity: 10,
-} as const;
-
-function levelToFactor(level: "low" | "medium" | "high"): number {
-  switch (level) {
-    case "low":    return 0;
-    case "medium": return 0.5;
-    case "high":   return 1;
-  }
-}
-
-function calculateWeightedScore(d: Dimensions): number {
-  const raw =
-    levelToFactor(d.workforceIntensity)  * WEIGHTS.workforceIntensity  +
-    levelToFactor(d.coordinationEntropy) * WEIGHTS.coordinationEntropy +
-    levelToFactor(d.commercialExposure)  * WEIGHTS.commercialExposure  +
-    levelToFactor(d.volatilityControl)   * WEIGHTS.volatilityControl   +
-    levelToFactor(d.measurementMaturity) * WEIGHTS.measurementMaturity;
-  return Math.round(raw);
-}
+import type { ComputationTrace } from "./scorecard";
+export { WEIGHTS } from "./scorecard";
 
 function scoreToVerdict(score: number): { verdict: Verdict; reason: string; triggeredBy: string[] } {
   if (score >= 80) {
@@ -89,7 +65,7 @@ function scoreToVerdict(score: number): { verdict: Verdict; reason: string; trig
   };
 }
 
-export function decideVerdict(d: Dimensions): VerdictResult {
+export function decideVerdict(d: Pick<Dimensions, "confidenceSignal">, trace: ComputationTrace): VerdictResult {
   // Hard override: Negative confidence is non-negotiable.
   // No weighted score can compensate for a fundamental confidence failure.
   if (d.confidenceSignal === "negative") {
@@ -97,14 +73,12 @@ export function decideVerdict(d: Dimensions): VerdictResult {
       verdict: "Do Not Proceed Without Repricing",
       reason: "Pricing or delivery confidence is insufficient to proceed safely. Engagement requires repricing or structural changes before commitment. This overrides all other risk signals.",
       triggeredBy: ["LOW_CONFIDENCE_OVERRIDE"],
-      weightedScore: null,
+      weightedScore: trace.compositeBeforeRounding,
     };
   }
 
-  const score = calculateWeightedScore(d);
+  const score = trace.compositeBeforeRounding;
   const { verdict, reason, triggeredBy } = scoreToVerdict(score);
 
   return { verdict, reason, triggeredBy, weightedScore: score };
 }
-
-export { WEIGHTS };

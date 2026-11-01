@@ -69,9 +69,9 @@ const neutralFields = ["fullName", "workEmail", "roleTitle", "organisationName",
 
 const bucketLabels: Record<string, string> = {
   WI: "Workforce Intensity",
-  SI: "Scope & Iteration",
-  CO: "Coordination & Overhead",
-  VSI: "Volatility & Stakeholder Impact",
+  CO: "Coordination Entropy",
+  VC: "Volatility Control",
+  MM: "Measurement Maturity",
   CE: "Commercial Exposure",
 };
 
@@ -1380,13 +1380,13 @@ export default function Assessment() {
     };
 
     const dimensionCards = [
-      { name: "Workforce Intensity", level: d.dimensions?.workforceIntensity, icon: Users },
-      { name: "Coordination Entropy", level: d.dimensions?.coordinationEntropy, icon: Zap },
-      { name: "Commercial Exposure", level: d.dimensions?.commercialExposure, icon: TrendingUp },
-      { name: "Volatility Control", level: d.dimensions?.volatilityControl, icon: AlertTriangle },
+      { name: "Workforce Intensity", level: d.dimensions?.workforceIntensity, score: d.bucketScores?.WI, icon: Users },
+      { name: "Coordination Entropy", level: d.dimensions?.coordinationEntropy, score: d.bucketScores?.CO, icon: Zap },
+      { name: "Commercial Exposure", level: d.dimensions?.commercialExposure, score: d.bucketScores?.CE, icon: TrendingUp },
+      { name: "Volatility Control", level: d.dimensions?.volatilityControl, score: d.bucketScores?.VC, icon: AlertTriangle },
       { name: "Confidence Signal", level: d.dimensions?.confidenceSignal, icon: Shield },
-      { name: "Measurement Maturity", level: d.dimensions?.measurementMaturity, icon: BarChart3 },
-    ];
+      { name: "Measurement Maturity", level: d.dimensions?.measurementMaturity, score: d.bucketScores?.MM, icon: BarChart3 },
+    ].filter((dimension) => dimension.level);
 
     return (
       <div className="h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-y-auto">
@@ -1438,64 +1438,6 @@ export default function Assessment() {
                 </div>
               )}
             </div>
-
-            {/* Margin Impact Section */}
-            {d.marginImpact && (
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-5 sm:p-6 mb-6">
-                <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-emerald-400" />
-                  Estimated Margin Impact
-                </h2>
-                <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-4">
-                  <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-xs text-gray-500 mb-1">Current Margin</p>
-                    <p className="text-xl sm:text-3xl font-bold text-white">{d.marginImpact.currentMargin}%</p>
-                  </div>
-                  <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-xs text-gray-500 mb-1">Estimated Margin Erosion</p>
-                    <p className={`text-xl sm:text-3xl font-bold ${
-                      d.marginImpact.impactColor === "emerald" ? "text-emerald-400" : 
-                      d.marginImpact.impactColor === "amber" ? "text-amber-400" : "text-red-400"
-                    }`}>
-                      {d.marginImpact.estimatedLoss > 0 ? `-${d.marginImpact.estimatedLoss}%` : "0%"}
-                    </p>
-                  </div>
-                  <div className="text-center p-3 sm:p-4 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-xs text-gray-500 mb-1">Effective Margin</p>
-                    <p className={`text-xl sm:text-3xl font-bold ${
-                      d.marginImpact.effectiveMargin >= d.marginImpact.currentMargin * 0.7 ? "text-emerald-400" : 
-                      d.marginImpact.effectiveMargin >= d.marginImpact.currentMargin * 0.5 ? "text-amber-400" : "text-red-400"
-                    }`}>
-                      {d.marginImpact.effectiveMargin}%
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 mr-4">
-                    <div className="relative h-3 bg-white/10 rounded-full overflow-hidden">
-                      <div
-                        className="absolute left-0 top-0 h-full bg-white/20 rounded-full"
-                        style={{ width: `${Math.min(d.marginImpact.currentMargin, 100)}%` }}
-                      />
-                      <div
-                        className={`absolute left-0 top-0 h-full rounded-full transition-all duration-1000 ${
-                          d.marginImpact.impactColor === "emerald" ? "bg-emerald-500" : 
-                          d.marginImpact.impactColor === "amber" ? "bg-amber-400" : "bg-red-500"
-                        }`}
-                        style={{ width: `${Math.min(d.marginImpact.effectiveMargin, 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                  <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${
-                    d.marginImpact.impactColor === "emerald" ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30" :
-                    d.marginImpact.impactColor === "amber" ? "bg-amber-500/20 text-amber-400 border-amber-500/30" :
-                    "bg-red-500/20 text-red-400 border-red-500/30"
-                  }`}>
-                    {d.marginImpact.impactLabel}
-                  </span>
-                </div>
-              </div>
-            )}
 
             {/* Assessment Context */}
             {submittedUserInfo && (
@@ -1567,7 +1509,7 @@ export default function Assessment() {
                     <div key={dim.name} className={`rounded-xl border p-3 sm:p-4 ${getDimensionColor(dim.level || "low")}`}>
                       <Icon className="h-4 w-4 mb-2 opacity-80" />
                       <p className="text-xs text-gray-400 mb-1">{dim.name}</p>
-                      <p className="text-sm font-semibold">{getDimensionLabel(dim.level || "low")}</p>
+                      <p className="text-sm font-semibold">{dim.score != null ? `${Number(dim.score.toFixed(1))}/100` : getDimensionLabel(dim.level || "low")}</p>
                     </div>
                   );
                 })}
@@ -1581,16 +1523,14 @@ export default function Assessment() {
                 Bucket Scores
               </h2>
               <div className="space-y-4">
-                {(["WI", "SI", "CO", "VSI", "CE"] as const).map((key) => {
+                {(["WI", "CO", "CE", "VC", "MM"] as const).map((key) => {
                   const score = d.bucketScores?.[key] ?? 0;
-                  const band = d.bucketBands?.[key] ?? "";
                   return (
                     <div key={key}>
                       <div className="flex justify-between items-center mb-1">
                         <span className="text-sm text-gray-300">{bucketLabels[key]}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500">{band}</span>
-                          <span className="text-sm font-mono font-bold text-white">{score}</span>
+                          <span className="text-sm font-mono font-bold text-white">{Number(score.toFixed(1))}</span>
                         </div>
                       </div>
                       <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
@@ -1599,37 +1539,6 @@ export default function Assessment() {
                     </div>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* Section 4 - Effort Allocation */}
-            <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
-              <h2 className="text-lg sm:text-xl font-semibold text-white mb-2 flex items-center gap-2">
-                <Users className="h-5 w-5 text-emerald-400" />
-                Effort Allocation
-              </h2>
-              <span className="inline-block px-2 py-0.5 rounded text-xs font-medium bg-white/10 text-gray-300 mb-4">
-                {d.effortBand}
-              </span>
-              <div className="space-y-3">
-                {[
-                  { label: "Senior", value: d.effortPercentages?.senior, detail: d.effortAllocation?.senior },
-                  { label: "Mid-Level", value: d.effortPercentages?.mid, detail: d.effortAllocation?.mid },
-                  { label: "Junior / Execution", value: d.effortPercentages?.junior, detail: d.effortAllocation?.execution },
-                ].map((item) => (
-                  <div key={item.label}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-sm text-gray-300">{item.label}</span>
-                      <span className="text-sm font-mono font-bold text-white">{item.value}</span>
-                    </div>
-                    <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-                      <div className="h-full bg-cyan-500 rounded-full transition-all duration-700" style={{ width: item.value || "0%" }} />
-                    </div>
-                    {item.detail != null && (
-                      <p className="text-xs text-gray-500 mt-0.5">Allocation: {item.detail}%</p>
-                    )}
-                  </div>
-                ))}
               </div>
             </div>
 
@@ -1660,7 +1569,6 @@ export default function Assessment() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
                 {[
                   { label: "Value Saturation Present", value: d.saturationDetails?.valueSaturationPresent },
-                  { label: "Optics-Driven Staffing", value: d.saturationDetails?.opticsDrivenStaffing },
                   { label: "Upward Cost Shift", value: d.saturationDetails?.upwardCostShift },
                 ].map((flag) => (
                   <div key={flag.label} className="flex items-center gap-2 p-2 rounded-lg bg-white/5">
@@ -1671,16 +1579,6 @@ export default function Assessment() {
                     </span>
                   </div>
                 ))}
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="p-3 rounded-lg bg-white/5">
-                  <p className="text-xs text-gray-500 mb-1">Risk Source</p>
-                  <p className="text-sm font-medium text-white">{d.riskSource}</p>
-                </div>
-                <div className="p-3 rounded-lg bg-white/5">
-                  <p className="text-xs text-gray-500 mb-1">Correctability</p>
-                  <p className="text-sm font-medium text-white">{d.correctability}</p>
-                </div>
               </div>
             </div>
 
@@ -1759,6 +1657,15 @@ export default function Assessment() {
                 ))}
               </div>
             </div>
+
+            {d.computationTrace && (
+              <details className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
+                <summary className="cursor-pointer text-sm font-semibold text-white">Computation trace (JSON)</summary>
+                <pre className="mt-4 overflow-x-auto whitespace-pre text-xs text-gray-300" tabIndex={0}>
+                  {JSON.stringify(d.computationTrace, null, 2)}
+                </pre>
+              </details>
+            )}
 
             {/* Section 9 - CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 pt-4 pb-8">

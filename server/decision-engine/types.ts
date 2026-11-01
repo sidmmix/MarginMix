@@ -32,7 +32,7 @@ export interface Signals {
   iterationLoad: Level;
   scopeElasticity: Level;
   pricingConfidence: Confidence;
-  deliveryConfidence: Confidence;
+  deliveryConfidence?: Confidence;
   measurementMaturity: Level;
   aiLeverage: Level;
   engagementState: "new" | "ongoing" | "escalation" | "renewal" | "strategic";
@@ -47,7 +47,7 @@ export interface Dimensions {
   coordinationEntropy: Level;
   commercialExposure: Level;
   volatilityControl: Level;
-  confidenceSignal: Confidence;
+  confidenceSignal?: Confidence;
   measurementMaturity: Level;
 }
 
@@ -78,5 +78,4 @@ export interface EngineOutput {
   triggeredBy: string[];
   weightedScore: number | null;
   flags: ContradictionFlag[];
-  effortAllocation: EffortAllocation;
 }

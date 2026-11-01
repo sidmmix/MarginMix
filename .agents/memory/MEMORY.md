@@ -2,3 +2,4 @@
 - [Audit assurance boundaries](audit-assurance-boundaries.md) — intake completeness is not financial risk; avoid presenting uncalibrated heuristics as measured margin forecasts.
 - [Audit navigation preferences](audit-navigation-preferences.md) — manual progression with Enter/click controls and automatic focus on the active answer field.
 - [Full assessment separation](assessment-flow-separation.md) — keep the full assessment and its reports independent from the homepage quick profiler.
+- [Scorecard authority](scorecard-authority.md) — Model1 governs answer-based calculations; 51.7 is an example, not a target, and AI must not invent numbers.

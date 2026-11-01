@@ -160,10 +160,10 @@ function getRiskBandColor(band: string): string {
 function formatBucketLabel(key: string): string {
   const labels: Record<string, string> = {
     WI: "Workforce Intensity",
-    SI: "Senior Involvement",
-    CO: "Coordination Overhead",
-    VSI: "Value Saturation Index",
-    CE: "Commercial Elasticity"
+    CO: "Coordination Entropy",
+    CE: "Commercial Exposure",
+    VC: "Volatility Control",
+    MM: "Measurement Maturity"
   };
   return labels[key] || key;
 }
@@ -173,7 +173,7 @@ export interface PDFAttachment {
   content: Buffer;
 }
 
-export async function sendAssessmentEmail(
+export function buildAssessmentEmail(
   decision: DecisionObject,
   openSignal: string | null,
   attachments?: PDFAttachment[]
@@ -184,13 +184,13 @@ export async function sendAssessmentEmail(
   const recommendations = getVerdictRecommendations(decision.marginRiskVerdict);
 
   const dimensionCards = [
-    { name: "Workforce Intensity", level: decision.dimensions?.workforceIntensity },
-    { name: "Coordination Entropy", level: decision.dimensions?.coordinationEntropy },
-    { name: "Commercial Exposure", level: decision.dimensions?.commercialExposure },
-    { name: "Volatility Control", level: decision.dimensions?.volatilityControl },
+    { name: "Workforce Intensity", level: decision.dimensions?.workforceIntensity, score: decision.bucketScores.WI },
+    { name: "Coordination Entropy", level: decision.dimensions?.coordinationEntropy, score: decision.bucketScores.CO },
+    { name: "Commercial Exposure", level: decision.dimensions?.commercialExposure, score: decision.bucketScores.CE },
+    { name: "Volatility Control", level: decision.dimensions?.volatilityControl, score: decision.bucketScores.VC },
     { name: "Confidence Signal", level: decision.dimensions?.confidenceSignal },
-    { name: "Measurement Maturity", level: decision.dimensions?.measurementMaturity },
-  ];
+    { name: "Measurement Maturity", level: decision.dimensions?.measurementMaturity, score: decision.bucketScores.MM },
+  ].filter((dimension) => dimension.level);
 
   const dimensionCardsHtml = dimensionCards.map(dim => {
     const colors = getDimensionColor(dim.level || "low");
@@ -199,15 +199,14 @@ export async function sendAssessmentEmail(
         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: ${colors.bg}; border: 1px solid ${colors.border}; border-radius: 8px;">
           <tr><td style="padding: 12px;">
             <p style="color: #9ca3af; margin: 0 0 4px 0; font-size: 11px;">${escapeHtml(dim.name)}</p>
-            <p style="color: ${colors.text}; margin: 0; font-weight: 600; font-size: 13px;">${escapeHtml(getDimensionLabel(dim.level || "low"))}</p>
+            <p style="color: ${colors.text}; margin: 0; font-weight: 600; font-size: 13px;">${escapeHtml(dim.score != null ? `${Number(dim.score.toFixed(1))}/100` : getDimensionLabel(dim.level || "low"))}</p>
           </td></tr>
         </table>
       </td>`;
   });
 
-  const bucketRows = (["WI", "SI", "CO", "VSI", "CE"] as const).map(key => {
+  const bucketRows = (["WI", "CO", "CE", "VC", "MM"] as const).map(key => {
     const score = decision.bucketScores[key] ?? 0;
-    const band = decision.bucketBands[key] ?? "";
     const barColor = getBarColor(score);
     return `
       <tr>
@@ -215,8 +214,8 @@ export async function sendAssessmentEmail(
           <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
             <tr>
               <td style="color: #d1d5db; font-size: 13px;">${escapeHtml(formatBucketLabel(key))}</td>
-              <td style="text-align: right; color: #6b7280; font-size: 12px;">${escapeHtml(band)} &nbsp;
-                <span style="color: white; font-weight: 700; font-family: monospace;">${escapeHtml(score)}</span>
+               <td style="text-align: right; color: #6b7280; font-size: 12px;">
+                 <span style="color: white; font-weight: 700; font-family: monospace;">${escapeHtml(Number(score.toFixed(1)))}</span>
               </td>
             </tr>
           </table>
@@ -233,7 +232,6 @@ export async function sendAssessmentEmail(
 
   const saturationFlags = [
     { label: "Value Saturation Present", value: decision.saturationDetails?.valueSaturationPresent },
-    { label: "Optics-Driven Staffing", value: decision.saturationDetails?.opticsDrivenStaffing },
     { label: "Upward Cost Shift", value: decision.saturationDetails?.upwardCostShift },
   ];
 
@@ -359,45 +357,6 @@ export async function sendAssessmentEmail(
                     </tr>
                   </table>
 
-                  ${decision.marginImpact ? `
-                  <!-- Margin Impact Section -->
-                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
-                    <tr>
-                      <td style="padding: 16px 20px;">
-                        <h3 style="color: white; margin: 0 0 12px 0; font-size: 16px;">📊 Estimated Margin Impact</h3>
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                          <tr>
-                            <td width="33%" style="text-align: center; padding: 8px 4px;">
-                              <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 11px;">Current Margin</p>
-                              <p style="color: white; margin: 0; font-size: 22px; font-weight: 700;">${escapeHtml(decision.marginImpact.currentMargin)}%</p>
-                            </td>
-                            <td width="33%" style="text-align: center; padding: 8px 4px;">
-                              <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 11px;">Estimated Margin Erosion</p>
-                              <p style="color: ${decision.marginImpact.impactColor === 'emerald' ? '#6ee7b7' : decision.marginImpact.impactColor === 'amber' ? '#fcd34d' : '#fca5a5'}; margin: 0; font-size: 22px; font-weight: 700;">${escapeHtml(decision.marginImpact.estimatedLoss > 0 ? `-${decision.marginImpact.estimatedLoss}%` : '0%')}</p>
-                            </td>
-                            <td width="33%" style="text-align: center; padding: 8px 4px;">
-                              <p style="color: #6b7280; margin: 0 0 4px 0; font-size: 11px;">Effective Margin</p>
-                              <p style="color: ${decision.marginImpact.effectiveMargin >= decision.marginImpact.currentMargin * 0.7 ? '#6ee7b7' : decision.marginImpact.effectiveMargin >= decision.marginImpact.currentMargin * 0.5 ? '#fcd34d' : '#fca5a5'}; margin: 0; font-size: 22px; font-weight: 700;">${escapeHtml(decision.marginImpact.effectiveMargin)}%</p>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td colspan="3" style="padding: 8px 0 0 0;">
-                              <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden; position: relative;">
-                                <div style="width: ${Math.min(decision.marginImpact.effectiveMargin, 100)}%; height: 10px; background: ${decision.marginImpact.impactColor === 'emerald' ? '#10b981' : decision.marginImpact.impactColor === 'amber' ? '#f59e0b' : '#ef4444'}; border-radius: 5px;"></div>
-                              </div>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td colspan="3" style="text-align: center; padding: 8px 0 0 0;">
-                              <span style="background: ${decision.marginImpact.impactColor === 'emerald' ? 'rgba(16,185,129,0.2)' : decision.marginImpact.impactColor === 'amber' ? 'rgba(245,158,11,0.2)' : 'rgba(239,68,68,0.2)'}; color: ${decision.marginImpact.impactColor === 'emerald' ? '#6ee7b7' : decision.marginImpact.impactColor === 'amber' ? '#fcd34d' : '#fca5a5'}; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid ${decision.marginImpact.impactColor === 'emerald' ? '#10b981' : decision.marginImpact.impactColor === 'amber' ? '#f59e0b' : '#ef4444'}; display: inline-block;">${escapeHtml(decision.marginImpact.impactLabel)}</span>
-                            </td>
-                          </tr>
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-                  ` : ''}
-
                   <!-- Section 2 - Basic Details -->
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
                     <tr>
@@ -441,8 +400,8 @@ export async function sendAssessmentEmail(
                       <td>
                         <h3 style="color: white; margin: 0 0 10px 0; font-size: 16px;">🎯 Risk Dimensions</h3>
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                          <tr class="dim-row">${dimensionCardsHtml[0]}${dimensionCardsHtml[1]}${dimensionCardsHtml[2]}</tr>
-                          <tr class="dim-row">${dimensionCardsHtml[3]}${dimensionCardsHtml[4]}${dimensionCardsHtml[5]}</tr>
+                          <tr class="dim-row">${dimensionCardsHtml.slice(0, 3).join("")}</tr>
+                          <tr class="dim-row">${dimensionCardsHtml.slice(3).join("")}</tr>
                         </table>
                       </td>
                     </tr>
@@ -455,42 +414,6 @@ export async function sendAssessmentEmail(
                         <h3 style="color: white; margin: 0 0 12px 0; font-size: 16px;">📊 Bucket Scores</h3>
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                           ${bucketRows}
-                        </table>
-                      </td>
-                    </tr>
-                  </table>
-
-                  <!-- Section 5 - Effort Allocation -->
-                  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
-                    <tr>
-                      <td style="padding: 16px 20px;">
-                        <h3 style="color: white; margin: 0 0 4px 0; font-size: 16px;">👥 Effort Allocation</h3>
-                        <p style="margin: 0 0 12px 0;"><span style="background: rgba(255,255,255,0.1); color: #d1d5db; padding: 2px 8px; border-radius: 4px; font-size: 12px;">${escapeHtml(decision.effortBand)}</span></p>
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                          ${[
-                            { label: "Senior", value: decision.effortPercentages.senior, alloc: decision.effortAllocation?.senior },
-                            { label: "Mid-Level", value: decision.effortPercentages.mid, alloc: decision.effortAllocation?.mid },
-                            { label: "Junior / Execution", value: decision.effortPercentages.junior, alloc: decision.effortAllocation?.execution },
-                          ].map(item => `
-                            <tr>
-                              <td style="padding: 4px 0 1px 0;">
-                                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                                  <tr>
-                                    <td style="color: #d1d5db; font-size: 13px;">${escapeHtml(item.label)}</td>
-                                    <td style="text-align: right; color: white; font-weight: 700; font-family: monospace; font-size: 13px;">${escapeHtml(item.value)}</td>
-                                  </tr>
-                                </table>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td style="padding: 0 0 ${item.alloc != null ? '0' : '8'}px 0;">
-                                <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
-                                  <div style="width: ${safePercent(item.value)}%; height: 8px; background: #06b6d4; border-radius: 4px;"></div>
-                                </div>
-                              </td>
-                            </tr>
-                            ${item.alloc != null ? `<tr><td style="padding: 0 0 8px 0; color: #6b7280; font-size: 11px;">Allocation: ${escapeHtml(item.alloc)}%</td></tr>` : ''}
-                          `).join('')}
                         </table>
                       </td>
                     </tr>
@@ -531,22 +454,6 @@ export async function sendAssessmentEmail(
                                 <tr><td style="padding: 10px;">
                                   <p style="color: #6b7280; margin: 0 0 2px 0; font-size: 11px;">AI Effort Shift</p>
                                   <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${escapeHtml(decision.aiImpactClassification)}</p>
-                                </td></tr>
-                              </table>
-                            </td>
-                            <td width="33.33%" style="padding: 4px; vertical-align: top;">
-                              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.03); border-radius: 8px;">
-                                <tr><td style="padding: 10px;">
-                                  <p style="color: #6b7280; margin: 0 0 2px 0; font-size: 11px;">Risk Source</p>
-                                  <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${escapeHtml(decision.riskSource)}</p>
-                                </td></tr>
-                              </table>
-                            </td>
-                            <td width="33.33%" style="padding: 4px; vertical-align: top;">
-                              <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.03); border-radius: 8px;">
-                                <tr><td style="padding: 10px;">
-                                  <p style="color: #6b7280; margin: 0 0 2px 0; font-size: 11px;">Correctability</p>
-                                  <p style="color: white; margin: 0; font-weight: 600; font-size: 13px;">${escapeHtml(decision.correctability)}</p>
                                 </td></tr>
                               </table>
                             </td>
@@ -601,14 +508,21 @@ export async function sendAssessmentEmail(
     content: att.content
   }));
 
-  const result = await resend.emails.send({
+  return {
     from: 'Sid <sid@marginmix.ai>',
     to: ['sid@marginmix.ai', decision.engagementContext.workEmail],
     subject: `Margin Risk Assessment: ${decision.marginRiskVerdict} - ${decision.engagementContext.organisationName}`,
     html: htmlContent,
     attachments: emailAttachments
-  });
+  };
+}
 
+export async function sendAssessmentEmail(
+  decision: DecisionObject,
+  openSignal: string | null,
+  attachments?: PDFAttachment[]
+) {
+  const result = await resend.emails.send(buildAssessmentEmail(decision, openSignal, attachments));
   throwIfResendError(result);
   return result;
 }

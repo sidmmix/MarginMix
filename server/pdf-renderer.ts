@@ -92,18 +92,10 @@ export async function renderDecisionMemoPDF(
     );
     doc.y += 15;
     doc.moveDown(0.5);
-    doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(`Risk Band: ${decision.riskBand}  |  Composite Score: ${decision.compositeRiskScore}/100  |  Effort Band: ${decision.effortBand}`);
+    doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(`Risk Band: ${decision.riskBand}  |  Composite Score: ${decision.compositeRiskScore}/100`);
     doc.moveDown(0.5);
     doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray).text(narrative.marginRiskVerdict, { lineGap: 4 });
 
-    if (decision.marginImpact) {
-      doc.moveDown(0.5);
-      doc.fontSize(11).fillColor(COLORS.dark).font("Helvetica-Bold").text("Estimated Margin Impact: ", { continued: true });
-      const memoLossColor = decision.marginImpact.impactColor === "emerald" ? COLORS.riskLow : decision.marginImpact.impactColor === "amber" ? COLORS.riskModerate : COLORS.riskVeryHigh;
-      doc.font("Helvetica").fillColor(COLORS.gray).text(
-        `${decision.marginImpact.currentMargin}% → ${decision.marginImpact.effectiveMargin}% (loss: ${decision.marginImpact.estimatedLoss > 0 ? `-${decision.marginImpact.estimatedLoss}%` : "0%"} — ${decision.marginImpact.impactLabel})`
-      );
-    }
     doc.moveDown(1.5);
 
     doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
@@ -198,23 +190,6 @@ export async function renderAssessmentOutputPDF(
     }
     doc.moveDown(1.5);
 
-    if (decision.marginImpact) {
-      doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
-      doc.moveDown(1);
-
-      doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Estimated Margin Impact");
-      doc.moveDown(0.5);
-      doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
-      doc.text(`Current Margin: ${decision.marginImpact.currentMargin}%`);
-      const lossColor = decision.marginImpact.impactColor === "emerald" ? COLORS.riskLow : decision.marginImpact.impactColor === "amber" ? COLORS.riskModerate : COLORS.riskVeryHigh;
-      doc.text(`Estimated Margin Erosion: `, { continued: true });
-      doc.fillColor(lossColor).text(`${decision.marginImpact.estimatedLoss > 0 ? `-${decision.marginImpact.estimatedLoss}%` : "0%"}`);
-      doc.fillColor(COLORS.gray).text(`Effective Margin: `, { continued: true });
-      doc.fillColor(lossColor).text(`${decision.marginImpact.effectiveMargin}%`);
-      doc.fillColor(COLORS.gray).text(`Impact Classification: ${decision.marginImpact.impactLabel}`);
-      doc.moveDown(1.5);
-    }
-
     doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
     doc.moveDown(1);
 
@@ -222,21 +197,22 @@ export async function renderAssessmentOutputPDF(
     doc.moveDown(0.5);
 
     const dimensions = [
-      { name: "Workforce Intensity", ...narrative.riskDimensionSummary.workforceIntensity },
-      { name: "Coordination Entropy", ...narrative.riskDimensionSummary.coordinationEntropy },
-      { name: "Commercial Exposure", ...narrative.riskDimensionSummary.commercialExposure },
-      { name: "Volatility Control", ...narrative.riskDimensionSummary.volatilityControl }
+      { name: "Workforce Intensity", score: decision.bucketScores.WI, ...narrative.riskDimensionSummary.workforceIntensity },
+      { name: "Coordination Entropy", score: decision.bucketScores.CO, ...narrative.riskDimensionSummary.coordinationEntropy },
+      { name: "Commercial Exposure", score: decision.bucketScores.CE, ...narrative.riskDimensionSummary.commercialExposure },
+      { name: "Volatility Control", score: decision.bucketScores.VC, ...narrative.riskDimensionSummary.volatilityControl }
     ];
 
     dimensions.forEach((dim) => {
       const dimColor = getDimensionColor(dim.level);
       doc.fontSize(11).fillColor(COLORS.dark).font("Helvetica-Bold").text(`${dim.name}: `, { continued: true });
-      doc.fillColor(dimColor).text(dim.level);
+      doc.fillColor(dimColor).text(`${Number(dim.score.toFixed(1))}/100`);
       doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(dim.description, { lineGap: 2 });
       doc.moveDown(0.6);
     });
 
-    const confidenceLevel = decision.dimensions?.confidenceSignal || "neutral";
+    const confidenceLevel = decision.dimensions?.confidenceSignal;
+    if (confidenceLevel) {
     const confidenceColor = getDimensionColor(confidenceLevel === "positive" ? "low" : confidenceLevel === "negative" ? "high" : "medium");
     doc.fontSize(11).fillColor(COLORS.dark).font("Helvetica-Bold").text("Confidence Signal: ", { continued: true });
     doc.fillColor(confidenceColor).text(confidenceLevel.charAt(0).toUpperCase() + confidenceLevel.slice(1));
@@ -246,15 +222,16 @@ export async function renderAssessmentOutputPDF(
       "Confidence is neutral — some concerns present but manageable.", { lineGap: 2 }
     );
     doc.moveDown(0.6);
+    }
 
     const measMaturityLevel = decision.dimensions?.measurementMaturity || "medium";
     const measColor = getDimensionColor(measMaturityLevel);
     doc.fontSize(11).fillColor(COLORS.dark).font("Helvetica-Bold").text("Measurement Maturity: ", { continued: true });
-    doc.fillColor(measColor).text(measMaturityLevel.charAt(0).toUpperCase() + measMaturityLevel.slice(1));
+    doc.fillColor(measColor).text(`${Number(decision.bucketScores.MM.toFixed(1))}/100`);
     doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(
-      measMaturityLevel === "high" ? "Strong measurement capability — early warning systems and data quality support proactive risk management." :
+      measMaturityLevel === "high" ? "High measurement/substitution risk — AI impact is unmeasured or the substitution path carries elevated risk." :
       measMaturityLevel === "medium" ? "Moderate measurement capability — some metrics in place but gaps in early detection remain." :
-      "Low measurement maturity — limited data quality and early warning capability increases blind spot risk.", { lineGap: 2 }
+      "Low measurement/substitution risk — the scorecard inputs indicate lower AI exposure.", { lineGap: 2 }
     );
     doc.moveDown(1);
 
@@ -276,26 +253,6 @@ export async function renderAssessmentOutputPDF(
     } else {
       doc.text("AI substitution at senior level or no clear path — oversight burden increases, margin dilutive.", { lineGap: 2 });
     }
-    doc.moveDown(1);
-
-    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
-    doc.moveDown(1);
-
-    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Effort Bands & Allocation");
-    doc.moveDown(0.5);
-
-    const effortBands = [
-      { name: "Senior Leadership", ...narrative.effortBandsAllocation.senior },
-      { name: "Mid-Level (Account / Program)", ...narrative.effortBandsAllocation.midLevel },
-      { name: "Execution Layer", ...narrative.effortBandsAllocation.execution }
-    ];
-
-    effortBands.forEach((band) => {
-      doc.fontSize(11).fillColor(COLORS.dark).font("Helvetica-Bold").text(`${band.name}: `, { continued: true });
-      doc.fillColor(COLORS.secondary).text(band.percentage);
-      doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(band.rationale, { lineGap: 2 });
-      doc.moveDown(0.6);
-    });
     doc.moveDown(1);
 
     doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
@@ -326,14 +283,9 @@ export async function renderAssessmentOutputPDF(
     doc.moveDown(0.3);
     doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray);
     doc.text(`Value Saturation Present: ${decision.saturationDetails?.valueSaturationPresent ? "Yes" : "No"}`);
-    doc.text(`Optics-Driven Staffing: ${decision.saturationDetails?.opticsDrivenStaffing ? "Yes" : "No"}`);
     doc.text(`Upward Cost Shift: ${decision.saturationDetails?.upwardCostShift ? "Yes" : "No"}`);
     doc.moveDown(0.5);
 
-    doc.fontSize(10).fillColor(COLORS.dark).font("Helvetica-Bold").text("Risk Source: ", { continued: true });
-    doc.font("Helvetica").fillColor(COLORS.gray).text(decision.riskSource || "Structural");
-    doc.fontSize(10).fillColor(COLORS.dark).font("Helvetica-Bold").text("Correctability: ", { continued: true });
-    doc.font("Helvetica").fillColor(COLORS.gray).text(decision.correctability || "Correctable");
     doc.moveDown(1.5);
 
     doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
@@ -364,7 +316,7 @@ export async function renderAssessmentOutputPDF(
     doc.fontSize(12).fillColor(COLORS.secondary).font("Helvetica-Bold").text("What This Assessment Measures");
     doc.moveDown(0.3);
     doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(
-      "Structural margin risk before commitment. This analysis evaluates workforce intensity, coordination complexity, commercial exposure, AI effort impact, and confidence signals to predict margin erosion risk.",
+      `Structural margin risk before commitment. This analysis evaluates workforce intensity, coordination complexity, commercial exposure, AI effort impact${decision.dimensions.confidenceSignal ? ", and confidence signals" : ""} to predict margin erosion risk.`,
       { lineGap: 3 }
     );
     doc.moveDown(1);

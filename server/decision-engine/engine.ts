@@ -9,7 +9,7 @@
  * 2. Map signals to dimensions (dimensionMapper)
  * 3. Decide verdict using decision table (decisionTable)
  * 4. Detect contradictions (contradictionDetector)
- * 5. Allocate effort based on verdict (effortAllocator)
+ * Numeric scoring uses the supplied Model1 scorecard, independently of descriptive levels.
  * 
  * AI is NOT used in this engine. AI may only be used externally
  * to narrate the already-computed outputs.
@@ -17,15 +17,14 @@
 
 import { Signals, Dimensions, EngineOutput } from "./types";
 import { AssessmentInput, mapQuestionsToSignals, extractIdentifiers, IdentifierFields } from "./questionMapper";
-import { mapDimensions } from "./dimensionMapper";
+import { mapDimensions, mapConfidenceSignal } from "./dimensionMapper";
 import { decideVerdict } from "./decisionTable";
 import { detectContradictions } from "./contradictionDetector";
-import { allocateEffort, getEffortBands, getEffortInterpretation, EffortBands } from "./effortAllocator";
+import { buildComputationTrace, type ComputationTrace } from "./scorecard";
 
 export interface FullEngineOutput extends EngineOutput {
   identifiers: IdentifierFields;
-  effortBands: EffortBands;
-  effortInterpretation: string;
+  computationTrace: ComputationTrace;
 }
 
 export function runMarginMix(input: AssessmentInput): FullEngineOutput {
@@ -33,16 +32,17 @@ export function runMarginMix(input: AssessmentInput): FullEngineOutput {
   
   const signals = mapQuestionsToSignals(input);
   
+  const computationTrace = buildComputationTrace(input);
+  // The scorer receives only numeric means plus the unchanged confidence override.
+  const decision = decideVerdict({ confidenceSignal: mapConfidenceSignal(signals) }, computationTrace);
+  // Retain existing descriptive levels for narrative compatibility only.
+  // Numeric scores and verdicts come exclusively from the scorecard trace.
   const dimensions = mapDimensions(signals);
   
-  const decision = decideVerdict(dimensions);
+  if (!input.deliveryConfidence?.trim()) delete dimensions.confidenceSignal;
   
   const flags = detectContradictions(signals);
   
-  const effortAllocation = allocateEffort(decision.verdict);
-  const effortBands = getEffortBands(decision.verdict);
-  const effortInterpretation = getEffortInterpretation(decision.verdict);
-
   return {
     identifiers,
     signals,
@@ -52,9 +52,7 @@ export function runMarginMix(input: AssessmentInput): FullEngineOutput {
     triggeredBy: decision.triggeredBy,
     weightedScore: decision.weightedScore,
     flags,
-    effortAllocation,
-    effortBands,
-    effortInterpretation
+    computationTrace
   };
 }
 

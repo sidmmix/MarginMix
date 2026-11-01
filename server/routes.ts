@@ -313,11 +313,15 @@ export function registerRoutes(app: Express): Server {
     roleTitle: z.string().trim().min(1).max(255),
     organisationName: z.string().trim().min(1).max(255),
     openSignal: z.string().max(4000).optional(),
+    deliveryConfidence: z.string().optional(),
   });
   app.post("/api/assessments", publicRateLimit(6, 15 * 60_000, 120), async (req, res) => {
     try {
       const validatedData = assessmentInputSchema.parse(req.body);
-      const assessment = await storage.createMarginAssessment(validatedData);
+      const assessment = await storage.createMarginAssessment({
+        ...validatedData,
+        deliveryConfidence: validatedData.deliveryConfidence ?? "",
+      });
       
       // Execute the deterministic decision engine
       const decisionObject = executeDecisionEngine({
@@ -328,7 +332,7 @@ export function registerRoutes(app: Express): Server {
         organisationSize: validatedData.organisationSize,
         industry: validatedData.industry || "marketing-advertising",
         decisionType: validatedData.decisionEvaluating || "exploratory",
-        specifyContext: validatedData.specifyContext || "single-client",
+        specifyContext: validatedData.specifyContext || "",
         engagementType: validatedData.engagementType,
         deliveryModel: validatedData.deliveryModel ?? undefined,
         engagementClassification: validatedData.engagementClassification || "new",
@@ -344,7 +348,7 @@ export function registerRoutes(app: Express): Server {
         marginalValueSaturation: validatedData.marginalValueSaturation || "significant",
         seniorOversightLoad: validatedData.seniorOversightLoad || "about_same",
         coordinationDecisionDrag: validatedData.coordinationDecisionDrag || "moderate",
-        deliveryConfidence: validatedData.deliveryConfidence || "high",
+        deliveryConfidence: validatedData.deliveryConfidence || "",
         aiHumanHoursReplaced: validatedData.aiHumanHoursReplaced || "na",
         aiCommercialImpactMeasured: validatedData.aiCommercialImpactMeasured || "na",
         aiAgenticFramework: validatedData.aiAgenticFramework || "na",
@@ -391,11 +395,6 @@ export function registerRoutes(app: Express): Server {
               coordinationEntropy: { level: decisionObject.dimensions.coordinationEntropy, description: `Coordination complexity is ${decisionObject.dimensions.coordinationEntropy}.` },
               commercialExposure: { level: decisionObject.dimensions.commercialExposure, description: `Commercial exposure is ${decisionObject.dimensions.commercialExposure}.` },
               volatilityControl: { level: decisionObject.dimensions.volatilityControl, description: `Volatility control is ${decisionObject.dimensions.volatilityControl}.` }
-            },
-            effortBandsAllocation: {
-              senior: { percentage: decisionObject.effortPercentages.senior, rationale: "Senior involvement should be capped to preserve margins." },
-              midLevel: { percentage: decisionObject.effortPercentages.mid, rationale: "Mid-level should absorb majority of delivery volatility." },
-              execution: { percentage: decisionObject.effortPercentages.junior, rationale: "Junior layer handles execution velocity." }
             },
             structuralRiskSignals: decisionObject.triggeredBy.length > 0
               ? [...decisionObject.triggeredBy.map(t => `${t} signal detected in assessment`), `AI Effort Shift: ${decisionObject.aiImpactClassification}`]

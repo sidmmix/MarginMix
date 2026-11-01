@@ -54,7 +54,7 @@ function confidenceToWeight(confidence: Confidence): number {
 export function calculateMarginImpact(
   currentMargin: number,
   verdict: Verdict,
-  dimensions: Dimensions
+  dimensions: Dimensions & { confidenceSignal: Confidence }
 ): MarginImpact {
   const range = verdictImpactRanges[verdict] || verdictImpactRanges["Structurally Safe"];
 

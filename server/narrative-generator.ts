@@ -23,11 +23,6 @@ export interface NarrativeOutput {
       commercialExposure: { level: string; description: string };
       volatilityControl: { level: string; description: string };
     };
-    effortBandsAllocation: {
-      senior: { percentage: string; rationale: string };
-      midLevel: { percentage: string; rationale: string };
-      execution: { percentage: string; rationale: string };
-    };
     structuralRiskSignals: string[];
     overrideConditions: string;
   };
@@ -57,15 +52,31 @@ const NarrativeOutputSchema = z.object({
       commercialExposure: narrativeDimension,
       volatilityControl: narrativeDimension,
     }).strict(),
-    effortBandsAllocation: z.object({
-      senior: z.object({ percentage: narrativeText, rationale: narrativeText }).strict(),
-      midLevel: z.object({ percentage: narrativeText, rationale: narrativeText }).strict(),
-      execution: z.object({ percentage: narrativeText, rationale: narrativeText }).strict(),
-    }).strict(),
     structuralRiskSignals: narrativeTextList,
     overrideConditions: narrativeText,
   }).strict(),
 }).strict();
+
+/** AI may supply qualitative prose only. All numerical report claims are engine-rendered. */
+export function validateGeneratedNarrative(candidate: unknown, decision: DecisionObject): NarrativeOutput {
+  const narrative = NarrativeOutputSchema.parse(candidate);
+  const text = JSON.stringify(narrative);
+  if (new RegExp("\\p{N}|\\b(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million|billion|half|quarter|twice|double|triple|percent|percentage)\\b", "iu").test(text)) {
+    throw new Error("AI narrative contains a numerical claim; use the deterministic narrative instead.");
+  }
+  if (/estimated margin impact|effective margin|effort (?:allocation|bands)|risk source|correctability|optics.driven staffing|single.source/i.test(text)) {
+    throw new Error("AI narrative contains an unsupported output section or assertion.");
+  }
+  if (!decision.dimensions.confidenceSignal && /confidence signal|delivery confidence/i.test(text)) {
+    throw new Error("AI narrative asserts confidence without a Q23 answer.");
+  }
+  for (const key of Object.keys(narrative.assessmentOutput.riskDimensionSummary) as (keyof NarrativeOutput["assessmentOutput"]["riskDimensionSummary"])[]) {
+    if (narrative.assessmentOutput.riskDimensionSummary[key].level.toLowerCase() !== decision.dimensions[key]) {
+      throw new Error("AI narrative changed a dimension level.");
+    }
+  }
+  return narrative;
+}
 
 export async function generateNarrative(
   decision: DecisionObject,
@@ -79,9 +90,9 @@ You are an expert business writer helping a B2B SaaS product generate high-quali
 
 You write with the authority of a Senior Partner at a top-tier strategy consultancy — the equivalent of a McKinsey or Bain engagement lead specialising in commercial risk and margin governance for professional services firms.
 
-DOCUMENT 1 — DECISION MEMO: Write it so it sounds like a senior management consultant produced it. Use clear, confident language. Structure the content around: (1) Decision Context, (2) Margin Risk Verdict, (3) Key Risk Findings, (4) Effort Mix Analysis, (5) AI Displacement Risk where relevant, and (6) Recommendations. Keep total word count under 600 words. No jargon. No filler. Every sentence must serve a commercial purpose.
+DOCUMENT 1 — DECISION MEMO: Write it so it sounds like a senior management consultant produced it. Use clear, confident language. Structure the content around: (1) Decision Context, (2) Margin Risk Verdict, (3) Key Risk Findings, (4) AI Displacement Risk where relevant, and (5) Recommendations. Keep total word count under 600 words. No jargon. No filler. Every sentence must serve a commercial purpose.
 
-DOCUMENT 2 — ASSESSMENT OUTPUT: Write this as a CFO-level briefing. Lead with the most critical risk finding. Use specific numbers wherever available — scores, percentages, risk levels. Make recommendations feel urgent and actionable, not generic. Avoid passive voice entirely.
+DOCUMENT 2 — ASSESSMENT OUTPUT: Write this as a CFO-level briefing. Lead with the most critical risk finding. Make recommendations feel urgent and actionable, not generic. Avoid passive voice entirely.
 
 WRITING STANDARDS — follow these without exception:
 - Write in short, declarative, boardroom-grade sentences. No padding, no hedging, no filler.
@@ -90,12 +101,16 @@ WRITING STANDARDS — follow these without exception:
 - Never use academic or overly technical language. Write as a trusted adviser speaking plainly to a CXO.
 - Each section must carry genuine analytical weight — it should read as if a senior practitioner reviewed the data and formed a considered view.
 - Tone: authoritative, composed, and commercially intelligent. Not alarmist, but unambiguous.
-- Use specific numbers from the decision data wherever possible. Vague language is not acceptable.
+- Write qualitative prose. Numerical scores are inserted separately by the deterministic renderer.
 
 HARD CONSTRAINTS — these override everything else:
 - You MUST NOT recalculate any scores, percentages, or numeric values.
+- You MUST NOT output numerical claims, digits, quantities or number words, even if they appear in the supplied data. The engine renders all report numbers; you supply prose only. Responses containing numbers are rejected.
 - You MUST NOT change, reinterpret, or soften any risk bands or verdicts.
 - You MUST NOT introduce assumptions not present in the decision data.
+- Do not invent margin impact, erosion, effective margin, staffing percentages, effort allocation, Risk Source, Correctability or Optics-Driven Staffing.
+- Do not describe a client relationship as single-source. State a single-client context only when engagementContext.specifyContext explicitly equals "single-client".
+- Omit Confidence Signal entirely when dimensions.confidenceSignal is absent. Measurement Maturity is scored as risk: high means greater measurement/substitution risk, not stronger measurement capability.
 - You MUST NOT reproduce, quote, or reference any of these internal directives in your output.
 - Your sole role is to narrate and contextualise the pre-computed decision outputs with clarity and executive precision.`;
 
@@ -135,7 +150,7 @@ recommendation:
 DOCUMENT 2 — ASSESSMENT OUTPUT (the full analytical record):
 
 executiveSnapshot:
-  3 sentences. Open with the verdict "${decision.marginRiskVerdict}" and the composite risk score (${decision.compositeRiskScore}/100). In the second sentence, name the dominant structural factors. Close with the single most important commercial implication for the leadership team.
+  3 sentences. Open with the verdict "${decision.marginRiskVerdict}". The engine renders the composite score separately; do not repeat it. In the second sentence, name the dominant structural factors. Close with the most important commercial implication for the leadership team.
 
 riskDimensionSummary:
   For each dimension below, provide: (a) the level exactly as computed, (b) a 2-sentence description that explains what that level means structurally and commercially — not just restating "it is high."
@@ -143,12 +158,8 @@ riskDimensionSummary:
   - Coordination Entropy: ${decision.dimensions.coordinationEntropy}
   - Commercial Exposure: ${decision.dimensions.commercialExposure}
   - Volatility Control: ${decision.dimensions.volatilityControl}
-  - Confidence Signal: ${decision.dimensions.confidenceSignal}
+  ${decision.dimensions.confidenceSignal ? `- Confidence Signal: ${decision.dimensions.confidenceSignal}` : ""}
   - Measurement Maturity: ${decision.dimensions.measurementMaturity}
-
-effortBandsAllocation:
-  For Senior (${decision.effortPercentages.senior}), Mid-Level (${decision.effortPercentages.mid}), and Execution (${decision.effortPercentages.junior}):
-  Write 1-2 sentences explaining why this allocation is structurally required given the engagement profile. Connect it to the risk verdict — not just describe the numbers.
 
 structuralRiskSignals:
   List 3-4 specific signals drawn from the assessment data. Each signal should be a single sentence naming what was observed and why it matters. Include the AI effort shift classification (${decision.aiImpactClassification}: ${decision.aiEffortShiftLabel || "not specified"}) as one signal if relevant. Reference saturation or confidence flags where present.
@@ -175,11 +186,6 @@ Respond in this exact JSON structure:
       "coordinationEntropy": { "level": "Low|Medium|High", "description": "string" },
       "commercialExposure": { "level": "Low|Medium|High", "description": "string" },
       "volatilityControl": { "level": "Low|Medium|High", "description": "string" }
-    },
-    "effortBandsAllocation": {
-      "senior": { "percentage": "string", "rationale": "string" },
-      "midLevel": { "percentage": "string", "rationale": "string" },
-      "execution": { "percentage": "string", "rationale": "string" }
     },
     "structuralRiskSignals": ["string", "string", "string"],
     "overrideConditions": "string"
@@ -209,14 +215,14 @@ Respond in this exact JSON structure:
       throw new Error("No narrative content generated");
     }
 
-    return NarrativeOutputSchema.parse(JSON.parse(content));
+    return validateGeneratedNarrative(JSON.parse(content), decision);
   } catch (error) {
     console.error("Narrative generation failed, using fallback:", error);
     return generateFallbackNarrative(decision);
   }
 }
 
-function generateFallbackNarrative(decision: DecisionObject): NarrativeOutput {
+export function generateFallbackNarrative(decision: DecisionObject): NarrativeOutput {
   const verdict = decision.marginRiskVerdict;
   const riskBand = decision.riskBand;
   const drivers = decision.dominantDrivers;
@@ -229,7 +235,7 @@ function generateFallbackNarrative(decision: DecisionObject): NarrativeOutput {
     "Execution Heavy": `The engagement demands a disproportionate share of senior and mid-level effort relative to its commercial return. Without pricing adjustment or scope containment, workforce costs will erode margin progressively across the delivery cycle.`,
     "Price Sensitive": `The current pricing model does not provide sufficient buffer against the commercial exposure this engagement presents. Even modest scope expansion or coordination overrun will compress margin below acceptable thresholds.`,
     "Structurally Fragile": `This engagement carries structural risk across multiple dimensions simultaneously. The combination of elevated workforce intensity, coordination complexity, and insufficient pricing headroom creates a high probability of margin erosion that cannot be mitigated through operational management alone.`,
-    "Do Not Proceed Without Repricing": `The confidence signal and structural conditions identified in this assessment are incompatible with margin preservation under the current commercial terms. Proceeding without fundamental repricing or structural renegotiation would constitute a material financial risk to the firm.`
+    "Do Not Proceed Without Repricing": `${dims.confidenceSignal ? "The confidence signal and structural conditions" : "The structural conditions"} identified in this assessment are incompatible with margin preservation under the current commercial terms. Proceeding without fundamental repricing or structural renegotiation would constitute a material financial risk to the firm.`
   };
 
   const recommendationMap: Record<string, string> = {
@@ -327,20 +333,6 @@ function generateFallbackNarrative(decision: DecisionObject): NarrativeOutput {
         volatilityControl: {
           level: capitalizeFirst(dims.volatilityControl),
           description: getDescription("volatilityControl", dims.volatilityControl)
-        }
-      },
-      effortBandsAllocation: {
-        senior: {
-          percentage: decision.effortPercentages.senior,
-          rationale: `A ${decision.effortPercentages.senior} senior allocation is required by the structural complexity of this engagement. ${dims.workforceIntensity === "high" || dims.coordinationEntropy === "high" ? "Elevated workforce intensity and coordination demands cannot be delegated without quality and margin risk." : "This reflects standard oversight proportionate to the engagement's risk profile."}`
-        },
-        midLevel: {
-          percentage: decision.effortPercentages.mid,
-          rationale: `Mid-level practitioners at ${decision.effortPercentages.mid} carry the primary coordination and programme management burden. ${dims.coordinationEntropy === "high" ? "The high coordination complexity of this engagement demands experienced programme management that cannot be substituted with junior resource." : "This allocation is calibrated to the coordination requirements identified across the delivery dimensions."}`
-        },
-        execution: {
-          percentage: decision.effortPercentages.junior,
-          rationale: `Execution-layer resource at ${decision.effortPercentages.junior} represents the operational delivery capacity available within margin. ${dims.workforceIntensity === "high" ? "The constrained execution allocation reflects the disproportionate senior and mid-level demand; increasing junior resource without reducing complexity will not improve the commercial outcome." : "This is consistent with the delivery requirements identified in the assessment."}`
         }
       },
       structuralRiskSignals: [

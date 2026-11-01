@@ -38,7 +38,7 @@ export function detectContradictions(s: Signals): ContradictionFlag[] {
     });
   }
 
-  if (s.coordinationLoad === "high" && s.measurementMaturity === "low") {
+  if (s.coordinationLoad === "high" && s.measurementMaturity === "high") {
     flags.push({
       code: "HIGH_COORD_LOW_MEASUREMENT",
       description: "High coordination requirements with low measurement maturity reduces early warning capability.",
@@ -54,7 +54,7 @@ export function detectContradictions(s: Signals): ContradictionFlag[] {
     });
   }
 
-  if (s.aiLeverage === "low" && s.measurementMaturity === "low") {
+  if (s.aiLeverage === "low" && s.measurementMaturity === "high") {
     flags.push({
       code: "AI_EFFORT_SHIFT_NEGATIVE",
       description: "AI is expected to substitute senior thinking or has no clear substitution — increased oversight cost likely offsets any efficiency gains.",

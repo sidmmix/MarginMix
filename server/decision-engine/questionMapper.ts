@@ -32,7 +32,7 @@ export interface AssessmentInput {
   marginalValueSaturation: string; // Q20 - Value Saturation → GovernanceStrength proxy
   seniorOversightLoad: string; // Q21 - Senior Oversight Load → SeniorDependency modifier
   coordinationDecisionDrag: string; // Q22 - Coordination Drag → CoordinationLoad
-  deliveryConfidence: string; // Q23 - Delivery Confidence → DeliveryConfidence
+  deliveryConfidence?: string; // Q23 - Delivery Confidence → DeliveryConfidence
   aiAgenticFramework?: string;          // Q24 - Agentic framework usage → MeasurementMaturity modifier
   aiHumanHoursReplaced?: string;        // Q25 - AI hours replaced → MeasurementMaturity modifier
   aiCommercialImpactMeasured?: string;  // Q26 - AI commercial impact → MeasurementMaturity modifier
@@ -118,17 +118,17 @@ export function mapQuestionsToSignals(input: AssessmentInput): Signals {
     input.marginalValueSaturation === "some" ? "neutral" :
     input.marginalValueSaturation === "minimal" || input.marginalValueSaturation === "none" ? "negative" : "neutral";
 
-  const deliveryConfidence = mapToConfidence(input.deliveryConfidence, {
+  const deliveryConfidence = input.deliveryConfidence?.trim() ? mapToConfidence(input.deliveryConfidence, {
     "high": "positive",
     "some_concerns": "neutral",
     "low": "negative"
-  });
+  }) : undefined;
 
   const baseMaturity: Level =
-    input.aiEffortShift === "junior_execution" ? "high" :
+    input.aiEffortShift === "junior_execution" ? "low" :
     input.aiEffortShift === "mid_level_production" ? "medium" :
-    input.aiEffortShift === "senior_thinking_review" ? "low" :
-    "low";
+    input.aiEffortShift === "senior_thinking_review" ? "high" :
+    "high";
 
   const aiHoursRisk: Level =
     input.aiHumanHoursReplaced === "75-100" ? "high" :
@@ -165,7 +165,7 @@ export function mapQuestionsToSignals(input: AssessmentInput): Signals {
     input.decisionType === "strategic-exception" ? "strategic" : "new";
 
   const HIGH_RIGIDITY = new Set([
-    "commission", "outcome-based",
+    "commission", "outcome-based", "fixed-fee",
     "ites-fixed-price", "ites-outcome",
     "mc-fixed-fee", "mc-outcome",
     "sw-fixed-price", "sw-outcome", "sw-implementation"

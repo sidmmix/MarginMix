@@ -9,16 +9,15 @@
  * 2. Map signals to dimensions (dimensionMapper)
  * 3. Decide verdict using decision table (decisionTable)
  * 4. Detect contradictions (contradictionDetector)
- * 5. Allocate effort based on verdict (effortAllocator)
- * 6. Build canonical decision object for rendering
+ * 5. Build the canonical decision object and computation trace for rendering
  * 
  * AI is NOT used in this engine. AI may only be used externally
  * to narrate the already-computed outputs.
  */
 
-import { runMarginMix, FullEngineOutput, AssessmentInput as EngineAssessmentInput } from "./engine";
-import { Verdict, Level, Confidence, EffortAllocation, ContradictionFlag, Dimensions, Signals } from "./types";
-import { calculateMarginImpact, MarginImpact } from "./marginImpactCalculator";
+import { runMarginMix, AssessmentInput as EngineAssessmentInput } from "./engine";
+import { Verdict, Level, ContradictionFlag, Dimensions, Signals } from "./types";
+import type { ComputationTrace } from "./scorecard";
 
 export interface AssessmentInput {
   fullName: string;
@@ -44,7 +43,7 @@ export interface AssessmentInput {
   marginalValueSaturation: string;
   seniorOversightLoad: string;
   coordinationDecisionDrag: string;
-  deliveryConfidence: string;
+  deliveryConfidence?: string;
   aiHumanHoursReplaced?: string;
   aiCommercialImpactMeasured?: string;
   aiAgenticFramework?: string;
@@ -69,21 +68,18 @@ export interface EngagementContext {
 
 export interface BucketScores {
   WI: number;
-  SI: number;
   CO: number;
-  VSI: number;
   CE: number;
+  VC: number;
+  MM: number;
 }
 
 export interface SaturationFlags {
   valueSaturationPresent: boolean;
-  opticsDrivenStaffing: boolean;
   upwardCostShift: boolean;
 }
 
 export type AIImpactClassification = "Accretive" | "Neutral" | "Fragile" | "Dilutive";
-export type RiskSource = "Structural" | "Behavioral" | "Technology-Amplified" | "Mixed";
-export type Correctability = "Correctable" | "Correctable with Redesign" | "Not Correctable";
 
 export interface DecisionObject {
   readonly id: string;
@@ -95,53 +91,28 @@ export interface DecisionObject {
   readonly bucketScores: BucketScores;
   readonly bucketBands: {
     WI: string;
-    SI: string;
     CO: string;
-    VSI: string;
     CE: string;
+    VC: string;
+    MM: string;
   };
   readonly valueSaturationFlag: boolean;
   readonly saturationDetails: SaturationFlags;
   readonly aiImpactClassification: AIImpactClassification;
   readonly aiEffortShiftLabel: string;
-  readonly riskSource: RiskSource;
   readonly dominantDrivers: readonly string[];
   readonly contradictionFlags: readonly ContradictionFlag[];
-  readonly correctability: Correctability;
-  readonly effortBand: string;
-  readonly effortPercentages: {
-    senior: string;
-    mid: string;
-    junior: string;
-  };
-  readonly effortAllocation: EffortAllocation;
   readonly verdictReason: string;
   readonly triggeredBy: readonly string[];
   readonly compositeRiskScore: number;
-  readonly marginImpact: MarginImpact | null;
   readonly createdAt: string;
+  readonly computationTrace: ComputationTrace;
 }
 
 function generateDecisionId(): string {
   const timestamp = Date.now().toString(36);
   const random = Math.random().toString(36).substring(2, 8);
   return `DEC-${timestamp}-${random}`.toUpperCase();
-}
-
-/**
- * levelToScore - Display-only numeric representation
- * 
- * IMPORTANT: These scores are used ONLY for PDF/UI rendering.
- * They are NOT used in verdict logic, which is purely rule-based.
- * The decision engine uses Level/Confidence types exclusively.
- */
-function levelToScore(level: Level): number {
-  switch (level) {
-    case "low": return 25;
-    case "medium": return 50;
-    case "high": return 75;
-    default: return 50;
-  }
 }
 
 function levelToBand(level: Level): string {
@@ -164,17 +135,6 @@ function verdictToRiskBand(verdict: Verdict): RiskBand {
   }
 }
 
-function verdictToEffortBand(verdict: Verdict): string {
-  switch (verdict) {
-    case "Structurally Safe": return "Low Effort";
-    case "Execution Heavy": return "Moderate Effort";
-    case "Price Sensitive": return "Moderate Effort";
-    case "Structurally Fragile": return "High Effort";
-    case "Do Not Proceed Without Repricing": return "Very High Effort";
-    default: return "Moderate Effort";
-  }
-}
-
 function getAIEffortShiftLabel(value: string): string {
   const labels: Record<string, string> = {
     "junior_execution": "Junior execution",
@@ -186,47 +146,16 @@ function getAIEffortShiftLabel(value: string): string {
 }
 
 function computeAIImpact(signals: Signals): AIImpactClassification {
-  if (signals.aiLeverage === "high" && signals.measurementMaturity === "high") {
+  if (signals.aiLeverage === "high" && signals.measurementMaturity === "low") {
     return "Accretive";
   }
   if (signals.aiLeverage === "medium") {
     return "Neutral";
   }
-  if (signals.aiLeverage === "low" && signals.measurementMaturity === "low") {
+  if (signals.aiLeverage === "low" && signals.measurementMaturity === "high") {
     return "Dilutive";
   }
   return "Dilutive";
-}
-
-function computeRiskSource(dimensions: Dimensions): RiskSource {
-  const sources: string[] = [];
-  
-  if (dimensions.workforceIntensity === "high") {
-    sources.push("Structural");
-  }
-  if (dimensions.coordinationEntropy === "high") {
-    sources.push("Behavioral");
-  }
-  if (dimensions.measurementMaturity === "low" && dimensions.workforceIntensity === "high") {
-    sources.push("Technology-Amplified");
-  }
-  
-  if (sources.length === 0) return "Structural";
-  if (sources.length === 1) return sources[0] as RiskSource;
-  return "Mixed";
-}
-
-function computeCorrectability(dimensions: Dimensions, verdict: Verdict): Correctability {
-  if (verdict === "Structurally Safe" || verdict === "Execution Heavy") {
-    return "Correctable";
-  }
-  if (verdict === "Price Sensitive") {
-    return "Correctable with Redesign";
-  }
-  if (verdict === "Do Not Proceed Without Repricing") {
-    return "Not Correctable";
-  }
-  return "Correctable with Redesign";
 }
 
 function identifyDominantDrivers(dimensions: Dimensions): string[] {
@@ -294,48 +223,38 @@ export function executeDecisionEngine(input: AssessmentInput): DecisionObject {
     seniorOversightLoad: input.seniorOversightLoad,
     coordinationDecisionDrag: input.coordinationDecisionDrag,
     deliveryConfidence: input.deliveryConfidence,
+    aiHumanHoursReplaced: input.aiHumanHoursReplaced,
+    aiCommercialImpactMeasured: input.aiCommercialImpactMeasured,
+    aiAgenticFramework: input.aiAgenticFramework,
     openSignal: input.openSignal
   };
 
   const engineOutput = runMarginMix(engineInput);
 
   const bucketScores: BucketScores = {
-    WI: levelToScore(engineOutput.dimensions.workforceIntensity),
-    SI: levelToScore(engineOutput.signals.seniorDependency),
-    CO: levelToScore(engineOutput.dimensions.coordinationEntropy),
-    VSI: levelToScore(engineOutput.dimensions.commercialExposure),
-    CE: engineOutput.dimensions.confidenceSignal === "negative" ? 75 : 
-        engineOutput.dimensions.confidenceSignal === "neutral" ? 50 : 25
+    WI: engineOutput.computationTrace.dimensions.workforceIntensity.score,
+    CO: engineOutput.computationTrace.dimensions.coordinationEntropy.score,
+    CE: engineOutput.computationTrace.dimensions.commercialExposure.score,
+    VC: engineOutput.computationTrace.dimensions.volatilityControl.score,
+    MM: engineOutput.computationTrace.dimensions.measurementMaturity.score
   };
 
   const bucketBands = {
     WI: levelToBand(engineOutput.dimensions.workforceIntensity),
-    SI: levelToBand(engineOutput.signals.seniorDependency),
     CO: levelToBand(engineOutput.dimensions.coordinationEntropy),
-    VSI: levelToBand(engineOutput.dimensions.commercialExposure),
-    CE: engineOutput.dimensions.confidenceSignal === "negative" ? "High" : 
-        engineOutput.dimensions.confidenceSignal === "neutral" ? "Moderate" : "Low"
+    CE: levelToBand(engineOutput.dimensions.commercialExposure),
+    VC: levelToBand(engineOutput.dimensions.volatilityControl),
+    MM: levelToBand(engineOutput.dimensions.measurementMaturity)
   };
 
   const saturationFlags: SaturationFlags = {
     valueSaturationPresent: engineOutput.dimensions.commercialExposure === "high" && 
                             engineOutput.dimensions.workforceIntensity === "high",
-    opticsDrivenStaffing: engineOutput.dimensions.coordinationEntropy === "high" && 
-                          engineOutput.dimensions.commercialExposure === "high",
     upwardCostShift: engineOutput.signals.seniorDependency === "high" && 
                      engineOutput.dimensions.commercialExposure === "high"
   };
 
-  // Use the engine's weighted score (0-100) as the composite risk score.
-  // When the confidence override fires, weightedScore is null — use 85 to
-  // represent a high-severity Do Not Proceed on the display bar.
-  const compositeScore = engineOutput.weightedScore !== null
-    ? engineOutput.weightedScore
-    : 85;
-
-  const marginImpact = (input.currentMargin !== undefined && input.currentMargin > 0)
-    ? calculateMarginImpact(input.currentMargin, engineOutput.verdict, engineOutput.dimensions)
-    : null;
+  const compositeScore = engineOutput.computationTrace.compositeBeforeRounding;
 
   const decisionObject: DecisionObject = {
     id: generateDecisionId(),
@@ -360,22 +279,13 @@ export function executeDecisionEngine(input: AssessmentInput): DecisionObject {
     saturationDetails: saturationFlags,
     aiImpactClassification: computeAIImpact(engineOutput.signals),
     aiEffortShiftLabel: getAIEffortShiftLabel(input.aiEffortShift),
-    riskSource: computeRiskSource(engineOutput.dimensions),
     dominantDrivers: identifyDominantDrivers(engineOutput.dimensions),
     contradictionFlags: engineOutput.flags,
-    correctability: computeCorrectability(engineOutput.dimensions, engineOutput.verdict),
-    effortBand: verdictToEffortBand(engineOutput.verdict),
-    effortPercentages: {
-      senior: `${engineOutput.effortAllocation.senior}%`,
-      mid: `${engineOutput.effortAllocation.mid}%`,
-      junior: `${engineOutput.effortAllocation.execution}%`
-    },
-    effortAllocation: engineOutput.effortAllocation,
     verdictReason: engineOutput.verdictReason,
     triggeredBy: engineOutput.triggeredBy,
     compositeRiskScore: Math.round(compositeScore * 10) / 10,
-    marginImpact,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    computationTrace: engineOutput.computationTrace
   };
 
   return deepFreeze(decisionObject) as DecisionObject;
