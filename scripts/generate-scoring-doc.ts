@@ -187,86 +187,75 @@ doc.fontSize(9).fillColor("#6EE7B7")
   .text(`Generated: ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}`, LEFT, 168);
 
 doc.y = 240;
-body("This document describes the complete scoring mechanism used by MarginMix to assess margin risk for agency and consulting engagements. The system is fully deterministic — no AI, no ML. Layers 1 and 2 use explicit if-then rules. Layer 3 uses a weighted scoring model to catch accumulated medium-risk engagements that a rule-only system would miss. Layer 4 translates the verdict into an estimated margin erosion figure.");
+body("This reference documents the standalone full assessment's deterministic Model1 computation. The scorecard is authoritative for question points, signal groups, arithmetic means, weights and verdict thresholds. The 51.7 example is a regression fixture, not a target for other answers. AI does not calculate or supply scores.");
 divider();
 
 // ─── LAYER 1 ─────────────────────────────────────────────────────────────────
 h1("Layer 1 — Questions → Signals");
-body("18 of the 23 questions (Q6–Q22) produce signals that feed the engine. Q1–Q5 are context identifiers that never influence the verdict. Q23 is an open text field used for narrative generation only.");
+body("The scorecard assigns points to 18 answers. Q1–Q6 are identifiers/context and are not in the composite. Q23 is a confidence override, not a numeric dimension input. Q27 is narrative-only. The full assessment is independent of the homepage quick profiler; answers are not prefilled or skipped.");
 
 h3("Identifier Questions (Q1–Q5) — No Signal Produced");
 note("Q1 Full Name  ·  Q2 Work Email  ·  Q3 Role / Title  ·  Q4 Organisation Name  ·  Q5 Organisation Size");
 
-h3("Signal-Producing Questions (Q6–Q22)");
+h3("Model1 Scored Answers");
 drawTable(
-  ["Q#", "Question", "Signal Produced", "Mapping Logic"],
+  ["Q#", "Answer", "Points"],
   [
-    ["Q6",  "Decision type",                   "engagementState",                    "New / ongoing / renewal / escalation / strategic"],
-    ["Q7",  "Specify context",                 "engagementState (modifier)",          "Single client vs group of clients"],
-    ["Q8",  "Engagement classification",       "engagementState",                    "New · Ongoing <6m / 6–12m / 12m+ · Renewal-expansion"],
-    ["Q9",  "Pricing model",                   "pricingRigidity",                    "Commission or Outcome-based = High · Hybrid = Medium · Retainer or T&M = Low"],
-    ["Q10", "Client volatility",               "clientVolatility",                   "Direct pass-through: Low / Medium / High"],
-    ["Q11", "Stakeholder complexity",          "stakeholderLoad",                    "Direct pass-through: Low / Medium / High"],
-    ["Q12", "Senior leadership involvement",   "seniorDependency (input 1 of 2)",    "Minimal = Low · Periodic = Medium · Frequent or Continuous = High"],
-    ["Q13", "Mid-level oversight",             "coordinationLoad (input 1 of 3)",    "Direct pass-through: Low / Medium / High"],
-    ["Q14", "Execution vs thinking mix",       "teamMaturity",                       "Execution-heavy = High · Balanced = Medium · Thinking-led = Low"],
-    ["Q15", "Iteration intensity",             "iterationLoad",                      "Direct pass-through: Low / Medium / High"],
-    ["Q16", "Scope change likelihood",         "scopeElasticity",                    "Direct pass-through: Low / Medium / High"],
-    ["Q17", "Cross-functional coordination",  "coordinationLoad (input 2 of 3)",    "Direct pass-through: Low / Medium / High"],
-    ["Q18", "AI effort shift",                 "measurementMaturity + aiLeverage",   "Junior execution = High · Mid-level production = Medium · Senior thinking or no clear substitution = Low"],
-    ["Q19", "Marginal value saturation",       "pricingConfidence + governance",     "Significant = Positive · Some = Neutral · Minimal or None = Negative"],
-    ["Q20", "Senior oversight load",           "seniorDependency (input 2 of 2)",    "Less than usual = Low · About the same = Medium · More than usual = High"],
-    ["Q21", "Coordination decision drag",      "coordinationLoad (input 3 of 3)",    "Minimal = Low · Moderate = Medium · Heavy = High"],
-    ["Q22", "Delivery confidence",             "deliveryConfidence",                 "High = Positive · Some concerns = Neutral · Low = Negative"],
-    ["Q23", "Open signal (optional text)",     "Narrative only — no signal",         "Feeds GPT-4.1 for written narrative. Never enters verdict, dimension, or signal logic."],
+    ["Q7", "Decision: new / renewal / exploratory; expansion / escalation; strategic exception", "0 / 100 / 50"],
+    ["Q9", "Stage: new / under 6 months / renewal-expansion; 6–12 months / 12+ months", "50 / 0"],
+    ["Q10", "Retainer; hybrid / T&M / managed; fixed fee / commission / outcome-based", "0 / 50 / 100"],
+    ["Q11, Q12, Q14, Q16, Q17, Q18", "Low / medium / high", "0 / 50 / 100"],
+    ["Q13, Q21", "Q13: minimal / periodic / frequent / continuous; Q21: less / same / more", "0 / 50 / 100"],
+    ["Q15", "Execution-heavy / balanced / thinking-heavy; technical implementation", "0 / 50 / 100; 50"],
+    ["Q19", "Junior execution / mid-level production / senior thinking / no clear path", "0 / 50 / 100 / 100"],
+    ["Q20", "Significant / some / minimal / no meaningful additional value", "0 / 50 / 100 / 100"],
+    ["Q24", "Agentic framework: no / yes / NA", "0 / 100 / 0"],
+    ["Q25", "AI hours replaced: 0–25% / 25–50% / 50–75% / 75–100% / NA", "0 / 50 / 100 / 100 / 0"],
+    ["Q26", "Commercial AI impact measured: yes / no / NA", "0 / 100 / 0"],
+    ["Q23", "Low confidence triggers the override; Q27 open text is narrative-only.", "Override / no points"],
   ],
-  [28, 138, 130, 189]
+  [60, 330, 95]
 );
 
-h3("Combined Signal Merging Rules");
-note("Where multiple questions feed the same signal, the following OR-logic applies:");
-bullet("seniorDependency", "High if Q12 OR Q20 is High · Medium if either is Medium · Low if both are Low");
-bullet("coordinationLoad", "High if Q13 OR Q17 OR Q21 is High · Medium if any one is Medium · Low if all are Low");
+h3("Scorecard interpretation");
+note("Points are risk points on a 0–100 scale, not Low/Medium/High ratings. For hybrid engagements, score each applicable component using its answer mapping; a fixed-fee answer scores 100 across industries. Missing or NA follow-ups are not silently replaced with an AI estimate.");
 
 // ─── LAYER 2 ─────────────────────────────────────────────────────────────────
-h1("Layer 2 — Signals → 6 Risk Dimensions");
-body("Signals are promoted to dimensions using pure if-then rules only. No numeric averaging or weighting is used at this layer. Each dimension resolves to Low, Medium, or High — except Confidence Signal which resolves to Positive, Neutral, or Negative.");
+h1("Layer 2 — Signals → Numeric Dimensions");
+body("Each named signal is first scored from its mapped answer. Signals joined by MAX use the highest point value. Each dimension is the arithmetic mean of its listed signal scores; no categorical dimension conversion is used for scoring.");
 
 drawTable(
-  ["Dimension", "Input Signals", "Promotion Rule"],
+  ["Dimension", "Signal and source question", "Aggregation"],
   [
     ["Workforce Intensity",
-     "seniorDependency\niterationLoad",
-     "High if EITHER seniorDependency OR iterationLoad = High\nMedium if either = Medium\nLow if both = Low"],
+     "SeniorDependency = MAX(Q13,Q21)\nIterationLoad proxy = Q15\nIterationLoad = Q16\nGovernanceStrength = Q20",
+     "Mean of 4 signal scores"],
     ["Coordination Entropy",
-     "stakeholderLoad\ncoordinationLoad",
-     "High if EITHER stakeholderLoad OR coordinationLoad = High\nMedium if either = Medium\nLow if both = Low"],
+     "CoordinationIntensity = Q14\nCoordinationLoad = MAX(Q18,Q22)",
+     "Mean of 2 signal scores"],
     ["Commercial Exposure",
-     "scopeElasticity\npricingRigidity",
-     "High if scopeElasticity = High (regardless of pricingRigidity)\nMedium if scopeElasticity = Medium\nLow if scopeElasticity = Low"],
+     "EngagementState = MAX(Q7,Q9)\nPricingRigidity = Q10\nScopeElasticity = Q17",
+     "Mean of 3 signal scores"],
     ["Volatility Control",
-     "clientVolatility",
-     "Directly mirrors clientVolatility\nLow / Medium / High — no transformation applied"],
-    ["Confidence Signal",
-     "pricingConfidence\ndeliveryConfidence",
-     "Negative if EITHER pricingConfidence OR deliveryConfidence = Negative\nPositive only if BOTH = Positive\nNeutral in all other cases"],
+     "ClientVolatility = Q11\nStakeholderLoad = Q12",
+     "Mean of 2 signal scores"],
     ["Measurement Maturity",
-     "measurementMaturity\n(derived from Q18)",
-     "Directly mirrors measurementMaturity signal\nJunior execution = High · Mid production = Medium · Senior or None = Low"],
+     "AILeverage = Q19\nAIRiskPeak = MAX(Q24,Q25,Q26)",
+     "Mean of 2 signal scores"],
   ],
-  [120, 120, 245]
+  [116, 254, 115]
 );
 
 // ─── LAYER 3 ─────────────────────────────────────────────────────────────────
 h1("Layer 3 — Dimensions → Verdict (Weighted Scoring Model)");
-body("Layer 3 produces the final verdict through two sequential steps: (1) a hard override check that fires unconditionally before any scoring, and (2) a weighted numerical score applied to the remaining five dimensions. This two-step design captures both unambiguous confidence failures and accumulated moderate-risk engagements that a pure rule-based system would misclassify as safe.");
+body("The raw composite is the sum of each numeric dimension mean multiplied by its unchanged weight. Preserve full precision through verdict selection; round only the displayed composite to one decimal place. The sample 51.7 is a fixture, not a score to impose on other answer sets.");
 
 h3("Step 1 — Hard Override (fires before scoring)");
 drawTable(
   ["Override", "Condition", "Verdict", "Trigger Code"],
   [
     ["Confidence Failure",
-     "Confidence Signal = Negative\nFires when pricingConfidence OR deliveryConfidence = Negative\n(from Q19 or Q22). Confidence is non-negotiable — no weight can\ndilute a fundamental pricing or delivery confidence failure.",
+     "Fires when the existing Confidence Signal is Negative: low Q23 delivery confidence, or minimal/no additional value on Q20. This override is evaluated before the weighted verdict.",
      "Do Not Proceed\nWithout Repricing",
      "LOW_CONFIDENCE\n_OVERRIDE"],
   ],
@@ -274,19 +263,34 @@ drawTable(
 );
 
 h3("Step 2 — Weighted Score (applied when no override fires)");
-body("Each of the five remaining dimensions is converted to a numeric value (Low=0, Medium=0.5, High=1.0) and multiplied by its weight. The weighted score is the sum of all five dimension scores × 100. A score of 50 correctly reflects an all-Medium engagement as Price Sensitive — a key accuracy improvement over the prior rule-based model.");
+body("Dimension means are already numeric; do not convert them to bands and back into points. For each dimension, weighted contribution = dimension mean × weight ÷ 100. Composite = sum of the five contributions. The override does not replace or fabricate the underlying composite.");
 drawTable(
-  ["Dimension", "Weight", "Low Score", "Medium Score", "High Score"],
+  ["Dimension", "Weight", "Score formula", "Contribution"],
   [
-    ["Workforce Intensity",   "30%", "0", "15", "30"],
-    ["Coordination Entropy",  "25%", "0", "12.5", "25"],
-    ["Commercial Exposure",   "20%", "0", "10", "20"],
-    ["Volatility Control",    "15%", "0", "7.5", "15"],
-    ["Measurement Maturity",  "10%", "0", "5", "10"],
-    ["TOTAL",                 "100%", "0", "50", "100"],
+    ["Workforce Intensity",   "30%", "Mean(Q13/Q21 MAX, Q15, Q16, Q20)", "Mean × 0.30"],
+    ["Coordination Entropy",  "25%", "Mean(Q14, Q18/Q22 MAX)", "Mean × 0.25"],
+    ["Commercial Exposure",   "20%", "Mean(Q7/Q9 MAX, Q10, Q17)", "Mean × 0.20"],
+    ["Volatility Control",    "15%", "Mean(Q11, Q12)", "Mean × 0.15"],
+    ["Measurement Maturity",  "10%", "Mean(Q19, Q24/Q25/Q26 MAX)", "Mean × 0.10"],
+    ["TOTAL",                 "100%", "Sum of five contributions", "Composite 0–100"],
   ],
-  [145, 50, 65, 85, 70]
+  [122, 46, 222, 95]
 );
+
+h3("Illustrative regression fixture — not a target");
+drawTable(
+  ["Dimension", "Mean", "Weight", "Contribution"],
+  [
+    ["Workforce Intensity", "62.5", "30%", "18.75"],
+    ["Coordination Entropy", "50", "25%", "12.5"],
+    ["Commercial Exposure", "33.333…", "20%", "6.666…"],
+    ["Volatility Control", "25", "15%", "3.75"],
+    ["Measurement Maturity", "100", "10%", "10"],
+    ["Raw total", "", "", "51.666… → display 51.7"],
+  ],
+  [150, 88, 75, 172]
+);
+note("Those values come from one fixed answer fixture. Other answers must produce their own signal scores, means and weighted contributions.");
 
 h3("Score → Verdict Thresholds");
 drawTable(
@@ -310,81 +314,12 @@ bullet("Do Not Proceed Without Repricing", "Pricing or delivery confidence is in
 
 note("Important: Rule 1 (Negative Confidence Signal) always fires before Rule 2 (Structural Overload). A negative confidence signal overrides even a full structural overload scenario.");
 
-// ─── LAYER 4 ─────────────────────────────────────────────────────────────────
-h1("Layer 4 — Margin Erosion Calculation");
-body("Once the verdict is determined, the estimated margin erosion is calculated in four steps. These figures are real arithmetic derived from the user's stated current margin — they represent a genuine estimated loss and effective margin, not cosmetic indicators. The calculation runs post-verdict and cannot change the verdict, but the output numbers are actual predictions, not approximations for display.");
-
-h3("Step 1 — Verdict Sets the Erosion Range");
-drawTable(
-  ["Verdict", "Min Erosion", "Max Erosion", "Interpretation"],
-  [
-    ["Structurally Safe",                "0%",  "3%",  "Minimal risk. Standard governance is sufficient."],
-    ["Execution Heavy",                  "3%",  "8%",  "Senior effort and iteration intensity will consume margin over time."],
-    ["Price Sensitive",                  "5%",  "12%", "Pricing assumptions need explicit protection to prevent leakage."],
-    ["Structurally Fragile",             "10%", "18%", "Structural overload is actively threatening commercial viability."],
-    ["Do Not Proceed Without Repricing", "15%", "25%", "Engagement is not commercially viable at the current price level."],
-  ],
-  [175, 75, 75, 160]
-);
-
-h3("Step 2 — Dimension Weights Position You Within the Range");
-body("Each of the 6 risk dimensions is converted to a numeric weight on a 0 to 1 scale:");
-bullet("Low", "0.0");
-bullet("Medium", "0.5");
-bullet("High", "1.0");
-bullet("Confidence Signal — Positive", "0.0   ·   Neutral: 0.5   ·   Negative: 1.0");
-doc.moveDown(0.2);
-body("The 6 weights (one per dimension) are added together and divided by 6 to produce a single average weight between 0 and 1. This average determines where within the verdict's erosion range the final figure lands — 0 means minimum erosion, 1 means maximum.");
-
-h3("Step 3 — Formula");
-infoBox([
-  "Estimated Margin Loss  =  Min + (Max − Min) × Average Dimension Weight",
-  "Effective Margin  =  Current Margin %  −  Estimated Margin Loss",
-]);
-
-h3("Worked Example");
-drawTable(
-  ["Input", "Value"],
-  [
-    ["Verdict", "Price Sensitive  →  Range: 5% to 12%"],
-    ["Workforce Intensity", "High = 1.0"],
-    ["Coordination Entropy", "Medium = 0.5"],
-    ["Commercial Exposure", "High = 1.0"],
-    ["Volatility Control", "Medium = 0.5"],
-    ["Confidence Signal", "Neutral = 0.5"],
-    ["Measurement Maturity", "Low = 0.0"],
-    ["Average weight", "(1.0 + 0.5 + 1.0 + 0.5 + 0.5 + 0.0) ÷ 6  =  0.583"],
-    ["Estimated Margin Loss", "5 + (12 − 5) × 0.583  =  5 + 4.08  =  9.1%"],
-    ["Current Margin entered", "18%"],
-    ["Effective Margin", "18 − 9.1  =  8.9%"],
-  ],
-  [175, 310]
-);
-
-h3("Step 4 — Impact Label");
-drawTable(
-  ["Estimated Loss", "Label", "Colour", "What It Means"],
-  [
-    ["0 – 1%",  "No Impact",          "Green", "Safe to proceed as structured. No margin intervention needed."],
-    ["1 – 4%",  "Minimal Impact",     "Green", "Manageable with standard controls and normal monitoring."],
-    ["4 – 8%",  "Moderate Impact",    "Amber", "Warrants active monitoring. Consider governance checkpoints."],
-    ["8 – 15%", "Significant Impact", "Red",   "Requires structural intervention. Revisit pricing or scope before proceeding."],
-    ["15%+",    "Severe Impact",      "Red",   "Engagement is not viable at the current margin. Repricing mandatory."],
-  ],
-  [75, 110, 65, 235]
-);
-
 // ─── PRINCIPLES ──────────────────────────────────────────────────────────────
 h1("Core Design Principles");
-bullet("Fully deterministic", "No AI, no ML, and no probabilistic scoring anywhere in the verdict logic. Given identical inputs, the system always produces an identical verdict. The weighted score is computed from fixed rules — it is deterministic arithmetic, not learned inference.");
-bullet("Confidence is a hard override, not a weight", "A Negative Confidence Signal fires unconditionally before any scoring begins. No combination of low-risk dimension scores can counteract a confidence failure. This reflects the real-world truth that a client or team without delivery confidence represents non-negotiable structural risk.");
-bullet("Weighted scoring catches accumulated medium risk", "A first-match rule-only system cannot detect an engagement that is Medium on every dimension — it would return Structurally Safe. The weighted model produces a score of 50 for an all-Medium engagement, correctly classifying it as Price Sensitive. This is the primary motivation for the scoring model.");
-bullet("Weights reflect margin sensitivity, not operational severity", "Workforce Intensity (30%) and Coordination Entropy (25%) carry the highest weights because senior-dependency and coordination drag are the two most consistent drivers of margin erosion in agency engagements. Commercial Exposure (20%) reflects pricing structure fragility. Volatility Control (15%) and Measurement Maturity (10%) are real but secondary contributors.");
-bullet("Margin erosion is a post-verdict calculation", "The erosion percentage is computed after the verdict is fixed and cannot change it. However, the numbers are real — they are deterministic arithmetic derived from the user's stated current margin and the six dimension weights. Estimated Margin Loss and Effective Margin are genuine predictions, not cosmetic display values. They represent how much of the stated margin is likely to erode under the assessed engagement conditions.");
-bullet("Identifiers are invisible to the engine", "Q1–Q5 (name, email, role, organisation name, organisation size) are passed to PDFs, emails, and heatmaps but are never evaluated by any scoring rule.");
-bullet("Q23 open signal is narrative only", "The optional open text field feeds GPT-4.1 for written narrative generation only. It cannot alter, override, soften, or harden the verdict in any way. GPT is never permitted to recalculate, reinterpret, or contradict the deterministic verdict.");
-bullet("AI exposure (Q18)", "Only affects the Measurement Maturity signal. It is not a direct verdict driver — it influences margin erosion depth through the dimension weight average, not the verdict itself. Junior-execution AI substitution = High risk; mid-level production = Medium; senior thinking or no clear substitution = Low.");
-bullet("Layers 1 and 2 use no arithmetic", "Questions → Signals (Layer 1) and Signals → Dimensions (Layer 2) use only logical comparisons (equals, AND, OR, MAX). Numeric weights appear only in Layer 3 Step 2 (verdict scoring) and Layer 4 (margin erosion calculation).");
+bullet("Deterministic scoring", "Every point, signal maximum, dimension mean and weighted contribution is calculated from the submitted answers. AI is limited to prose; numeric claims it produces are rejected.");
+bullet("Confidence override", "The existing negative Confidence Signal remains a pre-scoring override. It changes the verdict, not the numeric composite.");
+bullet("No margin forecast", "The assessment does not estimate margin erosion or effective margin, and does not invent staffing percentages or effort allocations.");
+bullet("Separate quick profiler", "The full assessment at /assessment has its own independent question, scoring and report flow. The homepage profiler does not prefill it or skip its questions.");
 
 divider();
 doc.fontSize(8).fillColor(MID_GRAY).font("Helvetica")

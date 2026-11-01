@@ -463,7 +463,59 @@ function riskText(risk: RiskLevel): string {
   return "—";
 }
 
-function drawQuestion(doc: PDFKit.PDFDocument, q: QuestionDef) {
+function scorecardPoints(q: QuestionDef, option: string): string {
+  const value = option.toLowerCase();
+  const direct = (): string => value.startsWith("low") ? "0" : value.startsWith("medium") ? "50" : value.startsWith("high") ? "100" : "—";
+  switch (q.number) {
+    case "Q7":
+      if (value.includes("scope expansion") || value.includes("escalation")) return "100";
+      if (value.includes("strategic")) return "50";
+      return "0";
+    case "Q9":
+      if (value.includes("under 6") || value.includes("< 6") || value.includes("new (") || value.includes("renewal")) return "50";
+      return "0";
+    case "Q10":
+      if (value.includes("hybrid")) return "50";
+      if (value.includes("retainer")) return "0";
+      if (value.includes("fixed") || value.includes("commission") || value.includes("outcome") || value.includes("implementation")) return "100";
+      if (value.includes("time & materials") || value.includes("t&m") || value.includes("managed") || value.includes("saas")) return "50";
+      return "—";
+    case "Q11": case "Q12": case "Q14": case "Q16": case "Q17": case "Q18":
+      return direct();
+    case "Q13":
+      if (value.includes("minimal")) return "0";
+      if (value.includes("periodic")) return "50";
+      if (value.includes("frequent") || value.includes("continuous")) return "100";
+      return "—";
+    case "Q15":
+      if (value.includes("execution-heavy")) return "0";
+      if (value.includes("balanced") || value.includes("technical /")) return "50";
+      if (value.includes("thinking") || value.includes("advisory") || value.includes("strategy")) return "100";
+      return "—";
+    case "Q19":
+      return value.includes("junior") ? "0" : value.includes("mid-level") ? "50" : "100";
+    case "Q20":
+      return value.includes("significant") ? "0" : value.includes("some") ? "50" : "100";
+    case "Q21":
+      return value.includes("less") ? "0" : value.includes("about") ? "50" : value.includes("more") ? "100" : "—";
+    case "Q22":
+      return value.includes("minimal") ? "0" : value.includes("moderate") ? "50" : value.includes("heavy") ? "100" : "—";
+    case "Q23":
+      return value.includes("low confidence") ? "OVERRIDE" : "No points";
+    case "Q24":
+      return value.includes("yes") ? "100" : "0";
+    case "Q25":
+      if (value.includes("25–50")) return "50";
+      if (value.includes("50–75") || value.includes("75–100")) return "100";
+      return "0";
+    case "Q26":
+      return value.includes("no") ? "100" : "0";
+    default:
+      return "—";
+  }
+}
+
+function drawQuestion(doc: PDFKit.PDFDocument, q: QuestionDef, isFullAssessment = false) {
   const pageW = doc.page.width - 100;
   maybeAddPage(doc, 100);
 
@@ -524,7 +576,7 @@ function drawQuestion(doc: PDFKit.PDFDocument, q: QuestionDef) {
     // Header
     doc.fontSize(7).font("Helvetica-Bold").fillColor(T.light)
       .text("OPTION", titleX, tY, { width: optW })
-      .text("RISK", riskColX, tY, { width: riskColW });
+      .text(isFullAssessment ? "POINTS" : "PROFILER RISK", riskColX, tY, { width: riskColW });
     doc.moveDown(0.3);
     hRule(doc);
     doc.moveDown(0.2);
@@ -533,8 +585,10 @@ function drawQuestion(doc: PDFKit.PDFDocument, q: QuestionDef) {
       maybeAddPage(doc, 16);
       const rowY = doc.y;
       doc.fontSize(8).font("Helvetica").fillColor(T.dark).text(opt.label, titleX, rowY, { width: optW - 4, lineGap: 1 });
-      const rLabel = riskText(opt.risk);
-      const rColor = opt.risk === "high" ? "#dc2626" : opt.risk === "medium" ? "#b45309" : opt.risk === "low" ? "#059669" : T.light;
+      const rLabel = isFullAssessment ? scorecardPoints(q, opt.label) : riskText(opt.risk);
+      const rColor = isFullAssessment
+        ? rLabel === "OVERRIDE" || rLabel === "100" ? "#dc2626" : rLabel === "50" ? "#b45309" : "#059669"
+        : opt.risk === "high" ? "#dc2626" : opt.risk === "medium" ? "#b45309" : opt.risk === "low" ? "#059669" : T.light;
       doc.fontSize(8).font("Helvetica-Bold").fillColor(rColor).text(rLabel, riskColX, rowY, { width: riskColW });
       doc.moveDown(0.5);
     });
@@ -573,8 +627,8 @@ function buildPdf() {
 
   // Summary grid (text only)
   const summaryItems = [
-    ["27", "Full Assessment Questions"],
-    ["6",  "Quick Profiler Questions"],
+    ["27", "Standalone Assessment Questions"],
+    ["6",  "Separate Profiler Questions"],
     ["5",  "Weighted Dimensions"],
     ["5",  "Verdict Levels"],
   ];
@@ -596,17 +650,16 @@ function buildPdf() {
   doc.moveDown(0.5);
   doc.fontSize(8.5).font("Helvetica").fillColor(T.gray)
     .text(
-      "The verdict is determined by a composite weighted score across five risk dimensions. " +
-      "Confidence Signal = Negative is a hard override that fires before scoring.",
+      "The standalone assessment uses deterministic Model1 arithmetic: answer points → named signals → dimension means → weighted composite. The quick profiler is independent.",
       50, doc.y, { width: pageW, lineGap: 2 }
     );
   doc.moveDown(0.8);
 
   // Override note
   doc.fontSize(8.5).font("Helvetica-Bold").fillColor(T.black)
-    .text("Hard Override:", 50, doc.y, { continued: true });
+    .text("Confidence override:", 50, doc.y, { continued: true });
   doc.font("Helvetica").fillColor(T.mid)
-    .text("  Q23 Low confidence → Confidence Signal = Negative → Do Not Proceed Without Repricing (fires unconditionally before scoring).");
+    .text("  Negative Confidence Signal remains a pre-score override: low Q23 delivery confidence or the existing Q20 minimal/none value-saturation mapping. The numeric composite remains answer-based.");
   doc.moveDown(0.8);
 
   // Dimensions table
@@ -615,25 +668,25 @@ function buildPdf() {
   doc.fontSize(7.5).font("Helvetica-Bold").fillColor(T.light)
     .text("DIMENSION",          50,  doc.y, { width: 140 })
     .text("WEIGHT",            194,  doc.y, { width: 38,  align: "right" })
-    .text("QUESTIONS",         242,  doc.y, { width: 80  })
-    .text("RATIONALE",         328,  doc.y, { width: pageW - 278 });
+    .text("SIGNAL GROUPS",     242,  doc.y, { width: 125 })
+    .text("DIMENSION MEAN",    372,  doc.y, { width: pageW - 322 });
   doc.moveDown(0.3);
   hRule(doc);
   doc.moveDown(0.3);
 
   const dims = [
-    { d: "Workforce Intensity",   w: "30%", qs: "Q13 Q15 Q16 Q20 Q21",  r: "Most direct driver of margin erosion" },
-    { d: "Coordination Entropy",  w: "25%", qs: "Q14 Q18 Q22",           r: "Compounding overhead across delivery layers" },
-    { d: "Commercial Exposure",   w: "20%", qs: "Q7 Q9 Q10 Q17",         r: "Pricing and scope risk" },
-    { d: "Volatility Control",    w: "15%", qs: "Q11 Q12",                r: "Client-side unpredictability" },
-    { d: "Measurement Maturity",  w: "10%", qs: "Q19 Q24 Q25 Q26",       r: "AI substitution and oversight risk" },
+    { d: "Workforce Intensity",   w: "30%", qs: "MAX(Q13,Q21); Q15; Q16; Q20", r: "Mean of 4 signals" },
+    { d: "Coordination Entropy",  w: "25%", qs: "Q14; MAX(Q18,Q22)",             r: "Mean of 2 signals" },
+    { d: "Commercial Exposure",   w: "20%", qs: "MAX(Q7,Q9); Q10; Q17",          r: "Mean of 3 signals" },
+    { d: "Volatility Control",    w: "15%", qs: "Q11; Q12",                       r: "Mean of 2 signals" },
+    { d: "Measurement Maturity",  w: "10%", qs: "Q19; MAX(Q24,Q25,Q26)",         r: "Mean of 2 signals" },
   ];
   dims.forEach(d => {
     doc.fontSize(8.5).font("Helvetica-Bold").fillColor(T.black).text(d.d, 50, doc.y, { width: 140 });
     doc.fontSize(8.5).font("Helvetica").fillColor(T.mid)
       .text(d.w,  194, doc.y - 11, { width: 38,  align: "right" })
-      .text(d.qs, 242, doc.y - 11, { width: 80  })
-      .text(d.r,  328, doc.y - 11, { width: pageW - 278 });
+      .text(d.qs, 242, doc.y - 11, { width: 125 })
+      .text(d.r,  372, doc.y - 11, { width: pageW - 322 });
     doc.moveDown(0.5);
     hRule(doc);
     doc.moveDown(0.3);
@@ -641,6 +694,11 @@ function buildPdf() {
 
   doc.moveDown(0.6);
 
+  doc.moveDown(0.4);
+  doc.fontSize(8.5).font("Helvetica").fillColor(T.mid).text(
+    "Score answers as 0, 50 or 100. Use MAX for grouped signals, then take the arithmetic mean of each dimension's signals. Multiply each mean by its weight / 100 and sum the five contributions. Preserve raw precision for verdict selection; round only the displayed score to one decimal place.",
+    50, doc.y, { width: pageW, lineGap: 2 }
+  );
   // Thresholds table
   doc.fontSize(10).font("Helvetica-Bold").fillColor(T.black).text("Score Thresholds (0–100)", 50, doc.y);
   doc.moveDown(0.4);
@@ -654,11 +712,11 @@ function buildPdf() {
   doc.moveDown(0.3);
 
   const thresholds = [
-    { range: "0 – 19",   verdict: "Structurally Safe"                    },
-    { range: "20 – 39",  verdict: "Execution Heavy"                      },
-    { range: "40 – 59",  verdict: "Price Sensitive"                      },
-    { range: "60 – 79",  verdict: "Structurally Fragile"                 },
-    { range: "80 – 100", verdict: "Do Not Proceed Without Repricing"     },
+    { range: "0 ≤ score < 20",   verdict: "Structurally Safe"                    },
+    { range: "20 ≤ score < 40",  verdict: "Execution Heavy"                      },
+    { range: "40 ≤ score < 60",  verdict: "Price Sensitive"                      },
+    { range: "60 ≤ score < 80",  verdict: "Structurally Fragile"                 },
+    { range: "score ≥ 80",       verdict: "Do Not Proceed Without Repricing"     },
   ];
   thresholds.forEach(t => {
     doc.fontSize(8.5).font("Helvetica").fillColor(T.mid).text(t.range,   50,  doc.y, { width: 80 });
@@ -674,8 +732,7 @@ function buildPdf() {
   doc.moveDown(0.3);
   doc.fontSize(8.5).font("Helvetica").fillColor(T.gray)
     .text(
-      "Six questions that generate an instant risk verdict. Answers carry over to the full assessment — those six questions are skipped in the full flow. " +
-      "The profiler applies the same risk dimension weightings as the main engine.",
+      "This is a separate, independent quick-risk flow. It does not prefill the standalone full assessment or skip its questions. Profiler risk labels are not Model1 points.",
       50, doc.y, { width: pageW, lineGap: 2 }
     );
   doc.moveDown(0.9);
@@ -689,8 +746,7 @@ function buildPdf() {
   doc.moveDown(0.3);
   doc.fontSize(8.5).font("Helvetica").fillColor(T.gray)
     .text(
-      "When arriving from the Quick Profiler, P1–P6 answers are pre-filled and those questions are skipped. " +
-      "Industry selection (Q6) controls which conditional question variants appear.",
+      "The full assessment does not import quick-profiler answers. Industry selection (Q6) controls conditional variants. The POINTS column applies to Model1-scored answers; Q23 is override-only and Q27 is narrative-only.",
       50, doc.y, { width: pageW, lineGap: 2 }
     );
   doc.moveDown(0.9);
@@ -701,7 +757,7 @@ function buildPdf() {
       sectionBanner(doc, q.section);
       lastSection = q.section;
     }
-    drawQuestion(doc, q);
+    drawQuestion(doc, q, true);
   });
 
   // ── 4. Signal → Dimension Routing ────────────────────────────────────────
@@ -731,7 +787,7 @@ function buildPdf() {
     { s: "CoordinationLoad",        qs: "Q18, Q22",      d: "Coordination Entropy",    r: "Either HIGH → high; either MEDIUM → medium; else low" },
     { s: "AILeverage",              qs: "Q19, P6",       d: "Measurement Maturity",    r: "junior=low, mid=medium, senior/no-sub=high" },
     { s: "GovernanceStrength",      qs: "Q20",           d: "Workforce Intensity",     r: "significant=high, some=medium, minimal/none=low" },
-    { s: "PricingRigidity",         qs: "Q10",           d: "Commercial Exposure",     r: "Fixed/outcome/milestone=high; T&M/managed/saas=medium; retainer=low" },
+    { s: "PricingRigidity",         qs: "Q10",           d: "Commercial Exposure",     r: "Retainer 0; hybrid/T&M/managed/SaaS 50; fixed/commission/outcome 100" },
     { s: "DeliveryConfidence",      qs: "Q23",           d: "HARD OVERRIDE",           r: "low=Negative→DNP override; some_concerns=neutral; high=positive" },
     { s: "MeasurementMaturity",     qs: "Q19,Q24,Q25,Q26",d: "Measurement Maturity",  r: "aiRiskPeak: high hours OR no measurement OR agentic = high modifier" },
     { s: "EngagementState",         qs: "Q7, Q9",        d: "Commercial Exposure",     r: "scope-expansion/escalation=high; strategic-exception/new/renewal=medium; stable=low" },
