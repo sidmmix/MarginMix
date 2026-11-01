@@ -15,8 +15,8 @@ Keep obsolete alternative main-assessment scorers and invented margin-loss/effor
 
 **How to apply:** Extend Model1 and its regression coverage when changing the main assessment. This rule does not authorize changing the independent homepage quick profiler.
 
-For report-output-only work, do not change scoring arithmetic, signal mapping, dimension weights, band boundaries, or the override threshold. Make one change at a time and show the ytx output after each. The ytx regression fixture must retain a composite of 55; if a change moves it, stop and tell the user which change caused it instead of proceeding.
+For report-output-only work, do not change scoring arithmetic, signal mapping, dimension weights, band boundaries, or the override threshold. These safeguards apply to every risk classification, not just ytx. Make one change at a time and show the ytx output after each. The ytx regression fixture must retain a composite of 55; if a change moves it, stop and tell the user which change caused it instead of proceeding.
 
 **Why:** The user explicitly requires report changes to preserve the established ytx result and leave the scoring engine unchanged.
 
-**How to apply:** Compare the ytx output before and after each report change. Treat 55 as a regression expectation for the saved ytx answers only, never as a hardcoded score or a target for other answers.
+**How to apply:** Compare the ytx output before and after each report change. Verify reporting preserves the engine output for all verdicts and confidence-override cases. Treat 55 as a regression expectation for the saved ytx answers only, never as a hardcoded score or a target for other answers.
