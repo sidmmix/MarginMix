@@ -91,3 +91,17 @@ mtime_ms = 1793507366677
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/0f23a70c-012c-4904-a873-c51ea9bf4bdd/58e93f55-9a54-4cb0-933f-325314699094"
 storage_version_token = "1793507377310267"
 content_type = "application/pdf"
+
+[[outputs]]
+id = "Ef9j2zhjhCFeI9Mkh7m58"
+uri = "file://generated-artifacts/assessment-exports/ytx-2026-11-01-questionnaire-responses.pdf"
+type = "pdf"
+title = "Latest Assessment — Questions & Submitted Answers"
+description = "ytx · 1 November 2026 · All 28 questionnaire questions with the saved answers, including contact details. No scores or generated analysis."
+logical_id = "81b1d063-61f1-4b8a-94c7-9d4261195e40"
+content_hash = "sha256:29a103c57d1b59ef1c0bd72c7d80b56bf216bf22e33b3a1acf91dddd40c02c92"
+size = 5746
+mtime_ms = 1793507411329
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/81b1d063-61f1-4b8a-94c7-9d4261195e40/26b08c47-9675-4978-8279-de88553180aa"
+storage_version_token = "1793507416740767"
+content_type = "application/pdf"
