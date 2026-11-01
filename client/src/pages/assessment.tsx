@@ -24,7 +24,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Link, useLocation } from "wouter";
+import { Link } from "wouter";
 import { ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Send, Check, ChevronDown, Save, Home, Shield, ShieldCheck, ShieldAlert, AlertTriangle, TrendingUp, BarChart3, Users, Zap, Target, AlertCircle, Info, Download, ChevronRight, Mail, Building2, Briefcase } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
@@ -466,9 +466,6 @@ export default function Assessment() {
   const containerRef = useRef<HTMLDivElement>(null);
   const marginAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { toast } = useToast();
-  const [location] = useLocation();
-  const isDemo = location === '/demo';
-
   const [selectedIndustry, setSelectedIndustry] = useState("marketing-advertising");
 
   const industryQuestions = getQuestionsForIndustry(selectedIndustry);
@@ -742,7 +739,7 @@ export default function Assessment() {
       const response = await fetch("/api/assessments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, accountName, currentMargin: marginValue, isDemo }),
+        body: JSON.stringify({ ...data, accountName, currentMargin: marginValue }),
       });
 
       if (response.ok) {
@@ -866,13 +863,7 @@ export default function Assessment() {
     if (currentQuestion === totalQuestions - 1) {
       if (areMandatoryQuestionsAnswered()) {
         analytics.reviewReached(totalQuestions);
-        if (isDemo) {
-          // Skip review screen in demo — auto-submit directly
-          setConsentChecked(true);
-          setTimeout(() => form.handleSubmit(onSubmit)(), 100);
-        } else {
-          scrollToQuestion(currentQuestion + 1);
-        }
+        scrollToQuestion(currentQuestion + 1);
       }
       return;
     }
@@ -1214,13 +1205,6 @@ export default function Assessment() {
                 <span>GDPR & CCPA compliant</span>
               </div>
             </div>
-
-            {isDemo && (
-              <div className="mb-4 inline-flex items-center gap-2 bg-white/20 border border-white/30 text-white text-sm font-semibold px-4 py-2 rounded-full">
-                <Zap className="h-4 w-4 text-yellow-300" />
-                Demo Mode — Full assessment, completely free
-              </div>
-            )}
 
             <Button
               onClick={handleNext}

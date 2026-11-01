@@ -47,7 +47,7 @@ export interface IStorage {
   createMarginAssessment(assessment: InsertMarginAssessment): Promise<MarginAssessment>;
   getMarginAssessments(): Promise<MarginAssessment[]>;
 
-  // Pending Assessment Result operations (Stripe gate)
+  // Legacy pending-result operations; the current assessment route returns results immediately.
   createPendingResult(data: { assessmentId: string; decisionObject: any; pdfs: any; formData: any }): Promise<PendingAssessmentResult>;
   getPendingResult(id: string): Promise<PendingAssessmentResult | undefined>;
   updatePendingResultStripeSession(id: string, stripeSessionId: string): Promise<void>;

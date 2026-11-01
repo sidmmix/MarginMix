@@ -257,7 +257,7 @@ export const insertMarginAssessmentSchema = createInsertSchema(marginAssessments
 export type MarginAssessment = typeof marginAssessments.$inferSelect;
 export type InsertMarginAssessment = z.infer<typeof insertMarginAssessmentSchema>;
 
-// Pending assessment results — holds processed output until Stripe payment is confirmed
+// Legacy payment-gated assessment records; the active assessment route does not use this table.
 export const pendingAssessmentResults = pgTable("pending_assessment_results", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   assessmentId: varchar("assessment_id").notNull(),
