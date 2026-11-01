@@ -28,7 +28,7 @@ const fixture: AssessmentInput = {
   organisationSize: "11-50",
   specifyContext: "",
   decisionType: "renewal-extension",                 // Q7 renewal
-  engagementClassification: "ongoing-6-12",         // Q9
+  engagementClassification: "ongoing-less-6",       // Q9 — updated scorecard example
   engagementType: "hybrid",                         // Q10
   clientVolatility: "medium",                      // Q11
   stakeholderComplexity: "low",                    // Q12
@@ -47,19 +47,27 @@ const fixture: AssessmentInput = {
   aiCommercialImpactMeasured: "no",                // Q26
 };
 
-test("required fixture: composite 51.7 and Price Sensitive", () => {
+test("updated scorecard fixture: composite 55 and Price Sensitive", () => {
   const result = executeDecisionEngine(fixture);
-  assert.equal(result.compositeRiskScore, 51.7);
+  assert.equal(result.compositeRiskScore, 55);
   assert.equal(result.marginRiskVerdict, "Price Sensitive");
-  assert.ok(Math.abs(result.computationTrace.compositeBeforeRounding - 51.66666666666667) < 1e-10);
+  assert.equal(result.computationTrace.compositeBeforeRounding, 55);
   const scores = Object.values(result.computationTrace.dimensions).map((d) => d.score);
-  assert.deepEqual(scores, [62.5, 50, 100 / 3, 25, 100]);
+  assert.deepEqual(scores, [62.5, 50, 50, 25, 100]);
+});
+
+test("Q9 stage points stay exact: under six months is 50; six to twelve is 0", () => {
+  const updatedExample = buildComputationTrace(fixture);
+  const priorStage = buildComputationTrace({ ...fixture, engagementClassification: "ongoing-6-12" });
+  assert.equal(updatedExample.dimensions.commercialExposure.signals[0].questions[1].score, 50);
+  assert.equal(priorStage.dimensions.commercialExposure.signals[0].questions[1].score, 0);
+  assert.equal(executeDecisionEngine({ ...fixture, engagementClassification: "ongoing-6-12" }).compositeRiskScore, 51.7);
 });
 
 test("required fixture: Q23 low confidence overrides the composite", () => {
   const result = executeDecisionEngine({ ...fixture, deliveryConfidence: "low" });
   assert.equal(result.marginRiskVerdict, "Do Not Proceed Without Repricing");
-  assert.equal(result.compositeRiskScore, 51.7); // Never replace a real score with 85.
+  assert.equal(result.compositeRiskScore, 55); // Never replace a real score with 85.
   assert.deepEqual(result.triggeredBy, ["LOW_CONFIDENCE_OVERRIDE"]);
   assert.deepEqual(result.computationTrace, executeDecisionEngine(fixture).computationTrace);
 });
@@ -137,7 +145,7 @@ test("no fabricated sections in JSON, email, or either PDF; absent Q23 stays abs
   }
   for (const output of outputs) {
     assert.doesNotMatch(output, /Estimated Margin Impact|Current Margin|Estimated Margin Erosion|Effective Margin|Effort (?:Bands|Allocation)|Risk Source|Correctability|Optics-Driven Staffing|Confidence Signal|single.source/i);
-    assert.match(output, /51\.7/);
+    assert.match(output, /\b55(?:\.0)?\b/);
   }
 });
 
@@ -149,9 +157,10 @@ test("answered Q23 remains visible in PDF and email", async () => {
   assert.match(execFileSync("pdftotext", ["-", "-"], { input: pdf }).toString(), /Confidence Signal/);
 });
 
-test("51.7 is a fixture, not a target: different answers produce different scores", () => {
+test("55 is a fixture, not a target: different answers produce different scores", () => {
   const low: AssessmentInput = {
-    ...fixture, engagementType: "retainer", clientVolatility: "low", stakeholderComplexity: "low",
+    ...fixture, engagementClassification: "ongoing-6-12",
+    engagementType: "retainer", clientVolatility: "low", stakeholderComplexity: "low",
     seniorLeadershipInvolvement: "minimal", seniorOversightLoad: "less_than_usual",
     executionThinkingMix: "execution-heavy", iterationIntensity: "low", marginalValueSaturation: "significant",
     midLevelOversight: "low", crossFunctionalCoordination: "low", coordinationDecisionDrag: "minimal",

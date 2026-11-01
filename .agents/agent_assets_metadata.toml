@@ -12,14 +12,14 @@ logical_id = "7f318d49-cf93-4750-a4cd-cb7553ddfd47"
 id = "biKnits26f_fJ5xVp4DTc"
 uri = "file://MarginMix_Risk_Logic_Reference.pdf"
 type = "pdf"
-title = "MarginMix Risk Logic Reference"
-description = "Updated assessment questions and Model1 point mappings, with the standalone assessment kept separate from the quick profiler."
+title = "Updated MarginMix Risk Logic Reference"
+description = "Updated reference PDF reflecting the revised Q9 example (composite 55) and current AI Substitution and Measurement Risk label."
 logical_id = "a5a8f6bc-bc8c-4d89-a3f3-8bda93874072"
-content_hash = "sha256:70c633d665d894c7ebbd4d587c3e285458d69bf3540437bd9f19ed02632d08c8"
-size = 25512
-mtime_ms = 1793505724196
-storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/a5a8f6bc-bc8c-4d89-a3f3-8bda93874072/81642800-9c42-46e1-93a1-f533fd45a1cf"
-storage_version_token = "1793505819640319"
+content_hash = "sha256:f7cb54b89354343abfa8ff59e897fdd493a4af531a8353445d79b07015187e05"
+size = 25620
+mtime_ms = 1793513699119
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/a5a8f6bc-bc8c-4d89-a3f3-8bda93874072/8bca65cc-3a13-4531-886a-fb302d809d60"
+storage_version_token = "1793513816214468"
 content_type = "application/pdf"
 
 [[outputs]]
@@ -54,14 +54,14 @@ content_type = "application/pdf"
 id = "rCzFql0O9bg6TCPFSAAW9"
 uri = "file://client/public/MarginMix-Scoring-Logic.pdf"
 type = "pdf"
-title = "Model1 Scoring Logic"
-description = "Updated answer points, signal aggregation, dimension means, weights, overrides and the illustrative 51.7 computation."
+title = "Updated Model1 Scoring Logic"
+description = "Updated scorecard reference PDF with the revised Q9 example and 55 composite."
 logical_id = "a31b6997-7f47-41ba-aa76-13a7aacc985c"
-content_hash = "sha256:e56fcdc903512c4dd970832214525d7cd44376f767c47af69d18e3d0d80d7980"
-size = 11468
-mtime_ms = 1793505722101
-storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/a31b6997-7f47-41ba-aa76-13a7aacc985c/51c739c0-b508-44bc-85e0-e0a3e652ac44"
-storage_version_token = "1793505818403427"
+content_hash = "sha256:b7c1b42a667b9396186c5fec6e481b9b3145c5a15472e1ec54f2ed35e409a6fe"
+size = 11651
+mtime_ms = 1793513698231
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/a31b6997-7f47-41ba-aa76-13a7aacc985c/9aff9441-2367-4d2f-bb6c-016b1cea8d9c"
+storage_version_token = "1793513817429771"
 content_type = "application/pdf"
 
 [[outputs]]

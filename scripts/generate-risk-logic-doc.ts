@@ -251,7 +251,7 @@ const fullAssessmentQuestions: QuestionDef[] = [
     number: "Q19", id: "aiEffortShift", title: "Where is AI primarily expected to substitute effort?",
     section: "Delivery Dynamics",
     context: "The layer where AI replaces human effort determines whether it reduces cost or increases oversight burden.",
-    signal: "AILeverage", dimension: "Measurement Maturity",
+    signal: "AILeverage", dimension: "AI Substitution and Measurement Risk",
     options: [
       { label: "Junior execution",              risk: "low"    },
       { label: "Mid-level production",          risk: "medium" },
@@ -309,7 +309,7 @@ const fullAssessmentQuestions: QuestionDef[] = [
     number: "Q24", id: "aiAgenticFramework", title: "Are you using AI or an Agentic framework and what kind of projects are they being deployed on?",
     section: "AI Risk",
     context: "Agentic deployments in billable workflows directly affect pricing integrity and delivery accountability.",
-    signal: "AIRiskPeak (MAX of Q24, Q25, Q26)", dimension: "Measurement Maturity",
+    signal: "AIRiskPeak (MAX of Q24, Q25, Q26)", dimension: "AI Substitution and Measurement Risk",
     options: [
       { label: "Yes", risk: "high" },
       { label: "No",  risk: "low"  },
@@ -320,7 +320,7 @@ const fullAssessmentQuestions: QuestionDef[] = [
     number: "Q25", id: "aiHumanHoursReplaced", title: "How many human hours will you replace / augment with an AI agent in delivery workflows?",
     section: "AI Risk",
     context: "The scale of AI substitution determines whether cost savings flow to margin or create oversight overhead.",
-    signal: "AIRiskPeak (MAX of Q24, Q25, Q26)", dimension: "Measurement Maturity",
+    signal: "AIRiskPeak (MAX of Q24, Q25, Q26)", dimension: "AI Substitution and Measurement Risk",
     options: [
       { label: "0–25%",     risk: "low"    },
       { label: "25–50%",    risk: "medium" },
@@ -333,7 +333,7 @@ const fullAssessmentQuestions: QuestionDef[] = [
     number: "Q26", id: "aiCommercialImpactMeasured", title: "Have you measured the commercial impact of using AI agents?",
     section: "AI Risk",
     context: "Unmeasured AI impact means you cannot price its contribution or account for its risks.",
-    signal: "AIRiskPeak (MAX of Q24, Q25, Q26)", dimension: "Measurement Maturity",
+    signal: "AIRiskPeak (MAX of Q24, Q25, Q26)", dimension: "AI Substitution and Measurement Risk",
     options: [
       { label: "Yes", risk: "low"  },
       { label: "No",  risk: "high" },
@@ -421,7 +421,7 @@ const profilerQuestions: QuestionDef[] = [
     number: "P6", id: "aiEffortShift", title: "Where is AI primarily expected to substitute effort?",
     section: "Quick Risk Profiler",
     context: "The layer where AI replaces human effort determines whether it reduces cost or increases oversight burden.",
-    signal: "AILeverage", dimension: "Measurement Maturity",
+    signal: "AILeverage", dimension: "AI Substitution and Measurement Risk",
     note: "Topic overlaps full-assessment Q19; answers are not transferred between flows.",
     options: [
       { label: "Junior execution",          risk: "low"    },
@@ -683,7 +683,7 @@ function buildPdf() {
     { d: "Coordination Entropy",  w: "25%", qs: "Q14; MAX(Q18,Q22)",             r: "Mean of 2 signals" },
     { d: "Commercial Exposure",   w: "20%", qs: "MAX(Q7,Q9); Q10; Q17",          r: "Mean of 3 signals" },
     { d: "Volatility Control",    w: "15%", qs: "Q11; Q12",                       r: "Mean of 2 signals" },
-    { d: "Measurement Maturity",  w: "10%", qs: "Q19; MAX(Q24,Q25,Q26)",         r: "Mean of 2 signals" },
+    { d: "AI Substitution and Measurement Risk",  w: "10%", qs: "Q19; MAX(Q24,Q25,Q26)",         r: "Mean of 2 signals" },
   ];
   dims.forEach(d => {
     const rowY = doc.y;
@@ -745,7 +745,7 @@ function buildPdf() {
 
   doc.moveDown(0.6);
   doc.fontSize(8.5).font("Helvetica").fillColor(T.mid).text(
-    "Example only: dimension means 62.5, 50, 33.333..., 25 and 100 give contributions 18.75 + 12.5 + 6.666... + 3.75 + 10 = 51.666..., displayed as 51.7. Different answers produce different scores. AI cannot supply numbers or alter the deterministic verdict. No margin-loss forecast or staffing percentages are inferred.",
+    "Updated scorecard example only: dimension means 62.5, 50, 50, 25 and 100 give contributions 18.75 + 12.5 + 10 + 3.75 + 10 = 55. Q9 is ongoing under six months (50 points); six to twelve months remains 0. Different answers produce different scores. AI cannot supply numbers or alter the deterministic verdict. No margin-loss forecast or staffing percentages are inferred.",
     50, doc.y, { width: pageW, lineGap: 2 }
   );
 
@@ -810,11 +810,11 @@ function buildPdf() {
     { s: "IterationLoad",           qs: "Q16",           d: "Workforce Intensity",     r: "Answer points: low 0; medium 50; high 100" },
     { s: "ScopeElasticity",         qs: "Q17",           d: "Commercial Exposure",     r: "Answer points: low 0; medium 50; high 100" },
     { s: "CoordinationLoad",        qs: "Q18, Q22",      d: "Coordination Entropy",    r: "MAX of both answer point values" },
-    { s: "AILeverage",              qs: "Q19",           d: "Measurement Maturity",    r: "Junior 0; mid-level 50; senior/no substitution 100" },
+    { s: "AILeverage",              qs: "Q19",           d: "AI Substitution and Measurement Risk",    r: "Junior 0; mid-level 50; senior/no substitution 100" },
     { s: "GovernanceStrength",      qs: "Q20",           d: "Workforce Intensity",     r: "Significant 0; some 50; minimal/none 100" },
     { s: "PricingRigidity",         qs: "Q10",           d: "Commercial Exposure",     r: "Retainer 0; hybrid/T&M/managed/SaaS 50; fixed/commission/outcome 100" },
     { s: "Confidence Signal",       qs: "Q20, Q23",      d: "HARD OVERRIDE",           r: "Negative triggers override; no points added" },
-    { s: "AIRiskPeak",              qs: "Q24,Q25,Q26",   d: "Measurement Maturity",    r: "MAX of three AI risk point values" },
+    { s: "AIRiskPeak",              qs: "Q24,Q25,Q26",   d: "AI Substitution and Measurement Risk",    r: "MAX of three AI risk point values" },
     { s: "EngagementState",         qs: "Q7, Q9",        d: "Commercial Exposure",     r: "MAX of both answer point values" },
   ];
 

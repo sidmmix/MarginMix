@@ -639,7 +639,7 @@ export default function Landing() {
               Assess Margin Risk & Price Work Profitably
             </h2>
             <p className="text-emerald-100 mb-8 text-base sm:text-lg">
-              Get a clear, structural verdict on any engagement — before you commit.
+              Get a clear, structural verdict on any engagement.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button

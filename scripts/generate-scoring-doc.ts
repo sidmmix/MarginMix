@@ -188,7 +188,7 @@ doc.fontSize(9).fillColor("#6EE7B7")
   .text(`Generated: ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}`, LEFT, 168);
 
 doc.y = 240;
-body("This reference documents the standalone full assessment's deterministic Model1 computation. The scorecard is authoritative for question points, signal groups, arithmetic means, weights and verdict thresholds. The 51.7 example is a regression fixture, not a target for other answers. AI does not calculate or supply scores.");
+body("This reference documents the standalone full assessment's deterministic Model1 computation. The scorecard is authoritative for question points, signal groups, arithmetic means, weights and verdict thresholds. The updated 55 example is a regression fixture, not a target for other answers. AI does not calculate or supply scores.");
 divider();
 
 // ─── LAYER 1 ─────────────────────────────────────────────────────────────────
@@ -203,7 +203,7 @@ drawTable(
   ["Q#", "Answer", "Points"],
   [
     ["Q7", "Decision: new / renewal / exploratory; expansion / escalation; strategic exception", "0 / 100 / 50"],
-    ["Q9", "Stage: new / under 6 months / renewal-expansion; 6–12 months / 12+ months", "50 / 0"],
+    ["Q9", "50: new / under 6 months / renewal-expansion; 0: 6–12 months / 12+ months", "50 / 0"],
     ["Q10", "Retainer; hybrid / T&M / managed; fixed fee / commission / outcome-based", "0 / 50 / 100"],
     ["Q11, Q12, Q14, Q16, Q17, Q18", "Low / medium / high", "0 / 50 / 100"],
     ["Q13", "Minimal / periodic / frequent / continuous senior involvement", "0 / 50 / 100 / 100"],
@@ -242,7 +242,7 @@ drawTable(
     ["Volatility Control",
      "ClientVolatility = Q11\nStakeholderLoad = Q12",
      "Mean of 2 signal scores"],
-    ["Measurement Maturity",
+    ["AI Substitution and Measurement Risk",
      "AILeverage = Q19\nAIRiskPeak = MAX(Q24,Q25,Q26)",
      "Mean of 2 signal scores"],
   ],
@@ -251,7 +251,7 @@ drawTable(
 
 // ─── LAYER 3 ─────────────────────────────────────────────────────────────────
 h1("Layer 3 — Dimensions to Verdict");
-body("The raw composite is the sum of each numeric dimension mean multiplied by its unchanged weight. Preserve full precision through verdict selection; round only the displayed composite to one decimal place. The sample 51.7 is a fixture, not a score to impose on other answer sets.");
+body("The raw composite is the sum of each numeric dimension mean multiplied by its unchanged weight. Preserve full precision through verdict selection; round only the displayed composite to one decimal place. The updated sample 55 is a fixture, not a score to impose on other answer sets. Its Q9 answer is ongoing under six months (50 points); six to twelve months remains 0.");
 
 h3("Step 1 — Hard Override (fires before scoring)");
 drawTable(
@@ -274,7 +274,7 @@ drawTable(
     ["Coordination Entropy",  "25%", "Mean(Q14, Q18/Q22 MAX)", "Mean × 0.25"],
     ["Commercial Exposure",   "20%", "Mean(Q7/Q9 MAX, Q10, Q17)", "Mean × 0.20"],
     ["Volatility Control",    "15%", "Mean(Q11, Q12)", "Mean × 0.15"],
-    ["Measurement Maturity",  "10%", "Mean(Q19, Q24/Q25/Q26 MAX)", "Mean × 0.10"],
+    ["AI Substitution and Measurement Risk",  "10%", "Mean(Q19, Q24/Q25/Q26 MAX)", "Mean × 0.10"],
     ["TOTAL",                 "100%", "Sum of five contributions", "Composite 0–100"],
   ],
   [122, 46, 222, 95]
@@ -286,10 +286,10 @@ drawTable(
   [
     ["Workforce Intensity", "62.5", "30%", "18.75"],
     ["Coordination Entropy", "50", "25%", "12.5"],
-    ["Commercial Exposure", "33.333…", "20%", "6.666…"],
+    ["Commercial Exposure", "50", "20%", "10"],
     ["Volatility Control", "25", "15%", "3.75"],
-    ["Measurement Maturity", "100", "10%", "10"],
-    ["Raw total", "", "", "51.666…; display 51.7"],
+    ["AI Substitution and Measurement Risk", "100", "10%", "10"],
+    ["Raw total", "", "", "55"],
   ],
   [150, 88, 75, 172]
 );

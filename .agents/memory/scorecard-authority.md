@@ -3,11 +3,11 @@ name: Scorecard authority
 description: The supplied scorecard governs calculations; the sample score is not a universal target.
 ---
 
-Use the user's Model1 scorecard as the authority for question points, signal groups and aggregation. The user clarified that 51.7 is an example of how computation should work, irrespective of classification—not a value to force for other answers.
+Use the user's latest Model1 scorecard as the authority for question points, signal groups and aggregation. Its updated example uses Q9 ongoing under six months (50 points) and yields composite 55. The earlier 51.7 example used Q9 ongoing six to twelve months (0 points); formulas and weights are unchanged.
 
-**Why:** The user explicitly requires computations to follow each answer's scorecard classification, with no AI-generated numbers.
+**Why:** The user supplied a revised scorecard example; its Q9 answer changes the example result without changing any scoring rule.
 
-**How to apply:** Calculate from actual answers using deterministic code. Treat the sample as a regression fixture only. Do not tune weights or bands to reproduce it for other engagements; AI prose must not introduce numerical claims.
+**How to apply:** Calculate from actual answers using deterministic code. Keep both Q9 stage mappings exact; treat 55 as a regression expectation only for the updated example answers, never a forced target for other engagements. AI prose must not introduce numerical claims.
 
 Keep obsolete alternative main-assessment scorers and invented margin-loss/effort-allocation helpers retired rather than retaining a second calculation path.
 
