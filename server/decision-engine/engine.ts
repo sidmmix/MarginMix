@@ -19,12 +19,14 @@ import { Signals, Dimensions, EngineOutput } from "./types";
 import { AssessmentInput, mapQuestionsToSignals, extractIdentifiers, IdentifierFields } from "./questionMapper";
 import { mapDimensions, mapConfidenceSignal } from "./dimensionMapper";
 import { decideVerdict } from "./decisionTable";
-import { detectContradictions } from "./contradictionDetector";
+import { detectContradictions, detectAIAnswerContradictions } from "./contradictionDetector";
 import { buildComputationTrace, type ComputationTrace } from "./scorecard";
+import type { VerdictProvenance, VerdictTrigger } from "../../shared/verdict-provenance";
 
 export interface FullEngineOutput extends EngineOutput {
   identifiers: IdentifierFields;
   computationTrace: ComputationTrace;
+  verdictProvenance: VerdictProvenance;
 }
 
 export function runMarginMix(input: AssessmentInput): FullEngineOutput {
@@ -41,7 +43,30 @@ export function runMarginMix(input: AssessmentInput): FullEngineOutput {
   
   if (!input.deliveryConfidence?.trim()) delete dimensions.confidenceSignal;
   
-  const flags = detectContradictions(signals);
+  const flags = [...detectContradictions(signals), ...detectAIAnswerContradictions(input)];
+
+  // Record why the EXISTING decision fired; this metadata does not participate in scoring.
+  const overrides: VerdictTrigger[] = [];
+  if (decision.triggeredBy.includes("LOW_CONFIDENCE_OVERRIDE")) {
+    if (signals.pricingConfidence === "negative") {
+      overrides.push({
+        condition: "Negative pricing confidence", questionId: "Q20",
+        question: "Compared to similar work, how much incremental value does adding more people create here?",
+        answer: input.marginalValueSaturation,
+        answerLabel: input.marginalValueSaturation === "minimal" ? "Minimal additional value" : "No meaningful additional value",
+      });
+    }
+    if (signals.deliveryConfidence === "negative") {
+      overrides.push({
+        condition: "Low delivery confidence", questionId: "Q23",
+        question: "How confident are you in the delivery model for this engagement?",
+        answer: input.deliveryConfidence!, answerLabel: "Low confidence",
+      });
+    }
+  }
+  const verdictProvenance: VerdictProvenance = decision.triggeredBy.includes("LOW_CONFIDENCE_OVERRIDE")
+    ? { path: "override", overrides }
+    : { path: "weighted_score", weightedScoreBand: decision.verdict, overrides: [] };
   
   return {
     identifiers,
@@ -52,7 +77,8 @@ export function runMarginMix(input: AssessmentInput): FullEngineOutput {
     triggeredBy: decision.triggeredBy,
     weightedScore: decision.weightedScore,
     flags,
-    computationTrace
+    computationTrace,
+    verdictProvenance,
   };
 }
 

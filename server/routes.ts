@@ -17,7 +17,7 @@ import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
 import { assertSafePublicUrl, UnsafeUrlError } from "./url-safety";
 import { sendAssessmentEmail, sendFeedbackNotificationEmail, sendContactRequestEmail, PDFAttachment } from "./resend";
 import { executeDecisionEngine, DecisionObject } from "./decision-engine";
-import { generateNarrative } from "./narrative-generator";
+import { generateNarrative, generateFallbackNarrative } from "./narrative-generator";
 import { renderDecisionMemoPDF, renderAssessmentOutputPDF, generatePDFFilename } from "./pdf-renderer";
 
 // Initialize OpenAI client
@@ -375,35 +375,7 @@ export function registerRoutes(app: Express): Server {
       } catch (narrativeError: any) {
         console.error("Failed to generate narrative:", narrativeError.message);
         // Use fallback narrative if GPT fails
-        narrative = {
-          decisionMemo: {
-            decisionContext: `${decisionObject.engagementContext.type} engagement for ${decisionObject.engagementContext.organisationName}, classified as ${decisionObject.engagementContext.classification}. Pricing structure: ${decisionObject.engagementContext.decisionType}.`,
-            marginRiskVerdict: `This engagement has been classified as ${decisionObject.marginRiskVerdict} with a ${decisionObject.riskBand} risk band based on the assessment inputs.`,
-            primaryDriversOfRisk: decisionObject.dominantDrivers.length > 0
-              ? decisionObject.dominantDrivers.map(d => `${d} contributes to structural margin pressure`)
-              : ["No significant risk drivers identified"],
-            pricingGovernanceImplications: `${decisionObject.riskBand} risk band requires ${decisionObject.riskBand === "Low" ? "standard" : "enhanced"} pricing review and governance oversight.`,
-            whatWouldNeedToChange: decisionObject.marginRiskVerdict === "Structurally Safe"
-              ? ["Current conditions support proceeding as planned"]
-              : ["Reduce workforce intensity through scope refinement", "Strengthen coordination governance structures"],
-            recommendation: `Proceed with appropriate governance controls for a ${decisionObject.riskBand.toLowerCase()} risk engagement.`
-          },
-          assessmentOutput: {
-            executiveSnapshot: `${decisionObject.marginRiskVerdict}. This assessment identifies ${decisionObject.riskBand.toLowerCase()} overall margin risk based on structural factors including ${decisionObject.dominantDrivers.join(", ") || "standard operating conditions"}.`,
-            riskDimensionSummary: {
-              workforceIntensity: { level: decisionObject.dimensions.workforceIntensity, description: `Workforce requirements are ${decisionObject.dimensions.workforceIntensity}.` },
-              coordinationEntropy: { level: decisionObject.dimensions.coordinationEntropy, description: `Coordination complexity is ${decisionObject.dimensions.coordinationEntropy}.` },
-              commercialExposure: { level: decisionObject.dimensions.commercialExposure, description: `Commercial exposure is ${decisionObject.dimensions.commercialExposure}.` },
-              volatilityControl: { level: decisionObject.dimensions.volatilityControl, description: `Volatility control is ${decisionObject.dimensions.volatilityControl}.` }
-            },
-            structuralRiskSignals: decisionObject.triggeredBy.length > 0
-              ? [...decisionObject.triggeredBy.map(t => `${t} signal detected in assessment`), `AI Effort Shift: ${decisionObject.aiImpactClassification}`]
-              : ["No significant structural risk signals detected"],
-            overrideConditions: decisionObject.triggeredBy.length > 0
-              ? `Override triggered by: ${decisionObject.triggeredBy.join(", ")}`
-              : "No override conditions were triggered."
-          }
-        };
+        narrative = generateFallbackNarrative(decisionObject);
       }
       
       // Generate PDFs

@@ -20,3 +20,15 @@ For report-output-only work, do not change scoring arithmetic, signal mapping, d
 **Why:** The user explicitly requires report changes to preserve the established ytx result and leave the scoring engine unchanged.
 
 **How to apply:** Compare the ytx output before and after each report change. Verify reporting preserves the engine output for all verdicts and confidence-override cases. Treat 55 as a regression expectation for the saved ytx answers only, never as a hardcoded score or a target for other answers.
+
+Report group descriptions must use the group's numeric score, reporting band, and rank among all five groups. Reporting bands are Low below 25, Medium from 25 to below 50, Elevated from 50 to below 75, and High from 75 through 100. Include a relative role and a comparison naming the highest and lowest scoring groups.
+
+**Why:** The user requires descriptions that cannot contradict the numbers, and clarified that 25 is Medium rather than Low.
+
+**How to apply:** Keep these presentation bands separate from engine verdict boundaries and confidence rules. Derive report text deterministically; never let AI recalculate scores or invent group rankings.
+
+The report name is "AI Substitution and Measurement Risk"; higher scores mean greater risk. Renaming must not invert or otherwise change the calculation. Flags for unclear AI substitution alongside expected replaced hours are explanatory only and must not change scores or verdicts.
+
+**Why:** The user explicitly requires the ytx AI group to remain 100 and its composite to remain 55 while correcting report labels and flagging contradictory answers.
+
+**How to apply:** Preserve the existing scorecard, weights and signal mapping. Quote both submitted answers in the advisory flag. Render verdict provenance from recorded engine metadata, never infer an override from a verdict-band identifier; preserve all existing override conditions and thresholds.

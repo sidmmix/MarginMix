@@ -3,6 +3,8 @@ import { DecisionObject } from "./decision-engine";
 import { NarrativeOutput } from "./narrative-generator";
 import path from "path";
 import fs from "fs";
+import { buildReportGroups } from "../shared/report-groups";
+import { buildVerdictReport, isVerdictMechanismText } from "../shared/verdict-provenance";
 
 const COLORS = {
   primary: "#059669",
@@ -93,6 +95,9 @@ export async function renderDecisionMemoPDF(
     doc.y += 15;
     doc.moveDown(0.5);
     doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(`Risk Band: ${decision.riskBand}  |  Composite Score: ${decision.compositeRiskScore}/100`);
+    const verdictReport = buildVerdictReport(decision);
+    doc.moveDown(0.5);
+    doc.text(verdictReport.explanation, { lineGap: 3 });
     doc.moveDown(0.5);
     doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray).text(narrative.marginRiskVerdict, { lineGap: 4 });
 
@@ -104,9 +109,23 @@ export async function renderDecisionMemoPDF(
     doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Primary Drivers of Risk");
     doc.moveDown(0.5);
     doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
-    narrative.primaryDriversOfRisk.forEach((driver) => {
-      doc.text(`• ${driver}`, { lineGap: 3 });
+    const report = buildReportGroups(decision.bucketScores);
+    report.groups.forEach((group) => {
+      doc.text(`• ${group.description}`, { lineGap: 3 });
     });
+    doc.moveDown(0.5);
+    doc.text(report.comparativeSentence, { lineGap: 3 });
+    if (verdictReport.overrideDescription) {
+      doc.moveDown(1);
+      doc.font("Helvetica-Bold").fontSize(14).fillColor(COLORS.dark).text("Override Conditions");
+      doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray).text(verdictReport.overrideDescription, { lineGap: 3 });
+    }
+    if (decision.contradictionFlags.length > 0) {
+      doc.moveDown(1);
+      doc.font("Helvetica-Bold").fontSize(14).fillColor(COLORS.dark).text("Contradiction Flags");
+      doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray);
+      decision.contradictionFlags.forEach(flag => doc.text(`• ${flag.description}`, { lineGap: 3 }));
+    }
     doc.moveDown(1.5);
 
     doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
@@ -188,6 +207,9 @@ export async function renderAssessmentOutputPDF(
       doc.fontSize(10).fillColor(COLORS.dark).font("Helvetica-Bold").text(`Composite Risk Score: `, { continued: true });
       doc.font("Helvetica").fillColor(COLORS.gray).text(`${decision.compositeRiskScore}/100`);
     }
+    const verdictReport = buildVerdictReport(decision);
+    doc.moveDown(0.5);
+    doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(verdictReport.explanation, { lineGap: 3 });
     doc.moveDown(1.5);
 
     doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
@@ -196,20 +218,18 @@ export async function renderAssessmentOutputPDF(
     doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Risk Dimension Summary");
     doc.moveDown(0.5);
 
-    const dimensions = [
-      { name: "Workforce Intensity", score: decision.bucketScores.WI, ...narrative.riskDimensionSummary.workforceIntensity },
-      { name: "Coordination Entropy", score: decision.bucketScores.CO, ...narrative.riskDimensionSummary.coordinationEntropy },
-      { name: "Commercial Exposure", score: decision.bucketScores.CE, ...narrative.riskDimensionSummary.commercialExposure },
-      { name: "Volatility Control", score: decision.bucketScores.VC, ...narrative.riskDimensionSummary.volatilityControl }
-    ];
+    const report = buildReportGroups(decision.bucketScores);
+    const dimensions = report.groups;
 
     dimensions.forEach((dim) => {
-      const dimColor = getDimensionColor(dim.level);
+      const dimColor = getDimensionColor(dim.band === "Elevated" ? "high" : dim.band.toLowerCase());
       doc.fontSize(11).fillColor(COLORS.dark).font("Helvetica-Bold").text(`${dim.name}: `, { continued: true });
       doc.fillColor(dimColor).text(`${Number(dim.score.toFixed(1))}/100`);
       doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(dim.description, { lineGap: 2 });
       doc.moveDown(0.6);
     });
+    doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(report.comparativeSentence, { lineGap: 2 });
+    doc.moveDown(0.6);
 
     const confidenceLevel = decision.dimensions?.confidenceSignal;
     if (confidenceLevel) {
@@ -224,16 +244,6 @@ export async function renderAssessmentOutputPDF(
     doc.moveDown(0.6);
     }
 
-    const measMaturityLevel = decision.dimensions?.measurementMaturity || "medium";
-    const measColor = getDimensionColor(measMaturityLevel);
-    doc.fontSize(11).fillColor(COLORS.dark).font("Helvetica-Bold").text("Measurement Maturity: ", { continued: true });
-    doc.fillColor(measColor).text(`${Number(decision.bucketScores.MM.toFixed(1))}/100`);
-    doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(
-      measMaturityLevel === "high" ? "High measurement/substitution risk — AI impact is unmeasured or the substitution path carries elevated risk." :
-      measMaturityLevel === "medium" ? "Moderate measurement capability — some metrics in place but gaps in early detection remain." :
-      "Low measurement/substitution risk — the scorecard inputs indicate lower AI exposure.", { lineGap: 2 }
-    );
-    doc.moveDown(1);
 
     doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
     doc.moveDown(1);
@@ -258,11 +268,12 @@ export async function renderAssessmentOutputPDF(
     doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
     doc.moveDown(1);
 
-    if (decision.dominantDrivers && decision.dominantDrivers.length > 0) {
+    const primaryDrivers = report.groups.filter(group => group.role === "primary driver");
+    if (primaryDrivers.length > 0) {
       doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Primary Risk Drivers");
       doc.moveDown(0.5);
       doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
-      decision.dominantDrivers.forEach((driver) => {
+      primaryDrivers.map(group => group.name).forEach((driver) => {
         doc.text(`• ${driver}`, { lineGap: 3 });
       });
       doc.moveDown(1);
@@ -274,7 +285,7 @@ export async function renderAssessmentOutputPDF(
     doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Structural Risk Signals");
     doc.moveDown(0.5);
     doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray);
-    narrative.structuralRiskSignals.forEach((signal) => {
+    narrative.structuralRiskSignals.filter(signal => !isVerdictMechanismText(signal)).forEach((signal) => {
       doc.text(`• ${signal}`, { lineGap: 3 });
     });
     doc.moveDown(0.8);
@@ -305,13 +316,14 @@ export async function renderAssessmentOutputPDF(
       doc.moveDown(1);
     }
 
-    doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Override Conditions");
-    doc.moveDown(0.5);
-    doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray).text(narrative.overrideConditions, { lineGap: 4 });
-    doc.moveDown(1.5);
-
-    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
-    doc.moveDown(1);
+    if (verdictReport.overrideDescription) {
+      doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Override Conditions");
+      doc.moveDown(0.5);
+      doc.font("Helvetica").fontSize(11).fillColor(COLORS.gray).text(verdictReport.overrideDescription, { lineGap: 4 });
+      doc.moveDown(1.5);
+      doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor(COLORS.lightGray).stroke();
+      doc.moveDown(1);
+    }
 
     doc.fontSize(12).fillColor(COLORS.secondary).font("Helvetica-Bold").text("What This Assessment Measures");
     doc.moveDown(0.3);

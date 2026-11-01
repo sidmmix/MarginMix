@@ -105,3 +105,31 @@ mtime_ms = 1793507411329
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/81b1d063-61f1-4b8a-94c7-9d4261195e40/26b08c47-9675-4978-8279-de88553180aa"
 storage_version_token = "1793507416740767"
 content_type = "application/pdf"
+
+[[outputs]]
+id = "8dh7JxM-XCRLFjXLJXSpe"
+uri = "file://generated-artifacts/assessment-exports/ytx-updated-assessment-results.pdf"
+type = "pdf"
+title = "ytx — Updated Assessment Results"
+description = "Regenerated from saved responses. Composite 55; AI Substitution and Measurement Risk 100; quoted AI contradiction flag; verdict attributed to the weighted composite."
+logical_id = "03b17b8d-7774-4230-b7a5-07470d887aba"
+content_hash = "sha256:5aadeec581bf717ac85eea1262274a16c944e2dcd20da57310b8c50a27689e26"
+size = 13208
+mtime_ms = 1793509334012
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/03b17b8d-7774-4230-b7a5-07470d887aba/c8665d42-4d25-4703-b6d0-68929206ff19"
+storage_version_token = "1793509416359393"
+content_type = "application/pdf"
+
+[[outputs]]
+id = "JILnZoYIiQk5AfwDCLiWE"
+uri = "file://generated-artifacts/assessment-exports/ytx-updated-decision-memo.pdf"
+type = "pdf"
+title = "ytx — Updated Decision Memo"
+description = "Regenerated decision memo with score-aligned group descriptions and the non-scoring AI contradiction flag. Composite remains 55."
+logical_id = "cd06794c-c698-462e-9cfd-8b9dfc7cc36d"
+content_hash = "sha256:6f0c380e90aca395e8ecedf428e4a35f8b3b361cb9e7c88a8fa4e45051c105c3"
+size = 13458
+mtime_ms = 1793509334100
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/cd06794c-c698-462e-9cfd-8b9dfc7cc36d/4ee80575-74a7-42d5-8ab1-0cd75a0f3b87"
+storage_version_token = "1793509417664314"
+content_type = "application/pdf"

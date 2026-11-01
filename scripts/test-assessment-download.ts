@@ -6,6 +6,8 @@ import { chromium } from "playwright";
 import { executeDecisionEngine } from "../server/decision-engine";
 import { generateFallbackNarrative } from "../server/narrative-generator";
 import { renderAssessmentOutputPDF, renderDecisionMemoPDF } from "../server/pdf-renderer";
+import { buildReportGroups } from "../shared/report-groups";
+import { buildVerdictReport } from "../shared/verdict-provenance";
 
 // Intercept submission: never store an assessment or send an email during this test.
 const form = {
@@ -90,6 +92,19 @@ try {
     assert.deepEqual(await readFile(destination), expected);
   }
   await page.screenshot({ path: join(output, "results.png") });
+  const report = buildReportGroups(decision.bucketScores);
+  await page.getByText(buildVerdictReport(decision).explanation, { exact: true }).waitFor();
+  assert.doesNotMatch(await page.locator("body").innerText(), /\boverride\b|WEIGHTED[\s_-]*SCORE/i);
+  assert.doesNotMatch(await page.locator("body").innerText(), /Measurement Maturity/i);
+  const aiFlag = decision.contradictionFlags.find(flag => flag.code === "UNCLEAR_AI_SUBSTITUTION_WITH_EXPECTED_HOURS");
+  assert.ok(aiFlag);
+  await page.getByText(aiFlag.description, { exact: true }).waitFor();
+  for (const group of report.groups) {
+    await page.getByText(group.description, { exact: true }).waitFor();
+  }
+  await page.getByText(report.comparativeSentence, { exact: true }).waitFor();
+  await page.getByRole("heading", { name: "Risk Dimensions", exact: true })
+    .locator("..").screenshot({ path: join(output, "group-descriptions.png") });
   malformed = true;
   await submit();
   await page.getByText("A PDF report is missing. Please submit again.", { exact: true }).waitFor();

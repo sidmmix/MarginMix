@@ -2,6 +2,8 @@ import { Resend } from 'resend';
 import { DecisionObject } from './decision-engine';
 import { generateFeedbackToken } from './feedback-token';
 import { buildAuditQuestionnaireEmail } from "./audit-email";
+import { buildReportGroups } from "../shared/report-groups";
+import { buildVerdictReport } from "../shared/verdict-provenance";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -163,7 +165,7 @@ function formatBucketLabel(key: string): string {
     CO: "Coordination Entropy",
     CE: "Commercial Exposure",
     VC: "Volatility Control",
-    MM: "Measurement Maturity"
+    MM: "AI Substitution and Measurement Risk"
   };
   return labels[key] || key;
 }
@@ -183,14 +185,15 @@ export function buildAssessmentEmail(
   const compositeBarColor = getBarColor(decision.compositeRiskScore);
   const recommendations = getVerdictRecommendations(decision.marginRiskVerdict);
 
-  const dimensionCards = [
-    { name: "Workforce Intensity", level: decision.dimensions?.workforceIntensity, score: decision.bucketScores.WI },
-    { name: "Coordination Entropy", level: decision.dimensions?.coordinationEntropy, score: decision.bucketScores.CO },
-    { name: "Commercial Exposure", level: decision.dimensions?.commercialExposure, score: decision.bucketScores.CE },
-    { name: "Volatility Control", level: decision.dimensions?.volatilityControl, score: decision.bucketScores.VC },
-    { name: "Confidence Signal", level: decision.dimensions?.confidenceSignal },
-    { name: "Measurement Maturity", level: decision.dimensions?.measurementMaturity, score: decision.bucketScores.MM },
-  ].filter((dimension) => dimension.level);
+  const report = buildReportGroups(decision.bucketScores);
+  const verdictReport = buildVerdictReport(decision);
+  const dimensionCards: { name: string; level?: string; score?: number; description?: string }[] = [
+    ...report.groups.map(group => ({
+      ...group, level: group.band === "Elevated" ? "high" : group.band.toLowerCase(),
+    })),
+    ...(decision.dimensions?.confidenceSignal
+      ? [{ name: "Confidence Signal", level: decision.dimensions.confidenceSignal }] : []),
+  ];
 
   const dimensionCardsHtml = dimensionCards.map(dim => {
     const colors = getDimensionColor(dim.level || "low");
@@ -200,6 +203,7 @@ export function buildAssessmentEmail(
           <tr><td style="padding: 12px;">
             <p style="color: #9ca3af; margin: 0 0 4px 0; font-size: 11px;">${escapeHtml(dim.name)}</p>
             <p style="color: ${colors.text}; margin: 0; font-weight: 600; font-size: 13px;">${escapeHtml(dim.score != null ? `${Number(dim.score.toFixed(1))}/100` : getDimensionLabel(dim.level || "low"))}</p>
+            ${dim.description ? `<p style="color: #d1d5db; margin: 8px 0 0; font-size: 12px;">${escapeHtml(dim.description)}</p>` : ""}
           </td></tr>
         </table>
       </td>`;
@@ -339,7 +343,8 @@ export function buildAssessmentEmail(
                         <p style="margin: 0 0 12px 0;">
                           <span style="background: ${riskBandColor}20; color: ${riskBandColor}; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; border: 1px solid ${riskBandColor}; display: inline-block;">${escapeHtml(decision.riskBand)} Risk</span>
                         </p>
-                        <p style="color: #d1d5db; margin: 0 0 16px 0; font-size: 14px; line-height: 1.5;">${escapeHtml(decision.verdictReason)}</p>
+                        <p style="color: #d1d5db; margin: 0 0 16px 0; font-size: 14px; line-height: 1.5;">${escapeHtml(verdictReport.explanation)}</p>
+                        ${verdictReport.overrideDescription ? `<h3 style="color: white;">Override Conditions</h3><p style="color: #d1d5db; font-size: 14px;">${escapeHtml(verdictReport.overrideDescription)}</p>` : ""}
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                           <tr>
                             <td style="color: #9ca3af; font-size: 12px;">Composite Risk Score</td>
@@ -403,6 +408,7 @@ export function buildAssessmentEmail(
                           <tr class="dim-row">${dimensionCardsHtml.slice(0, 3).join("")}</tr>
                           <tr class="dim-row">${dimensionCardsHtml.slice(3).join("")}</tr>
                         </table>
+                        <p style="color: #d1d5db; margin: 12px 0 0; font-size: 13px;">${escapeHtml(report.comparativeSentence)}</p>
                       </td>
                     </tr>
                   </table>
@@ -420,13 +426,13 @@ export function buildAssessmentEmail(
                   </table>
 
                   <!-- Section 6 - Primary Risk Drivers -->
-                  ${decision.dominantDrivers && decision.dominantDrivers.length > 0 ? `
+                  ${report.groups.some(group => group.role === "primary driver") ? `
                   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; margin-bottom: 16px;">
                     <tr>
                       <td style="padding: 16px 20px;">
                         <h3 style="color: white; margin: 0 0 12px 0; font-size: 16px;">⚡ Primary Risk Drivers</h3>
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0">
-                          ${decision.dominantDrivers.map(driver => `
+                          ${report.groups.filter(group => group.role === "primary driver").map(group => group.name).map(driver => `
                             <tr>
                               <td style="padding: 3px 0;">
                                 <span style="display: inline-block; background: rgba(245,158,11,0.2); color: #fcd34d; padding: 4px 12px; border-radius: 16px; font-size: 13px; font-weight: 500; border: 1px solid rgba(245,158,11,0.3);">▸ ${escapeHtml(driver)}</span>

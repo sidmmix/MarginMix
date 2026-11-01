@@ -10,6 +10,25 @@
  */
 
 import { Signals, ContradictionFlag } from "./types";
+import type { AssessmentInput } from "./questionMapper";
+
+/** Answer-level advisory only: never used to map signals, score, or decide a verdict. */
+export function detectAIAnswerContradictions(
+  input: Pick<AssessmentInput, "aiEffortShift" | "aiHumanHoursReplaced">,
+): ContradictionFlag[] {
+  if (input.aiEffortShift !== "no_clear_substitution") return [];
+  const hourLabels: Record<string, string> = {
+    "0-25": "0–25%", "25-50": "25–50%", "50-75": "50–75%", "75-100": "75–100%",
+  };
+  const hours = input.aiHumanHoursReplaced && hourLabels[input.aiHumanHoursReplaced];
+  if (!hours) return [];
+  const includesZero = input.aiHumanHoursReplaced === "0-25";
+  return [{
+    code: "UNCLEAR_AI_SUBSTITUTION_WITH_EXPECTED_HOURS",
+    description: `AI substitution is described as "No clear substitution", while "${hours}" of human hours are expected to be replaced or augmented by an AI agent.${includesZero ? " This band includes zero; clarify whether any hours are expected to be replaced before treating this as a confirmed contradiction." : ""}`,
+    severity: includesZero ? "info" : "warning",
+  }];
+}
 
 export function detectContradictions(s: Signals): ContradictionFlag[] {
   const flags: ContradictionFlag[] = [];
@@ -41,7 +60,7 @@ export function detectContradictions(s: Signals): ContradictionFlag[] {
   if (s.coordinationLoad === "high" && s.measurementMaturity === "high") {
     flags.push({
       code: "HIGH_COORD_LOW_MEASUREMENT",
-      description: "High coordination requirements with low measurement maturity reduces early warning capability.",
+      description: "High coordination requirements alongside high AI Substitution and Measurement Risk warrant reviewing AI impact measurement and coordination controls.",
       severity: "warning"
     });
   }

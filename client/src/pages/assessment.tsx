@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { analytics } from "@/lib/analytics";
+import { buildReportGroups } from "@shared/report-groups";
+import { buildVerdictReport } from "@shared/verdict-provenance";
 import { downloadPdf, prepareAssessmentDownloads, releaseAssessmentDownloads, type AssessmentDownloads } from "@/lib/pdf-download";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { useForm } from "react-hook-form";
@@ -72,7 +74,7 @@ const bucketLabels: Record<string, string> = {
   WI: "Workforce Intensity",
   CO: "Coordination Entropy",
   VC: "Volatility Control",
-  MM: "Measurement Maturity",
+  MM: "AI Substitution and Measurement Risk",
   CE: "Commercial Exposure",
 };
 
@@ -1379,14 +1381,17 @@ export default function Assessment() {
       </>
     );
 
-    const dimensionCards = [
-      { name: "Workforce Intensity", level: d.dimensions?.workforceIntensity, score: d.bucketScores?.WI, icon: Users },
-      { name: "Coordination Entropy", level: d.dimensions?.coordinationEntropy, score: d.bucketScores?.CO, icon: Zap },
-      { name: "Commercial Exposure", level: d.dimensions?.commercialExposure, score: d.bucketScores?.CE, icon: TrendingUp },
-      { name: "Volatility Control", level: d.dimensions?.volatilityControl, score: d.bucketScores?.VC, icon: AlertTriangle },
-      { name: "Confidence Signal", level: d.dimensions?.confidenceSignal, icon: Shield },
-      { name: "Measurement Maturity", level: d.dimensions?.measurementMaturity, score: d.bucketScores?.MM, icon: BarChart3 },
-    ].filter((dimension) => dimension.level);
+    const report = buildReportGroups(d.bucketScores);
+    const verdictReport = buildVerdictReport(d);
+    const groupIcons = { WI: Users, CO: Zap, CE: TrendingUp, VC: AlertTriangle, MM: BarChart3 };
+    const dimensionCards: { name: string; level?: string; score?: number; description?: string; icon: typeof Users }[] = [
+      ...report.groups.map(group => ({
+        ...group, level: group.band === "Elevated" ? "high" : group.band.toLowerCase(),
+        icon: groupIcons[group.key],
+      })),
+      ...(d.dimensions?.confidenceSignal
+        ? [{ name: "Confidence Signal", level: d.dimensions.confidenceSignal, icon: Shield }] : []),
+    ];
 
     return (
       <div className="h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 overflow-y-auto">
@@ -1408,8 +1413,14 @@ export default function Assessment() {
                 </span>
               </div>
               <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-6">
-                {d.verdictReason}
+                {verdictReport.explanation}
               </p>
+              {verdictReport.overrideDescription && (
+                <div className="mb-4 text-sm text-gray-300">
+                  <h2 className="font-semibold text-white mb-2">Override Conditions</h2>
+                  <p>{verdictReport.overrideDescription}</p>
+                </div>
+              )}
               <div className="flex items-center gap-4">
                 <div className="flex-1">
                   <div className="flex justify-between text-xs text-gray-400 mb-1">
@@ -1507,10 +1518,12 @@ export default function Assessment() {
                       <Icon className="h-4 w-4 mb-2 opacity-80" />
                       <p className="text-xs text-gray-400 mb-1">{dim.name}</p>
                       <p className="text-sm font-semibold">{dim.score != null ? `${Number(dim.score.toFixed(1))}/100` : getDimensionLabel(dim.level || "low")}</p>
+                      {dim.description && <p className="text-xs text-gray-300 mt-2 leading-relaxed">{dim.description}</p>}
                     </div>
                   );
                 })}
               </div>
+              <p className="text-sm text-gray-300 mt-4 leading-relaxed">{report.comparativeSentence}</p>
             </div>
 
             {/* Section 3 - Bucket Scores */}
@@ -1540,14 +1553,14 @@ export default function Assessment() {
             </div>
 
             {/* Section 5 - Primary Risk Drivers */}
-            {d.dominantDrivers && d.dominantDrivers.length > 0 && (
+            {report.groups.some(group => group.role === "primary driver") && (
               <div className="mb-6 rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6">
                 <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 flex items-center gap-2">
                   <AlertTriangle className="h-5 w-5 text-amber-400" />
                   Primary Risk Drivers
                 </h2>
                 <div className="flex flex-wrap gap-2">
-                  {d.dominantDrivers.map((driver: string, i: number) => (
+                  {report.groups.filter(group => group.role === "primary driver").map(group => group.name).map((driver, i) => (
                     <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
                       <ChevronRight className="h-3 w-3" />
                       {driver}

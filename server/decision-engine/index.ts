@@ -18,6 +18,7 @@
 import { runMarginMix, AssessmentInput as EngineAssessmentInput } from "./engine";
 import { Verdict, Level, ContradictionFlag, Dimensions, Signals } from "./types";
 import type { ComputationTrace } from "./scorecard";
+import type { VerdictProvenance } from "../../shared/verdict-provenance";
 
 export interface AssessmentInput {
   fullName: string;
@@ -107,6 +108,7 @@ export interface DecisionObject {
   readonly compositeRiskScore: number;
   readonly createdAt: string;
   readonly computationTrace: ComputationTrace;
+  readonly verdictProvenance: VerdictProvenance;
 }
 
 function generateDecisionId(): string {
@@ -283,6 +285,7 @@ export function executeDecisionEngine(input: AssessmentInput): DecisionObject {
     contradictionFlags: engineOutput.flags,
     verdictReason: engineOutput.verdictReason,
     triggeredBy: engineOutput.triggeredBy,
+    verdictProvenance: engineOutput.verdictProvenance,
     compositeRiskScore: Math.round(compositeScore * 10) / 10,
     createdAt: new Date().toISOString(),
     computationTrace: engineOutput.computationTrace
