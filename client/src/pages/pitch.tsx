@@ -362,18 +362,19 @@ function SlideCustomer() {
   );
 }
 
-// ── SLIDE 6: PRODUCT MODEL ────────────────────────────────────────────────────
+// ── SLIDE 6: REVENUE MODEL ────────────────────────────────────────────────────
 function SlideRevenue() {
   return (
     <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
       <div className="max-w-5xl mx-auto w-full">
-        <Tag>Product Model</Tag>
-        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">Decision support for each engagement, with portfolio-wide workflows.</h2>
-        <p className="text-slate-500 text-sm mb-8">Start with a clear assessment result, then extend visibility across the agency's active engagements.</p>
+        <Tag>Revenue Model</Tag>
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">Value-based. Decision-anchored. Not seat-based.</h2>
+        <p className="text-slate-500 text-sm mb-8">Pricing reflects the value of the decision being protected — not the number of users. Insurance for protecting margins.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Assessment</p>
-            <p className="text-slate-500 text-sm mb-4">Decision support for each engagement</p>
+            <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Entry / Assessment</p>
+            <p className="text-4xl font-bold text-slate-900 mb-1">Free</p>
+            <p className="text-slate-500 text-sm mb-4">for every submission</p>
             <div className="space-y-2 text-sm text-slate-600">
               <p>— Instant output</p>
               <p>— No commitment</p>
@@ -382,27 +383,31 @@ function SlideRevenue() {
             </div>
           </div>
           <div className="bg-emerald-50 border-2 border-emerald-400 rounded-2xl p-6">
-            <p className="text-emerald-700 text-xs font-bold tracking-widest uppercase mb-3">Portfolio Workspace</p>
-            <p className="text-slate-500 text-sm mb-4">For ongoing engagement oversight</p>
+            <p className="text-emerald-700 text-xs font-bold tracking-widest uppercase mb-3">Subscription</p>
+            <p className="text-4xl font-bold text-slate-900 mb-1">$5,000<span className="text-xl text-slate-400">/mo</span></p>
+            <p className="text-slate-500 text-sm mb-4">60K ACV</p>
             <div className="space-y-2 text-sm text-slate-600">
               <p>— Unlimited submissions</p>
               <p>— Portfolio-level views</p>
               <p>— Deal desk workflows</p>
               <p>— AI ROI simulation</p>
+              <p>— Primary revenue driver</p>
             </div>
           </div>
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Expanded Coverage</p>
-            <p className="text-slate-500 text-sm mb-4">For complex service and implementation work</p>
+            <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Phase 2 Expansion</p>
+            <p className="text-4xl font-bold text-slate-900 mb-1">$7,500<span className="text-xl text-slate-400">/mo</span></p>
+            <p className="text-slate-500 text-sm mb-4">90K ACV</p>
             <div className="space-y-2 text-sm text-slate-600">
-              <p>— Portfolio workspace features</p>
+              <p>— Everything in Phase 1</p>
               <p>— Engineering / SI firms</p>
-              <p>— Broader implementation support</p>
+              <p>— Full expansion tier</p>
+              <p>— Year 2+ upsell</p>
             </div>
           </div>
         </div>
         <div className="mt-5 p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-500">
-          Designed for agencies that make frequent, high-stakes decisions about client work.
+          Subscription launches after 300 assessment customers (target: within 6 months).
         </div>
       </div>
     </div>
@@ -425,12 +430,12 @@ function SlideMarket() {
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-2">SAM · Phase 1</p>
             <p className="text-3xl font-bold text-emerald-700 mb-1">$800M–$900M</p>
-            <p className="text-slate-500 text-sm">14,200 firms · 13 core markets · 2–3 year horizon</p>
+            <p className="text-slate-500 text-sm">14,200 firms · 13 core markets · $60K ACV · 2–3 year horizon</p>
           </div>
           <div className="bg-emerald-50 border border-emerald-300 rounded-2xl p-6">
             <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-2">SOM · 5 to 7 Years</p>
-            <p className="text-3xl font-bold text-emerald-700 mb-1">2,000 firms</p>
-            <p className="text-slate-600 text-sm">Top 13 markets · focused category reach</p>
+            <p className="text-3xl font-bold text-emerald-700 mb-1">$150M ARR</p>
+            <p className="text-slate-600 text-sm">2,000 firms · top 13 markets · $75K ACV</p>
           </div>
         </div>
         <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
@@ -448,10 +453,10 @@ function SlideUnitEconomics() {
   const metrics = [
     { label: "Gross Margin", value: "90%", sub: "Minimal COGS — LLM narration + infra only", color: "text-emerald-600" },
     { label: "CAC", value: "Low", sub: "Founder-led sales initially. No channel cost in early stage", color: "text-blue-600" },
-    { label: "Onboarding", value: "Instant", sub: "No integrations. No implementation. Assessment output is ready immediately", color: "text-purple-600" },
-    { label: "Decision Impact", value: "Per engagement", sub: "An avoided mispriced engagement can materially protect firm margin", color: "text-amber-600" },
+    { label: "Onboarding Cost", value: "$0", sub: "No integrations. No implementation. Instant assessment output", color: "text-purple-600" },
+    { label: "ACV", value: "$60K", sub: "Even one avoided bad engagement justifies multiple years of subscription", color: "text-amber-600" },
     { label: "Decision Frequency", value: "70–80/yr", sub: "Typical mid-tier firm pricing decisions — episodic, high-stakes", color: "text-red-600" },
-    { label: "Risk Timing", value: "Before delivery", sub: "Surface exposure while scope and delivery terms can still be reviewed", color: "text-emerald-600" },
+    { label: "Payback", value: "< 1 deal", sub: "A single flagged engagement typically saves more than the annual fee", color: "text-emerald-600" },
   ];
   return (
     <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
@@ -547,9 +552,9 @@ function SlideFounder() {
 // ── SLIDE 11: THE ASK ─────────────────────────────────────────────────────────
 function SlideAsk() {
   const milestones = [
-    { phase: "0–6 mo", goal: "300 assessment customers", metric: "Usage validation and agency feedback" },
-    { phase: "6–18 mo", goal: "Portfolio workflows + 50 firms", metric: "Adoption across active engagements" },
-    { phase: "18–36 mo", goal: "500 firms", metric: "Expansion across consulting and SI markets" },
+    { phase: "0–6 mo", goal: "300 assessment customers", metric: "Usage validation and qualified subscription pipeline" },
+    { phase: "6–18 mo", goal: "Subscription launch + 50 firms", metric: "$62.5K MRR / $750K ARR" },
+    { phase: "18–36 mo", goal: "500 subscription firms", metric: "$625K MRR / $7.5M ARR" },
   ];
   return (
     <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">

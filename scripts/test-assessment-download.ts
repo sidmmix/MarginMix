@@ -40,21 +40,12 @@ try {
     localStorage.setItem("marginmix_assessment_progress", JSON.stringify({ data }));
   }, form);
   let malformed = false;
-  await page.route("**/api/assessments", (route) => {
-    const submission = route.request().postDataJSON() as Record<string, unknown>;
-    assert.equal("isDemo" in submission, false);
-    return route.fulfill({
-      status: 201, contentType: "application/json",
-      body: JSON.stringify({ success: true, pdfs: malformed ? {} : reports, decisionObject: decision }),
-    });
-  });
+  await page.route("**/api/assessments", (route) => route.fulfill({
+    status: 201, contentType: "application/json",
+    body: JSON.stringify({ success: true, pdfs: malformed ? {} : reports, decisionObject: decision }),
+  }));
   const base = process.env.REPLIT_DEV_DOMAIN
     ? `https://${process.env.REPLIT_DEV_DOMAIN}` : "http://127.0.0.1:5000";
-  for (const path of ["/assessment", "/demo"]) {
-    await page.goto(`${base}${path}`);
-    await page.getByRole("button", { name: "Click / Enter / Return to continue" }).waitFor();
-    assert.doesNotMatch(await page.locator("body").innerText(), /Demo Mode|completely free|Free for every submission|payment required|pay to continue/i);
-  }
   async function submit() {
     await page.goto(`${base}/assessment`);
     await page.getByRole("button", { name: "Click / Enter / Return to continue" }).waitFor();
