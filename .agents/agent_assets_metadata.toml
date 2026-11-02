@@ -133,3 +133,17 @@ mtime_ms = 1793509334100
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/cd06794c-c698-462e-9cfd-8b9dfc7cc36d/4ee80575-74a7-42d5-8ab1-0cd75a0f3b87"
 storage_version_token = "1793509417664314"
 content_type = "application/pdf"
+
+[[outputs]]
+id = "lRLIu7vIL0rKSS-IU-SO3"
+uri = "file://generated-artifacts/MarginMix_Silicon_Valley_Pitch_Deck.pptx"
+type = "slides"
+title = "MarginMix — Investor Pitch Deck"
+description = "Six-slide editable PowerPoint deck styled with MarginMix’s Calibri and green/cream visual language."
+logical_id = "cb50bca4-f0ed-4bfc-82a4-c272b4c64928"
+content_hash = "sha256:4927a88528ec91331e26a2ec989e6ae667f91d81055f55d39baba78049e7a444"
+size = 121238
+mtime_ms = 1793596135861
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/cb50bca4-f0ed-4bfc-82a4-c272b4c64928/3d1383b8-5876-4cb5-8069-c38c019c3f93"
+storage_version_token = "1793596239504022"
+content_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
