@@ -161,3 +161,17 @@ mtime_ms = 1793597515324
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/69aedc78-b92a-44b4-a258-9209845f0dae/a1ea218b-c0fd-4db2-8e60-7fe5e9b9d170"
 storage_version_token = "1793597563817835"
 content_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+
+[[outputs]]
+id = "PJG7aEC_b_5k1K0DeyZzA"
+uri = "file://generated-artifacts/marginmix-chat-history.json"
+type = "unspecified"
+title = "Chat History (JSON)"
+description = "JSON export of the conversation messages available in this session, with unavailable prior history clearly identified."
+logical_id = "f05e426f-cd97-44df-87ad-aef9016eb2ba"
+content_hash = "sha256:c6082e49418a3ef06675a4b7c2e6dc3214ca7affd4708c9a0a7e501c0c7bf3d4"
+size = 4315
+mtime_ms = 1793670268773
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/f05e426f-cd97-44df-87ad-aef9016eb2ba/025da8cd-ba5d-4818-abb8-8300a18e4b06"
+storage_version_token = "1793670271392369"
+content_type = "application/octet-stream"
