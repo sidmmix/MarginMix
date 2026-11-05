@@ -3,3 +3,4 @@
 - [Audit navigation preferences](audit-navigation-preferences.md) — manual progression with Enter/click controls and automatic focus on the active answer field.
 - [Full assessment separation](assessment-flow-separation.md) — keep the full assessment and its reports independent from the homepage quick profiler.
 - [Scorecard authority](scorecard-authority.md) — Model1 governs answer-based calculations; 51.7 is an example, not a target, and AI must not invent numbers.
+- [Paxel history coverage](paxel-history-coverage.md) — verify Git coverage separately from transcript coverage; fixed commit caps can omit early history as checkpoints accumulate.
