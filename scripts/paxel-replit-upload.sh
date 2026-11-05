@@ -52,4 +52,16 @@ fi
 
 apply_cursor_prelude_patch
 
-exec bash "$PAXEL_SH" "$@"
+# Upload's parse_since rejects "all" (setup-only). Drop --since all = no session date cutoff.
+upload_args=()
+while [ $# -gt 0 ]; do
+  if [ "$1" = --since ] && [ "${2:-}" = all ]; then
+    echo "paxel-replit-upload: ignoring --since all (upload has no cutoff; git uses --commits only)" >&2
+    shift 2
+    continue
+  fi
+  upload_args+=("$1")
+  shift
+done
+
+exec bash "$PAXEL_SH" "${upload_args[@]}"
