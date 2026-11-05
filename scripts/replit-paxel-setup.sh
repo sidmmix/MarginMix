@@ -8,6 +8,8 @@ fi
 
 cd "$(dirname "${BASH_SOURCE[0]}")/.." || exit 0
 
+bash scripts/paxel-replit-gitdir.sh 2>/dev/null || true
+
 # Override in Replit Secrets if the store lives elsewhere.
 store="${PAXEL_STORE:-github.com/sidmmix/paxel-transcripts}"
 
