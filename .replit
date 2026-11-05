@@ -1,4 +1,5 @@
 modules = ["nodejs-20", "web", "python-3.11", "postgresql-16"]
+onBoot = "bash scripts/replit-paxel-setup.sh"
 run = "npm run dev"
 hidden = [".config", ".git", "generated-icon.png", "node_modules", "dist"]
 
