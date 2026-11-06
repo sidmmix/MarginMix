@@ -44,6 +44,7 @@ export function Header({
   const navLinks = [
     { href: "/founder", label: "Why We Exist", mobileLabel: "Why We Exist" },
     { href: "/why-choose", label: "Why Choose Us", mobileLabel: "Why Choose Us" },
+    { href: "/free-tier/input", label: "Leak Calculator", mobileLabel: "Leak Calculator" },
   ];
 
   const isActive = (href: string) => location === href;
