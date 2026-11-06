@@ -84,6 +84,7 @@ export default function FreeTierCalculatorPage() {
               step="any"
               required
               value={form.fee ?? ""}
+              className="border-2 border-emerald-600 focus-visible:ring-emerald-500"
               onChange={(e) => update("fee", Number(e.target.value) as LeakInput["fee"])}
             />
             {errors.fee && <p className="text-sm text-red-600">{errors.fee}</p>}
@@ -99,6 +100,7 @@ export default function FreeTierCalculatorPage() {
               step={1}
               required
               value={form.months ?? ""}
+              className="border-2 border-emerald-600 focus-visible:ring-emerald-500"
               onChange={(e) => update("months", Number(e.target.value))}
             />
             {errors.months && <p className="text-sm text-red-600">{errors.months}</p>}
@@ -114,6 +116,7 @@ export default function FreeTierCalculatorPage() {
               step="any"
               required
               value={form.fte ?? ""}
+              className="border-2 border-emerald-600 focus-visible:ring-emerald-500"
               onChange={(e) => update("fte", Number(e.target.value))}
             />
             <p className="text-xs text-slate-500">
@@ -131,6 +134,7 @@ export default function FreeTierCalculatorPage() {
               step="any"
               required
               value={form.staffcost ?? ""}
+              className="border-2 border-emerald-600 focus-visible:ring-emerald-500"
               onChange={(e) => update("staffcost", Number(e.target.value))}
             />
             <p className="text-xs text-slate-500">
@@ -145,7 +149,7 @@ export default function FreeTierCalculatorPage() {
               value={form.scopemove ?? ""}
               onValueChange={(v) => update("scopemove", v as ScopeMove)}
             >
-              <SelectTrigger id="scope_move">
+              <SelectTrigger id="scope_move" className="border-2 border-emerald-600 focus:ring-emerald-500">
                 <SelectValue placeholder="Select…" />
               </SelectTrigger>
               <SelectContent>
@@ -164,7 +168,7 @@ export default function FreeTierCalculatorPage() {
               value={form.scopebilled ?? ""}
               onValueChange={(v) => update("scopebilled", v as ScopeBilled)}
             >
-              <SelectTrigger id="scope_billed">
+              <SelectTrigger id="scope_billed" className="border-2 border-emerald-600 focus:ring-emerald-500">
                 <SelectValue placeholder="Select…" />
               </SelectTrigger>
               <SelectContent>
@@ -182,7 +186,7 @@ export default function FreeTierCalculatorPage() {
               value={form.hourstracked ?? ""}
               onValueChange={(v) => update("hourstracked", v as HoursTracked)}
             >
-              <SelectTrigger id="hours_tracked">
+              <SelectTrigger id="hours_tracked" className="border-2 border-emerald-600 focus:ring-emerald-500">
                 <SelectValue placeholder="Select…" />
               </SelectTrigger>
               <SelectContent>
