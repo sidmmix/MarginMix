@@ -175,3 +175,31 @@ mtime_ms = 1793670268773
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/f05e426f-cd97-44df-87ad-aef9016eb2ba/025da8cd-ba5d-4818-abb8-8300a18e4b06"
 storage_version_token = "1793670271392369"
 content_type = "application/octet-stream"
+
+[[outputs]]
+id = "j3Up-EmFGk_2hU_J7oYeO"
+uri = "file://generated-artifacts/MarginMix-Development-History.md"
+type = "text"
+title = "MarginMix Development History"
+description = "Complete locally available Git history across refs, including all original 857 commits, plus three saved project plans."
+logical_id = "245c42a2-5abf-421d-931c-d8e0b40b3de5"
+content_hash = "sha256:abec715fc6be37c96fbd3d54ce6d0c7e95d9ce7e31c4d347e87f7a925acfa393"
+size = 262970
+mtime_ms = 1793927665226
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/245c42a2-5abf-421d-931c-d8e0b40b3de5/6b9fa19b-7136-4e50-a4d6-9325efd1aaed"
+storage_version_token = "1793927676846808"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "x0YO1hCIVk4-MilMCbNVB"
+uri = "file://generated-artifacts/MarginMix-Available-Agent-Conversation-INCOMPLETE.md"
+type = "text"
+title = "Available Agent Conversation — Incomplete"
+description = "Separate Markdown conversation excerpt with coverage gaps clearly labeled. Not a complete historical Agent transcript or native Paxel input."
+logical_id = "c974cb04-20fd-4e5f-b9d8-3008e3c81514"
+content_hash = "sha256:90ac31cbf25f673629bdac1b7cfe22879120fc523d690b8802e314ba69d0f9d2"
+size = 13563
+mtime_ms = 1793927665230
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/c974cb04-20fd-4e5f-b9d8-3008e3c81514/75c90326-4393-4517-8395-66437fa332c7"
+storage_version_token = "1793927678115295"
+content_type = "text/markdown"
