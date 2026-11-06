@@ -62,4 +62,12 @@ export const analytics = {
   profilerContinuedToAssessment() {
     push("profiler_continued_to_assessment", { event_category: "profiler" });
   },
+
+  leakFormSubmitted() {
+    push("leak_form_submitted", { event_category: "free_tier_leak" });
+  },
+
+  leakCtaClick() {
+    push("leak_cta_click", { event_category: "free_tier_leak" });
+  },
 };
