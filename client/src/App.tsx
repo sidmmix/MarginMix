@@ -187,6 +187,7 @@ function Router() {
             <Route path="/quick-profiler" component={QuickProfiler} />
             <Route path="/free-tier/calculator/output" component={FreeTierCalculatorOutput} />
             <Route path="/free-tier/calculator" component={FreeTierCalculator} />
+            <Route path="/free-tier/input" component={FreeTierCalculator} />
             <Route path="/audit-questions" component={AuditQuestions} />
             <Route path="/assessment" component={Assessment} />
             <Route path="/demo" component={Assessment} />
