@@ -25,6 +25,7 @@ const Assessment = lazy(() => import("@/pages/assessment"));
 const QuickProfiler = lazy(() => import("@/pages/quick-profiler"));
 const FreeTierCalculator = lazy(() => import("@/pages/free-tier-calculator"));
 const FreeTierCalculatorOutput = lazy(() => import("@/pages/free-tier-calculator-output"));
+const Platform = lazy(() => import("@/pages/platform"));
 const AuditQuestions = lazy(() => import("@/pages/audit-questions"));
 const Founder = lazy(() => import("@/pages/founder"));
 const WhyChoose = lazy(() => import("@/pages/why-choose"));
@@ -184,6 +185,7 @@ function Router() {
         <Suspense fallback={<PageLoader />}>
           <Switch location={location}>
             <Route path="/" component={HomeRedirect} />
+            <Route path="/platform" component={Platform} />
             <Route path="/quick-profiler" component={QuickProfiler} />
             <Route path="/free-tier/calculator/output" component={FreeTierCalculatorOutput} />
             <Route path="/free-tier/calculator" component={FreeTierCalculator} />

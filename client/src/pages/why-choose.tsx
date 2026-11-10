@@ -1,7 +1,9 @@
 import { Shield, Gauge, Target, Lightbulb, Scale, Zap } from "lucide-react";
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { AnimatedSection, MotionButton } from "@/components/animations";
+import { AnimatedSection } from "@/components/animations";
 import { staggerContainer, staggerItem } from "@/components/motion-variants";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -113,20 +115,16 @@ export default function WhyChoose() {
               Assess Margin Risk & Price work Profitably!
             </h2>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <MotionButton
-                size="lg"
-                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-4 sm:px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-xl whitespace-normal"
-                onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
-              >
-                Book Demo
-              </MotionButton>
-              <MotionButton
-                size="lg"
-                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-4 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-xl whitespace-normal"
-                onClick={() => window.location.href = '/quick-profiler'}
-              >
-                Free Delivery Risk Check - 60 seconds!
-              </MotionButton>
+              <Link href="/free-tier/input">
+                <Button size="lg" className="w-full sm:w-auto h-auto py-3 bg-white px-8 text-emerald-700 hover:bg-emerald-50">
+                  Try Free Scanner
+                </Button>
+              </Link>
+              <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer">
+                <Button size="lg" variant="outline" className="w-full sm:w-auto h-auto py-3 border-white/70 bg-transparent px-8 text-white hover:bg-white/10 hover:text-white">
+                  Book a Demo
+                </Button>
+              </a>
             </div>
             <p className="text-emerald-100 mt-4 text-sm">
             </p>

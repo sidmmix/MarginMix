@@ -41,46 +41,39 @@ export default function Landing() {
           >
             <motion.h1
               variants={shouldReduce ? undefined : heroItem}
-              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-red-600 dark:text-red-400 mb-5 leading-tight"
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-emerald-700 dark:text-emerald-400 mb-5 leading-tight"
             >
-              MarginMix protects you from losing thousands / millions to delivery complexity
+              Make engagement margin risk visible before work begins.
             </motion.h1>
 
             <motion.p
               variants={shouldReduce ? undefined : heroItem}
               className="text-base sm:text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-6 mx-auto leading-relaxed"
             >
-              Don't rely on spreadsheets, gut feel & past experience. Every engagement carries unique delivery risks that erode margin silently.
+              Pressure-test pricing, staffing, and delivery assumptions before you commit to an engagement.
             </motion.p>
 
             <motion.p
               variants={shouldReduce ? undefined : heroItem}
               className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-7 px-2 sm:px-0"
             >
-              MarginMix is a deterministic decision infrastructure for{" "}
+              MarginMix is structured decision support for{" "}
               <span className="text-emerald-600 dark:text-emerald-400">pricing & margin risk</span>
               {" — "}
-              <span className="text-red-600 dark:text-red-400">not a productivity tool.</span>
+              not a productivity or time-tracking system.
             </motion.p>
 
             <motion.div
               variants={shouldReduce ? undefined : heroItem}
               className="flex flex-col sm:flex-row gap-3 justify-center items-center"
             >
-              <MotionButton
-                onClick={() => window.location.href = '/quick-profiler'}
-                className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-600 rounded-xl whitespace-normal font-semibold"
-              >
-                Free Delivery Risk Check — 60 seconds!
-              </MotionButton>
+              <Link href="/free-tier/input">
+                <MotionButton className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl whitespace-normal font-semibold">
+                  Try Free Scanner
+                </MotionButton>
+              </Link>
             </motion.div>
 
-            <motion.p
-              variants={shouldReduce ? undefined : heroItem}
-              className="mt-4 text-base sm:text-lg text-gray-400 dark:text-gray-500 px-2 sm:px-0 tracking-wide"
-            >
-              Lightweight <span className="text-emerald-500 mx-1">›</span> Interactive <span className="text-emerald-500 mx-1">›</span> Insightful <span className="text-emerald-500 mx-1">›</span> API enabled
-            </motion.p>
             <motion.p
               variants={shouldReduce ? undefined : heroItem}
               className="mt-2 text-base sm:text-lg italic text-gray-900 dark:text-white px-2 sm:px-0"
@@ -647,7 +640,7 @@ export default function Landing() {
                 className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-6 sm:px-8 bg-white hover:bg-emerald-50 text-emerald-700 rounded-xl whitespace-normal"
                 onClick={() => window.location.href = '/quick-profiler'}
               >
-                Free Delivery Risk Check — 60 seconds!
+                Try Free Scanner
               </Button>
             </div>
           </div>

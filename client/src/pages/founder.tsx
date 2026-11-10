@@ -1,11 +1,13 @@
 import { useEffect } from "react";
+import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { AlertTriangle, Eye, Target, Lightbulb, UserCheck, Building2 } from "lucide-react";
 import founderPhoto from "@assets/1586921422945_1768559339757.jpeg";
 import advisorPhoto from "@assets/Screenshot_2026-01-21-08-12-37-88_254de13a4bc8758c9908fff1f73e_1768955128744.jpg";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
-import { AnimatedSection, MotionButton } from "@/components/animations";
+import { AnimatedSection } from "@/components/animations";
 
 export default function Founder() {
   useEffect(() => {
@@ -292,20 +294,16 @@ export default function Founder() {
       <section className="py-12 sm:py-16 bg-emerald-600">
         <AnimatedSection className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <MotionButton 
-              size="default" 
-              className="w-full sm:w-auto h-auto py-3 text-sm sm:text-base px-6 bg-white hover:bg-gray-100 text-emerald-700 rounded-xl font-semibold shadow-lg whitespace-normal"
-              onClick={() => window.open('https://calendly.com/sid-marginmix/30min', '_blank')}
-            >
-              Book Demo
-            </MotionButton>
-            <MotionButton
-              size="default"
-              className="w-full sm:w-auto h-auto py-3 text-sm sm:text-base px-6 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl font-semibold shadow-lg whitespace-normal"
-              onClick={() => window.location.href = '/quick-profiler'}
-            >
-              Free Delivery Risk Check - 60 seconds!
-            </MotionButton>
+            <Link href="/free-tier/input">
+              <Button className="w-full sm:w-auto bg-white px-6 text-emerald-700 hover:bg-gray-100">
+                Try Free Scanner
+              </Button>
+            </Link>
+            <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer">
+              <Button variant="outline" className="w-full sm:w-auto border-white/70 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white">
+                Book a Demo
+              </Button>
+            </a>
           </div>
         </AnimatedSection>
       </section>
