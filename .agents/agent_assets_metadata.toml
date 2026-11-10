@@ -203,3 +203,17 @@ mtime_ms = 1793927665230
 storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/c974cb04-20fd-4e5f-b9d8-3008e3c81514/75c90326-4393-4517-8395-66437fa332c7"
 storage_version_token = "1793927678115295"
 content_type = "text/markdown"
+
+[[outputs]]
+id = "XjTOL3ba9FWjpSjwTPNBK"
+uri = "file://reports/leak-calculator-assumptions-audit.md"
+type = "text"
+title = "Leak Calculator Assumptions Audit"
+description = "Current engine versus the build-plan examples, period semantics, cap discontinuity, and proposed acceptance values. Audit only; no financial formulas changed."
+logical_id = "468251bd-bee6-4ec4-8e23-f78c6d982ee1"
+content_hash = "sha256:79d2597f4e7022520f9d0ada48e0dfc84b63b5dc2c15fbc9c46e861421fb409d"
+size = 10718
+mtime_ms = 1794347931668
+storage_uri = "gcs://replit-rams-assets-sisko/rams/assets/repl:b1ac8574-8aca-4106-9a5c-bbe1a90b48d8/468251bd-bee6-4ec4-8e23-f78c6d982ee1/1f55e2e2-1424-40c4-8c65-1a1c2117e01a"
+storage_version_token = "1794348361188809"
+content_type = "text/markdown"
