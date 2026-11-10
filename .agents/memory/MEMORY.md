@@ -5,3 +5,4 @@
 - [Scorecard authority](scorecard-authority.md) — Model1 governs answer-based calculations; 51.7 is an example, not a target, and AI must not invent numbers.
 - [Paxel history coverage](paxel-history-coverage.md) — verify Git coverage separately from transcript coverage; fixed commit caps can omit early history as checkpoints accumulate.
 - [GTM consent boundary](gtm-consent-boundary.md) — denied Consent Mode still allows cookieless pings; do not load GTM before accepted consent.
+- [Leak calculator decisions](leak-calculator-decisions.md) — target margin 10–50% in 5-point steps; retain composite disclosure; disputed arithmetic requires approval after audit.
