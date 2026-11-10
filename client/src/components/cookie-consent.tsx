@@ -5,6 +5,12 @@ import { getStoredConsent, CONSENT_KEY } from "@/lib/consent";
 
 declare function gtag(...args: unknown[]): void;
 
+declare global {
+  interface Window {
+    loadMarginMixGTM: () => void;
+  }
+}
+
 function pushConsentUpdate(granted: boolean) {
   try {
     if (typeof gtag !== "undefined") {
@@ -17,6 +23,10 @@ function pushConsentUpdate(granted: boolean) {
       });
     }
   } catch {}
+
+  if (granted) {
+    window.loadMarginMixGTM();
+  }
 }
 
 export function CookieConsent() {
