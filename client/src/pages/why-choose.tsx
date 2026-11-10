@@ -21,8 +21,8 @@ const cards = [
     iconBg: "bg-amber-100 dark:bg-amber-900/30",
     Icon: Target,
     iconColor: "text-amber-600 dark:text-amber-400",
-    title: "Pricing decisions create variance",
-    body: "Margin risk is locked in before delivery begins. MarginMix operates at this moment, when pricing assumptions can still be challenged.",
+    title: "Margins evolve with delivery",
+    body: "MarginMix accounts for delivery complexities that are inevitable in service delivery and gives you a real-time opportunity to change course and stop the bleed.",
   },
   {
     color: "border-rose-500",
