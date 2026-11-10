@@ -83,3 +83,48 @@ test("accepted consent sends completion event names only to Replit Analytics", (
     state.restore();
   }
 });
+
+test("question answers and margins stay out of Replit Analytics while retaining GTM payloads", () => {
+  const state = installBrowserState("accepted");
+  try {
+    analytics.questionAnswered("assessment", 7, "private-question-id", "private-section", "private-answer");
+    analytics.questionAnswered("profiler", 2, "profiler-question-id", "profiler-section", "private-profiler-answer");
+    analytics.marginEntered("assessment", "private-margin");
+    analytics.marginEntered("profiler", "private-profiler-margin");
+
+    // These paths have no approved Replit Analytics event names.
+    assert.deepEqual(state.tracked, []);
+
+    // Preserve the existing GTM payload behavior, including answer and margin values.
+    assert.deepEqual(state.dataLayer, [
+      {
+        event: "question_answered",
+        event_category: "assessment",
+        question_number: 7,
+        question_id: "private-question-id",
+        question_section: "private-section",
+        answer_value: "private-answer",
+      },
+      {
+        event: "question_answered",
+        event_category: "profiler",
+        question_number: 2,
+        question_id: "profiler-question-id",
+        question_section: "profiler-section",
+        answer_value: "private-profiler-answer",
+      },
+      {
+        event: "margin_entered",
+        event_category: "assessment",
+        margin_value: "private-margin",
+      },
+      {
+        event: "margin_entered",
+        event_category: "profiler",
+        margin_value: "private-profiler-margin",
+      },
+    ]);
+  } finally {
+    state.restore();
+  }
+});
