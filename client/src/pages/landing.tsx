@@ -43,14 +43,14 @@ export default function Landing() {
               variants={shouldReduce ? undefined : heroItem}
               className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-emerald-700 dark:text-emerald-400 mb-5 leading-tight"
             >
-              Make engagement margin risk visible before work begins.
+              Make engagement margin risk Visible.
             </motion.h1>
 
             <motion.p
               variants={shouldReduce ? undefined : heroItem}
               className="text-base sm:text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-6 mx-auto leading-relaxed"
             >
-              Pressure-test pricing, staffing, and delivery assumptions before you commit to an engagement.
+              Pressure-test pricing, staffing, and delivery assumptions of an engagement.
             </motion.p>
 
             <motion.p
@@ -74,12 +74,6 @@ export default function Landing() {
               </Link>
             </motion.div>
 
-            <motion.p
-              variants={shouldReduce ? undefined : heroItem}
-              className="mt-2 text-base sm:text-lg italic text-gray-900 dark:text-white px-2 sm:px-0"
-            >
-              No ERP/CRM Integration required
-            </motion.p>
           </motion.div>
         </div>
       </section>
