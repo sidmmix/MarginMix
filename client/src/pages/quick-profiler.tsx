@@ -96,7 +96,7 @@ const profilerQuestions: ProfilerQuestion[] = [
     fieldKey: "seniorLeadershipInvolvement",
     number: 4,
     title: "What's the planned senior leadership involvement?",
-    context: "Senior time is the most expensive resource — its draw shapes margin.",
+    context: "Senior time is the most expensive resource, and its draw shapes margin.",
     section: "Workforce Intensity",
     sectionColor: "teal",
     options: [
@@ -245,7 +245,7 @@ function decideVerdict(dims: QuickDimensions): { verdict: Verdict; reason: strin
   if (dims.aiExposure === "high" && dims.workforceIntensity === "high") {
     return {
       verdict: "Do Not Proceed Without Repricing",
-      reason: "AI is expected to substitute at the senior or unclear level while workforce intensity is high. This combination creates unsustainable cost pressure — engagement requires repricing or structural changes."
+      reason: "AI is expected to substitute at the senior or unclear level while workforce intensity is high. This combination creates unsustainable cost pressure, so the engagement requires repricing or structural changes."
     };
   }
   if (dims.workforceIntensity === "high" && dims.coordinationEntropy === "high") {
@@ -808,7 +808,7 @@ export default function QuickProfiler() {
 
             <p className="text-gray-400 mb-8 max-w-lg mx-auto text-sm sm:text-base">
               {risk.level === "critical" && "High AI exposure combined with workforce intensity creates unsustainable cost pressure. This engagement requires repricing or structural changes before commitment."}
-              {risk.level === "high" && "Multiple high-risk signals detected. Structural overload likely — senior involvement and volatility create unsustainable margin pressure."}
+              {risk.level === "high" && "Multiple high-risk signals detected. Structural overload is likely because senior involvement and volatility create unsustainable margin pressure."}
               {risk.level === "elevated" && "Elevated risk indicators present. Execution demands or AI oversight burden will dominate effort and may erode margins without careful management."}
               {risk.level === "moderate" && "Some risk signals present. Pricing assumptions may need protection to preserve margins."}
               {risk.level === "low" && "No high-risk conditions triggered. Engagement appears viable under stated assumptions."}
@@ -879,7 +879,7 @@ export default function QuickProfiler() {
               }}
             >
               <span className="flex items-center gap-2 font-semibold">
-                Book a Meeting - Get started with Full Audit
+                Book a Meeting to Get Started with the Full Audit
               </span>
             </Button>
           </div>

@@ -244,7 +244,7 @@ export function registerRoutes(app: Express): Server {
         <!DOCTYPE html>
         <html>
         <head>
-          <title>Thank You - MarginMix</title>
+          <title>Thank You | MarginMix</title>
           <meta charset="utf-8">
         </head>
         <body style="font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #f9fafb;">

@@ -14,7 +14,7 @@ const cards = [
     Icon: Gauge,
     iconColor: "text-emerald-600 dark:text-emerald-400",
     title: "Enterprise systems explain what happened",
-    body: "ERPs and dashboards report on the past. MarginMix acts earlier — when work is priced, staffed, and committed.",
+    body: "ERPs and dashboards report on the past. MarginMix acts earlier, when work is priced, staffed, and committed.",
   },
   {
     color: "border-amber-500",
@@ -22,7 +22,7 @@ const cards = [
     Icon: Target,
     iconColor: "text-amber-600 dark:text-amber-400",
     title: "Pricing decisions create variance",
-    body: "Margin risk is locked in before delivery begins. MarginMix operates at this moment — when pricing assumptions can still be challenged.",
+    body: "Margin risk is locked in before delivery begins. MarginMix operates at this moment, when pricing assumptions can still be challenged.",
   },
   {
     color: "border-rose-500",
@@ -38,7 +38,7 @@ const cards = [
     Icon: Scale,
     iconColor: "text-blue-600 dark:text-blue-400",
     title: "Standardized pricing risk evaluation",
-    body: "A shared lens to pressure-test pricing, staffing, and coordination risk — creating discipline without bureaucracy.",
+    body: "A shared lens to pressure-test pricing, staffing, and coordination risk, creating discipline without bureaucracy.",
   },
   {
     color: "border-violet-500",
@@ -112,7 +112,7 @@ export default function WhyChoose() {
         <AnimatedSection className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
-              Assess Margin Risk & Price work Profitably!
+              Assess Margin Risk & Be Profitable!
             </h2>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/free-tier/input">

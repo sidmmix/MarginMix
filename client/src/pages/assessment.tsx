@@ -209,8 +209,8 @@ function getQuestionsForIndustry(industry: string): Question[] {
     { value: "fixed-fee", label: "Fixed Fees" },
     { value: "retainer", label: "Retainer" },
     { value: "outcome-based", label: "Outcome based" },
-    { value: "hybrid-retainer-commission", label: "Hybrid - Retainer + Commission" },
-    { value: "hybrid-retainer-outcome", label: "Hybrid - Retainer + Outcome based" },
+    { value: "hybrid-retainer-commission", label: "Hybrid: Retainer + Commission" },
+    { value: "hybrid-retainer-outcome", label: "Hybrid: Retainer + Outcome-based" },
   ];
 
   const executionThinkingOptions = [
@@ -258,7 +258,7 @@ function getQuestionsForIndustry(industry: string): Question[] {
       id: "specifyContext", title: "Specify Context",
       context: "Multi-client assessments carry compounding coordination risk.",
       type: "select",
-      options: [{ value: "single-client", label: "Single client" }, { value: "group-of-clients", label: "Group of clients - Org level" }],
+      options: [{ value: "single-client", label: "Single client" }, { value: "group-of-clients", label: "Group of clients, organization level" }],
       required: true, section: "Client Engagement Context", sectionColor: "teal"
     },
     {
@@ -433,7 +433,7 @@ function getQuestionsForIndustry(industry: string): Question[] {
     },
     {
       id: "openSignal", title: "Is there anything about this client engagement that feels risky or unusual?",
-      subtitle: "Share any concerns, gut-feel risks, or unusual factors — even if they don't fit neatly into a category",
+      subtitle: "Share any concerns, gut-feel risks, or unusual factors, even if they don't fit neatly into a category.",
       type: "textarea", placeholder: "Share any concerns or observations... (optional)",
       required: false, section: "Open Signal", sectionColor: "violet"
     },
@@ -866,7 +866,7 @@ export default function Assessment() {
       if (areMandatoryQuestionsAnswered()) {
         analytics.reviewReached(totalQuestions);
         if (isDemo) {
-          // Skip review screen in demo — auto-submit directly
+      // Skip the review screen in demo mode and submit directly.
           setConsentChecked(true);
           setTimeout(() => form.handleSubmit(onSubmit)(), 100);
         } else {
@@ -1217,7 +1217,7 @@ export default function Assessment() {
             {isDemo && (
               <div className="mb-4 inline-flex items-center gap-2 bg-white/20 border border-white/30 text-white text-sm font-semibold px-4 py-2 rounded-full">
                 <Zap className="h-4 w-4 text-yellow-300" />
-                Demo Mode — Full assessment, completely free
+                Demo mode: full assessment, completely free
               </div>
             )}
 
@@ -1614,10 +1614,10 @@ export default function Assessment() {
               <div className="mt-3 p-3 rounded-lg bg-white/5">
                 <p className="text-xs text-gray-500 mb-1">Implication</p>
                 <p className="text-sm text-gray-300">{
-                  d.aiImpactClassification === "Accretive" ? "AI is substituting junior execution — real cost reduction with minimal oversight overhead." :
-                  d.aiImpactClassification === "Neutral" ? "AI is substituting mid-level production — efficiency gains possible but requires monitoring." :
-                  d.aiImpactClassification === "Fragile" ? "AI is substituting senior thinking/review — increased oversight cost may offset gains." :
-                  "No clear AI substitution identified — risk of unmeasured effort displacement."
+                  d.aiImpactClassification === "Accretive" ? "AI is substituting junior execution, which can reduce costs with minimal oversight." :
+                  d.aiImpactClassification === "Neutral" ? "AI is substituting mid-level production. Efficiency gains are possible, but they require monitoring." :
+                  d.aiImpactClassification === "Fragile" ? "AI is substituting senior thinking and review. The added oversight cost may offset any gains." :
+                  "No clear AI substitution was identified, which creates a risk of unmeasured effort displacement."
                 }</p>
               </div>
             </div>
@@ -1695,7 +1695,7 @@ export default function Assessment() {
               </h2>
               {contactSubmitted ? (
                 <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-300">
-                  Thanks — your details have been sent. We’ll be in touch soon.
+                  Thanks. Your details have been sent. We’ll be in touch soon.
                 </div>
               ) : (
                 <form onSubmit={handleContactSubmit} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -2002,7 +2002,7 @@ export default function Assessment() {
             <DialogDescription className="text-center text-lg pt-4">
               <div className="flex flex-col items-center space-y-4">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
-                <p className="text-gray-600">Give us a minute - Please stay on this page.</p>
+                <p className="text-gray-600">Give us a minute. Please stay on this page.</p>
               </div>
             </DialogDescription>
           </DialogHeader>

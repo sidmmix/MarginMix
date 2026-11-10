@@ -71,7 +71,7 @@ export async function renderDecisionMemoPDF(
 
     doc.moveDown(3);
 
-    doc.fontSize(24).fillColor(COLORS.primary).text("MarginMix – Decision Memo", { align: "center" });
+    doc.fontSize(24).fillColor(COLORS.primary).text("MarginMix: Decision Memo", { align: "center" });
     doc.moveDown(1.5);
 
     doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Decision Context");
@@ -185,7 +185,7 @@ export async function renderAssessmentOutputPDF(
 
     doc.moveDown(3);
 
-    doc.fontSize(22).fillColor(COLORS.primary).text("MarginMix – Margin Risk Assessment Results", { align: "center" });
+    doc.fontSize(22).fillColor(COLORS.primary).text("MarginMix: Margin Risk Assessment Results", { align: "center" });
     doc.moveDown(1.5);
 
     doc.fontSize(14).fillColor(COLORS.dark).font("Helvetica-Bold").text("Executive Snapshot");
@@ -193,7 +193,7 @@ export async function renderAssessmentOutputPDF(
     const riskColor = getRiskColor(decision.riskBand);
     doc.rect(50, doc.y, 495, 35).fillAndStroke(riskColor, riskColor);
     doc.fontSize(12).fillColor(COLORS.white).font("Helvetica-Bold").text(
-      `${decision.riskBand.toUpperCase()} RISK – ${decision.marginRiskVerdict}`,
+      `${decision.riskBand.toUpperCase()} RISK: ${decision.marginRiskVerdict}`,
       60,
       doc.y - 30,
       { align: "center", width: 475 }
@@ -237,9 +237,9 @@ export async function renderAssessmentOutputPDF(
     doc.fontSize(11).fillColor(COLORS.dark).font("Helvetica-Bold").text("Confidence Signal: ", { continued: true });
     doc.fillColor(confidenceColor).text(confidenceLevel.charAt(0).toUpperCase() + confidenceLevel.slice(1));
     doc.font("Helvetica").fontSize(10).fillColor(COLORS.gray).text(
-      confidenceLevel === "negative" ? "Confidence is low — structural issues may prevent safe delivery." :
-      confidenceLevel === "positive" ? "Confidence is strong — delivery model assumptions are supported." :
-      "Confidence is neutral — some concerns present but manageable.", { lineGap: 2 }
+      confidenceLevel === "negative" ? "Confidence is low. Structural issues may prevent safe delivery." :
+      confidenceLevel === "positive" ? "Confidence is strong. Delivery model assumptions are supported." :
+      "Confidence is neutral. Some concerns are present, but they appear manageable.", { lineGap: 2 }
     );
     doc.moveDown(0.6);
     }
@@ -257,11 +257,11 @@ export async function renderAssessmentOutputPDF(
     doc.fillColor(aiColor).font("Helvetica-Bold").text(decision.aiImpactClassification);
     doc.font("Helvetica").fillColor(COLORS.gray).fontSize(10);
     if (decision.aiImpactClassification === "Accretive") {
-      doc.text("AI is reducing cost at the junior execution layer — margin accretive.", { lineGap: 2 });
+      doc.text("AI is reducing costs at the junior execution layer, which can improve margins.", { lineGap: 2 });
     } else if (decision.aiImpactClassification === "Neutral") {
-      doc.text("AI is substituting mid-level effort — neutral impact on margins.", { lineGap: 2 });
+      doc.text("AI is substituting mid-level effort, with a neutral impact on margins.", { lineGap: 2 });
     } else {
-      doc.text("AI substitution at senior level or no clear path — oversight burden increases, margin dilutive.", { lineGap: 2 });
+      doc.text("AI is substituting at the senior level, or no clear substitution path has been identified. The added oversight burden may reduce margins.", { lineGap: 2 });
     }
     doc.moveDown(1);
 

@@ -72,10 +72,10 @@ export const auditQuestions: AuditQuestion[] = [
   { id: "currency", section: "financial", title: "Which currency should we use?", type: "text", placeholder: "e.g. USD, GBP, MYR", required: true, allowUnknown: true, description: "Use this currency for all amounts. List other currencies and FX assumptions in the next question." },
   text("fx", "financial", "Do other currencies affect this engagement?", "List currencies, exchange-rate assumptions and contractual FX protection. Enter “None” if not applicable."),
   single("marginDefinition", "financial", "Which margin are you assessing?", [
-    ["delivery", "Delivery / gross margin — less direct delivery costs"],
-    ["contribution", "Contribution margin — less specified attributable costs"],
-    ["operating", "Operating margin — includes allocated overhead"],
-    ["unsure", "Unsure — help us define this"],
+    ["delivery", "Delivery or gross margin (less direct delivery costs)"],
+    ["contribution", "Contribution margin (less specified attributable costs)"],
+    ["operating", "Operating margin (including allocated overhead)"],
+    ["unsure", "Unsure (help us define this)"],
   ], "The audit must use one consistent cost definition."),
   text("costDefinition", "financial", "Which costs are included in your margin definition?", "Identify included and excluded costs. Avoid adding employment overhead again if it is already in loaded role costs."),
   { id: "targetMargin", section: "financial", title: "What is your target margin?", type: "number", placeholder: "Percentage, e.g. 30", description: "Enter a percentage, not a decimal fraction. Choose Unknown if no target has been defined.", required: true, allowUnknown: true },
@@ -169,7 +169,7 @@ export const auditQuestions: AuditQuestion[] = [
     ["impact", "Delay impact / likely extra cost"],
   ), "If none, enter “None” and use the review date."),
   single("aiUse", "exposure", "Does AI or automation affect this engagement?", [
-    ["yes", "Yes — in use"], ["planned", "Planned"], ["no", "No"],
+    ["yes", "Yes, in use"], ["planned", "Planned"], ["no", "No"],
   ]),
   table("aiEvidence", "exposure", "What is the measured or expected AI impact?", cols(
     ["task", "Task"], ["before", "Comparable hours before", "number"], ["after", "Hours after", "number"],

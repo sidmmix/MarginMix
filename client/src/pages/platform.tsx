@@ -7,7 +7,7 @@ const stages = [
   {
     status: "Available now",
     title: "Free Leak Calculator",
-    body: "Explore an engagement's fee, staff costs, scope movement, billing, and hours tracking. It returns an indicative, rule-based exposure estimate—not an audited loss.",
+    body: "Explore an engagement's fee, staff costs, scope movement, billing, and hours tracking. It returns an indicative, rule-based exposure estimate, not an audited loss.",
     action: true,
   },
   {
@@ -32,11 +32,10 @@ export default function Platform() {
             MarginMix Platform
           </p>
           <h1 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-bold text-slate-900 dark:text-white">
-            Margin-risk clarity, in stages
+            Margin Risk clarity, in stages...
           </h1>
           <p className="mt-5 text-base sm:text-lg text-slate-600 dark:text-slate-300">
-            Start with an engagement-level estimate. The planned document review and future product direction are
-            clearly separate from what is available today.
+            Start with an estimate of an engagement.
           </p>
         </header>
 

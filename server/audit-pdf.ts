@@ -2,7 +2,7 @@ import PDFDocument from "pdfkit";
 import { auditSections, getAnswerStatus, getVisibleQuestions, type AuditAnswers, type AuditQuestion } from "../shared/audit-questionnaire";
 
 function displayAnswer(question: AuditQuestion, value: AuditAnswers[string] | undefined): string[] {
-  if (value === "__unknown__") return ["Unknown — information not yet available."];
+  if (value === "__unknown__") return ["Unknown (information not yet available)."];
   if (value === undefined) return ["Not provided."];
   if (question.type === "table" && Array.isArray(value)) {
     return (value as Record<string, string>[]).flatMap((row, index) => [
@@ -22,7 +22,7 @@ export function renderAuditResponsesPDF(input: { id: string; submittedAt: string
     const doc = new PDFDocument({
       size: "A4", margins: { top: 54, bottom: 55, left: 48, right: 48 }, bufferPages: true,
       // Fixed creation date also keeps retry attachments byte-identical for Resend idempotency.
-      info: { Title: "MarginMix — Questionnaire Responses", Author: "MarginMix", CreationDate: date, ModDate: date },
+      info: { Title: "MarginMix Questionnaire Responses", Author: "MarginMix", CreationDate: date, ModDate: date },
     });
     const chunks: Buffer[] = [];
     doc.on("data", (chunk: Buffer) => chunks.push(chunk));

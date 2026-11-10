@@ -71,7 +71,7 @@ export default function Founder() {
           </div>
 
           <p className="text-lg text-gray-600 dark:text-gray-400 text-center">
-            This pattern shows up repeatedly — across retainers, fixed-fee projects, and complex transformation work — and it rarely surfaces early enough to act on.
+            This pattern appears across retainers, fixed-fee projects, and complex transformation work, but rarely surfaces early enough to act on.
           </p>
         </AnimatedSection>
       </section>
@@ -120,7 +120,7 @@ export default function Founder() {
           <Card className="bg-emerald-600 dark:bg-emerald-700 border-0">
             <CardContent className="p-6">
               <p className="text-white text-lg sm:text-xl font-semibold text-center">
-                MarginMix exists to make this pattern visible earlier — while there are still decisions to be made.
+                MarginMix exists to make this pattern visible earlier, while there are still decisions to be made.
               </p>
             </CardContent>
           </Card>
@@ -151,7 +151,7 @@ export default function Founder() {
 
           <div className="bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800 p-6 rounded-xl mb-6">
             <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-              These matter, but they miss a deeper structural issue: <strong className="text-teal-700 dark:text-teal-400">delivery complexities</strong> — how much senior attention, coordination drag, iteration intensity and cognitive load an engagement quietly demands over time.
+              These matter, but they miss a deeper structural issue: <strong className="text-teal-700 dark:text-teal-400">delivery complexity</strong>, including the senior attention, coordination, iteration, and cognitive load an engagement quietly demands over time.
             </p>
             <p className="text-teal-700 dark:text-teal-400 font-semibold">
               "Delivery Complexity" is rarely tracked formally. Yet it is often the single biggest driver of margin erosion.
@@ -197,7 +197,7 @@ export default function Founder() {
           <Card className="bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 mb-6">
             <CardContent className="p-6">
               <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-                Instead, MarginMix is a <strong className="text-emerald-700 dark:text-emerald-400">decision lens</strong> — designed to help leaders assess whether work is structurally viable based on how it is likely to be staffed, coordinated, and governed.
+                Instead, MarginMix is a <strong className="text-emerald-700 dark:text-emerald-400">decision lens</strong> designed to help leaders assess whether work is structurally viable based on how it is likely to be staffed, coordinated, and governed.
               </p>
             </CardContent>
           </Card>

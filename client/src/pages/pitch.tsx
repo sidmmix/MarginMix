@@ -128,7 +128,7 @@ function SlideCover() {
         </p>
         <div className="w-24 h-px bg-emerald-500 mx-auto mb-8" />
         <p className="text-base md:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-          Pricing and margin risk decisions — made before delivery begins,
+          Pricing and margin risk decisions are made before delivery begins,
           where the cost of being wrong is highest.
         </p>
         <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-slate-500 text-sm">
@@ -147,7 +147,7 @@ function SlideProblem() {
     { icon: "📋", text: "Timesheets are inaccurate and lagging" },
     { icon: "📉", text: "Historical data is noisy and backward-looking" },
     { icon: "🧠", text: "Complexity and coordination costs are routinely underestimated" },
-    { icon: "🤖", text: "AI adoption changes effort patterns — but ROI is unclear" },
+    { icon: "🤖", text: "AI adoption changes effort patterns, but ROI remains unclear" },
     { icon: "👤", text: "Judgment lives in senior operators' heads, not in systems" },
   ];
   return (
@@ -197,7 +197,7 @@ function SlideSolution() {
   const outputs = [
     "Margin risk verdict (5-level classification)",
     "Structural risk drivers identified",
-    "Effort concentration bands — Senior / Mid / Execution",
+    "Effort concentration bands: senior, mid-level, and execution",
     "Pricing & governance implications",
     "Decision memo usable at CXO / partner level",
     "Estimated margin erosion on current margin",
@@ -237,7 +237,7 @@ function SlideSolution() {
               <div className="space-y-2">
                 {notThis.map((n, i) => (
                   <div key={i} className="flex items-start gap-2">
-                    <span className="text-slate-400 text-sm">—</span>
+                    <span className="text-slate-400 text-sm">•</span>
                     <p className="text-slate-500 text-sm">{n}</p>
                   </div>
                 ))}
@@ -247,7 +247,7 @@ function SlideSolution() {
               <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-3">The Engine</p>
               <p className="text-slate-800 text-sm leading-relaxed">
                 Deterministic. Rule-based. No ML. No AI in verdict logic.
-                Encodes expert judgment into a <strong>repeatable, auditable decision system</strong> that gives the same answer to identical inputs — every time.
+                Encodes expert judgment into a <strong>repeatable, auditable decision system</strong> that gives the same answer to identical inputs, every time.
               </p>
             </div>
           </div>
@@ -263,21 +263,21 @@ function SlideWhyNow() {
     {
       icon: <Zap className="h-6 w-6" />,
       title: "AI is reshaping delivery economics",
-      body: "Firms are adopting AI tools rapidly — but have no framework to price AI-augmented work. The effort mix has changed. The pricing model hasn't.",
+      body: "Firms are adopting AI tools rapidly, but they have no framework to price AI-augmented work. The effort mix has changed, but the pricing model has not.",
     },
     {
       icon: <BarChart3 className="h-6 w-6" />,
       title: "CFOs want predictive confidence",
-      body: "Post-pandemic margin pressure means finance leaders are demanding forward-looking risk signals — not post-mortems built on lagging timesheet data.",
+      body: "Post-pandemic margin pressure means finance leaders are demanding forward-looking risk signals rather than post-mortems based on lagging timesheet data.",
     },
     {
       icon: <Target className="h-6 w-6" />,
       title: "No system sits before commitment",
-      body: "Every existing tool — ERP, PSA, BI — operates after delivery begins. The pre-commitment gap is entirely unaddressed. MarginMix owns that moment.",
+      body: "Every existing tool, including ERP, PSA, and BI systems, operates after delivery begins. The pre-commitment gap remains unaddressed, and MarginMix addresses that moment.",
     },
     {
       icon: <Clock className="h-6 w-6" />,
-      title: "The window is open — briefly",
+      title: "The window is open for a limited time",
       body: "AI-native firms will build this capability. The window to establish 'Margin Risk Clarity' as the category standard is 18–24 months.",
     },
   ];
@@ -285,7 +285,7 @@ function SlideWhyNow() {
     <div className="w-full h-full bg-white flex flex-col justify-center px-10 md:px-16 lg:px-24 py-16">
       <div className="max-w-5xl mx-auto w-full">
         <Tag>Why Now</Tag>
-        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Four forces converging — right now.</h2>
+        <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Four forces are converging right now.</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           {reasons.map((r, i) => (
             <div key={i} className="bg-white border border-slate-200 hover:border-emerald-400 transition-colors rounded-2xl p-6 shadow-sm">
@@ -312,7 +312,7 @@ function SlideCustomer() {
     "Make 70–80 pricing decisions annually",
     "Cannot afford large consulting engagements",
     "Lack internal decision systems",
-    "Feel margin risk acutely — every missed deal hurts",
+    "Feel margin risk acutely. Every missed deal hurts.",
     "Fewer decisions = higher stakes per decision",
   ];
   return (
@@ -369,17 +369,17 @@ function SlideRevenue() {
       <div className="max-w-5xl mx-auto w-full">
         <Tag>Revenue Model</Tag>
         <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2">Value-based. Decision-anchored. Not seat-based.</h2>
-        <p className="text-slate-500 text-sm mb-8">Pricing reflects the value of the decision being protected — not the number of users. Insurance for protecting margins.</p>
+        <p className="text-slate-500 text-sm mb-8">Pricing reflects the value of the decision being protected, not the number of users. It is insurance for protecting margins.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
             <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Entry / Assessment</p>
             <p className="text-4xl font-bold text-slate-900 mb-1">Free</p>
             <p className="text-slate-500 text-sm mb-4">for every submission</p>
             <div className="space-y-2 text-sm text-slate-600">
-              <p>— Instant output</p>
-              <p>— No commitment</p>
-              <p>— Decision memo + PDF</p>
-              <p>— Low friction entry</p>
+              <p>• Instant output</p>
+              <p>• No commitment</p>
+              <p>• Decision memo + PDF</p>
+              <p>• Low-friction entry</p>
             </div>
           </div>
           <div className="bg-emerald-50 border-2 border-emerald-400 rounded-2xl p-6">
@@ -387,11 +387,11 @@ function SlideRevenue() {
             <p className="text-4xl font-bold text-slate-900 mb-1">$5,000<span className="text-xl text-slate-400">/mo</span></p>
             <p className="text-slate-500 text-sm mb-4">60K ACV</p>
             <div className="space-y-2 text-sm text-slate-600">
-              <p>— Unlimited submissions</p>
-              <p>— Portfolio-level views</p>
-              <p>— Deal desk workflows</p>
-              <p>— AI ROI simulation</p>
-              <p>— Primary revenue driver</p>
+              <p>• Unlimited submissions</p>
+              <p>• Portfolio-level views</p>
+              <p>• Deal desk workflows</p>
+              <p>• AI ROI simulation</p>
+              <p>• Primary revenue driver</p>
             </div>
           </div>
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
@@ -399,10 +399,10 @@ function SlideRevenue() {
             <p className="text-4xl font-bold text-slate-900 mb-1">$7,500<span className="text-xl text-slate-400">/mo</span></p>
             <p className="text-slate-500 text-sm mb-4">90K ACV</p>
             <div className="space-y-2 text-sm text-slate-600">
-              <p>— Everything in Phase 1</p>
-              <p>— Engineering / SI firms</p>
-              <p>— Full expansion tier</p>
-              <p>— Year 2+ upsell</p>
+              <p>• Everything in Phase 1</p>
+              <p>• Engineering and SI firms</p>
+              <p>• Full expansion tier</p>
+              <p>• Year 2+ upsell</p>
             </div>
           </div>
         </div>
@@ -451,11 +451,11 @@ function SlideMarket() {
 // ── SLIDE 8: UNIT ECONOMICS ───────────────────────────────────────────────────
 function SlideUnitEconomics() {
   const metrics = [
-    { label: "Gross Margin", value: "90%", sub: "Minimal COGS — LLM narration + infra only", color: "text-emerald-600" },
+    { label: "Gross Margin", value: "90%", sub: "Minimal COGS, with LLM narration and infrastructure only", color: "text-emerald-600" },
     { label: "CAC", value: "Low", sub: "Founder-led sales initially. No channel cost in early stage", color: "text-blue-600" },
     { label: "Onboarding Cost", value: "$0", sub: "No integrations. No implementation. Instant assessment output", color: "text-purple-600" },
     { label: "ACV", value: "$60K", sub: "Even one avoided bad engagement justifies multiple years of subscription", color: "text-amber-600" },
-    { label: "Decision Frequency", value: "70–80/yr", sub: "Typical mid-tier firm pricing decisions — episodic, high-stakes", color: "text-red-600" },
+    { label: "Decision Frequency", value: "70–80/yr", sub: "Typical mid-tier firm pricing decisions are episodic and high-stakes", color: "text-red-600" },
     { label: "Payback", value: "< 1 deal", sub: "A single flagged engagement typically saves more than the annual fee", color: "text-emerald-600" },
   ];
   return (
@@ -482,9 +482,9 @@ function SlideUnitEconomics() {
 function SlideScalability() {
   const reasons = [
     { title: "Judgment is systemized", body: "Expert knowledge encoded once. Delivered infinitely. No per-client consulting required." },
-    { title: "AI amplifies speed, not logic", body: "GPT generates narratives only. The verdict logic is deterministic — auditable, repeatable, trustworthy." },
+    { title: "AI amplifies speed, not logic", body: "GPT generates narratives only. The verdict logic is deterministic, auditable, repeatable, and trustworthy." },
     { title: "Same engine, every industry", body: "Agencies, consulting, SIs, ITeS. The Workforce Intensity Matrix applies universally across professional services." },
-    { title: "No integration overhead", body: "Zero ERP/PSA connections needed. Assessment runs on structured inputs alone — no IT project, no implementation risk." },
+    { title: "No integration overhead", body: "No ERP or PSA connections are needed. The assessment uses structured inputs, with no IT project or implementation risk." },
     { title: "Decision infrastructure, not software", body: "Customers don't churn from decision infrastructure. Once embedded in the pricing process, switching cost is high." },
   ];
   return (
@@ -517,8 +517,8 @@ function SlideFounder() {
   const advantages = [
     "Deep operating experience across large, labor-intensive professional services organisations",
     "First-hand understanding of how pricing decisions are actually made at the senior level",
-    "Ability to encode judgment that others treat as intuition — and make it repeatable",
-    "Built the World's first Workforce Intensity Matrix — the proprietary framework powering the engine",
+    "Ability to encode judgment that others treat as intuition and make it repeatable",
+    "Built the world's first Workforce Intensity Matrix, the proprietary framework powering the engine",
     "Category creator advantage: defined the problem space before the market named it",
   ];
   return (
@@ -529,7 +529,7 @@ function SlideFounder() {
           The insight can't be reverse-engineered without the experience.
         </h2>
         <p className="text-slate-500 text-sm mb-8">
-          MarginMix exists because of a specific, hard-won operating perspective — one that took years of front-line pricing decisions to develop.
+          MarginMix grew from a specific, hard-won operating perspective shaped by years of front-line pricing decisions.
         </p>
         <div className="space-y-3 mb-8">
           {advantages.map((a, i) => (
@@ -541,7 +541,7 @@ function SlideFounder() {
         </div>
         <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
           <p className="text-emerald-800 text-base md:text-lg italic leading-relaxed">
-            "MarginMix helps professional services firms price work with confidence by systematising margin risk decisions before delivery begins — where mistakes are most expensive."
+            "MarginMix helps professional services firms price work with confidence by systematising margin risk decisions before delivery begins, when mistakes are most expensive."
           </p>
         </div>
       </div>

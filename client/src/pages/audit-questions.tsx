@@ -498,7 +498,7 @@ export default function AuditQuestions() {
                     <button type="button" disabled={isSubmitting} onClick={() => { setReviewing(false); setError(""); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#d7d6ca] px-4 py-3 text-sm font-semibold text-[#53645c] hover:bg-[#eeede5] disabled:opacity-50"><ArrowLeft size={16} /> Back to questions</button>
                     <button type="button" disabled={isSubmitting} onClick={submit} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#28796a] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#216657] disabled:cursor-wait disabled:opacity-60">{isSubmitting ? "Sending securely…" : "Submit audit"}<Send size={16} /></button>
                   </div>
-                  <p className="mt-3 text-xs leading-6 text-[#777d73]">When you submit, these answers—including financial information—are stored by MarginMix. A PDF copy is emailed to your supplied address and sid@dilexicon.com. Until then, your draft remains in this browser.</p>
+                  <p className="mt-3 text-xs leading-6 text-[#777d73]">When you submit, these answers, including financial information, are stored by MarginMix. A PDF copy is emailed to your supplied address and sid@dilexicon.com. Until then, your draft remains in this browser.</p>
                 </motion.div>
               ) : activeQuestion ? (
                 <motion.div key={activeQuestion.id} initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
@@ -508,7 +508,7 @@ export default function AuditQuestions() {
                       <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[#98998d]">Engagement assumptions</p>
                     </div>
                     <button type="button" disabled={isSubmitting} onClick={next} className="text-right text-xs font-semibold text-[#28796a] underline decoration-[#a7c7b8] underline-offset-4 hover:text-[#1c5d50] disabled:opacity-50">
-                      {activeIndex === visibleQuestions.length - 1 ? "Press Enter or Click here to submit" : "Press Enter or Click here to continue"}
+                      {activeIndex === visibleQuestions.length - 1 ? "Press Enter or click here to submit" : "Press Enter or click here to continue"}
                     </button>
                   </div>
                   <div className="max-w-3xl">
@@ -526,7 +526,7 @@ export default function AuditQuestions() {
                     <div className="mt-8 flex flex-col-reverse gap-3 border-t border-[#deddd2] pt-5 sm:flex-row sm:items-center sm:justify-between">
                       <button type="button" disabled={isSubmitting || activeIndex === 0} onClick={previous} className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-[#64716a] hover:bg-[#ebeae1] disabled:opacity-40"><ArrowLeft size={16} /> Back</button>
                       <button type="button" disabled={isSubmitting} onClick={next} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#28796a] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#216657] disabled:cursor-wait disabled:opacity-60">
-                        {activeIndex === visibleQuestions.length - 1 ? (isSubmitting ? "Submitting & emailing PDF…" : "Press Enter or Click here to submit") : "Press Enter or Click here to continue"}
+                        {activeIndex === visibleQuestions.length - 1 ? (isSubmitting ? "Submitting and emailing PDF…" : "Press Enter or click here to submit") : "Press Enter or click here to continue"}
                         {activeIndex === visibleQuestions.length - 1 ? <Send size={16} /> : <ArrowRight size={16} />}
                       </button>
                     </div>
@@ -577,7 +577,7 @@ export default function AuditQuestions() {
                   <div className="grid grid-cols-6 gap-1.5 sm:grid-cols-8 lg:grid-cols-6">
                     {sectionQuestions.map((question) => {
                       const status = getAnswerStatus(question, answers[question.id]);
-                      return <button key={question.id} type="button" disabled={isSubmitting} onClick={() => jumpToQuestion(question)} aria-label={`${question.title}: ${statusCopy[status]}`} title={`${question.title} — ${statusCopy[status]}`} className={`grid aspect-square min-h-8 place-items-center rounded-md text-[10px] font-bold transition hover:ring-2 hover:ring-[#28796a]/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#28796a] disabled:opacity-50 ${statusStyle[status]} ${activeId === question.id && !reviewing ? "ring-2 ring-[#24423c] ring-offset-1" : ""}`}><span>{sectionQuestions.indexOf(question) + 1}</span></button>;
+                      return <button key={question.id} type="button" disabled={isSubmitting} onClick={() => jumpToQuestion(question)} aria-label={`${question.title}: ${statusCopy[status]}`} title={`${question.title}: ${statusCopy[status]}`} className={`grid aspect-square min-h-8 place-items-center rounded-md text-[10px] font-bold transition hover:ring-2 hover:ring-[#28796a]/40 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#28796a] disabled:opacity-50 ${statusStyle[status]} ${activeId === question.id && !reviewing ? "ring-2 ring-[#24423c] ring-offset-1" : ""}`}><span>{sectionQuestions.indexOf(question) + 1}</span></button>;
                     })}
                   </div>
                 </div>;

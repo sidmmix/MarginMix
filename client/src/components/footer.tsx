@@ -10,7 +10,7 @@ export function Footer() {
           </Link>
           <p className="text-sm italic text-gray-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</p>
           <p className="text-gray-300 mb-6 mt-4">
-            MarginMix is a decision system for margin governance — not a delivery or productivity platform.
+            MarginMix is a decision system for margin governance, not a delivery or productivity platform.
           </p>
           <p className="text-gray-300 mb-6">
             Contact: <a href="mailto:sid@marginmix.ai" className="text-emerald-400 hover:text-emerald-300">sid@marginmix.ai</a>

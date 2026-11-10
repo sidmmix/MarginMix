@@ -114,6 +114,7 @@ DOCUMENT 2 — ASSESSMENT OUTPUT: Write this as a CFO-level briefing. Lead with 
 
 WRITING STANDARDS — follow these without exception:
 - Write in short, declarative, boardroom-grade sentences. No padding, no hedging, no filler.
+- Avoid em dashes in generated prose. Use commas or separate sentences instead.
 - Be precise and commercially specific. Avoid generic phrases like "this may impact margins" — state exactly what is at risk and why.
 - Use the active voice at all times.
 - Never use academic or overly technical language. Write as a trusted adviser speaking plainly to a CXO.
@@ -329,7 +330,7 @@ export function generateFallbackNarrative(decision: DecisionObject): NarrativeOu
         }
       },
       structuralRiskSignals: [
-        `AI Effort Shift classified as ${decision.aiImpactClassification}${decision.aiEffortShiftLabel ? ` (${decision.aiEffortShiftLabel})` : ""} — ${decision.aiImpactClassification === "Accretive" ? "AI tooling is contributing positively to delivery efficiency without undermining margin." : decision.aiImpactClassification === "Dilutive" ? "AI implementation is introducing complexity or cost that undermines the commercial return rather than enhancing it." : "AI tooling is present but does not materially alter the margin risk profile at this stage."}`
+        `AI Effort Shift classified as ${decision.aiImpactClassification}${decision.aiEffortShiftLabel ? ` (${decision.aiEffortShiftLabel})` : ""}. ${decision.aiImpactClassification === "Accretive" ? "AI tooling is contributing positively to delivery efficiency without undermining margin." : decision.aiImpactClassification === "Dilutive" ? "AI implementation is introducing complexity or cost that undermines the commercial return rather than enhancing it." : "AI tooling is present but does not materially alter the margin risk profile at this stage."}`
       ],
       overrideConditions: buildVerdictReport(decision).overrideDescription
     }

@@ -76,7 +76,7 @@ export function detectContradictions(s: Signals): ContradictionFlag[] {
   if (s.aiLeverage === "low" && s.measurementMaturity === "high") {
     flags.push({
       code: "AI_EFFORT_SHIFT_NEGATIVE",
-      description: "AI is expected to substitute senior thinking or has no clear substitution — increased oversight cost likely offsets any efficiency gains.",
+      description: "AI is expected to substitute senior thinking, or no clear substitution path has been identified. Increased oversight costs are likely to offset any efficiency gains.",
       severity: "warning"
     });
   }
