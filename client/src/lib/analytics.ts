@@ -75,6 +75,7 @@ export const analytics = {
 
   profilerStarted() {
     push("profiler_started", { event_category: "profiler" });
+    trackConsentAwareEvent("free_delivery_risk_check_started");
   },
 
   profilerCompleted(verdict: string) {
@@ -86,6 +87,14 @@ export const analytics = {
     push("profiler_continued_to_assessment", { event_category: "profiler" });
   },
 
+  profilerAuditCtaClicked() {
+    trackConsentAwareEvent("free_delivery_risk_check_audit_cta_clicked");
+  },
+
+  leakFormStarted() {
+    trackConsentAwareEvent("leak_calculator_started");
+  },
+
   leakFormSubmitted() {
     push("leak_form_submitted", { event_category: "free_tier_leak" });
     trackConsentAwareEvent("leak_calculator_completed");
@@ -93,5 +102,6 @@ export const analytics = {
 
   leakCtaClick() {
     push("leak_cta_click", { event_category: "free_tier_leak" });
+    trackConsentAwareEvent("leak_calculator_result_cta_clicked");
   },
 };

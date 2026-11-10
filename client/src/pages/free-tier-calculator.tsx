@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
@@ -34,8 +34,13 @@ export default function FreeTierCalculatorPage() {
   const [form, setForm] = useState<Partial<LeakInput>>(emptyForm);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [warnings, setWarnings] = useState<string[]>([]);
+  const hasTrackedStart = useRef(false);
 
   const update = <K extends keyof LeakInput>(key: K, value: LeakInput[K]) => {
+    if (!hasTrackedStart.current) {
+      analytics.leakFormStarted();
+      hasTrackedStart.current = true;
+    }
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 

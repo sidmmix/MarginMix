@@ -871,7 +871,10 @@ export default function QuickProfiler() {
             <Button
               size="lg"
               className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white py-3.5 sm:py-4 px-8 sm:px-10 text-base sm:text-lg shadow-lg rounded-xl flex flex-col h-auto gap-0.5 items-center"
-              onClick={() => window.open("https://calendly.com/sid-marginmix/30min", "_blank", "noopener,noreferrer")}
+              onClick={() => {
+                analytics.profilerAuditCtaClicked();
+                window.open("https://calendly.com/sid-marginmix/30min", "_blank", "noopener,noreferrer");
+              }}
             >
               <span className="flex items-center gap-2 font-semibold">
                 Book a Meeting - Get started with Full Audit
