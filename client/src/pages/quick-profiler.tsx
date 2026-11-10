@@ -371,6 +371,7 @@ export default function QuickProfiler() {
   const [direction, setDirection] = useState<1 | -1>(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const marginAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const profilerStartTracked = useRef(false);
   const { toast } = useToast();
   const shouldReduce = useReducedMotion();
 
@@ -457,7 +458,8 @@ export default function QuickProfiler() {
       const q = profilerQuestions[currentQuestion];
       analytics.questionView("profiler", q.number, q.id, q.section ?? "");
     }
-    if (currentQuestion === -1) {
+    if (currentQuestion === -1 && !profilerStartTracked.current) {
+      profilerStartTracked.current = true;
       analytics.profilerStarted();
     }
   }, [currentQuestion]);

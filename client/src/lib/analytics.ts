@@ -100,6 +100,10 @@ export const analytics = {
     trackConsentAwareEvent("leak_calculator_completed");
   },
 
+  leakCalculatorStarted() {
+    trackConsentAwareEvent("leak_calculator_started");
+  },
+
   leakCtaClick() {
     push("leak_cta_click", { event_category: "free_tier_leak" });
     trackConsentAwareEvent("leak_calculator_result_cta_clicked");
