@@ -3,14 +3,12 @@ export type { LeakInput, LeakResult } from "./types";
 export type { HoursTracked, ScopeBilled, ScopeMove } from "./constants";
 export { computeLeak } from "./compute-leak";
 export { validateLeakInput } from "./validate-input";
-export { buildComparisonLine } from "./comparison-line";
+export { readStoredLeakResult } from "./stored-result";
 export {
   formatUsd,
   formatUsdBandHeadline,
   formatPercent,
   formatPercentRange,
-  staffNormLabel,
-  grossMarginNormLabel,
 } from "./format";
 
 export const LEAK_RESULT_STORAGE_KEY = "marginmix_free_tier_leak_result";

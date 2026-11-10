@@ -21,9 +21,12 @@ import {
   type ScopeBilled,
   type ScopeMove,
   type HoursTracked,
+  DEFAULT_TARGET_MARGIN_PERCENT,
+  TARGET_MARGIN_OPTIONS,
 } from "@shared/leak-engine";
 
 const emptyForm: Partial<LeakInput> = {
+  targetMarginPercent: DEFAULT_TARGET_MARGIN_PERCENT,
   scopemove: undefined,
   scopebilled: undefined,
   hourstracked: undefined,
@@ -53,6 +56,7 @@ export default function FreeTierCalculatorPage() {
       months: Number(form.months),
       fte: Number(form.fte),
       staffcost: Number(form.staffcost),
+      targetMarginPercent: Number(form.targetMarginPercent ?? DEFAULT_TARGET_MARGIN_PERCENT),
       scopemove: form.scopemove,
       scopebilled: form.scopebilled,
       hourstracked: form.hourstracked,
@@ -145,9 +149,31 @@ export default function FreeTierCalculatorPage() {
               onChange={(e) => update("staffcost", Number(e.target.value))}
             />
             <p className="text-xs text-slate-500">
-              Use what your finance team allocates to this job, or FTE times your average fully loaded salary.
+              Use the total your finance team allocates to this job. If estimating from salary, convert fully loaded salary
+              to the entered period before multiplying by FTE.
             </p>
             {errors.staffcost && <p className="text-sm text-red-600">{errors.staffcost}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="target-margin">Target margin after staff costs</Label>
+            <Select
+              value={String(form.targetMarginPercent ?? DEFAULT_TARGET_MARGIN_PERCENT)}
+              onValueChange={(value) => update("targetMarginPercent", Number(value))}
+            >
+              <SelectTrigger id="target-margin" className="border-2 border-emerald-600 focus:ring-emerald-500">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {TARGET_MARGIN_OPTIONS.map((margin) => (
+                  <SelectItem key={margin} value={String(margin)}>{margin}%</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-slate-500">
+              The calculator derives a staff-cost ceiling from this target. It is a planning assumption, not an industry benchmark.
+            </p>
+            {errors.targetMarginPercent && <p className="text-sm text-red-600">{errors.targetMarginPercent}</p>}
           </div>
 
           <div className="space-y-2">

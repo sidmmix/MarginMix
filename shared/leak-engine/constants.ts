@@ -1,22 +1,14 @@
 // Every number the free tier depends on. Nothing here is user data.
-// BENCHMARK-labelled values are industry figures, not this firm's own data.
+// Model assumptions are not measured losses or industry benchmarks.
 
-/** BENCHMARK: staff cost as share of fee at a healthy agency gross margin. */
-export const STAFFCOST_NORM = 0.6;
+/** User-selectable target margin percentages; 40% preserves the current default. */
+export const TARGET_MARGIN_OPTIONS = [10, 15, 20, 25, 30, 35, 40, 45, 50] as const;
+export const DEFAULT_TARGET_MARGIN_PERCENT = 40;
 
-/** Derived; healthy gross margin implied by STAFFCOST_NORM. */
-export const GROSS_MARGIN_NORM = 0.4;
-
-/** Guardrail: cap delivery leak at this share of fee when staff share of fee is at or above 100%. */
+/** Guardrail: cap delivery exposure at this share of the total period fee. */
 export const MAX_DELIVERY_LEAK = 0.3;
 
-/**
- * Scales scope mid-point leak to an engagement-period estimate (acceptance calibration).
- * BENCHMARK bands in SCOPE_SHARE are per-fee shares before this scale.
- */
-export const SCOPE_LEAK_SCALE = 3;
-
-/** BENCHMARK scope leakage as share of fee, by how far scope moved. */
+/** Assumed scope exposure as share of the period fee, by scope movement. */
 export const SCOPE_SHARE = {
   none: { low: 0.0, high: 0.02 },
   slight: { low: 0.02, high: 0.04 },
@@ -43,10 +35,6 @@ export const BAND_WIDTH = {
 } as const;
 
 export type HoursTracked = keyof typeof BAND_WIDTH;
-
-/** BENCHMARK: typical revenue leakage for services firms (comparison line only). */
-export const INDUSTRY_LEAK_LOW = 0.04;
-export const INDUSTRY_LEAK_HIGH = 0.06;
 
 export const CAUSE_THRESHOLDS = {
   staffShareOverride: 0.8,

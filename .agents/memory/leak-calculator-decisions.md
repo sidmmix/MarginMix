@@ -9,8 +9,8 @@ Expose target margin from 10% to 50% in 5-percentage-point increments. The build
 
 **How to apply:** Preserve these choices when hardening the free calculator; they do not authorize changes to other assessment scoring.
 
-Audit and obtain explicit product-owner approval before changing the disputed duration treatment or associated acceptance values.
+Fee and staff cost are totals for the same entered period. Do not multiply delivery exposure or fee uplift by months or scope exposure by three. Apply the 30%-of-fee delivery cap consistently to all inputs.
 
-**Why:** The user chose “Audit before deciding” after the current engine and the supplied example tables were found to disagree. A request to continue the agreed tasks does not itself choose between those interpretations.
+**Why:** After reviewing the audit, the user explicitly approved the period-total package and its acceptance values.
 
-**How to apply:** Present the audit recommendation and its numerical effects before implementing disputed arithmetic. Do not treat the recommended period-total formulas or unconditional delivery cap as approved until the user selects them.
+**How to apply:** Keep max-plus-half-min combination, category percentages, billing multipliers, and range widths unchanged. Duration is contextual, not another multiplier on already-period-total amounts.

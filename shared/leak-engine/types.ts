@@ -5,6 +5,7 @@ export interface LeakInput {
   months: number;
   fte: number;
   staffcost: number;
+  targetMarginPercent?: number;
   scopemove: ScopeMove;
   scopebilled: ScopeBilled;
   hourstracked: HoursTracked;

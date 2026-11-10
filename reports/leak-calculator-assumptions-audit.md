@@ -1,5 +1,7 @@
 # MarginMix Leak Calculator — Assumptions Audit
 
+**Subsequent decision:** The product owner explicitly approved the period-total package, including removal of both extra multipliers, an unconditional 30% delivery cap, and the acceptance values below. The audit findings that follow describe the pre-change engine; the follow-on calculator work implements the approved recommendation. The combination rule, category bands, billing multipliers, and sensitivity widths remain unchanged.
+
 ## Status and scope
 
 Audit only. No calculator arithmetic, combined-indicator rule, acceptance-test expectations, customer-facing labels, analytics, or website content was changed.

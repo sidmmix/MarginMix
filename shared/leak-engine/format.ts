@@ -1,5 +1,3 @@
-import { GROSS_MARGIN_NORM, STAFFCOST_NORM } from "./constants";
-
 export function formatUsd(amount: number, options?: { decimals?: number }): string {
   const decimals = options?.decimals ?? 0;
   return new Intl.NumberFormat("en-US", {
@@ -22,12 +20,4 @@ export function formatPercent(value: number, decimals = 1): string {
 
 export function formatPercentRange(low: number, high: number, decimals = 0): string {
   return `${formatPercent(low, decimals)} to ${formatPercent(high, decimals)}`;
-}
-
-export function staffNormLabel(): string {
-  return `${Math.round(STAFFCOST_NORM * 100)}%`;
-}
-
-export function grossMarginNormLabel(): string {
-  return `${Math.round(GROSS_MARGIN_NORM * 100)}%`;
 }

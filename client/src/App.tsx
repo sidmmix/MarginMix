@@ -182,7 +182,7 @@ function Router() {
         exit={shouldReduce ? undefined : "exit"}
       >
         <Suspense fallback={<PageLoader />}>
-          <Switch>
+          <Switch location={location}>
             <Route path="/" component={HomeRedirect} />
             <Route path="/quick-profiler" component={QuickProfiler} />
             <Route path="/free-tier/calculator/output" component={FreeTierCalculatorOutput} />

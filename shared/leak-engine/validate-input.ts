@@ -1,4 +1,12 @@
-import { INPUT_BOUNDS, INPUT_WARNINGS } from "./constants";
+import {
+  BILLING_MULTIPLIER,
+  BAND_WIDTH,
+  DEFAULT_TARGET_MARGIN_PERCENT,
+  INPUT_BOUNDS,
+  INPUT_WARNINGS,
+  SCOPE_SHARE,
+  TARGET_MARGIN_OPTIONS,
+} from "./constants";
 import type { LeakInput } from "./types";
 
 export interface FieldErrors {
@@ -6,6 +14,7 @@ export interface FieldErrors {
   months?: string;
   fte?: string;
   staffcost?: string;
+  targetMarginPercent?: string;
   scopemove?: string;
   scopebilled?: string;
   hourstracked?: string;
@@ -25,12 +34,15 @@ export function validateLeakInput(raw: Partial<LeakInput>): ValidationResult {
   const months = Number(raw.months);
   const fte = Number(raw.fte);
   const staffcost = Number(raw.staffcost);
+  const targetMarginPercent = raw.targetMarginPercent === undefined
+    ? DEFAULT_TARGET_MARGIN_PERCENT
+    : Number(raw.targetMarginPercent);
 
   if (!Number.isFinite(fee) || fee <= 0) {
     errors.fee = "Enter a fee greater than zero.";
   }
-  if (!Number.isFinite(months) || months < INPUT_BOUNDS.months.min || months > INPUT_BOUNDS.months.max) {
-    errors.months = `Enter months between ${INPUT_BOUNDS.months.min} and ${INPUT_BOUNDS.months.max}.`;
+  if (!Number.isInteger(months) || months < INPUT_BOUNDS.months.min || months > INPUT_BOUNDS.months.max) {
+    errors.months = `Enter whole months between ${INPUT_BOUNDS.months.min} and ${INPUT_BOUNDS.months.max}.`;
   }
   if (!Number.isFinite(fte) || fte < INPUT_BOUNDS.fte.min || fte > INPUT_BOUNDS.fte.max) {
     errors.fte = `Enter FTE between ${INPUT_BOUNDS.fte.min} and ${INPUT_BOUNDS.fte.max}.`;
@@ -38,9 +50,18 @@ export function validateLeakInput(raw: Partial<LeakInput>): ValidationResult {
   if (!Number.isFinite(staffcost) || staffcost <= 0) {
     errors.staffcost = "Enter staff cost greater than zero.";
   }
-  if (!raw.scopemove) errors.scopemove = "Select scope movement.";
-  if (!raw.scopebilled) errors.scopebilled = "Select scope billing status.";
-  if (!raw.hourstracked) errors.hourstracked = "Select hours tracked.";
+  if (!TARGET_MARGIN_OPTIONS.includes(targetMarginPercent as (typeof TARGET_MARGIN_OPTIONS)[number])) {
+    errors.targetMarginPercent = "Choose a target margin from 10% to 50% in 5% increments.";
+  }
+  if (typeof raw.scopemove !== "string" || !Object.hasOwn(SCOPE_SHARE, raw.scopemove)) {
+    errors.scopemove = "Select a valid scope movement.";
+  }
+  if (typeof raw.scopebilled !== "string" || !Object.hasOwn(BILLING_MULTIPLIER, raw.scopebilled)) {
+    errors.scopebilled = "Select a valid scope billing status.";
+  }
+  if (typeof raw.hourstracked !== "string" || !Object.hasOwn(BAND_WIDTH, raw.hourstracked)) {
+    errors.hourstracked = "Select a valid hours-tracking option.";
+  }
 
   if (Object.keys(errors).length === 0) {
     if (staffcost > fee * INPUT_WARNINGS.staffCostHigh) {
@@ -50,7 +71,7 @@ export function validateLeakInput(raw: Partial<LeakInput>): ValidationResult {
       warnings.push("Check this figure. Staff cost is under a tenth of the fee.");
     }
     if (fte * months < INPUT_WARNINGS.minPersonMonths) {
-      warnings.push("That is less than one person-month of work. Check the numbers.");
+      warnings.push("That is less than half a person-month of work. Check the numbers.");
     }
   }
 
