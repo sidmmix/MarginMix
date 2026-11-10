@@ -14,7 +14,7 @@ const cards = [
     Icon: Gauge,
     iconColor: "text-emerald-600 dark:text-emerald-400",
     title: "Enterprise systems explain what happened",
-    body: "ERPs and dashboards report on the past. MarginMix acts earlier, when work is priced, staffed, and committed.",
+    body: "ERPs and dashboards report on the past. MarginMix provides real-time margin intelligence and an opportunity to rectify issues before they hit the P&L.",
   },
   {
     color: "border-amber-500",
