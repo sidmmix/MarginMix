@@ -2,6 +2,18 @@
 // GTM reads these pushes natively. In GTM, set up one GA4 Event tag triggered by
 // "Custom Event — All Events" to capture everything below.
 
+import { getStoredConsent } from "@/lib/consent";
+
+type AnalyticsData = Record<string, string | number | boolean>;
+
+declare global {
+  interface Window {
+    umami?: {
+      track(name: string, data?: AnalyticsData): void;
+    };
+  }
+}
+
 declare const dataLayer: Record<string, unknown>[];
 
 function push(event: string, params: Record<string, unknown> = {}) {
@@ -10,6 +22,16 @@ function push(event: string, params: Record<string, unknown> = {}) {
       dataLayer.push({ event, ...params });
     }
   } catch {}
+}
+
+function trackConsentAwareEvent(name: string) {
+  if (typeof window === "undefined" || getStoredConsent() !== "accepted") return;
+
+  try {
+    window.umami?.track(name);
+  } catch {
+    // Analytics must never interrupt an assessment or calculator flow.
+  }
 }
 
 export const analytics = {
@@ -57,6 +79,7 @@ export const analytics = {
 
   profilerCompleted(verdict: string) {
     push("profiler_completed", { event_category: "profiler", verdict });
+    trackConsentAwareEvent("free_delivery_risk_check_completed");
   },
 
   profilerContinuedToAssessment() {
@@ -65,6 +88,7 @@ export const analytics = {
 
   leakFormSubmitted() {
     push("leak_form_submitted", { event_category: "free_tier_leak" });
+    trackConsentAwareEvent("leak_calculator_completed");
   },
 
   leakCtaClick() {
