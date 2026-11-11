@@ -43,14 +43,14 @@ export default function Landing() {
               variants={shouldReduce ? undefined : heroItem}
               className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-emerald-700 dark:text-emerald-400 mb-5 leading-tight"
             >
-              Make engagement margin risk visible.
+              Make engagement margin risk Visible.
             </motion.h1>
 
             <motion.p
               variants={shouldReduce ? undefined : heroItem}
               className="text-base sm:text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-6 mx-auto leading-relaxed"
             >
-              Pressure-test pricing, staffing, and delivery assumptions of an engagement.
+              Pressure test pricing, staffing, and delivery assumptions of an engagement.
             </motion.p>
 
             <motion.p
@@ -59,7 +59,8 @@ export default function Landing() {
             >
               MarginMix is structured decision support for{" "}
               <span className="text-emerald-600 dark:text-emerald-400">pricing & margin risk</span>
-              , not a productivity or time-tracking system.
+              {" — "}
+              not a productivity or time-tracking system.
             </motion.p>
 
             <motion.div
@@ -73,6 +74,11 @@ export default function Landing() {
               </Link>
             </motion.div>
 
+            <motion.p
+              variants={shouldReduce ? undefined : heroItem}
+              className="mt-2 text-base sm:text-lg italic text-gray-900 dark:text-white px-2 sm:px-0"
+            >
+            </motion.p>
           </motion.div>
         </div>
       </section>
@@ -81,7 +87,7 @@ export default function Landing() {
       <section className="py-12 bg-white dark:bg-gray-800">
         <AnimatedSection className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="italic text-gray-500 dark:text-gray-400 text-base sm:text-lg leading-relaxed mb-4">
-            "Agencies benchmark 18–20% EBITDA. Most realize 13% or less. For a $25M agency, that gap is worth over $1.5M a year. It is often caused not by bad clients, but by delivery complexity that was never priced in."
+            "Agencies benchmark 18–20% EBITDA. Most realize 13% or less. For a $25M agency, that gap is worth over $1.5M a year — not lost to bad clients, but to delivery complexity that was never priced in."
           </p>
           <p className="text-lg sm:text-xl font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
             MarginMix helps you plug that gap!
@@ -102,7 +108,7 @@ export default function Landing() {
               </div>
               <div>
                 <p className="text-sm font-semibold text-gray-900 dark:text-white mb-1">AI is reshaping delivery</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">AI changes how work gets done. Most pricing models haven't caught up, creating a hidden margin gap.</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">AI changes how work gets done. Most pricing models haven't caught up — creating a hidden margin gap.</p>
               </div>
             </div>
             <div className="hidden md:block w-px h-12 bg-gray-200 dark:bg-gray-700 flex-shrink-0" />
@@ -127,7 +133,7 @@ export default function Landing() {
               What MarginMix tells you
             </h2>
             <p className="text-gray-500 dark:text-gray-400 text-center mb-12 text-sm sm:text-base">
-              The decision engine produces real verdict scenarios. Every output is deterministic, not AI-generated.
+              Real verdict scenarios from the decision engine — every output is deterministic, not AI-generated
             </p>
           </AnimatedSection>
 
@@ -468,7 +474,7 @@ export default function Landing() {
                 What MarginMix Does
               </h2>
               <p className="text-base md:text-xl text-gray-700 dark:text-gray-300 mb-12 text-center max-w-3xl mx-auto">
-                MarginMix acts as a pricing and margin assurance layer. It evaluates whether work is structurally viable based on how it will actually be staffed, governed, and reviewed, rather than how it looks on paper.
+                MarginMix acts as a pricing and margin assurance layer. It evaluates whether work is structurally viable based on how it will actually be staffed, governed, and reviewed — not how it looks on paper.
               </p>
             </AnimatedSection>
             
@@ -544,7 +550,7 @@ export default function Landing() {
                   </div>
                   <div className="flex items-start gap-3">
                     <Target className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 dark:text-gray-300 font-medium">More defensible margins without adding process or friction</span>
+                    <span className="text-gray-700 dark:text-gray-300 font-medium">More defensible margins — without adding process or friction</span>
                   </div>
                 </div>
               </div>
@@ -564,7 +570,7 @@ export default function Landing() {
                 Why MarginMix exists
               </h2>
               <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-                MarginMix is built on lived agency and consulting experience. Margin loss is not theoretical; agencies experience it.
+                MarginMix is built from lived agency and consulting experience — where margin loss isn't theoretical, it's experienced.
               </p>
               <p className="text-base md:text-lg text-emerald-600 dark:text-emerald-400 font-semibold leading-relaxed">
                 It exists to surface economic truth early, while decisions can still be changed.
@@ -575,7 +581,7 @@ export default function Landing() {
               {[
                 { icon: AlertTriangle, color: "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800", iconColor: "text-red-500", label: "Engagement arrives", sub: "Complexity is unknown. Pricing is gut-feel." },
                 { icon: BarChart3, color: "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800", iconColor: "text-amber-500", label: "MarginMix assesses", sub: "6 structural dimensions evaluated in minutes." },
-                { icon: Shield, color: "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800", iconColor: "text-emerald-500", label: "Decision clarity", sub: "Proceed, reprice, or restructure before it's too late." },
+                { icon: Shield, color: "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800", iconColor: "text-emerald-500", label: "Decision clarity", sub: "Proceed, reprice, or restructure — before it's too late." },
               ].map((step, i) => (
                 <div key={i}>
                   <div className={`flex items-start gap-4 rounded-xl border p-4 ${step.color}`}>
@@ -647,7 +653,7 @@ export default function Landing() {
             <h3 className="text-2xl font-bold text-emerald-400 mb-1">MarginMix</h3>
             <p className="text-sm italic text-gray-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</p>
             <p className="text-gray-300 mb-6 mt-4">
-              MarginMix is a decision system for margin governance, not a delivery or productivity platform.
+              MarginMix is a decision system for margin governance — not a delivery or productivity platform.
             </p>
             <p className="text-gray-300 mb-6">
               Contact: <a href="mailto:sid@marginmix.ai" className="text-emerald-400 hover:text-emerald-300">sid@marginmix.ai</a>

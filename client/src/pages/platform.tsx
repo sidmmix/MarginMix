@@ -7,7 +7,7 @@ const stages = [
   {
     status: "Available now",
     title: "Free Leak Calculator",
-    body: "Explore an engagement's fee, staff costs, scope movement, billing, and hours tracking. It returns an indicative, rule-based exposure estimate, not an audited loss.",
+    body: "Explore an engagement's fee, staff costs, scope movement, billing, and hours tracking. It returns an indicative, rule-based exposure estimate—not an audited loss.",
     action: true,
   },
   {

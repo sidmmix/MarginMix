@@ -14,15 +14,15 @@ const cards = [
     Icon: Gauge,
     iconColor: "text-emerald-600 dark:text-emerald-400",
     title: "Enterprise systems explain what happened",
-    body: "ERPs and dashboards report on the past. MarginMix provides real-time margin intelligence and an opportunity to rectify issues before they hit the P&L.",
+    body: "ERPs and dashboards report on the past. MarginMix acts earlier — when work is priced, staffed, and committed.",
   },
   {
     color: "border-amber-500",
     iconBg: "bg-amber-100 dark:bg-amber-900/30",
     Icon: Target,
     iconColor: "text-amber-600 dark:text-amber-400",
-    title: "Margins evolve with delivery",
-    body: "MarginMix accounts for delivery complexities that are inevitable in service delivery and gives you a real-time opportunity to change course and stop the bleed.",
+    title: "Pricing decisions create variance",
+    body: "Margin risk is locked in before delivery begins. MarginMix operates at this moment — when pricing assumptions can still be challenged.",
   },
   {
     color: "border-rose-500",
@@ -38,7 +38,7 @@ const cards = [
     Icon: Scale,
     iconColor: "text-blue-600 dark:text-blue-400",
     title: "Standardized pricing risk evaluation",
-    body: "A shared lens to pressure-test pricing, staffing, and coordination risk, creating discipline without bureaucracy.",
+    body: "A shared lens to pressure-test pricing, staffing, and coordination risk — creating discipline without bureaucracy.",
   },
   {
     color: "border-violet-500",
