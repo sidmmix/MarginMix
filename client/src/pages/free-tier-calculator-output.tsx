@@ -40,6 +40,7 @@ declare global {
     turnstile?: {
       render: (container: HTMLElement, options: TurnstileOptions) => string;
       remove: (widgetId: string) => void;
+      reset: (widgetId: string) => void;
     };
   }
 }
@@ -48,23 +49,25 @@ function TurnstileCheck({
   siteKey,
   onToken,
   onError,
+  resetSignal,
 }: {
   siteKey: string;
   onToken: (token: string) => void;
   onError: (message: string) => void;
+  resetSignal: number;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
-    let widgetId: string | undefined;
     const scriptUrl = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
     let script = document.querySelector<HTMLScriptElement>('script[src^="https://challenges.cloudflare.com/turnstile/v0/api.js"]');
 
     const renderWidget = () => {
-      if (!mounted || !window.turnstile || !containerRef.current || widgetId) return;
+      if (!mounted || !window.turnstile || !containerRef.current || widgetIdRef.current) return;
       try {
-        widgetId = window.turnstile.render(containerRef.current, {
+        widgetIdRef.current = window.turnstile.render(containerRef.current, {
           sitekey: siteKey,
           action: "leak_review_interest",
           callback: (token) => {
@@ -104,10 +107,18 @@ function TurnstileCheck({
       mounted = false;
       script?.removeEventListener("load", renderWidget);
       script?.removeEventListener("error", handleScriptError);
-      if (widgetId && window.turnstile) window.turnstile.remove(widgetId);
+      if (widgetIdRef.current && window.turnstile) window.turnstile.remove(widgetIdRef.current);
+      widgetIdRef.current = null;
       onToken("");
     };
   }, [siteKey, onToken, onError]);
+
+  useEffect(() => {
+    if (resetSignal > 0 && widgetIdRef.current && window.turnstile) {
+      onToken("");
+      window.turnstile.reset(widgetIdRef.current);
+    }
+  }, [resetSignal, onToken]);
 
   return <div ref={containerRef} aria-label="Cloudflare Turnstile security check" />;
 }
@@ -145,6 +156,7 @@ export default function FreeTierCalculatorOutputPage() {
   const [reviewError, setReviewError] = useState("");
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileError, setTurnstileError] = useState("");
+  const [turnstileResetSignal, setTurnstileResetSignal] = useState(0);
   const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? "";
 
   const handleTurnstileToken = useCallback((token: string) => setTurnstileToken(token), []);
@@ -180,6 +192,10 @@ export default function FreeTierCalculatorOutputPage() {
   const handleReviewSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!result || reviewSubmitting) return;
+    if (!turnstileToken) {
+      setReviewError("Complete the security check before submitting.");
+      return;
+    }
 
     const formData = new FormData(event.currentTarget);
     const payload = {
@@ -216,6 +232,8 @@ export default function FreeTierCalculatorOutputPage() {
       setReviewError(error instanceof Error ? error.message : "Unable to send your request right now. Please try again.");
     } finally {
       setReviewSubmitting(false);
+      setTurnstileToken("");
+      setTurnstileResetSignal((current) => current + 1);
     }
   };
 
@@ -395,6 +413,7 @@ export default function FreeTierCalculatorOutputPage() {
                       siteKey={turnstileSiteKey}
                       onToken={handleTurnstileToken}
                       onError={handleTurnstileError}
+                      resetSignal={turnstileResetSignal}
                     />
                   ) : (
                     <p role="alert" className="text-sm text-amber-800">

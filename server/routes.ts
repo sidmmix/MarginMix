@@ -325,11 +325,17 @@ export function registerRoutes(app: Express): Server {
 
     try {
       const request = requestSchema.parse(req.body);
-      const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
-      if (!turnstileSecret) {
+      const turnstileSecret = process.env.TURNSTILE_SECRET;
+      const expectedHostnames = new Set(
+        (process.env.TURNSTILE_HOSTNAMES ?? "")
+          .split(",")
+          .map((hostname) => hostname.trim().toLowerCase())
+          .filter(Boolean),
+      );
+      if (!turnstileSecret || expectedHostnames.size === 0) {
         return res.status(503).json({
           success: false,
-          message: "The security check is not configured yet. Please try again later.",
+          message: "The security check is not fully configured yet. Please try again later.",
         });
       }
 
@@ -338,9 +344,11 @@ export function registerRoutes(app: Express): Server {
         const verificationResponse = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          signal: AbortSignal.timeout(10_000),
           body: new URLSearchParams({
             secret: turnstileSecret,
             response: request.turnstileToken,
+            remoteip: req.ip || req.socket.remoteAddress || "",
           }),
         });
         if (!verificationResponse.ok) throw new Error("Turnstile verification request failed");
@@ -355,7 +363,7 @@ export function registerRoutes(app: Express): Server {
 
       if (
         !verification.success ||
-        verification.hostname?.toLowerCase() !== req.hostname.toLowerCase() ||
+        !expectedHostnames.has(verification.hostname?.toLowerCase() ?? "") ||
         verification.action !== "leak_review_interest"
       ) {
         return res.status(403).json({

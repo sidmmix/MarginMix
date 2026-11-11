@@ -50,3 +50,8 @@ integrations = ["javascript_openai:1.0.0", "javascript_log_in_with_replit:1.0.0"
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 180000
+
+[userenv]
+
+[userenv.shared]
+VITE_TURNSTILE_SITE_KEY = "0x4AAAAAAF8YTqqJPVaiV965"
