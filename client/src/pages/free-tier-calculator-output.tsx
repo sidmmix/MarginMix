@@ -157,7 +157,8 @@ export default function FreeTierCalculatorOutputPage() {
   const [turnstileToken, setTurnstileToken] = useState("");
   const [turnstileError, setTurnstileError] = useState("");
   const [turnstileResetSignal, setTurnstileResetSignal] = useState(0);
-  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? "";
+  const turnstileHostAllowed = typeof window !== "undefined" && window.location.hostname === "marginmix.ai";
+  const turnstileSiteKey = turnstileHostAllowed ? import.meta.env.VITE_TURNSTILE_SITE_KEY ?? "" : "";
 
   const handleTurnstileToken = useCallback((token: string) => setTurnstileToken(token), []);
   const handleTurnstileError = useCallback((message: string) => setTurnstileError(message), []);
@@ -418,6 +419,10 @@ export default function FreeTierCalculatorOutputPage() {
                       onError={handleTurnstileError}
                       resetSignal={turnstileResetSignal}
                     />
+                  ) : !turnstileHostAllowed ? (
+                    <p role="note" className="text-sm text-slate-600">
+                      The security check is enabled on marginmix.ai only. Please use the production site to submit a review request.
+                    </p>
                   ) : (
                     <p role="alert" className="text-sm text-amber-800">
                       The security check is not configured yet. Please try again later.
@@ -431,7 +436,13 @@ export default function FreeTierCalculatorOutputPage() {
                   disabled={reviewSubmitting || !turnstileToken || !turnstileSiteKey}
                   className="w-full bg-emerald-600 hover:bg-emerald-700"
                 >
-                  {reviewSubmitting ? "Sending..." : turnstileSiteKey && !turnstileToken ? "Complete the security check" : "Submit"}
+                  {reviewSubmitting
+                    ? "Sending..."
+                    : !turnstileHostAllowed
+                      ? "Available on marginmix.ai"
+                      : turnstileSiteKey && !turnstileToken
+                        ? "Complete the security check"
+                        : "Submit"}
                 </Button>
               </form>
             </>
