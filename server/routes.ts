@@ -15,7 +15,7 @@ import {
 
 import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
 import { assertSafePublicUrl, UnsafeUrlError } from "./url-safety";
-import { sendAssessmentEmail, sendFeedbackNotificationEmail, sendContactRequestEmail, PDFAttachment } from "./resend";
+import { sendAssessmentEmail, sendFeedbackNotificationEmail, sendContactRequestEmail, sendLeakReviewInterestEmails, PDFAttachment } from "./resend";
 import { executeDecisionEngine, DecisionObject } from "./decision-engine";
 import { generateNarrative, generateFallbackNarrative } from "./narrative-generator";
 import { renderDecisionMemoPDF, renderAssessmentOutputPDF, generatePDFFilename } from "./pdf-renderer";
@@ -302,6 +302,42 @@ export function registerRoutes(app: Express): Server {
       res.status(500).json({
         success: false,
         message: "Unable to send your message right now. Please try again.",
+      });
+    }
+  });
+
+  app.post("/api/leak-review-interest", publicRateLimit(5, 15 * 60_000, 100), async (req, res) => {
+    const requestSchema = z.object({
+      name: z.string().trim().min(1, "Full name is required").max(200),
+      email: z.string().trim().email("A valid email is required").max(320),
+      companyName: z.string().trim().min(1, "Company name is required").max(200),
+      engagement: z.object({
+        fee: z.number().finite().positive(),
+        months: z.number().int().min(1).max(60),
+        fte: z.number().finite().positive(),
+        staffcost: z.number().finite().nonnegative(),
+        targetMarginPercent: z.number().int().min(10).max(50),
+        exposureLow: z.number().finite().nonnegative(),
+        exposureHigh: z.number().finite().nonnegative(),
+      }),
+    });
+
+    try {
+      const request = requestSchema.parse(req.body);
+      await sendLeakReviewInterestEmails(request);
+      console.log(`Leak calculator review request received from ${request.companyName}`);
+      res.status(200).json({ success: true });
+    } catch (error: any) {
+      if (error.name === "ZodError") {
+        return res.status(400).json({
+          success: false,
+          message: error.issues?.[0]?.message || "Please check the form fields.",
+        });
+      }
+      console.error("Leak calculator review request error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Unable to send your request right now. Please try again.",
       });
     }
   });

@@ -771,3 +771,66 @@ export async function sendContactRequestEmail(contact: {
   throwIfResendError(result);
   return result;
 }
+
+export async function sendLeakReviewInterestEmails(contact: {
+  name: string;
+  email: string;
+  companyName: string;
+  engagement: {
+    fee: number;
+    months: number;
+    fte: number;
+    staffcost: number;
+    targetMarginPercent: number;
+    exposureLow: number;
+    exposureHigh: number;
+  };
+}) {
+  const name = escapeHtml(contact.name);
+  const email = escapeHtml(contact.email);
+  const companyName = escapeHtml(contact.companyName);
+  const { engagement } = contact;
+  const engagementRows = `
+    <p><strong>Fee for entered period:</strong> ${escapeHtml(engagement.fee)} USD</p>
+    <p><strong>Period:</strong> ${escapeHtml(engagement.months)} months</p>
+    <p><strong>Team size:</strong> ${escapeHtml(engagement.fte)} FTE</p>
+    <p><strong>Staff cost for entered period:</strong> ${escapeHtml(engagement.staffcost)} USD</p>
+    <p><strong>Target margin:</strong> ${escapeHtml(engagement.targetMarginPercent)}%</p>
+    <p><strong>Indicative exposure range:</strong> ${escapeHtml(engagement.exposureLow)} to ${escapeHtml(engagement.exposureHigh)} USD</p>
+  `;
+
+  const internalResult = await resend.emails.send({
+    from: "MarginMix <sid@marginmix.ai>",
+    to: ["sid@marginmix.ai"],
+    replyTo: contact.email,
+    subject: `Detailed engagement review request from ${contact.name}`,
+    html: `
+      <h1>Detailed engagement review request</h1>
+      <p><strong>Full name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Company:</strong> ${companyName}</p>
+      <h2>Calculator engagement details</h2>
+      ${engagementRows}
+    `,
+  });
+  throwIfResendError(internalResult);
+
+  const confirmationResult = await resend.emails.send({
+    from: "MarginMix <sid@marginmix.ai>",
+    to: [contact.email],
+    subject: "We received your detailed engagement review request",
+    html: `
+      <h1>Thank you, ${name}</h1>
+      <p>We received your request for a detailed review. The details you submitted are included below for your records.</p>
+      <p><strong>Full name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Company:</strong> ${companyName}</p>
+      <h2>Engagement details</h2>
+      ${engagementRows}
+      <p>Sid at MarginMix will be in touch.</p>
+    `,
+  });
+  throwIfResendError(confirmationResult);
+
+  return { internalId: internalResult.data?.id, confirmationId: confirmationResult.data?.id };
+}

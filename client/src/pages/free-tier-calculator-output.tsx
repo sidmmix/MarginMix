@@ -1,7 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation } from "wouter";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { analytics } from "@/lib/analytics";
 import {
   formatPercent,
@@ -45,6 +54,10 @@ function scopeAssumptionCopy(result: LeakResult): string {
 export default function FreeTierCalculatorOutputPage() {
   const [, setLocation] = useLocation();
   const [result, setResult] = useState<LeakResult | null>(null);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [reviewError, setReviewError] = useState("");
 
   useEffect(() => {
     const savedResult = readStoredLeakResult(sessionStorage.getItem(LEAK_RESULT_STORAGE_KEY));
@@ -66,6 +79,50 @@ export default function FreeTierCalculatorOutputPage() {
 
   const handleCta = () => {
     analytics.leakCtaClick();
+    setReviewSubmitted(false);
+    setReviewError("");
+    setReviewOpen(true);
+  };
+
+  const handleReviewSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!result || reviewSubmitting) return;
+
+    const formData = new FormData(event.currentTarget);
+    const payload = {
+      name: String(formData.get("name") ?? "").trim(),
+      email: String(formData.get("email") ?? "").trim(),
+      companyName: String(formData.get("companyName") ?? "").trim(),
+      engagement: {
+        fee: input.fee,
+        months: input.months,
+        fte: input.fte,
+        staffcost: input.staffcost,
+        targetMarginPercent,
+        exposureLow: result.leaklow,
+        exposureHigh: result.leakhigh,
+      },
+    };
+
+    setReviewSubmitting(true);
+    setReviewError("");
+    try {
+      const response = await fetch("/api/leak-review-interest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+      const responseBody = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(responseBody.message || "Unable to send your request right now. Please try again.");
+      }
+      setReviewSubmitted(true);
+    } catch (error) {
+      setReviewError(error instanceof Error ? error.message : "Unable to send your request right now. Please try again.");
+    } finally {
+      setReviewSubmitting(false);
+    }
   };
 
   return (
@@ -185,15 +242,13 @@ export default function FreeTierCalculatorOutputPage() {
 
         {/* Block 9 */}
         <section className="free-tier-leak-no-print space-y-3">
-          <Link href="/assessment">
-            <Button
-              size="lg"
-              className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700"
-              onClick={handleCta}
-            >
-              Review this engagement
-            </Button>
-          </Link>
+          <Button
+            size="lg"
+            className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700"
+            onClick={handleCta}
+          >
+            Review this engagement
+          </Button>
           <p className="text-sm text-slate-600 max-w-xl">
             Bring your SOW, timesheet export and rate card to a fuller review of these assumptions.
             This indicative calculator is not a substitute for checking the underlying records.
@@ -203,6 +258,55 @@ export default function FreeTierCalculatorOutputPage() {
           </Link>
         </section>
       </main>
+
+      <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
+        <DialogContent className="sm:max-w-lg">
+          {reviewSubmitted ? (
+            <DialogHeader>
+              <DialogTitle className="text-2xl text-emerald-700">Request submitted</DialogTitle>
+              <DialogDescription className="pt-2">
+                Your request and engagement summary have been emailed to you and Sid at MarginMix.
+              </DialogDescription>
+              <Button type="button" className="mt-4 bg-emerald-600 hover:bg-emerald-700" onClick={() => setReviewOpen(false)}>
+                Close
+              </Button>
+            </DialogHeader>
+          ) : (
+            <>
+              <DialogHeader>
+                <DialogTitle className="pr-6 text-xl leading-snug">
+                  Register Interest for a Detailed Review of Concerned Engagement/Account
+                </DialogTitle>
+                <DialogDescription>
+                  Enter your contact details. We’ll send your request and this engagement’s calculator summary to you and Sid.
+                </DialogDescription>
+              </DialogHeader>
+              <form onSubmit={handleReviewSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="review-full-name">Full Name</Label>
+                  <Input id="review-full-name" name="name" autoComplete="name" required maxLength={200} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="review-email">Email</Label>
+                  <Input id="review-email" name="email" type="email" autoComplete="email" required maxLength={320} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="review-company">Company Name</Label>
+                  <Input id="review-company" name="companyName" autoComplete="organization" required maxLength={200} />
+                </div>
+                {reviewError && <p role="alert" className="text-sm text-red-600">{reviewError}</p>}
+                <Button
+                  type="submit"
+                  disabled={reviewSubmitting}
+                  className="w-full bg-emerald-600 hover:bg-emerald-700"
+                >
+                  {reviewSubmitting ? "Sending..." : "Submit"}
+                </Button>
+              </form>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
