@@ -55,6 +55,12 @@ export default function FreeTierCalculatorPage() {
 
   const update = <K extends keyof LeakInput>(key: K, value: LeakInput[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+    setErrors((prev) => {
+      if (!prev[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
   };
 
   const updateNumeric = (key: NumericInputKey, value: string) => {
@@ -67,6 +73,17 @@ export default function FreeTierCalculatorPage() {
       if (!prev[key]) return prev;
       const next = { ...prev };
       delete next[key];
+      return next;
+    });
+  };
+
+  const validateField = (key: keyof LeakInput) => {
+    const message = validateLeakInput(form).errors[key];
+    setErrors((prev) => {
+      if (!message && !prev[key]) return prev;
+      const next = { ...prev };
+      if (message) next[key] = message;
+      else delete next[key];
       return next;
     });
   };
@@ -87,6 +104,11 @@ export default function FreeTierCalculatorPage() {
     setWarnings(result.warnings);
     if (!result.valid) {
       setErrors(result.errors as Record<string, string>);
+      requestAnimationFrame(() => {
+        const firstInvalid = document.querySelector<HTMLElement>('[aria-invalid="true"]');
+        firstInvalid?.scrollIntoView({ behavior: "smooth", block: "center" });
+        firstInvalid?.focus();
+      });
       return;
     }
     setErrors({});
@@ -95,6 +117,11 @@ export default function FreeTierCalculatorPage() {
     analytics.leakFormSubmitted();
     setLocation("/free-tier/calculator/output");
   };
+
+  const controlClass = (field: keyof LeakInput) =>
+    errors[field]
+      ? "border-2 border-red-500 bg-red-50/40 ring-2 ring-red-500/20 focus:ring-red-500 focus-visible:ring-red-500"
+      : "border-2 border-emerald-600 focus:ring-emerald-500 focus-visible:ring-emerald-500";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/40">
@@ -111,24 +138,30 @@ export default function FreeTierCalculatorPage() {
           Free indicative range from your fee, team cost, and scope signals. All figures stay in your browser.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} noValidate className="space-y-6">
+          <p className="text-sm text-slate-600">
+            <span className="font-semibold text-red-600">*</span> All fields are required.
+          </p>
           <div className="space-y-2">
-            <Label htmlFor="fee">Total fee on this engagement, in USD</Label>
+            <Label htmlFor="fee">Total fee on this engagement, in USD <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Input
               id="fee"
               type="number"
               min={1}
               step="any"
               required
+              aria-required="true"
+              aria-invalid={Boolean(errors.fee)}
               value={numericDrafts.fee}
-              className="border-2 border-emerald-600 focus-visible:ring-emerald-500"
+              className={controlClass("fee")}
               onChange={(e) => updateNumeric("fee", e.target.value)}
+              onBlur={() => validateField("fee")}
             />
             {errors.fee && <p className="text-sm text-red-600">{errors.fee}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="months">How many months the engagement covers, or has run</Label>
+            <Label htmlFor="months">How many months the engagement covers, or has run <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Input
               id="months"
               type="number"
@@ -136,15 +169,18 @@ export default function FreeTierCalculatorPage() {
               max={60}
               step={1}
               required
+              aria-required="true"
+              aria-invalid={Boolean(errors.months)}
               value={numericDrafts.months}
-              className="border-2 border-emerald-600 focus-visible:ring-emerald-500"
+              className={controlClass("months")}
               onChange={(e) => updateNumeric("months", e.target.value)}
+              onBlur={() => validateField("months")}
             />
             {errors.months && <p className="text-sm text-red-600">{errors.months}</p>}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="fte">Full-time equivalent people on the account</Label>
+            <Label htmlFor="fte">Full-time equivalent people on the account <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Input
               id="fte"
               type="number"
@@ -152,9 +188,12 @@ export default function FreeTierCalculatorPage() {
               max={200}
               step="any"
               required
+              aria-required="true"
+              aria-invalid={Boolean(errors.fte)}
               value={numericDrafts.fte}
-              className="border-2 border-emerald-600 focus-visible:ring-emerald-500"
+              className={controlClass("fte")}
               onChange={(e) => updateNumeric("fte", e.target.value)}
+              onBlur={() => validateField("fte")}
             />
             <p className="text-xs text-slate-500">
               Count shared people as a fraction. Ten people at 30% each is 3.0.
@@ -163,16 +202,19 @@ export default function FreeTierCalculatorPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="staffcost">Total staff cost on this account over the same period as the fee, in USD</Label>
+            <Label htmlFor="staffcost">Total staff cost on this account over the same period as the fee, in USD <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Input
               id="staffcost"
               type="number"
               min={1}
               step="any"
               required
+              aria-required="true"
+              aria-invalid={Boolean(errors.staffcost)}
               value={numericDrafts.staffcost}
-              className="border-2 border-emerald-600 focus-visible:ring-emerald-500"
+              className={controlClass("staffcost")}
               onChange={(e) => updateNumeric("staffcost", e.target.value)}
+              onBlur={() => validateField("staffcost")}
             />
             <p className="text-xs text-slate-500">
               Use the total your finance team allocates to this job. If estimating from salary, convert fully loaded salary
@@ -182,12 +224,18 @@ export default function FreeTierCalculatorPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="target-margin">Target margin after staff costs</Label>
+            <Label htmlFor="target-margin">Target margin after staff costs <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Select
               value={String(form.targetMarginPercent ?? DEFAULT_TARGET_MARGIN_PERCENT)}
               onValueChange={(value) => update("targetMarginPercent", Number(value))}
             >
-              <SelectTrigger id="target-margin" className="border-2 border-emerald-600 focus:ring-emerald-500">
+              <SelectTrigger
+                id="target-margin"
+                aria-required="true"
+                aria-invalid={Boolean(errors.targetMarginPercent)}
+                className={controlClass("targetMarginPercent")}
+                onBlur={() => validateField("targetMarginPercent")}
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -203,12 +251,18 @@ export default function FreeTierCalculatorPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="scope_move">Scope movement</Label>
+            <Label htmlFor="scope_move">Scope movement <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Select
               value={form.scopemove ?? ""}
               onValueChange={(v) => update("scopemove", v as ScopeMove)}
             >
-              <SelectTrigger id="scope_move" className="border-2 border-emerald-600 focus:ring-emerald-500">
+              <SelectTrigger
+                id="scope_move"
+                aria-required="true"
+                aria-invalid={Boolean(errors.scopemove)}
+                className={controlClass("scopemove")}
+                onBlur={() => validateField("scopemove")}
+              >
                 <SelectValue placeholder="Select…" />
               </SelectTrigger>
               <SelectContent>
@@ -222,12 +276,18 @@ export default function FreeTierCalculatorPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="scope_billed">Scope billing status</Label>
+            <Label htmlFor="scope_billed">Scope billing status <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Select
               value={form.scopebilled ?? ""}
               onValueChange={(v) => update("scopebilled", v as ScopeBilled)}
             >
-              <SelectTrigger id="scope_billed" className="border-2 border-emerald-600 focus:ring-emerald-500">
+              <SelectTrigger
+                id="scope_billed"
+                aria-required="true"
+                aria-invalid={Boolean(errors.scopebilled)}
+                className={controlClass("scopebilled")}
+                onBlur={() => validateField("scopebilled")}
+              >
                 <SelectValue placeholder="Select…" />
               </SelectTrigger>
               <SelectContent>
@@ -240,12 +300,18 @@ export default function FreeTierCalculatorPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="hours_tracked">Hours tracked on this account</Label>
+            <Label htmlFor="hours_tracked">Hours tracked on this account <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Select
               value={form.hourstracked ?? ""}
               onValueChange={(v) => update("hourstracked", v as HoursTracked)}
             >
-              <SelectTrigger id="hours_tracked" className="border-2 border-emerald-600 focus:ring-emerald-500">
+              <SelectTrigger
+                id="hours_tracked"
+                aria-required="true"
+                aria-invalid={Boolean(errors.hourstracked)}
+                className={controlClass("hourstracked")}
+                onBlur={() => validateField("hourstracked")}
+              >
                 <SelectValue placeholder="Select…" />
               </SelectTrigger>
               <SelectContent>
@@ -256,6 +322,12 @@ export default function FreeTierCalculatorPage() {
             </Select>
             {errors.hourstracked && <p className="text-sm text-red-600">{errors.hourstracked}</p>}
           </div>
+
+          {Object.keys(errors).length > 0 && (
+            <div role="alert" className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm font-medium text-red-800">
+              Complete or correct all fields highlighted in red before calculating.
+            </div>
+          )}
 
           {warnings.length > 0 && (
             <Alert className="border-amber-200 bg-amber-50">
