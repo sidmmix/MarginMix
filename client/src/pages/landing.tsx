@@ -43,7 +43,7 @@ export default function Landing() {
               variants={shouldReduce ? undefined : heroItem}
               className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-emerald-700 dark:text-emerald-400 mb-5 leading-tight"
             >
-              Make engagement margin risk Visible.
+              Make Margin Risk Visible.
             </motion.h1>
 
             <motion.p

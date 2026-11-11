@@ -55,3 +55,9 @@ timeoutMs = 180000
 
 [userenv.shared]
 VITE_TURNSTILE_SITE_KEY = "0x4AAAAAAF8YTqqJPVaiV965"
+
+[userenv.development]
+TURNSTILE_HOSTNAMES = "b1ac8574-8aca-4106-9a5c-bbe1a90b48d8-00-182vcf3v4nbiz.riker.replit.dev,localhost,127.0.0.1"
+
+[userenv.production]
+TURNSTILE_HOSTNAMES = "marginmix.ai,www.marginmix.ai"

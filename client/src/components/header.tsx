@@ -8,10 +8,12 @@ import { useToast } from "@/hooks/use-toast";
 interface HeaderProps {
   variant?: "transparent" | "solid";
   hideDemoButton?: boolean;
+  notice?: string;
 }
 
 export function Header({
   variant = "transparent",
+  notice,
 }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [location] = useLocation();
@@ -226,6 +228,13 @@ export function Header({
           )}
         </AnimatePresence>
       </div>
+      {notice && (
+        <div className="border-t border-gray-200 bg-white px-4 py-2 dark:border-gray-700 dark:bg-gray-900">
+          <p className="mx-auto max-w-7xl text-center text-xs font-bold text-gray-800 dark:text-gray-100 sm:text-sm">
+            {notice}
+          </p>
+        </div>
+      )}
     </nav>
   );
 }

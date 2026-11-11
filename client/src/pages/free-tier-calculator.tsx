@@ -98,7 +98,7 @@ export default function FreeTierCalculatorPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/40">
-      <Header variant="solid" hideDemoButton />
+      <Header variant="solid" hideDemoButton notice="Data entered and computed is not stored." />
       <main className="max-w-lg mx-auto px-4 pt-24 pb-16">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
           Engagement leak calculator
@@ -268,6 +268,9 @@ export default function FreeTierCalculatorPage() {
           </Button>
         </form>
       </main>
+      <footer className="border-t border-slate-200 bg-white px-4 py-5 text-center text-sm text-slate-700">
+        <p className="font-bold">Data entered and computed is not stored.</p>
+      </footer>
     </div>
   );
 }
