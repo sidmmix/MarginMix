@@ -241,7 +241,11 @@ export default function FreeTierCalculatorOutputPage() {
   return (
     <div className="min-h-screen bg-white free-tier-leak-print-root">
       <div className="free-tier-leak-no-print">
-        <Header variant="solid" hideDemoButton notice="Data entered and computed is not stored." />
+        <Header
+          variant="solid"
+          hideDemoButton
+          notice="Calculator inputs and results stay in your browser. Submitting a review request emails your contact details and engagement summary to you and MarginMix."
+        />
       </div>
 
       <main className="max-w-2xl mx-auto px-4 pt-24 pb-16 print:pt-6 print:pb-6">
@@ -372,7 +376,9 @@ export default function FreeTierCalculatorOutputPage() {
         </section>
       </main>
       <footer className="border-t border-slate-200 bg-white px-4 py-5 text-center text-sm text-slate-700">
-        <p className="font-bold">Data entered and computed is not stored.</p>
+        <p className="font-bold">
+          Calculator inputs and results stay in your browser. Submitting a review request emails your contact details and engagement summary to you and MarginMix.
+        </p>
       </footer>
 
       <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
