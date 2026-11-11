@@ -32,9 +32,17 @@ const emptyForm: Partial<LeakInput> = {
   hourstracked: undefined,
 };
 
+type NumericInputKey = "fee" | "months" | "fte" | "staffcost";
+
 export default function FreeTierCalculatorPage() {
   const [, setLocation] = useLocation();
   const [form, setForm] = useState<Partial<LeakInput>>(emptyForm);
+  const [numericDrafts, setNumericDrafts] = useState<Record<NumericInputKey, string>>({
+    fee: "",
+    months: "",
+    fte: "",
+    staffcost: "",
+  });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [warnings, setWarnings] = useState<string[]>([]);
   const startTracked = useRef(false);
@@ -47,6 +55,20 @@ export default function FreeTierCalculatorPage() {
 
   const update = <K extends keyof LeakInput>(key: K, value: LeakInput[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const updateNumeric = (key: NumericInputKey, value: string) => {
+    setNumericDrafts((prev) => ({ ...prev, [key]: value }));
+    setForm((prev) => ({
+      ...prev,
+      [key]: value.trim() === "" ? undefined : Number(value),
+    }));
+    setErrors((prev) => {
+      if (!prev[key]) return prev;
+      const next = { ...prev };
+      delete next[key];
+      return next;
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -94,9 +116,9 @@ export default function FreeTierCalculatorPage() {
               min={1}
               step="any"
               required
-              value={form.fee ?? ""}
+              value={numericDrafts.fee}
               className="border-2 border-emerald-600 focus-visible:ring-emerald-500"
-              onChange={(e) => update("fee", Number(e.target.value) as LeakInput["fee"])}
+              onChange={(e) => updateNumeric("fee", e.target.value)}
             />
             {errors.fee && <p className="text-sm text-red-600">{errors.fee}</p>}
           </div>
@@ -110,9 +132,9 @@ export default function FreeTierCalculatorPage() {
               max={60}
               step={1}
               required
-              value={form.months ?? ""}
+              value={numericDrafts.months}
               className="border-2 border-emerald-600 focus-visible:ring-emerald-500"
-              onChange={(e) => update("months", Number(e.target.value))}
+              onChange={(e) => updateNumeric("months", e.target.value)}
             />
             {errors.months && <p className="text-sm text-red-600">{errors.months}</p>}
           </div>
@@ -126,9 +148,9 @@ export default function FreeTierCalculatorPage() {
               max={200}
               step="any"
               required
-              value={form.fte ?? ""}
+              value={numericDrafts.fte}
               className="border-2 border-emerald-600 focus-visible:ring-emerald-500"
-              onChange={(e) => update("fte", Number(e.target.value))}
+              onChange={(e) => updateNumeric("fte", e.target.value)}
             />
             <p className="text-xs text-slate-500">
               Count shared people as a fraction. Ten people at 30% each is 3.0.
@@ -144,9 +166,9 @@ export default function FreeTierCalculatorPage() {
               min={1}
               step="any"
               required
-              value={form.staffcost ?? ""}
+              value={numericDrafts.staffcost}
               className="border-2 border-emerald-600 focus-visible:ring-emerald-500"
-              onChange={(e) => update("staffcost", Number(e.target.value))}
+              onChange={(e) => updateNumeric("staffcost", e.target.value)}
             />
             <p className="text-xs text-slate-500">
               Use the total your finance team allocates to this job. If estimating from salary, convert fully loaded salary
