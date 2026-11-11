@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useLocation } from "wouter";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,91 @@ import {
   type LeakResult,
 } from "@shared/leak-engine";
 import { BILLING_MULTIPLIER } from "@shared/leak-engine";
+
+type TurnstileOptions = {
+  sitekey: string;
+  action: string;
+  callback: (token: string) => void;
+  "expired-callback": () => void;
+  "error-callback": () => void;
+};
+
+declare global {
+  interface Window {
+    turnstile?: {
+      render: (container: HTMLElement, options: TurnstileOptions) => string;
+      remove: (widgetId: string) => void;
+    };
+  }
+}
+
+function TurnstileCheck({
+  siteKey,
+  onToken,
+  onError,
+}: {
+  siteKey: string;
+  onToken: (token: string) => void;
+  onError: (message: string) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    let widgetId: string | undefined;
+    const scriptUrl = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+    let script = document.querySelector<HTMLScriptElement>('script[src^="https://challenges.cloudflare.com/turnstile/v0/api.js"]');
+
+    const renderWidget = () => {
+      if (!mounted || !window.turnstile || !containerRef.current || widgetId) return;
+      try {
+        widgetId = window.turnstile.render(containerRef.current, {
+          sitekey: siteKey,
+          action: "leak_review_interest",
+          callback: (token) => {
+            onError("");
+            onToken(token);
+          },
+          "expired-callback": () => {
+            onToken("");
+            onError("The security check expired. Please complete it again.");
+          },
+          "error-callback": () => {
+            onToken("");
+            onError("The security check could not be completed. Please try again.");
+          },
+        });
+      } catch {
+        onError("The security check could not be loaded. Please refresh and try again.");
+      }
+    };
+    const handleScriptError = () => onError("The security check could not be loaded. Please refresh and try again.");
+
+    if (window.turnstile) {
+      renderWidget();
+    } else {
+      if (!script) {
+        script = document.createElement("script");
+        script.src = scriptUrl;
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+      }
+      script.addEventListener("load", renderWidget);
+      script.addEventListener("error", handleScriptError);
+    }
+
+    return () => {
+      mounted = false;
+      script?.removeEventListener("load", renderWidget);
+      script?.removeEventListener("error", handleScriptError);
+      if (widgetId && window.turnstile) window.turnstile.remove(widgetId);
+      onToken("");
+    };
+  }, [siteKey, onToken, onError]);
+
+  return <div ref={containerRef} aria-label="Cloudflare Turnstile security check" />;
+}
 
 function confidenceCopy(hours: LeakResult["input"]["hourstracked"]): string {
   if (hours === "no") {
@@ -58,6 +143,12 @@ export default function FreeTierCalculatorOutputPage() {
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
   const [reviewError, setReviewError] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileError, setTurnstileError] = useState("");
+  const turnstileSiteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY ?? "";
+
+  const handleTurnstileToken = useCallback((token: string) => setTurnstileToken(token), []);
+  const handleTurnstileError = useCallback((message: string) => setTurnstileError(message), []);
 
   useEffect(() => {
     const savedResult = readStoredLeakResult(sessionStorage.getItem(LEAK_RESULT_STORAGE_KEY));
@@ -81,6 +172,8 @@ export default function FreeTierCalculatorOutputPage() {
     analytics.leakCtaClick();
     setReviewSubmitted(false);
     setReviewError("");
+    setTurnstileToken("");
+    setTurnstileError("");
     setReviewOpen(true);
   };
 
@@ -93,6 +186,7 @@ export default function FreeTierCalculatorOutputPage() {
       name: String(formData.get("name") ?? "").trim(),
       email: String(formData.get("email") ?? "").trim(),
       companyName: String(formData.get("companyName") ?? "").trim(),
+      turnstileToken,
       engagement: {
         fee: input.fee,
         months: input.months,
@@ -294,13 +388,28 @@ export default function FreeTierCalculatorOutputPage() {
                   <Label htmlFor="review-company">Company Name</Label>
                   <Input id="review-company" name="companyName" autoComplete="organization" required maxLength={200} />
                 </div>
+                <div className="space-y-2">
+                  <Label>Security check</Label>
+                  {turnstileSiteKey ? (
+                    <TurnstileCheck
+                      siteKey={turnstileSiteKey}
+                      onToken={handleTurnstileToken}
+                      onError={handleTurnstileError}
+                    />
+                  ) : (
+                    <p role="alert" className="text-sm text-amber-800">
+                      The security check is not configured yet. Please try again later.
+                    </p>
+                  )}
+                  {turnstileError && <p role="alert" className="text-sm text-red-600">{turnstileError}</p>}
+                </div>
                 {reviewError && <p role="alert" className="text-sm text-red-600">{reviewError}</p>}
                 <Button
                   type="submit"
-                  disabled={reviewSubmitting}
+                  disabled={reviewSubmitting || !turnstileToken || !turnstileSiteKey}
                   className="w-full bg-emerald-600 hover:bg-emerald-700"
                 >
-                  {reviewSubmitting ? "Sending..." : "Submit"}
+                  {reviewSubmitting ? "Sending..." : turnstileSiteKey && !turnstileToken ? "Complete the security check" : "Submit"}
                 </Button>
               </form>
             </>

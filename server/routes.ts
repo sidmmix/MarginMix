@@ -311,6 +311,7 @@ export function registerRoutes(app: Express): Server {
       name: z.string().trim().min(1, "Full name is required").max(200),
       email: z.string().trim().email("A valid email is required").max(320),
       companyName: z.string().trim().min(1, "Company name is required").max(200),
+      turnstileToken: z.string().min(1).max(2048),
       engagement: z.object({
         fee: z.number().finite().positive(),
         months: z.number().int().min(1).max(60),
@@ -324,6 +325,45 @@ export function registerRoutes(app: Express): Server {
 
     try {
       const request = requestSchema.parse(req.body);
+      const turnstileSecret = process.env.TURNSTILE_SECRET_KEY;
+      if (!turnstileSecret) {
+        return res.status(503).json({
+          success: false,
+          message: "The security check is not configured yet. Please try again later.",
+        });
+      }
+
+      let verification: { success?: boolean; hostname?: string; action?: string };
+      try {
+        const verificationResponse = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams({
+            secret: turnstileSecret,
+            response: request.turnstileToken,
+          }),
+        });
+        if (!verificationResponse.ok) throw new Error("Turnstile verification request failed");
+        verification = await verificationResponse.json();
+      } catch (verificationError) {
+        console.error("Turnstile verification is unavailable:", verificationError);
+        return res.status(503).json({
+          success: false,
+          message: "The security check could not be verified. Please try again.",
+        });
+      }
+
+      if (
+        !verification.success ||
+        verification.hostname?.toLowerCase() !== req.hostname.toLowerCase() ||
+        verification.action !== "leak_review_interest"
+      ) {
+        return res.status(403).json({
+          success: false,
+          message: "The security check did not pass. Please complete it and try again.",
+        });
+      }
+
       await sendLeakReviewInterestEmails(request);
       console.log(`Leak calculator review request received from ${request.companyName}`);
       res.status(200).json({ success: true });
