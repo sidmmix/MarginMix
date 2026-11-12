@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Cookie, X } from "lucide-react";
+import { BrandName } from "@/components/brand-name";
 import { getStoredConsent, CONSENT_KEY } from "@/lib/consent";
 
 declare function gtag(...args: unknown[]): void;
@@ -76,7 +77,7 @@ export function CookieConsent() {
               <div>
                 <p className="font-semibold text-sm text-slate-900 leading-snug">We use cookies</p>
                 <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
-                  Analytics cookies help us understand how you use MarginMix so we can improve the experience. No personal data is sold or shared.
+                  Analytics cookies help us understand how you use <BrandName /> so we can improve the experience. No personal data is sold or shared.
                 </p>
               </div>
             </div>

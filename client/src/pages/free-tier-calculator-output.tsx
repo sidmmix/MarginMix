@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useLocation } from "wouter";
 import { Header } from "@/components/header";
+import { BrandName } from "@/components/brand-name";
+import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +14,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { analytics } from "@/lib/analytics";
+import { ChevronDown } from "lucide-react";
 import {
   formatPercent,
   formatCurrency,
@@ -151,6 +154,7 @@ function scopeAssumptionCopy(result: LeakResult): string {
 export default function FreeTierCalculatorOutputPage() {
   const [, setLocation] = useLocation();
   const [result, setResult] = useState<LeakResult | null>(null);
+  const [showMethodology, setShowMethodology] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
@@ -242,38 +246,35 @@ export default function FreeTierCalculatorOutputPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white free-tier-leak-print-root">
+    <div className="mm-page min-h-screen free-tier-leak-print-root mm-results">
       <div className="free-tier-leak-no-print">
-        <Header
-          variant="solid"
-          hideDemoButton
-          notice="Your calculator inputs and results remain in this browser session and are not saved to MarginMix’s database."
-        />
+        <Header notice="Your calculator inputs and results remain in this browser session and are not saved to MarginMix’s database." />
       </div>
 
-      <main className="max-w-2xl mx-auto px-4 pt-32 pb-16 print:pt-6 print:pb-6">
+      <main className="max-w-4xl mx-auto px-4 pt-32 pb-16 print:pt-6 print:pb-6 sm:px-6">
         {/* Block 1 */}
         <header className="mb-8 print:mb-4">
-          <h1 className="text-xl font-semibold text-slate-900">Engagement leak analysis</h1>
-          <p className="text-slate-600 mt-1">
+          <p className="mm-eyebrow mb-2">Your engagement snapshot</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-[#183b37] sm:text-4xl">Engagement leak analysis</h1>
+          <p className="text-[#60776f] mt-2">
             Fee {formatCurrency(input.fee, currency)} over {input.months} month{input.months === 1 ? "" : "s"}. {fteDisplay} FTE.
           </p>
         </header>
 
         {/* Block 2 */}
-        <section className="mb-8 print:mb-4">
+        <section className="mm-result-hero mb-8 print:mb-4">
           {result.noLeak ? (
             <>
-              <p className="text-3xl sm:text-4xl font-bold text-emerald-700">No material modelled exposure detected</p>
-              <p className="text-slate-700 mt-3">Combined exposure indicator: {formatCurrency(result.leakpoint, currency)}. Indicative exposure range: {formatCurrency(result.leaklow, currency)} to {formatCurrency(result.leakhigh, currency)}.</p>
+              <p className="text-3xl sm:text-4xl font-extrabold text-[#146d58]">No material modelled exposure detected</p>
+              <p className="text-[#45635a] mt-3">Combined exposure indicator: {formatCurrency(result.leakpoint, currency)}. Indicative exposure range: {formatCurrency(result.leaklow, currency)} to {formatCurrency(result.leakhigh, currency)}.</p>
             </>
           ) : (
             <>
-              <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Indicative exposure range</p>
-              <p className="text-[clamp(1.75rem,8vw,2.75rem)] font-bold text-slate-900 leading-tight break-words">
+              <p className="text-xs font-extrabold uppercase tracking-[.15em] text-[#5f8074]">Indicative exposure range</p>
+              <p className="mm-number text-[clamp(1.9rem,8vw,4rem)] font-extrabold text-[#183b37] leading-tight break-words">
                 {formatCurrencyBandHeadline(result.leaklow, currency)} to {formatCurrencyBandHeadline(result.leakhigh, currency)}
               </p>
-              <p className="text-slate-700 mt-3 text-base sm:text-lg">
+              <p className="text-[#45635a] mt-3 text-base sm:text-lg">
                 {formatPercent(result.leakpctlow, 0)} to {formatPercent(result.leakpcthigh, 0)} of fee. Combined exposure indicator:{" "}
                 {formatCurrency(result.leakpoint, currency)}, or {formatPercent(result.leakpctmid, 1)}.
               </p>
@@ -289,13 +290,13 @@ export default function FreeTierCalculatorOutputPage() {
         )}
 
         {/* Block 4 */}
-          <section className="mb-8 grid gap-6 sm:grid-cols-2 print:mb-4">
+          <section className="mm-result-grid mb-8 grid gap-4 sm:grid-cols-2 print:mb-4">
             <div
-              className={`rounded-xl border p-4 ${result.driver === "delivery" ? "border-emerald-500 bg-emerald-50/50" : "border-slate-200"}`}
+                className={`rounded-2xl border p-5 ${result.driver === "delivery" ? "border-[#79b39b] bg-[#eaf3e9]" : "border-[#dce5dc] bg-[#fffefa]"}`}
             >
-              <h2 className="font-semibold text-slate-900">Estimated delivery-cost exposure</h2>
-              <p className="text-2xl font-bold mt-1">{formatCurrency(result.deliveryleak, currency)}</p>
-              <p className="text-sm text-slate-600 mt-2">
+              <h2 className="font-semibold text-[#294c45]">Estimated delivery-cost exposure</h2>
+              <p className="mm-number text-3xl font-extrabold text-[#183b37] mt-1">{formatCurrency(result.deliveryleak, currency)}</p>
+              <p className="text-sm text-[#60776f] mt-2">
                 Staff cost is {formatPercent(result.staffsharepct, 0)} of fee. Your selected target is {targetMarginPercent}% after staff costs, which sets a {100 - targetMarginPercent}% staff-cost ceiling.
               </p>
               {result.deliverycapped && (
@@ -309,11 +310,11 @@ export default function FreeTierCalculatorOutputPage() {
             </div>
 
               <div
-                className={`rounded-xl border p-4 ${result.driver === "scope" ? "border-emerald-500 bg-emerald-50/50" : "border-slate-200"}`}
+                className={`rounded-2xl border p-5 ${result.driver === "scope" ? "border-[#79b39b] bg-[#eaf3e9]" : "border-[#dce5dc] bg-[#fffefa]"}`}
               >
-                <h2 className="font-semibold text-slate-900">Estimated scope exposure</h2>
-                <p className="text-2xl font-bold mt-1">{formatCurrency(result.scopeleak, currency)}</p>
-                <p className="text-sm text-slate-600 mt-2 capitalize">{scopeSubtitle(result)}</p>
+                <h2 className="font-semibold text-[#294c45]">Estimated scope exposure</h2>
+                <p className="mm-number text-3xl font-extrabold text-[#183b37] mt-1">{formatCurrency(result.scopeleak, currency)}</p>
+                <p className="text-sm text-[#60776f] mt-2 capitalize">{scopeSubtitle(result)}</p>
                 {!result.noLeak && result.driver === "scope" && (
                   <p className="text-sm font-medium text-emerald-800 mt-2">This is the driver.</p>
                 )}
@@ -344,8 +345,25 @@ export default function FreeTierCalculatorOutputPage() {
           )}
         </section>
 
-        <section className="mb-8 space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 print:mb-4">
-          <h2 className="font-semibold text-slate-900">How to interpret this estimate</h2>
+        <section className="mm-explain mb-8 space-y-3 rounded-2xl border border-[#dce5dc] bg-[#eaf0e8] p-5 text-sm text-[#45635a] print:mb-4">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="font-semibold text-slate-900">Estimate assumptions and method</h2>
+            <Button
+              type="button"
+              variant="ghost"
+              aria-expanded={showMethodology}
+              aria-controls="leak-estimate-methodology"
+              onClick={() => setShowMethodology((open) => !open)}
+              className="free-tier-leak-no-print shrink-0 text-[#146d58] hover:bg-[#dce9d7]"
+            >
+              {showMethodology ? "Hide details" : "How this estimate works"}
+              <ChevronDown className={`ml-2 h-4 w-4 transition-transform ${showMethodology ? "rotate-180" : ""}`} />
+            </Button>
+          </div>
+          <div
+            id="leak-estimate-methodology"
+            className={`free-tier-leak-methodology-content space-y-3 ${showMethodology ? "" : "hidden"}`}
+          >
             <p>
               The combined exposure indicator is the larger of the delivery and scope estimates plus half the smaller.
               These components can overlap, so this is not their additive total, verified loss, or recovered revenue.
@@ -358,31 +376,28 @@ export default function FreeTierCalculatorOutputPage() {
             and do not multiply these amounts. Delivery exposure is capped at 30% of fee. These assumptions have not been
             calibrated against actual engagement outcomes.
           </p>
+          </div>
         </section>
 
         {/* Block 9 */}
         <section className="free-tier-leak-no-print space-y-3">
-          <Button
+            <Button
             size="lg"
-            className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700"
+            className="mm-action w-full sm:w-auto bg-[#146d58] hover:bg-[#0c5747]"
             onClick={handleCta}
           >
             Review this engagement
           </Button>
-          <p className="text-sm text-slate-600 max-w-xl">
+          <p className="text-sm text-[#60776f] max-w-xl">
             Bring your SOW, timesheet export and rate card to a fuller review of these assumptions.
             This indicative calculator is not a substitute for checking the underlying records.
           </p>
-          <Link href="/free-tier/calculator" className="text-sm text-emerald-700 hover:underline inline-block">
+          <Link href="/free-tier/calculator" className="text-sm font-semibold text-[#146d58] hover:underline inline-block">
             Run another engagement
           </Link>
         </section>
       </main>
-      <footer className="border-t border-slate-200 bg-white px-4 py-5 text-center text-sm text-slate-700">
-        <p className="font-bold">
-          Your calculator inputs and results remain in this browser session and are not saved to MarginMix’s database.
-        </p>
-      </footer>
+      <Footer notice="Your calculator inputs and results remain in this browser session and are not saved to MarginMix’s database." />
 
       <Dialog open={reviewOpen} onOpenChange={setReviewOpen}>
         <DialogContent className="sm:max-w-lg">
@@ -390,7 +405,7 @@ export default function FreeTierCalculatorOutputPage() {
             <DialogHeader>
               <DialogTitle className="text-2xl text-emerald-700">Request submitted</DialogTitle>
               <DialogDescription className="pt-2">
-                Your request and engagement summary have been emailed to you and Sid at MarginMix.
+                Your request and engagement summary have been emailed to you and Sid at <BrandName />.
               </DialogDescription>
               <Button type="button" className="mt-4 bg-emerald-600 hover:bg-emerald-700" onClick={() => setReviewOpen(false)}>
                 Close

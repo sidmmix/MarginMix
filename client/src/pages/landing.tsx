@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import { AlertTriangle, CheckCircle, XCircle, Users, Building2, Briefcase, Target, Shield, TrendingUp, BarChart3, Zap } from "lucide-react";
 import { Link } from "wouter";
 import { Header } from "@/components/header";
-import { AnimatedSection, MotionButton } from "@/components/animations";
+import { Footer } from "@/components/footer";
+import { BrandName } from "@/components/brand-name";
+import { AnimatedSection } from "@/components/animations";
 import { staggerContainer, staggerItem } from "@/components/motion-variants";
 
 const heroContainer = {
@@ -18,67 +20,82 @@ const heroItem = {
 export default function Landing() {
   const shouldReduce = useReducedMotion();
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-100 dark:from-gray-900 dark:via-gray-800 dark:to-emerald-900 relative overflow-hidden">
+    <div className="mm-page mm-home min-h-screen relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-200/30 dark:bg-emerald-700/20 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-200/30 dark:bg-teal-700/20 rounded-full blur-3xl"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-emerald-100/20 to-teal-100/20 dark:from-emerald-800/10 dark:to-teal-800/10 rounded-full blur-3xl"></div>
       </div>
 
-      <Header hideDemoButton />
+      <Header />
 
       {/* Spacer for fixed header */}
       <div className="h-16"></div>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-6 sm:pt-10 pb-16">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="mm-home-hero relative overflow-hidden pt-6 sm:pt-10 pb-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
-            className="text-center"
+            className="grid items-center gap-10 text-left lg:grid-cols-[1.05fr_.95fr]"
             variants={shouldReduce ? undefined : heroContainer}
             initial={shouldReduce ? undefined : "hidden"}
             animate={shouldReduce ? undefined : "show"}
           >
+            <div className="relative z-10">
             <motion.h1
               variants={shouldReduce ? undefined : heroItem}
-              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-emerald-700 dark:text-emerald-400 mb-5 leading-tight"
+              className="mm-display max-w-3xl text-4xl sm:text-5xl md:text-6xl lg:text-[4.4rem] font-extrabold text-[#f8f6ee] mb-5"
             >
               Make Margin Risk Visible.
             </motion.h1>
 
             <motion.p
               variants={shouldReduce ? undefined : heroItem}
-              className="text-base sm:text-lg md:text-xl text-gray-700 dark:text-gray-300 mb-6 mx-auto leading-relaxed"
+              className="max-w-xl text-base sm:text-lg md:text-xl text-[#d1e0d8] mb-6 leading-relaxed"
             >
               Pressure test pricing, staffing, and delivery assumptions of an engagement.
             </motion.p>
 
             <motion.p
               variants={shouldReduce ? undefined : heroItem}
-              className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-7 px-2 sm:px-0"
+              className="max-w-xl text-base sm:text-lg font-semibold text-[#eff3e9] mb-7"
             >
-              MarginMix is structured decision support for{" "}
-              <span className="text-emerald-600 dark:text-emerald-400">pricing & margin risk</span>
-              {" — "}
-              not a productivity or time-tracking system.
+              <BrandName className="mm-brand-pad" /> is structured decision support for{" "}
+                  <span className="text-[#d5e96c]">pricing & margin risk.</span>{" "}
+              Not a productivity or time tracking system.
             </motion.p>
 
             <motion.div
               variants={shouldReduce ? undefined : heroItem}
-              className="flex flex-col sm:flex-row gap-3 justify-center items-center"
+              className="flex flex-col items-start gap-3 sm:flex-row"
             >
-              <Link href="/free-tier/input">
-                <MotionButton className="w-full sm:w-auto h-auto sm:h-14 py-3 sm:py-0 text-sm sm:text-lg px-5 sm:px-8 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl whitespace-normal font-semibold">
-                  Try Free Scanner
-                </MotionButton>
+              <Link href="/free-tier/input" className="mm-action inline-flex w-full items-center justify-center bg-[#d5e96c] px-6 py-3.5 text-sm font-bold text-[#183b37] hover:bg-[#e2f48a] sm:w-auto sm:px-8 sm:py-4 sm:text-base">
+                Try Free Scanner
               </Link>
             </motion.div>
 
-            <motion.p
-              variants={shouldReduce ? undefined : heroItem}
-              className="mt-2 text-base sm:text-lg italic text-gray-900 dark:text-white px-2 sm:px-0"
-            >
-            </motion.p>
+            </div>
+            <motion.div variants={shouldReduce ? undefined : heroItem} className="relative mt-2 mx-auto w-full max-w-lg lg:mt-0">
+              <div className="absolute inset-x-7 top-7 bottom-0 rotate-[-5deg] rounded-[2rem] border border-white/10 bg-[#0e302c]/50" />
+              <div className="relative rounded-[2rem] border border-white/15 bg-[#f5f3eb] p-4 shadow-[0_28px_70px_rgba(0,0,0,.22)] sm:p-6">
+                <div className="flex items-center justify-between border-b border-[#e3e8df] pb-4">
+                  <div><p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#789087]">Decision snapshot</p><p className="mt-1 font-bold text-[#183b37]">Engagement economics</p></div>
+                  <span className="rounded-full bg-[#e7f0e8] px-3 py-1 text-xs font-bold text-[#146d58]">Review ready</span>
+                </div>
+                <div className="mt-6 flex items-end justify-between">
+                  <div><p className="text-xs text-[#70857d]">Decision lens</p><p className="mt-1 text-3xl font-extrabold tracking-tight text-[#183b37]">Risk in view</p></div>
+                  <div className="grid h-[76px] w-[76px] place-items-center rounded-full border-[7px] border-[#e2e96b] border-b-[#dfe7dc] text-[10px] font-extrabold text-[#146d58]">STRUCTURE</div>
+                </div>
+                <div className="mt-7 space-y-4">
+                  {["Workforce intensity", "Commercial exposure", "Coordination load"].map((label, index) => (
+                    <div key={label} className="flex items-center justify-between border-b border-[#e8ece5] pb-3 text-xs last:border-0">
+                      <span className="font-semibold text-[#45635a]">{label}</span><span className={`rounded-full px-2.5 py-1 font-bold ${index === 0 ? "bg-[#f7edcf] text-[#8a6828]" : "bg-[#e7f0e8] text-[#397965]"}`}>{index === 0 ? "Review" : "Visible"}</span>
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-3 border-t border-[#e3e8df] pt-4 text-[10px] text-[#8a9a91]">Illustrative interface · outputs depend on stated assumptions</p>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -90,7 +107,7 @@ export default function Landing() {
             "Agencies benchmark 18–20% EBITDA. Most realize 13% or less. For a $25M agency, that gap is worth over $1.5M a year — not lost to bad clients, but to delivery complexity that was never priced in."
           </p>
           <p className="text-lg sm:text-xl font-semibold text-emerald-600 dark:text-emerald-400 mb-2">
-            MarginMix helps you plug that gap!
+            <BrandName /> helps you plug that gap!
           </p>
           <p className="text-xs text-gray-400 dark:text-gray-500">
             Figures derived from publicly available data
@@ -130,7 +147,7 @@ export default function Landing() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection>
             <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 text-center">
-              What MarginMix tells you
+              What <BrandName /> tells you
             </h2>
             <p className="text-gray-500 dark:text-gray-400 text-center mb-12 text-sm sm:text-base">
               Real verdict scenarios from the decision engine — every output is deterministic, not AI-generated
@@ -146,7 +163,10 @@ export default function Landing() {
           >
 
             {/* Verdict 1: Structurally Safe */}
-            <motion.div variants={shouldReduce ? undefined : staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+            <motion.details name="marginmix-verdict" variants={shouldReduce ? undefined : staggerItem} className="group overflow-hidden rounded-2xl border border-white/10 bg-[#153e38]">
+              <summary className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 text-white outline-none focus-visible:ring-2 focus-visible:ring-[#d5e96c] sm:px-7">
+                <span><span className="font-bold">Structurally Safe</span><span className="ml-2 text-xs text-emerald-300">Low risk · 22/100 · 18% to 17%</span></span><span className="shrink-0 rounded-full border border-white/20 px-3 py-1 text-[10px] font-bold text-[#d5e96c]">View scenario</span>
+              </summary>
               <div className="p-6 sm:p-8">
                 <div className="rounded-xl border bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border-emerald-500/30 p-5 sm:p-6 mb-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
@@ -206,10 +226,13 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </motion.details>
 
             {/* Verdict 2: Price Sensitive */}
-            <motion.div variants={shouldReduce ? undefined : staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+            <motion.details name="marginmix-verdict" variants={shouldReduce ? undefined : staggerItem} className="group overflow-hidden rounded-2xl border border-white/10 bg-[#153e38]">
+              <summary className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 text-white outline-none focus-visible:ring-2 focus-visible:ring-[#d5e96c] sm:px-7">
+                <span><span className="font-bold">Price Sensitive</span><span className="ml-2 text-xs text-amber-200">Moderate risk · 52/100 · 15% to 8%</span></span><span className="shrink-0 rounded-full border border-white/20 px-3 py-1 text-[10px] font-bold text-[#d5e96c]">View scenario</span>
+              </summary>
               <div className="p-6 sm:p-8">
                 <div className="rounded-xl border bg-gradient-to-br from-amber-500/20 to-amber-600/10 border-amber-500/30 p-5 sm:p-6 mb-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
@@ -269,10 +292,13 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </motion.details>
 
             {/* Verdict 3: Structurally Fragile */}
-            <motion.div variants={shouldReduce ? undefined : staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+            <motion.details name="marginmix-verdict" variants={shouldReduce ? undefined : staggerItem} className="group overflow-hidden rounded-2xl border border-white/10 bg-[#153e38]">
+              <summary className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 text-white outline-none focus-visible:ring-2 focus-visible:ring-[#d5e96c] sm:px-7">
+                <span><span className="font-bold">Structurally Fragile</span><span className="ml-2 text-xs text-red-200">High risk · 74/100 · 20% to 6%</span></span><span className="shrink-0 rounded-full border border-white/20 px-3 py-1 text-[10px] font-bold text-[#d5e96c]">View scenario</span>
+              </summary>
               <div className="p-6 sm:p-8">
                 <div className="rounded-xl border bg-gradient-to-br from-red-500/20 to-red-600/10 border-red-500/30 p-5 sm:p-6 mb-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
@@ -332,10 +358,13 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </motion.details>
 
             {/* Verdict 4: Do Not Proceed Without Repricing */}
-            <motion.div variants={shouldReduce ? undefined : staggerItem} className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl overflow-hidden">
+            <motion.details name="marginmix-verdict" variants={shouldReduce ? undefined : staggerItem} className="group overflow-hidden rounded-2xl border border-white/10 bg-[#153e38]">
+              <summary className="flex cursor-pointer items-center justify-between gap-4 px-5 py-4 text-white outline-none focus-visible:ring-2 focus-visible:ring-[#d5e96c] sm:px-7">
+                <span><span className="font-bold">Do Not Proceed Without Repricing</span><span className="ml-2 text-xs text-red-200">Very high risk · 89/100 · 16% to -4%</span></span><span className="shrink-0 rounded-full border border-white/20 px-3 py-1 text-[10px] font-bold text-[#d5e96c]">View scenario</span>
+              </summary>
               <div className="p-6 sm:p-8">
                 <div className="rounded-xl border bg-gradient-to-br from-red-600/20 to-red-700/10 border-red-600/30 p-5 sm:p-6 mb-5">
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
@@ -395,24 +424,29 @@ export default function Landing() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </motion.details>
 
           </motion.div>
 
           <AnimatedSection delay={0.1}>
             <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-8">
-              These are illustrative scenarios showing actual verdict types from the MarginMix decision engine
+              These are illustrative scenarios showing actual verdict types from the <BrandName /> decision engine
             </p>
           </AnimatedSection>
         </div>
       </section>
 
-      {/* Pre vs Post MarginMix */}
+      {/* Pre and post comparison */}
+      <details className="bg-white dark:bg-gray-800">
+        <summary className="mx-auto flex max-w-5xl cursor-pointer items-center justify-between gap-4 px-4 py-6 text-left text-sm font-bold text-[#183b37] outline-none focus-visible:ring-2 focus-visible:ring-[#146d58] sm:px-8">
+          <span>Before and after</span>
+          <span className="text-xs font-semibold text-[#146d58]">See the full comparison</span>
+        </summary>
       <section className="py-20 bg-white dark:bg-gray-800">
         <AnimatedSection className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-8">
             <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-8">
-              <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">Pre MarginMix</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-6">Before <BrandName /></h3>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <span className="text-gray-400 mt-1 flex-shrink-0">&#x2022;</span>
@@ -437,7 +471,7 @@ export default function Landing() {
               </ul>
             </div>
             <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-2xl p-8">
-              <h3 className="text-xl md:text-2xl font-bold text-emerald-700 dark:text-emerald-400 mb-6">Post MarginMix</h3>
+              <h3 className="text-xl md:text-2xl font-bold text-emerald-700 dark:text-emerald-400 mb-6">With <BrandName /></h3>
               <ul className="space-y-4">
                 <li className="flex items-start gap-3">
                   <CheckCircle className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-1" />
@@ -464,6 +498,7 @@ export default function Landing() {
           </div>
         </AnimatedSection>
       </section>
+      </details>
 
       {/* What MarginMix Does */}
       <section className="py-20 bg-gray-50 dark:bg-gray-900">
@@ -471,10 +506,10 @@ export default function Landing() {
           <div className="max-w-4xl mx-auto">
             <AnimatedSection>
               <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-                What MarginMix Does
+                What <BrandName /> does
               </h2>
               <p className="text-base md:text-xl text-gray-700 dark:text-gray-300 mb-12 text-center max-w-3xl mx-auto">
-                MarginMix acts as a pricing and margin assurance layer. It evaluates whether work is structurally viable based on how it will actually be staffed, governed, and reviewed — not how it looks on paper.
+                <BrandName /> is a pricing and margin assurance layer. It evaluates structural viability from how work will be staffed, governed, and reviewed.
               </p>
             </AnimatedSection>
             
@@ -510,16 +545,16 @@ export default function Landing() {
               <AnimatedSection delay={0.05}>
               <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 border-gray-400 shadow-sm">
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-                  What MarginMix Is (and Isn't)
+                  What <BrandName /> is and is not
                 </h3>
                 <div className="space-y-3 mb-6">
                   <p className="text-gray-600 dark:text-gray-400">
                     <XCircle className="h-4 w-4 text-gray-400 inline-block mr-2 align-middle" />
-                    <span>MarginMix is <span className="font-semibold">not</span> a productivity tool.</span>
+                    <span><BrandName /> is <span className="font-semibold">not</span> a productivity tool.</span>
                   </p>
                   <p className="text-gray-600 dark:text-gray-400">
                     <XCircle className="h-4 w-4 text-gray-400 inline-block mr-2 align-middle" />
-                    <span>It is <span className="font-semibold">not</span> a time-tracking system.</span>
+                    <span>It is <span className="font-semibold">not</span> a time tracking system.</span>
                   </p>
                   <p className="text-gray-600 dark:text-gray-400">
                     <XCircle className="h-4 w-4 text-gray-400 inline-block mr-2 align-middle" />
@@ -567,10 +602,10 @@ export default function Landing() {
             {/* Text */}
             <div>
               <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
-                Why MarginMix exists
+                Why <BrandName /> exists
               </h2>
               <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
-                MarginMix is built from lived agency and consulting experience — where margin loss isn't theoretical, it's experienced.
+                <BrandName /> is built from lived agency and consulting experience, where margin loss is experienced, not theoretical.
               </p>
               <p className="text-base md:text-lg text-emerald-600 dark:text-emerald-400 font-semibold leading-relaxed">
                 It exists to surface economic truth early, while decisions can still be changed.
@@ -580,7 +615,7 @@ export default function Landing() {
             <div className="flex flex-col gap-3">
               {[
                 { icon: AlertTriangle, color: "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800", iconColor: "text-red-500", label: "Engagement arrives", sub: "Complexity is unknown. Pricing is gut-feel." },
-                { icon: BarChart3, color: "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800", iconColor: "text-amber-500", label: "MarginMix assesses", sub: "6 structural dimensions evaluated in minutes." },
+                { icon: BarChart3, color: "bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800", iconColor: "text-amber-500", label: "Structural review", sub: "6 structural dimensions evaluated in minutes." },
                 { icon: Shield, color: "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800", iconColor: "text-emerald-500", label: "Decision clarity", sub: "Proceed, reprice, or restructure — before it's too late." },
               ].map((step, i) => (
                 <div key={i}>
@@ -646,24 +681,7 @@ export default function Landing() {
         </AnimatedSection>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-emerald-400 mb-1">MarginMix</h3>
-            <p className="text-sm italic text-gray-400 mb-4" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</p>
-            <p className="text-gray-300 mb-6 mt-4">
-              MarginMix is a decision system for margin governance — not a delivery or productivity platform.
-            </p>
-            <p className="text-gray-300 mb-6">
-              Contact: <a href="mailto:sid@marginmix.ai" className="text-emerald-400 hover:text-emerald-300">sid@marginmix.ai</a>
-            </p>
-            <p className="text-gray-400 text-sm">
-              MarginMix-Headroom. All rights reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

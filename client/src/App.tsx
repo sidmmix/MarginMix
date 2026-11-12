@@ -9,6 +9,9 @@ import {
 import { publishableKeyFromHost } from "@clerk/react/internal";
 import { shadcn } from "@clerk/themes";
 import { CookieConsent } from "@/components/cookie-consent";
+import { BrandName } from "@/components/brand-name";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -58,19 +61,19 @@ const clerkAppearance = {
   },
   variables: {
     colorPrimary: "#059669",
-    colorForeground: "#0f172a",
-    colorMutedForeground: "#64748b",
+    colorForeground: "#183b37",
+    colorMutedForeground: "#60776f",
     colorDanger: "#dc2626",
-    colorBackground: "#ffffff",
-    colorInput: "#f8fafc",
-    colorInputForeground: "#0f172a",
-    colorNeutral: "#cbd5e1",
-    fontFamily: "Inter, ui-sans-serif, system-ui, sans-serif",
+    colorBackground: "#fffefa",
+    colorInput: "#f5f3eb",
+    colorInputForeground: "#183b37",
+    colorNeutral: "#dce5dc",
+    fontFamily: "Open Sans, ui-sans-serif, system-ui, sans-serif",
     borderRadius: "0.75rem",
   },
   elements: {
     rootBox: "w-full flex justify-center",
-    cardBox: "bg-white rounded-2xl w-[440px] max-w-full overflow-hidden shadow-xl border border-emerald-100",
+    cardBox: "bg-[#fffefa] rounded-2xl w-[440px] max-w-full overflow-hidden shadow-xl border border-[#dce5dc]",
     card: "!shadow-none !border-0 !bg-transparent !rounded-none",
     footer: "!shadow-none !border-0 !bg-transparent !rounded-none",
     headerTitle: "text-slate-900",
@@ -134,16 +137,52 @@ function ScrollToTop() {
 
 function SignInPage() {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-100 px-4">
-      <SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} />
+    <div className="min-h-[100dvh] bg-[#f5f3eb]">
+      <Header />
+      <div className="h-16" aria-hidden="true" />
+      <main className="mm-auth relative flex min-h-[calc(100dvh-4rem)] items-center justify-center overflow-hidden bg-[#f5f3eb] px-4 py-12">
+      <div className="relative grid w-full max-w-6xl overflow-hidden rounded-[2rem] bg-[#153e38] shadow-[0_28px_80px_rgba(20,62,55,.18)] lg:grid-cols-[1fr_500px]">
+        <section className="mm-grid relative hidden min-h-[660px] flex-col justify-between p-12 text-[#f5f3eb] lg:flex">
+          <div><BrandName className="mm-brand-pad text-2xl" /><p className="mt-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#a9c7bb]">Margin risk clarity</p></div>
+          <div className="relative z-10 max-w-lg">
+            <p className="text-xs font-bold uppercase tracking-[.18em] text-[#d5e96c]">A clearer decision starts here</p>
+            <p className="mt-4 text-4xl font-extrabold leading-tight tracking-[-.045em]">Know what the work will really ask of your margin.</p>
+            <p className="mt-5 max-w-sm text-sm leading-6 text-[#bed2c8]">Sign in to continue to your workspace.</p>
+          </div>
+          <p className="text-xs text-[#94b0a5]">Decision support for agency and consulting leaders</p>
+        </section>
+        <div className="flex min-h-[600px] items-center justify-center bg-[#f5f3eb] p-5 sm:p-10">
+          <SignIn routing="path" path={`${basePath}/sign-in`} signUpUrl={`${basePath}/sign-up`} />
+        </div>
+      </div>
+      </main>
+      <Footer />
     </div>
   );
 }
 
 function SignUpPage() {
   return (
-    <div className="flex min-h-[100dvh] items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-100 px-4">
-      <SignUp routing="path" path={`${basePath}/sign-up`} signInUrl={`${basePath}/sign-in`} />
+    <div className="min-h-[100dvh] bg-[#f5f3eb]">
+      <Header />
+      <div className="h-16" aria-hidden="true" />
+      <main className="mm-auth relative flex min-h-[calc(100dvh-4rem)] items-center justify-center overflow-hidden bg-[#f5f3eb] px-4 py-12">
+      <div className="relative grid w-full max-w-6xl overflow-hidden rounded-[2rem] bg-[#153e38] shadow-[0_28px_80px_rgba(20,62,55,.18)] lg:grid-cols-[1fr_500px]">
+        <section className="mm-grid relative hidden min-h-[660px] flex-col justify-between p-12 text-[#f5f3eb] lg:flex">
+          <div><BrandName className="mm-brand-pad text-2xl" /><p className="mt-2 text-[10px] font-bold uppercase tracking-[.18em] text-[#a9c7bb]">Margin risk clarity</p></div>
+          <div className="relative z-10 max-w-lg">
+            <p className="text-xs font-bold uppercase tracking-[.18em] text-[#d5e96c]">Make the decision visible</p>
+            <p className="mt-4 text-4xl font-extrabold leading-tight tracking-[-.045em]">Build more clarity into the work you take on.</p>
+            <p className="mt-5 max-w-sm text-sm leading-6 text-[#bed2c8]">Create an account to start making clearer margin decisions.</p>
+          </div>
+          <p className="text-xs text-[#94b0a5]">Decision support for agency and consulting leaders</p>
+        </section>
+        <div className="flex min-h-[600px] items-center justify-center bg-[#f5f3eb] p-5 sm:p-10">
+          <SignUp routing="path" path={`${basePath}/sign-up`} signInUrl={`${basePath}/sign-in`} />
+        </div>
+      </div>
+      </main>
+      <Footer />
     </div>
   );
 }
@@ -226,12 +265,12 @@ function ClerkProviderWithRoutes() {
         signIn: {
           start: {
             title: "Welcome back",
-            subtitle: "Sign in to access MarginMix",
+            subtitle: "Sign in to access your workspace",
           },
         },
         signUp: {
           start: {
-            title: "Create your MarginMix account",
+            title: "Create your account",
             subtitle: "Start making margin decisions with clarity",
           },
         },

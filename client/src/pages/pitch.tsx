@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, TrendingUp, Target, Zap, Users, DollarSign, BarChart3, Rocket, Clock, Shield, ArrowRight } from "lucide-react";
+import { BrandName } from "@/components/brand-name";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 
 const slides = [
   { id: "cover" },
@@ -31,7 +34,10 @@ export default function PitchDeck() {
   }, [next, prev]);
 
   return (
-    <div className="relative w-full h-screen bg-white overflow-hidden font-sans select-none">
+    <>
+    <Header />
+    <div className="h-16" aria-hidden="true" />
+    <div className="mm-pitch relative w-full h-[calc(100dvh-4rem)] bg-[#f5f3eb] overflow-hidden font-sans select-none">
 
       {/* Slide Container */}
       <div className="w-full h-full">
@@ -63,6 +69,8 @@ export default function PitchDeck() {
             <button
               key={i}
               onClick={() => setCurrent(i)}
+              aria-label={`Go to slide ${i + 1}`}
+              aria-current={i === current ? "step" : undefined}
               className={`rounded-full transition-all ${i === current ? "w-6 h-2 bg-emerald-500" : "w-2 h-2 bg-slate-300 hover:bg-slate-400"}`}
             />
           ))}
@@ -89,6 +97,8 @@ export default function PitchDeck() {
         </div>
       )}
     </div>
+    <Footer />
+    </>
   );
 }
 
@@ -122,7 +132,7 @@ function SlideCover() {
 
       <div className="relative z-10 text-center max-w-4xl">
         <p className="text-emerald-600 text-sm font-semibold tracking-widest uppercase mb-6">Investor Presentation · 2026</p>
-        <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-4 tracking-tight">MarginMix</h1>
+        <h1 className="text-6xl md:text-7xl font-bold text-slate-900 mb-4 tracking-tight"><BrandName /></h1>
         <p className="text-xl md:text-2xl text-emerald-700 font-light mb-8">
           The Financial Reasoning Engine for Professional Services
         </p>
@@ -144,11 +154,11 @@ function SlideCover() {
 // ── SLIDE 2: PROBLEM ──────────────────────────────────────────────────────────
 function SlideProblem() {
   const points = [
-    { icon: "📋", text: "Timesheets are inaccurate and lagging" },
-    { icon: "📉", text: "Historical data is noisy and backward-looking" },
-    { icon: "🧠", text: "Complexity and coordination costs are routinely underestimated" },
-    { icon: "🤖", text: "AI adoption changes effort patterns, but ROI remains unclear" },
-    { icon: "👤", text: "Judgment lives in senior operators' heads, not in systems" },
+    { icon: "01", text: "Timesheets are inaccurate and lagging" },
+    { icon: "02", text: "Historical data is noisy and backward looking" },
+    { icon: "03", text: "Complexity and coordination costs are routinely underestimated" },
+    { icon: "04", text: "AI adoption changes effort patterns, but ROI remains unclear" },
+    { icon: "05", text: "Judgment lives in senior operators' heads, not in systems" },
   ];
   return (
     <div className="w-full h-full flex flex-col lg:flex-row bg-white">
@@ -161,7 +171,7 @@ function SlideProblem() {
         <div className="space-y-3 mt-2">
           {points.map((p, i) => (
             <div key={i} className="flex items-start gap-3">
-              <span className="text-xl mt-0.5">{p.icon}</span>
+              <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-[#e4ebdf] font-mono text-[10px] font-bold text-[#176c58]">{p.icon}</span>
               <p className="text-slate-600 text-sm md:text-base">{p.text}</p>
             </div>
           ))}
@@ -219,7 +229,7 @@ function SlideSolution() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-4">What MarginMix Outputs</p>
+            <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-4">What <BrandName /> outputs</p>
             <div className="space-y-3">
               {outputs.map((o, i) => (
                 <div key={i} className="flex items-start gap-3">
@@ -273,7 +283,7 @@ function SlideWhyNow() {
     {
       icon: <Target className="h-6 w-6" />,
       title: "No system sits before commitment",
-      body: "Every existing tool, including ERP, PSA, and BI systems, operates after delivery begins. The pre-commitment gap remains unaddressed, and MarginMix addresses that moment.",
+      body: "Every existing tool, including ERP, PSA, and BI systems, operates after delivery begins. The gap before commitment remains open.",
     },
     {
       icon: <Clock className="h-6 w-6" />,
@@ -529,7 +539,7 @@ function SlideFounder() {
           The insight can't be reverse-engineered without the experience.
         </h2>
         <p className="text-slate-500 text-sm mb-8">
-          MarginMix grew from a specific, hard-won operating perspective shaped by years of front-line pricing decisions.
+          <BrandName /> grew from a specific, hard-won operating perspective shaped by years of front-line pricing decisions.
         </p>
         <div className="space-y-3 mb-8">
           {advantages.map((a, i) => (
@@ -541,7 +551,7 @@ function SlideFounder() {
         </div>
         <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
           <p className="text-emerald-800 text-base md:text-lg italic leading-relaxed">
-            "MarginMix helps professional services firms price work with confidence by systematising margin risk decisions before delivery begins, when mistakes are most expensive."
+            "<BrandName /> helps professional services firms price work with confidence by systematising margin risk decisions before delivery begins, when mistakes are most expensive."
           </p>
         </div>
       </div>
@@ -588,7 +598,7 @@ function SlideAsk() {
           </div>
           <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 flex flex-col justify-between">
             <div>
-              <p className="text-emerald-700 text-xs font-bold tracking-widest uppercase mb-3">Why MarginMix Wins</p>
+              <p className="text-emerald-700 text-xs font-bold tracking-widest uppercase mb-3">Why <BrandName /> wins</p>
               <p className="text-slate-600 text-sm leading-relaxed">
                 First mover. Proprietary framework. Deterministic engine. No integration cost. High gross margin. Founder with operating insight the market hasn't yet systemised.
               </p>

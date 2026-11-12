@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -129,25 +130,24 @@ export default function FreeTierCalculatorPage() {
       : "border-2 border-emerald-600 focus:ring-emerald-500 focus-visible:ring-emerald-500";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/40">
-      <Header
-        variant="solid"
-        hideDemoButton
-        notice="Your calculator inputs and results remain in this browser session and are not saved to MarginMix’s database."
-      />
-      <main className="max-w-lg mx-auto px-4 pt-32 pb-16">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
+    <div className="mm-page min-h-screen">
+      <Header notice="Your calculator inputs and results remain in this browser session and are not saved to MarginMix’s database." />
+      <main className="mx-auto max-w-2xl px-4 pb-16 pt-32 sm:px-6">
+        <div className="mb-7">
+        <p className="mm-eyebrow mb-3">Engagement economics · Private by session</p>
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#183b37] mb-2">
           Engagement leak calculator
         </h1>
-        <p className="text-slate-600 mb-8 text-sm sm:text-base">
-          Free indicative range from your fee, team cost, and scope signals. All figures stay in your browser.
+        <p className="max-w-xl text-[#60776f] mb-8 text-sm sm:text-base leading-6">
+          Pressure test one engagement. Your inputs and results stay in this browser session.
         </p>
+        </div>
 
-        <form onSubmit={handleSubmit} noValidate className="space-y-6">
-          <p className="text-sm text-slate-600">
+        <form onSubmit={handleSubmit} noValidate className="mm-form-card space-y-6 p-5 sm:p-8">
+          <p className="text-sm text-[#60776f]">
             <span className="font-semibold text-red-600">*</span> All fields are required.
           </p>
-          <div className="space-y-2">
+          <div className="relative space-y-2">
             <Label htmlFor="currency">Currency <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Select
               value={form.currency ?? DEFAULT_CURRENCY}
@@ -171,9 +171,9 @@ export default function FreeTierCalculatorPage() {
             <p className="text-xs text-slate-500">
               Applies to the fee and staff cost. Values are not converted between currencies.
             </p>
-            {errors.currency && <p className="text-sm text-red-600">{errors.currency}</p>}
+            {errors.currency && <p className="absolute left-0 right-0 top-full z-10 -translate-y-2 text-sm text-red-600">{errors.currency}</p>}
           </div>
-          <div className="space-y-2">
+          <div className="relative space-y-2">
             <Label htmlFor="fee">Total fee on this engagement <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Input
               id="fee"
@@ -188,10 +188,10 @@ export default function FreeTierCalculatorPage() {
               onChange={(e) => updateNumeric("fee", e.target.value)}
               onBlur={() => validateField("fee")}
             />
-            {errors.fee && <p className="text-sm text-red-600">{errors.fee}</p>}
+            {errors.fee && <p className="absolute left-0 right-0 top-full z-10 -translate-y-2 text-sm text-red-600">{errors.fee}</p>}
           </div>
 
-          <div className="space-y-2">
+          <div className="relative space-y-2">
             <Label htmlFor="months">How many months the engagement covers, or has run <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Input
               id="months"
@@ -207,10 +207,10 @@ export default function FreeTierCalculatorPage() {
               onChange={(e) => updateNumeric("months", e.target.value)}
               onBlur={() => validateField("months")}
             />
-            {errors.months && <p className="text-sm text-red-600">{errors.months}</p>}
+            {errors.months && <p className="absolute left-0 right-0 top-full z-10 -translate-y-2 text-sm text-red-600">{errors.months}</p>}
           </div>
 
-          <div className="space-y-2">
+          <div className="relative space-y-2">
             <Label htmlFor="fte">Full-time equivalent people on the account <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Input
               id="fte"
@@ -229,10 +229,10 @@ export default function FreeTierCalculatorPage() {
             <p className="text-xs text-slate-500">
               Count shared people as a fraction. Ten people at 30% each is 3.0.
             </p>
-            {errors.fte && <p className="text-sm text-red-600">{errors.fte}</p>}
+            {errors.fte && <p className="absolute left-0 right-0 top-full z-10 -translate-y-2 text-sm text-red-600">{errors.fte}</p>}
           </div>
 
-          <div className="space-y-2">
+          <div className="relative space-y-2">
             <Label htmlFor="staffcost">Total staff cost on this account over the same period as the fee <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Input
               id="staffcost"
@@ -251,10 +251,10 @@ export default function FreeTierCalculatorPage() {
               Use the total your finance team allocates to this job. If estimating from salary, convert fully loaded salary
               to the entered period before multiplying by FTE.
             </p>
-            {errors.staffcost && <p className="text-sm text-red-600">{errors.staffcost}</p>}
+            {errors.staffcost && <p className="absolute left-0 right-0 top-full z-10 -translate-y-2 text-sm text-red-600">{errors.staffcost}</p>}
           </div>
 
-          <div className="space-y-2">
+          <div className="relative space-y-2">
             <Label htmlFor="target-margin">Target margin after staff costs <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Select
               value={String(form.targetMarginPercent ?? DEFAULT_TARGET_MARGIN_PERCENT)}
@@ -278,10 +278,10 @@ export default function FreeTierCalculatorPage() {
             <p className="text-xs text-slate-500">
               The calculator derives a staff-cost ceiling from this target. It is a planning assumption, not an industry benchmark.
             </p>
-            {errors.targetMarginPercent && <p className="text-sm text-red-600">{errors.targetMarginPercent}</p>}
+            {errors.targetMarginPercent && <p className="absolute left-0 right-0 top-full z-10 -translate-y-2 text-sm text-red-600">{errors.targetMarginPercent}</p>}
           </div>
 
-          <div className="space-y-2">
+          <div className="relative space-y-2">
             <Label htmlFor="scope_move">Scope movement <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Select
               value={form.scopemove ?? ""}
@@ -303,10 +303,10 @@ export default function FreeTierCalculatorPage() {
                 <SelectItem value="significant">Significant</SelectItem>
               </SelectContent>
             </Select>
-            {errors.scopemove && <p className="text-sm text-red-600">{errors.scopemove}</p>}
+            {errors.scopemove && <p className="absolute left-0 right-0 top-full z-10 -translate-y-2 text-sm text-red-600">{errors.scopemove}</p>}
           </div>
 
-          <div className="space-y-2">
+          <div className="relative space-y-2">
             <Label htmlFor="scope_billed">Scope billing status <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Select
               value={form.scopebilled ?? ""}
@@ -327,10 +327,10 @@ export default function FreeTierCalculatorPage() {
                 <SelectItem value="unbilled">Unbilled</SelectItem>
               </SelectContent>
             </Select>
-            {errors.scopebilled && <p className="text-sm text-red-600">{errors.scopebilled}</p>}
+            {errors.scopebilled && <p className="absolute left-0 right-0 top-full z-10 -translate-y-2 text-sm text-red-600">{errors.scopebilled}</p>}
           </div>
 
-          <div className="space-y-2">
+          <div className="relative space-y-2">
             <Label htmlFor="hours_tracked">Hours tracked on this account <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Select
               value={form.hourstracked ?? ""}
@@ -351,8 +351,12 @@ export default function FreeTierCalculatorPage() {
                 <SelectItem value="no">No</SelectItem>
               </SelectContent>
             </Select>
-            {errors.hourstracked && <p className="text-sm text-red-600">{errors.hourstracked}</p>}
+            {errors.hourstracked && <p className="absolute left-0 right-0 top-full z-10 -translate-y-2 text-sm text-red-600">{errors.hourstracked}</p>}
           </div>
+
+          <Button type="submit" className="mm-action w-full bg-[#146d58] hover:bg-[#0c5747] text-white py-6 text-base">
+            Calculate engagement leak
+          </Button>
 
           {Object.keys(errors).length > 0 && (
             <div role="alert" className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm font-medium text-red-800">
@@ -369,17 +373,9 @@ export default function FreeTierCalculatorPage() {
               </AlertDescription>
             </Alert>
           )}
-
-          <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-6 text-base">
-            Calculate engagement leak
-          </Button>
         </form>
       </main>
-      <footer className="border-t border-slate-200 bg-white px-4 py-5 text-center text-sm text-slate-700">
-        <p className="font-bold">
-          Your calculator inputs and results remain in this browser session and are not saved to MarginMix’s database.
-        </p>
-      </footer>
+      <Footer notice="Your calculator inputs and results remain in this browser session and are not saved to MarginMix’s database." />
     </div>
   );
 }

@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import { Progress } from "@/components/ui/progress";
-import { ArrowRight, ArrowDown, ArrowUp, ArrowLeft, Zap, AlertTriangle, ShieldCheck, ShieldAlert, Shield, ChevronDown, Check, Home } from "lucide-react";
+import { ArrowRight, ArrowDown, ArrowUp, ArrowLeft, Zap, AlertTriangle, ShieldCheck, ShieldAlert, Shield, ChevronDown, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 
 const PROFILER_STORAGE_KEY = "marginmix_profiler_answers";
 
@@ -371,6 +373,7 @@ export default function QuickProfiler() {
   const [direction, setDirection] = useState<1 | -1>(1);
   const containerRef = useRef<HTMLDivElement>(null);
   const marginAdvanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const transitionLock = useRef(false);
   const profilerStartTracked = useRef(false);
   const { toast } = useToast();
   const shouldReduce = useReducedMotion();
@@ -382,14 +385,18 @@ export default function QuickProfiler() {
   const risk = computeRisk(answers);
 
   const scrollToQuestion = (index: number) => {
-    if (isTransitioning) return;
+    if (transitionLock.current) return;
+    transitionLock.current = true;
     setDirection(index >= currentQuestion ? 1 : -1);
     setIsTransitioning(true);
     if (index > totalQuestions - 1 && Object.keys(answers).length === totalQuestions) {
       setShowResult(true);
     }
     setCurrentQuestion(index);
-    setTimeout(() => setIsTransitioning(false), 500);
+    setTimeout(() => {
+      transitionLock.current = false;
+      setIsTransitioning(false);
+    }, 500);
   };
 
   const handleOptionSelect = (questionId: string, value: string) => {
@@ -609,7 +616,7 @@ export default function QuickProfiler() {
 
   const renderIntro = () => {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+      <div className="min-h-full bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
           <div className="max-w-2xl mx-auto text-center text-white">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/15 backdrop-blur-sm rounded-full mb-6">
               <Zap className="h-5 w-5 text-white" />
@@ -663,7 +670,7 @@ export default function QuickProfiler() {
 
   const renderMarginQuestion = () => {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex flex-col overflow-y-auto">
+      <div className="min-h-full bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex flex-col overflow-y-auto">
         <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
           <div className="w-full max-w-2xl">
             <div className="mb-4 sm:mb-6">
@@ -697,7 +704,7 @@ export default function QuickProfiler() {
                     if (marginAdvanceTimer.current) clearTimeout(marginAdvanceTimer.current);
                     const val = parseFloat(e.target.value);
                     if (!isNaN(val) && val > 0 && val <= 100) {
-                      marginAdvanceTimer.current = setTimeout(() => handleNext(), 800);
+                      marginAdvanceTimer.current = setTimeout(() => scrollToQuestion(0), 800);
                     }
                   }}
                   placeholder="e.g. 18"
@@ -819,17 +826,17 @@ export default function QuickProfiler() {
                 <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4 text-center">Estimated Margin Impact</h3>
                 <div className="grid grid-cols-3 gap-3 sm:gap-4">
                   <div className="text-center p-3 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-xs text-gray-500 mb-1">Current Margin</p>
+                    <p className="text-xs text-gray-200 mb-1">Current Margin</p>
                     <p className="text-xl sm:text-2xl font-bold text-white">{marginImpact.estimatedLoss > 0 ? marginValue : marginValue}%</p>
                   </div>
                   <div className="text-center p-3 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-xs text-gray-500 mb-1">Est. Margin Loss</p>
+                    <p className="text-xs text-gray-200 mb-1">Est. Margin Loss</p>
                     <p className={`text-xl sm:text-2xl font-bold ${marginImpact.impactColor === "emerald" ? "text-emerald-400" : marginImpact.impactColor === "amber" ? "text-amber-400" : "text-red-400"}`}>
                       {marginImpact.estimatedLoss > 0 ? `-${marginImpact.estimatedLoss}%` : "0%"}
                     </p>
                   </div>
                   <div className="text-center p-3 rounded-xl bg-white/5 border border-white/10">
-                    <p className="text-xs text-gray-500 mb-1">Effective Margin</p>
+                    <p className="text-xs text-gray-200 mb-1">Effective Margin</p>
                     <p className={`text-xl sm:text-2xl font-bold ${marginImpact.effectiveMargin >= marginValue * 0.7 ? "text-emerald-400" : marginImpact.effectiveMargin >= marginValue * 0.5 ? "text-amber-400" : "text-red-400"}`}>
                       {marginImpact.effectiveMargin}%
                     </p>
@@ -856,7 +863,7 @@ export default function QuickProfiler() {
                     <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl flex items-center justify-center text-sm font-bold shadow-lg ${riskLevel ? `${getHeatmapColor(riskLevel)} text-white ${getHeatmapGlow(riskLevel)}` : 'bg-white/10 text-white/40'}`}>
                       Q{q.number}
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-200">
                       {riskLevel === "high" ? "High" : riskLevel === "medium" ? "Med" : "Low"}
                     </span>
                   </div>
@@ -909,7 +916,10 @@ export default function QuickProfiler() {
   };
 
   return (
-    <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
+    <>
+    <Header />
+    <div className="h-16" aria-hidden="true" />
+    <div ref={containerRef} className="mm-profiler relative h-[calc(100dvh-4rem)] overflow-hidden bg-emerald-700">
       {shouldReduce ? (
         <div className="absolute inset-0">
           {isIntro && renderIntro()}
@@ -938,14 +948,9 @@ export default function QuickProfiler() {
       )}
 
       {/* Fixed header — outside AnimatePresence so it never slides */}
-      <div className="fixed top-0 left-0 right-0 z-[100] bg-black/40 backdrop-blur-md" style={{ pointerEvents: 'auto' }}>
+      <div className="fixed top-16 left-0 right-0 z-[40] bg-black/40 backdrop-blur-md" style={{ pointerEvents: 'auto' }}>
         <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
-          <Link href="/">
-            <Button variant="ghost" className="text-white hover:text-emerald-200 hover:bg-white/10 px-2 sm:px-3 py-1.5 sm:py-2">
-              <ArrowLeft className="h-4 w-4 sm:mr-2" />
-              <span className="font-bold hidden sm:inline">MarginMix</span>
-            </Button>
-          </Link>
+          <span className="text-xs font-semibold uppercase tracking-[.14em] text-white/70 sm:text-sm">Quick assessment</span>
           <div className="flex items-center gap-2 sm:gap-4">
             {!isIntro && (
               <>
@@ -959,15 +964,6 @@ export default function QuickProfiler() {
                 <div className="w-12 sm:w-20 md:w-24">
                   <Progress value={calculateProgress()} className="h-1.5 bg-white/20" />
                 </div>
-                <Link href="/">
-                  <Button
-                    variant="ghost"
-                    className="text-white hover:text-emerald-200 hover:bg-white/10 px-2 sm:px-3 py-1.5 sm:py-2"
-                  >
-                    <Home className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Home</span>
-                  </Button>
-                </Link>
               </>
             )}
           </div>
@@ -1034,5 +1030,7 @@ export default function QuickProfiler() {
         </div>
       )}
     </div>
+    <Footer />
+    </>
   );
 }

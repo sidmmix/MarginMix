@@ -8,3 +8,4 @@
 - [Leak calculator decisions](leak-calculator-decisions.md) — approved period-total arithmetic, consistent 30% cap, target margin 10–50% in 5-point steps, and composite overlap disclosure.
 - [Form journey verification](form-journey-verification.md) — test return-to-form navigation with animations enabled; direct loads can miss first-input loss.
 - [Analytics ownership](analytics-ownership.md) — preserve the user's existing Google Analytics and Google Tag Manager setup; do not change it unless asked.
+- [Site copy style](copy-style.md) — avoid unnecessary hyphens between words when editing MarginMix copy.

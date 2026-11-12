@@ -11,6 +11,9 @@ import {
 } from "@shared/audit-questionnaire";
 import type { AuditAnswers, AuditQuestion } from "@shared/audit-questionnaire";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import { BrandName } from "@/components/brand-name";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 
 const STORAGE_KEY = "marginmix_audit_draft_v1";
 const UNKNOWN = "__unknown__";
@@ -431,13 +434,13 @@ export default function AuditQuestions() {
   const mapQuestions = visibleQuestions.filter((question) => !question.contact && !["name", "email", "agency"].includes(question.id));
 
   return (
-    <main className="min-h-[100dvh] bg-[#f4f2e9] text-[#263b39]">
-      <header className="sticky top-0 z-30 border-b border-[#deddd2] bg-[#f8f7f0]/95 backdrop-blur">
+    <>
+    <Header />
+    <div className="h-16" aria-hidden="true" />
+    <main className="mm-audit min-h-[calc(100dvh-4rem)] bg-[#f5f3eb] text-[#183b37]">
+      <header className="sticky top-16 z-30 border-b border-[#deddd2] bg-[#f8f7f0]/95 backdrop-blur">
         <div className="mx-auto flex max-w-[1440px] items-center justify-between gap-4 px-4 py-3.5 sm:px-8">
-          <a href="/" className="group flex items-center gap-3 rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#28796a]">
-            <span className="grid h-9 w-9 place-items-center rounded-xl bg-[#28796a] text-sm font-bold tracking-tight text-white">M</span>
-            <span><span className="block font-semibold tracking-[-0.03em] text-[#23443e]">MarginMix</span><span className="block text-[10px] uppercase tracking-[0.16em] text-[#7d867e]">Engagement audit</span></span>
-          </a>
+          <span className="text-xs font-semibold uppercase tracking-[.12em] text-[#758078]">Engagement audit</span>
           <div className="flex items-center gap-3">
             <div aria-live="polite" className="hidden items-center gap-1.5 text-xs text-[#7a8279] sm:flex">
               {saving === "saving" ? <Save size={14} /> : saving === "unavailable" ? <CircleHelp size={14} /> : <Check size={14} />}
@@ -498,7 +501,7 @@ export default function AuditQuestions() {
                     <button type="button" disabled={isSubmitting} onClick={() => { setReviewing(false); setError(""); }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#d7d6ca] px-4 py-3 text-sm font-semibold text-[#53645c] hover:bg-[#eeede5] disabled:opacity-50"><ArrowLeft size={16} /> Back to questions</button>
                     <button type="button" disabled={isSubmitting} onClick={submit} className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#28796a] px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#216657] disabled:cursor-wait disabled:opacity-60">{isSubmitting ? "Sending securely…" : "Submit audit"}<Send size={16} /></button>
                   </div>
-                  <p className="mt-3 text-xs leading-6 text-[#777d73]">When you submit, these answers, including financial information, are stored by MarginMix. A PDF copy is emailed to your supplied address and sid@dilexicon.com. Until then, your draft remains in this browser.</p>
+                  <p className="mt-3 text-xs leading-6 text-[#777d73]">When you submit, these answers, including financial information, are stored by <BrandName />. A PDF copy is emailed to your supplied address and sid@dilexicon.com. Until then, your draft remains in this browser.</p>
                 </motion.div>
               ) : activeQuestion ? (
                 <motion.div key={activeQuestion.id} initial={reducedMotion ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
@@ -530,7 +533,7 @@ export default function AuditQuestions() {
                         {activeIndex === visibleQuestions.length - 1 ? <Send size={16} /> : <ArrowRight size={16} />}
                       </button>
                     </div>
-                    {activeIndex === visibleQuestions.length - 1 && <p className="mt-3 text-xs leading-6 text-[#777d73]">Submitting stores your responses with MarginMix and emails a PDF copy to your supplied address and sid@dilexicon.com. You can review all answers before submitting.</p>}
+                    {activeIndex === visibleQuestions.length - 1 && <p className="mt-3 text-xs leading-6 text-[#777d73]">Submitting stores your responses with <BrandName /> and emails a PDF copy to your supplied address and sid@dilexicon.com. You can review all answers before submitting.</p>}
                   </div>
                 </motion.div>
               ) : <div className="rounded-2xl border border-[#deddd2] bg-[#fffefa] p-8 text-sm text-[#6f776f]">No questions are currently available. Please reload the assessment.</div>}
@@ -554,7 +557,7 @@ export default function AuditQuestions() {
           )}
         </section>
 
-        <aside className="lg:sticky lg:top-[94px] lg:self-start">
+        <aside className="lg:sticky lg:top-[150px] lg:self-start">
           <div className="rounded-2xl border border-[#deddd2] bg-[#faf9f3] p-4 sm:p-5">
             <div className="flex items-start justify-between gap-4">
               <div><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#899087]">Assessment map</p><h2 className="mt-1 font-serif text-xl tracking-[-0.02em] text-[#345149]">Your working picture</h2></div>
@@ -619,5 +622,7 @@ export default function AuditQuestions() {
         </div>
       </div>}
     </main>
+    <Footer />
+    </>
   );
 }

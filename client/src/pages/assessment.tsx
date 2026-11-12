@@ -29,6 +29,8 @@ import { ArrowDown, ArrowUp, ArrowLeft, ArrowRight, Send, Check, ChevronDown, Sa
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
+import { BrandName } from "@/components/brand-name";
 
 const STORAGE_KEY = "marginmix_assessment_progress";
 
@@ -1097,7 +1099,7 @@ export default function Assessment() {
 
   const renderAccountNameQuestion = () => {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex flex-col overflow-y-auto">
+      <div className="min-h-full bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex flex-col overflow-y-auto">
         <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
           <div className="w-full max-w-2xl">
             <div className="mb-4 sm:mb-6">
@@ -1136,7 +1138,7 @@ export default function Assessment() {
 
   const renderMarginQuestion = () => {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex flex-col overflow-y-auto">
+      <div className="min-h-full bg-gradient-to-br from-emerald-600 via-teal-500 to-cyan-500 flex flex-col overflow-y-auto">
         <div className="flex-1 flex items-center justify-center px-4 sm:px-6 pt-16 sm:pt-20 pb-28 sm:pb-20">
           <div className="w-full max-w-2xl">
             <div className="mb-4 sm:mb-6">
@@ -1188,7 +1190,7 @@ export default function Assessment() {
 
   const renderIntro = () => {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
+      <div className="min-h-full bg-gradient-to-br from-emerald-600 via-teal-600 to-emerald-700 flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12">
           <div className="max-w-2xl mx-auto text-center text-white">
             <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-4">Margin Risk Assessment</h1>
             <p className="text-base sm:text-xl md:text-2xl text-emerald-100 mb-4 sm:mb-8 italic" style={{ fontFamily: 'Georgia, serif' }}>
@@ -1284,7 +1286,7 @@ export default function Assessment() {
                 className="mt-1 h-5 w-5 text-emerald-500 border-gray-600 rounded focus:ring-emerald-500 bg-transparent"
               />
               <label htmlFor="consent" className="text-sm text-gray-300 cursor-pointer leading-relaxed">
-                I consent to MarginMix processing my professional and company information to deliver this assessment and related communications, in accordance with GDPR and CCPA.
+                I consent to <BrandName className="mm-brand-pad" /> processing my professional and company information to deliver this assessment and related communications, in accordance with GDPR and CCPA.
               </label>
             </div>
             
@@ -1314,7 +1316,6 @@ export default function Assessment() {
             </p>
           </div>
           
-          <Footer />
         </div>
     );
   };
@@ -1679,19 +1680,15 @@ export default function Assessment() {
             {/* Section 9 - CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 pt-4 pb-8">
               {renderDownloadLinks()}
-              <Link href="/" className="flex-1">
-                <Button
-                  className="w-full border border-white/20 bg-transparent text-white hover:bg-white/10 py-6 text-base rounded-xl"
-                >
-                  <Home className="mr-2 h-5 w-5" />
-                  Return to Home
-                </Button>
+              <Link href="/" className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-white/20 bg-transparent py-4 text-base font-semibold text-white hover:bg-white/10">
+                <Home className="h-5 w-5" />
+                Return to Home
               </Link>
             </div>
 
             <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-5 sm:p-6 mb-8">
               <h2 className="text-lg sm:text-xl font-semibold text-white mb-2">
-                Want to incorporate MarginMix Logic on your data? Get in touch -
+                Want to incorporate <BrandName className="mm-brand-pad" /> Logic on your data? Get in touch -
               </h2>
               {contactSubmitted ? (
                 <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-4 text-sm text-emerald-300">
@@ -1744,7 +1741,7 @@ export default function Assessment() {
                   </div>
                   <div className="sm:col-span-3">
                      <p className="mb-4 text-xs leading-relaxed text-gray-400">
-                       By submitting this form, you consent to MarginMix processing your professional and company information to respond to your inquiry, in accordance with GDPR and CCPA.
+                        By submitting this form, you consent to <BrandName className="mm-brand-pad" /> processing your professional and company information to respond to your inquiry, in accordance with GDPR and CCPA.
                      </p>
                     <Button
                       type="submit"
@@ -1759,7 +1756,6 @@ export default function Assessment() {
             </div>
 
           </div>
-          <Footer />
         </div>
     );
   };
@@ -1789,7 +1785,10 @@ export default function Assessment() {
   };
 
   return (
-    <div ref={containerRef} className="relative h-screen overflow-hidden bg-emerald-600">
+    <>
+    <Header />
+    <div className="h-16" aria-hidden="true" />
+    <div ref={containerRef} className="mm-assessment relative h-[calc(100dvh-4rem)] overflow-hidden bg-[#143f38]">
       {shouldReduce ? (
         <div className="absolute inset-0">
           {isIntro && renderIntro()}
@@ -1822,14 +1821,9 @@ export default function Assessment() {
       )}
 
       {/* Fixed header with progress - rendered after content to be on top */}
-      <div className="fixed top-0 left-0 right-0 z-[100] bg-black/40 backdrop-blur-md" style={{ pointerEvents: 'auto' }}>
+      <div className="fixed top-16 left-0 right-0 z-[40] bg-black/40 backdrop-blur-md" style={{ pointerEvents: 'auto' }}>
         <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
-          <Link href="/">
-            <Button variant="ghost" className="text-white hover:text-emerald-200 hover:bg-white/10 px-2 sm:px-3 py-1.5 sm:py-2">
-              <ArrowLeft className="h-4 w-4 sm:mr-2" />
-              <span className="font-bold hidden sm:inline">MarginMix</span>
-            </Button>
-          </Link>
+          <span className="text-xs font-semibold uppercase tracking-[.14em] text-white/70 sm:text-sm">Decision assessment</span>
           <div className="flex items-center gap-2 sm:gap-4">
             {!isIntro && !showDecisionPage && (
               <>
@@ -1847,15 +1841,6 @@ export default function Assessment() {
                   <Save className="h-4 w-4 sm:mr-2" />
                   <span className="hidden sm:inline">Save</span>
                 </Button>
-                <Link href="/">
-                  <Button 
-                    variant="ghost" 
-                    className="text-white hover:text-emerald-200 hover:bg-white/10 px-2 sm:px-3 py-1.5 sm:py-2"
-                  >
-                    <Home className="h-4 w-4 sm:mr-2" />
-                    <span className="hidden sm:inline">Home</span>
-                  </Button>
-                </Link>
               </>
             )}
           </div>
@@ -1865,7 +1850,7 @@ export default function Assessment() {
 
       {/* Vertical heatmap - fixed on right side */}
       {!isIntro && !isReviewScreen && !showDecisionPage && currentQuestion >= 0 && (
-        <div className="fixed right-1.5 sm:right-4 top-1/2 -translate-y-1/2 z-[90] flex flex-col items-center gap-[2px] sm:gap-1 bg-black/30 backdrop-blur-sm rounded-full py-2 sm:py-4 px-1 sm:px-2 border border-white/10 max-h-[60vh] sm:max-h-[70vh] overflow-y-auto scrollbar-hide" style={{ pointerEvents: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        <div className="fixed right-1.5 sm:right-4 top-1/2 -translate-y-1/2 z-[40] flex flex-col items-center gap-[2px] sm:gap-1 bg-black/30 backdrop-blur-sm rounded-full py-2 sm:py-4 px-1 sm:px-2 border border-white/10 max-h-[60vh] sm:max-h-[70vh] overflow-y-auto scrollbar-hide" style={{ pointerEvents: 'auto', scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {activeQuestions.map((q, idx) => {
             const value = watchedValues[q.id] || "";
             const isAnswered = value !== "";
@@ -2024,5 +2009,7 @@ export default function Assessment() {
       </Dialog>
 
     </div>
+    <Footer />
+    </>
   );
 }

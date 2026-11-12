@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AlertTriangle, Eye, Target, Lightbulb, UserCheck, Building2 } from "lucide-react";
+import { Eye, Lightbulb, UserCheck } from "lucide-react";
 import founderPhoto from "@assets/1586921422945_1768559339757.jpeg";
 import advisorPhoto from "@assets/Screenshot_2026-01-21-08-12-37-88_254de13a4bc8758c9908fff1f73e_1768955128744.jpg";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { BrandName } from "@/components/brand-name";
 import { AnimatedSection } from "@/components/animations";
 
 export default function Founder() {
@@ -15,299 +15,137 @@ export default function Founder() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header variant="solid" />
+    <div className="mm-page mm-founder min-h-screen">
+      <Header />
+      <div className="h-16" />
 
-      {/* Spacer for fixed header */}
-      <div className="h-16"></div>
-
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white py-12 sm:py-20">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
-            Why MarginMix Exists
+      <section className="mm-founder-hero bg-gradient-to-br from-emerald-600 to-teal-700 text-white">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-8 sm:py-20">
+          <p className="mb-4 text-xs font-extrabold uppercase tracking-[.18em] text-[#d5e96c]">Why <BrandName className="mm-brand-pad" /> exists</p>
+          <h1 className="mm-display max-w-4xl text-4xl font-extrabold sm:text-5xl md:text-6xl">
+            Margin rarely breaks all at once.
           </h1>
-          <p className="text-xl sm:text-2xl text-emerald-100 font-medium">
-            Most agencies & consulting firms don't lose margin in a dramatic way.
+          <p className="mt-5 max-w-2xl text-lg leading-7 text-[#d1e0d8] sm:text-xl">
+            Delivery complexity quietly reshapes the economics after the work is sold.
           </p>
         </div>
       </section>
 
-      {/* The Silent Pattern */}
-      <section className="py-12 sm:py-16 bg-white dark:bg-gray-800">
-        <AnimatedSection className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid sm:grid-cols-2 gap-4 mb-8">
-            <Card className="bg-gray-50 dark:bg-gray-900 border-0">
-              <CardContent className="p-6 text-center">
-                <p className="text-lg text-gray-700 dark:text-gray-300">They win work that looks commercially sound.</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-gray-50 dark:bg-gray-900 border-0">
-              <CardContent className="p-6 text-center">
-                <p className="text-lg text-gray-700 dark:text-gray-300">The team is busy.</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-gray-50 dark:bg-gray-900 border-0">
-              <CardContent className="p-6 text-center">
-                <p className="text-lg text-gray-700 dark:text-gray-300">The client is satisfied.</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-gray-50 dark:bg-gray-900 border-0">
-              <CardContent className="p-6 text-center">
-                <p className="text-lg text-gray-700 dark:text-gray-300">Delivery feels under control.</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-6 rounded-r-lg mb-8">
-            <div className="flex items-start gap-4">
-              <AlertTriangle className="h-6 w-6 text-amber-500 flex-shrink-0 mt-1" />
-              <div className="space-y-3 text-gray-700 dark:text-gray-300">
-                <p className="font-medium">And yet, a few months in, margin starts to feel… harder to explain.</p>
-                <p>Senior leaders are spending more time than expected. Conversations multiply. Decisions that should be straightforward take longer.</p>
-                <p className="text-amber-700 dark:text-amber-400 font-semibold">None of this feels like failure. But somehow, the economics don't add up.</p>
+      <main>
+        <section className="py-12 sm:py-16">
+          <AnimatedSection className="mx-auto grid max-w-7xl gap-6 px-4 sm:px-8 lg:grid-cols-[.9fr_1.1fr]">
+            <div className="mm-panel p-6 sm:p-8">
+              <div className="mb-5 flex items-center gap-3">
+                <span className="grid h-10 w-10 place-items-center rounded-xl bg-[#e5f0e6] text-[#146d58]"><Eye size={19} /></span>
+                <p className="mm-eyebrow">The quiet pattern</p>
               </div>
-            </div>
-          </div>
-
-          <p className="text-lg text-gray-600 dark:text-gray-400 text-center">
-            This pattern appears across retainers, fixed-fee projects, and complex transformation work, but rarely surfaces early enough to act on.
-          </p>
-        </AnimatedSection>
-      </section>
-
-      {/* The Pattern Behind the Problem */}
-      <section className="py-12 sm:py-16 bg-emerald-50 dark:bg-emerald-900/10">
-        <AnimatedSection className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center">
-              <Eye className="h-6 w-6 text-white" />
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-              The Pattern Behind the Problem
-            </h2>
-          </div>
-
-          <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-            When margin erodes, the conversation usually turns to pricing, utilization, or delivery efficiency. Sometimes those are the issues. <span className="font-semibold text-emerald-600 dark:text-emerald-400">Often, they're not.</span>
-          </p>
-
-          <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-            More commonly, margin is being quietly shaped by things that sit outside formal reporting:
-          </p>
-
-          <div className="space-y-4 mb-8">
-            <div className="flex items-start gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-              <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">1</span>
-              </div>
-              <p className="text-gray-700 dark:text-gray-300">How much senior attention an engagement really demands over time</p>
-            </div>
-            <div className="flex items-start gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-              <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">2</span>
-              </div>
-              <p className="text-gray-700 dark:text-gray-300">How much coordination is required as stakeholders multiply</p>
-            </div>
-            <div className="flex items-start gap-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm">
-              <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-emerald-600 dark:text-emerald-400 font-bold">3</span>
-              </div>
-              <p className="text-gray-700 dark:text-gray-300">How often work needs to be revisited, refined, or re-explained</p>
-            </div>
-          </div>
-
-          <Card className="bg-emerald-600 dark:bg-emerald-700 border-0">
-            <CardContent className="p-6">
-              <p className="text-white text-lg sm:text-xl font-semibold text-center">
-                MarginMix exists to make this pattern visible earlier, while there are still decisions to be made.
+              <h2 className="text-2xl font-extrabold tracking-tight text-[#183b37] sm:text-3xl">Work looks sound. The load grows.</h2>
+              <p className="mt-4 leading-7 text-[#60776f]">
+                The team is busy and the client is satisfied, yet senior attention, coordination and rework begin to outpace the plan.
               </p>
-            </CardContent>
-          </Card>
-        </AnimatedSection>
-      </section>
-
-      {/* The Problem I Kept Seeing */}
-      <section className="py-12 sm:py-16 bg-white dark:bg-gray-800">
-        <AnimatedSection className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-gray-900 dark:bg-gray-700 rounded-full flex items-center justify-center">
-              <Target className="h-6 w-6 text-white" />
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-              The Problem I Kept Seeing
-            </h2>
-          </div>
-
-          <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-            Across large agency networks and consulting-style engagements, margin conversations tend to focus on:
-          </p>
-
-          <div className="flex flex-wrap gap-3 mb-8">
-            <span className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300">Pricing discipline</span>
-            <span className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300">Utilization targets</span>
-            <span className="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-600 dark:text-gray-300">Delivery efficiency</span>
-          </div>
-
-          <div className="bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800 p-6 rounded-xl mb-6">
-            <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-              These matter, but they miss a deeper structural issue: <strong className="text-teal-700 dark:text-teal-400">delivery complexity</strong>, including the senior attention, coordination, iteration, and cognitive load an engagement quietly demands over time.
-            </p>
-            <p className="text-teal-700 dark:text-teal-400 font-semibold">
-              "Delivery Complexity" is rarely tracked formally. Yet it is often the single biggest driver of margin erosion.
-            </p>
-          </div>
-
-          <p className="text-lg font-semibold text-gray-900 dark:text-white text-center">
-            MarginMix is an attempt to make this visible before it becomes a problem.
-          </p>
-        </AnimatedSection>
-      </section>
-
-      {/* What MarginMix Is (and Isn't) */}
-      <section className="py-12 sm:py-16 bg-gray-100 dark:bg-gray-900">
-        <AnimatedSection className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-emerald-600 rounded-full flex items-center justify-center">
-              <Lightbulb className="h-6 w-6 text-white" />
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
-              What MarginMix Is (and Isn't)
-            </h2>
-          </div>
-
-          <div className="grid sm:grid-cols-3 gap-4 mb-8">
-            <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
-              <CardContent className="p-4 text-center">
-                <p className="text-red-600 dark:text-red-400 font-medium">Not a productivity tool</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
-              <CardContent className="p-4 text-center">
-                <p className="text-red-600 dark:text-red-400 font-medium">Not a time-tracking system</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800">
-              <CardContent className="p-4 text-center">
-                <p className="text-red-600 dark:text-red-400 font-medium">Not a utilization dashboard</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          <Card className="bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 mb-6">
-            <CardContent className="p-6">
-              <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-                Instead, MarginMix is a <strong className="text-emerald-700 dark:text-emerald-400">decision lens</strong> designed to help leaders assess whether work is structurally viable based on how it is likely to be staffed, coordinated, and governed.
+              <p className="mt-4 border-l-2 border-[#d5e96c] pl-4 font-semibold leading-6 text-[#315b50]">
+                Those signals are easy to miss until the economics stop adding up.
               </p>
-            </CardContent>
-          </Card>
-
-          <div className="text-center">
-            <p className="text-xl text-emerald-600 dark:text-emerald-400 font-semibold">
-              The goal is not to optimize people.<br />
-              The goal is to make better economic decisions about work.
-            </p>
-          </div>
-        </AnimatedSection>
-      </section>
-
-      {/* Founder & Key Advisor */}
-      <section className="py-12 sm:py-16 bg-gradient-to-br from-gray-900 to-emerald-900 text-white">
-        <AnimatedSection className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Two column layout on desktop, stacked on mobile */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* Founder */}
-            <div>
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center">
-                  <UserCheck className="h-6 w-6 text-white" />
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-bold">
-                  Founder
-                </h2>
-              </div>
-
-              <div className="flex flex-col items-center sm:items-start gap-6">
-                <img 
-                  src={founderPhoto} 
-                  alt="Siddhartha Dasgupta (Sid)" 
-                  className="w-40 h-40 rounded-full object-cover border-4 border-emerald-400 flex-shrink-0 shadow-xl"
-                />
-                <div className="space-y-4 text-center sm:text-left">
-                  <p className="text-2xl font-bold text-emerald-400">
-                    Siddhartha Dasgupta (Sid)
-                  </p>
-                  <p className="text-gray-300">
-                    I've spent my career across creative, media, corporate marketing and performance-led environments working with global networks including <span className="text-white font-medium">Dentsu, Ogilvy, Grey, Publicis</span> as well as building and running an independent consultancy.
-                  </p>
-                  <p className="text-gray-300">
-                    I've led large accounts, managed cross-market teams, sat in commercial and operational conversations, and been accountable for both growth and profitability.
-                  </p>
-                  <p className="text-gray-300">
-                  </p>
-                </div>
-              </div>
             </div>
-
-            {/* Key Advisor */}
-            <div>
-              <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 bg-teal-500 rounded-full flex items-center justify-center">
-                  <UserCheck className="h-6 w-6 text-white" />
-                </div>
-                <h2 className="text-2xl sm:text-3xl font-bold">
-                  Key Advisor
-                </h2>
+            <div className="mm-dark-panel p-6 sm:p-8">
+              <p className="text-xs font-bold uppercase tracking-[.16em] text-[#d5e96c]">What sits outside the quote</p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                {[
+                  ["Senior attention", "How much leadership time the work consumes"],
+                  ["Coordination", "How many people and decisions must align"],
+                  ["Iteration", "How often work is revisited or refined"],
+                ].map(([title, body], index) => (
+                  <div key={title} className="rounded-2xl border border-white/10 bg-white/[.045] p-4">
+                    <span className="font-mono text-xs font-bold text-[#d5e96c]">0{index + 1}</span>
+                    <h3 className="mt-3 font-bold text-white">{title}</h3>
+                    <p className="mt-2 text-sm leading-5 text-[#bfd2c9]">{body}</p>
+                  </div>
+                ))}
               </div>
+              <p className="mt-6 flex items-center gap-2 text-sm text-[#b9d0c5]">
+                <Lightbulb size={16} className="text-[#d5e96c]" /> Make the pattern visible while decisions can still change.
+              </p>
+            </div>
+          </AnimatedSection>
+        </section>
 
-              <div className="flex flex-col items-center sm:items-start gap-6">
-                <img 
-                  src={advisorPhoto} 
-                  alt="Joy Dasgupta" 
-                  className="w-40 h-40 rounded-full object-cover border-4 border-teal-400 flex-shrink-0 shadow-xl"
-                />
-                <div className="space-y-4 text-center sm:text-left">
-                  <p className="text-2xl font-bold text-teal-400">
-                    Joy Dasgupta
-                  </p>
-                  <p className="text-gray-300">
-                    Joy is a seasoned enterprise operator who has led large-scale business transformation across global teams at <span className="text-white font-medium">HP, AMEX and Genpact</span>. He brings deep firsthand understanding of margin risk in labor-intensive operating models.
-                  </p>
-                  <p className="text-gray-300">
-                    Based in Boston, Joy is the CEO of gyanAI and advises MarginMix on decision system design, operating-model risk, and enterprise adoption.
-                  </p>
-                </div>
+        <section className="bg-[#eaf1e8] py-10 sm:py-14">
+          <AnimatedSection className="mx-auto flex max-w-7xl flex-col gap-5 px-4 sm:px-8 md:flex-row md:items-center md:justify-between">
+            <div className="max-w-3xl">
+              <p className="mm-eyebrow">The idea</p>
+              <h2 className="mt-2 text-2xl font-extrabold tracking-tight text-[#183b37] sm:text-3xl">A decision lens for the economics of work.</h2>
+              <p className="mt-3 text-sm leading-6 text-[#526d64]">Not a productivity, time tracking or utilization tool. Better economic decisions, not optimization of people.</p>
+            </div>
+            <details className="max-w-xl rounded-2xl border border-[#c8d9ca] bg-[#f8f8f0] p-4 text-sm text-[#526d64]">
+              <summary className="cursor-pointer font-bold text-[#146d58] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#146d58]">Read the fuller story</summary>
+              <div className="mt-3 space-y-3 leading-6">
+                <p>Margin conversations often turn to pricing, utilization and delivery efficiency. These matter, but they do not always reveal how an engagement is staffed and governed.</p>
+                <p>Senior attention over time, coordination across stakeholders, repeated refinement and cognitive load can sit outside formal reporting. This pattern appears across retainers, fixed fee projects and complex transformation work, often too late to act. It is often the single biggest driver of margin erosion.</p>
+                <p><BrandName /> makes those conditions visible earlier, helping leaders assess structural viability from likely staffing, coordination and governance. It is a decision lens for pricing and margin assurance, not a productivity, time tracking or utilization system.</p>
               </div>
+            </details>
+          </AnimatedSection>
+        </section>
+
+        <section className="py-12 sm:py-16">
+          <div className="mx-auto max-w-7xl px-4 sm:px-8">
+            <div className="mb-7 flex flex-wrap items-end justify-between gap-3">
+              <div><p className="mm-eyebrow">People behind the perspective</p><h2 className="mt-2 text-3xl font-extrabold tracking-tight text-[#183b37]">Built from operating experience.</h2></div>
+              <span className="text-xs font-semibold text-[#70857d]"><BrandName /> · Headroom</span>
+            </div>
+            <div className="grid gap-5 lg:grid-cols-2">
+              <article className="mm-panel overflow-hidden">
+                <div className="grid sm:grid-cols-[170px_1fr]">
+                  <div className="flex items-center justify-center bg-[#e4eee2] p-5 sm:items-start">
+                    <img src={founderPhoto} alt="Siddhartha Dasgupta (Sid)" className="h-32 w-32 rounded-[1.4rem] object-cover shadow-md sm:h-36 sm:w-36" />
+                  </div>
+                  <div className="p-5 sm:p-6">
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[.12em] text-[#568475]"><UserCheck size={14} /> Founder</div>
+                    <h3 className="mt-2 text-xl font-extrabold text-[#183b37]">Siddhartha Dasgupta (Sid)</h3>
+                    <p className="mt-3 text-sm leading-6 text-[#60776f]">His career spans creative, media, corporate marketing and performance environments, including Dentsu, Ogilvy, Grey and Publicis, as well as an independent consultancy.</p>
+                    <details className="mt-4 border-t border-[#e2e8df] pt-3 text-sm text-[#60776f]">
+                      <summary className="cursor-pointer font-semibold text-[#146d58] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#146d58]">More about Sid</summary>
+                      <p className="mt-2 leading-6">He led large accounts and cross market teams, took part in commercial and operational decisions, and was accountable for growth and profitability. <BrandName /> draws on patterns seen over years inside agency and consulting work.</p>
+                    </details>
+                  </div>
+                </div>
+              </article>
+
+              <article className="mm-panel overflow-hidden">
+                <div className="grid sm:grid-cols-[170px_1fr]">
+                  <div className="flex items-center justify-center bg-[#e4eee2] p-5 sm:items-start">
+                    <img src={advisorPhoto} alt="Joy Dasgupta" className="h-32 w-32 rounded-[1.4rem] object-cover shadow-md sm:h-36 sm:w-36" />
+                  </div>
+                  <div className="p-5 sm:p-6">
+                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[.12em] text-[#568475]"><UserCheck size={14} /> Key advisor</div>
+                    <h3 className="mt-2 text-xl font-extrabold text-[#183b37]">Joy Dasgupta</h3>
+                    <p className="mt-3 text-sm leading-6 text-[#60776f]">An enterprise operator with transformation experience across global teams at HP, AMEX and Genpact.</p>
+                    <details className="mt-4 border-t border-[#e2e8df] pt-3 text-sm text-[#60776f]">
+                      <summary className="cursor-pointer font-semibold text-[#146d58] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#146d58]">More about Joy</summary>
+                      <p className="mt-2 leading-6">Based in Boston, Joy is CEO of gyanAI. He advises <BrandName /> on decision system design, operating model risk and enterprise adoption, bringing firsthand understanding of margin risk in labor intensive operating models.</p>
+                    </details>
+                  </div>
+                </div>
+              </article>
             </div>
           </div>
+        </section>
 
-          <div className="mt-12 text-center">
-            <p className="text-xl text-emerald-400 font-semibold">
-              MarginMix is not an abstract idea.<br />
-              It is a synthesis of patterns observed over years inside the system.
-            </p>
-          </div>
-        </AnimatedSection>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-12 sm:py-16 bg-emerald-600">
-        <AnimatedSection className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/free-tier/input">
-              <Button className="w-full sm:w-auto bg-white px-6 text-emerald-700 hover:bg-gray-100">
-                Try Free Scanner
-              </Button>
-            </Link>
-            <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer">
-              <Button variant="outline" className="w-full sm:w-auto border-white/70 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white">
-                Book a Demo
-              </Button>
-            </a>
-          </div>
-        </AnimatedSection>
-      </section>
-
+        <section className="bg-[#146d58] py-10 text-white sm:py-12">
+          <AnimatedSection className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-5 px-4 sm:px-8 md:flex-row md:items-center">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[.16em] text-[#d5e96c]">Consider the engagement</p>
+              <h2 className="mt-2 text-2xl font-extrabold tracking-tight sm:text-3xl">Make the assumptions visible.</h2>
+            </div>
+            <div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
+              <Link href="/free-tier/input" className="inline-flex items-center justify-center rounded-full bg-[#d5e96c] px-6 py-3 text-sm font-bold text-[#183b37] hover:bg-[#e2f48a]">Try Free Scanner</Link>
+              <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" className="w-full rounded-full border-white/70 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white sm:w-auto">Book a Demo</Button>
+              </a>
+            </div>
+          </AnimatedSection>
+        </section>
+      </main>
       <Footer />
     </div>
   );

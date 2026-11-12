@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { BrandName } from "@/components/brand-name";
 import { AnimatedSection } from "@/components/animations";
 import { staggerContainer, staggerItem } from "@/components/motion-variants";
 import { motion, useReducedMotion } from "framer-motion";
@@ -45,7 +46,7 @@ const cards = [
     iconBg: "bg-violet-100 dark:bg-violet-900/30",
     Icon: Zap,
     iconColor: "text-violet-600 dark:text-violet-400",
-    title: "MarginMix stays lightweight",
+    title: "Stays lightweight",
     body: "No ERP integrations, timesheets, or cost tables required. Designed to be used every time pricing is discussed.",
   },
   {
@@ -61,7 +62,7 @@ const cards = [
 export default function WhyChoose() {
   const shouldReduce = useReducedMotion();
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-100 dark:from-gray-900 dark:via-gray-800 dark:to-emerald-900 relative overflow-hidden">
+    <div className="mm-page mm-why min-h-screen relative overflow-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-emerald-200/30 dark:bg-emerald-700/20 rounded-full blur-3xl"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-teal-200/30 dark:bg-teal-700/20 rounded-full blur-3xl"></div>
@@ -72,11 +73,12 @@ export default function WhyChoose() {
 
       <div className="h-16"></div>
 
-      <section className="relative py-16">
+      <section className="relative py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="text-center mb-16">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-              Why Choose <span className="text-emerald-600 dark:text-emerald-400">MarginMix</span>
+            <p className="mm-eyebrow mb-3">Decision support, not another dashboard</p>
+            <h1 className="mm-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#183b37] mb-6">
+              Why Choose <BrandName />
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             </p>
@@ -93,7 +95,7 @@ export default function WhyChoose() {
               <motion.div
                 key={i}
                 variants={shouldReduce ? undefined : staggerItem}
-                className={`bg-white dark:bg-gray-800 rounded-2xl p-8 border-l-4 ${c.color} shadow-sm hover:shadow-md transition-shadow`}
+                className={`mm-panel rounded-2xl p-7 border-t-4 border-l-0 ${c.color} transition-all duration-200 hover:-translate-y-1 hover:shadow-xl`}
               >
                 <div className="flex items-center gap-3 mb-4">
                   <div className={`p-2 ${c.iconBg} rounded-lg`}>
@@ -101,24 +103,26 @@ export default function WhyChoose() {
                   </div>
                   <h3 className="text-lg font-bold text-gray-900 dark:text-white">{c.title}</h3>
                 </div>
-                <p className="text-gray-600 dark:text-gray-300">{c.body}</p>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {c.body.split(/(MarginMix)/).map((part, index) =>
+                    part === "MarginMix" ? <BrandName key={index} /> : part
+                  )}
+                </p>
               </motion.div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      <section className="py-12 sm:py-20 bg-emerald-600 dark:bg-emerald-700">
+      <section className="mm-why-cta py-12 sm:py-20 bg-emerald-600 dark:bg-emerald-700">
         <AnimatedSection className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
               Assess Margin Risk & Be Profitable!
             </h2>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/free-tier/input">
-                <Button size="lg" className="w-full sm:w-auto h-auto py-3 bg-white px-8 text-emerald-700 hover:bg-emerald-50">
-                  Try Free Scanner
-                </Button>
+              <Link href="/free-tier/input" className="inline-flex w-full items-center justify-center rounded-lg bg-white px-8 py-3 font-semibold text-emerald-700 hover:bg-emerald-50 sm:w-auto">
+                Try Free Scanner
               </Link>
               <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer">
                 <Button size="lg" variant="outline" className="w-full sm:w-auto h-auto py-3 border-white/70 bg-transparent px-8 text-white hover:bg-white/10 hover:text-white">

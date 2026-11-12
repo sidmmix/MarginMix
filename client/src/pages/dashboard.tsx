@@ -4,9 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/hooks/useAuth";
 import { useActivityTracker } from "@/hooks/useActivityTracker";
-import { User, LogOut, Building2, Target, Sparkles, BarChart3, Heart, CheckCircle, Users, TrendingUp, Shield, Megaphone, Clock, Zap } from "lucide-react";
+import { Building2, Target, Sparkles, BarChart3, Heart, CheckCircle, Users, TrendingUp, Shield, Megaphone, Clock, Zap } from "lucide-react";
 import { Link } from "wouter";
 import type { User as UserType } from "@shared/schema";
+import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 
 interface CommercialLogic {
   the_moat: string;
@@ -29,7 +31,7 @@ export default function Dashboard() {
   const [showThankYouModal, setShowThankYouModal] = useState(false);
   const [brandBrief, setBrandBrief] = useState<BrandBrief | null>(null);
   const [analyzedUrl, setAnalyzedUrl] = useState<string | null>(null);
-  const { user, logout, isLoggingOut, isAuthenticated } = useAuth();
+  const { user, logout, isAuthenticated } = useAuth();
   
   const typedUser = user as UserType | undefined;
 
@@ -80,37 +82,9 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-100 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <div className="flex flex-col">
-                <h1 className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
-                  MarginMix Dashboard
-                </h1>
-                <span className="text-xs italic text-gray-500 dark:text-gray-400" style={{ fontFamily: 'Georgia, serif' }}>Margin Risk Clarity</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 sm:gap-4">
-              <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
-                <User className="h-4 w-4" />
-                <span>{typedUser?.firstName} {typedUser?.lastName}</span>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-                data-testid="button-logout"
-              >
-                <LogOut className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">{isLoggingOut ? "Logging out..." : "Logout"}</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="mm-page mm-dashboard min-h-screen">
+      <Header onLogout={handleLogout} />
+      <div className="h-16" aria-hidden="true" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
@@ -119,7 +93,7 @@ export default function Dashboard() {
               <div className="w-32 h-32 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full blur-3xl"></div>
             </div>
             <div className="relative">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent mb-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-[#183b37] mb-4">
                 Welcome back, {typedUser?.firstName}!
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -298,10 +272,8 @@ export default function Dashboard() {
             <Card className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border-emerald-200 dark:border-emerald-700">
               <CardContent className="pt-6">
                 <div className="text-center">
-                  <Link href="/">
-                    <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700" data-testid="button-analyze-new">
-                      Analyze Another Brand
-                    </Button>
+                  <Link href="/" className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700" data-testid="button-analyze-new">
+                    Analyze Another Brand
                   </Link>
                 </div>
               </CardContent>
@@ -318,14 +290,14 @@ export default function Dashboard() {
             <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
               Enter your client's website URL on the homepage to get started with brand analysis.
             </p>
-            <Link href="/">
-              <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700" data-testid="button-go-home">
-                Go to Homepage
-              </Button>
+            <Link href="/" className="inline-flex items-center justify-center rounded-md bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700" data-testid="button-go-home">
+              Go to Homepage
             </Link>
           </div>
         )}
       </main>
+
+      <Footer />
 
       <Dialog open={showThankYouModal} onOpenChange={setShowThankYouModal}>
         <DialogContent className="sm:max-w-md">
