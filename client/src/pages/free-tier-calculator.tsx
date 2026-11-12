@@ -22,10 +22,14 @@ import {
   type ScopeMove,
   type HoursTracked,
   DEFAULT_TARGET_MARGIN_PERCENT,
+  CURRENCY_OPTIONS,
+  DEFAULT_CURRENCY,
   TARGET_MARGIN_OPTIONS,
+  type LeakCurrency,
 } from "@shared/leak-engine";
 
 const emptyForm: Partial<LeakInput> = {
+  currency: DEFAULT_CURRENCY,
   targetMarginPercent: DEFAULT_TARGET_MARGIN_PERCENT,
   scopemove: undefined,
   scopebilled: undefined,
@@ -91,6 +95,7 @@ export default function FreeTierCalculatorPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const parsed: Partial<LeakInput> = {
+      currency: form.currency ?? DEFAULT_CURRENCY,
       fee: Number(form.fee),
       months: Number(form.months),
       fte: Number(form.fte),
@@ -143,7 +148,33 @@ export default function FreeTierCalculatorPage() {
             <span className="font-semibold text-red-600">*</span> All fields are required.
           </p>
           <div className="space-y-2">
-            <Label htmlFor="fee">Total fee on this engagement, in USD <span aria-hidden="true" className="text-red-600">*</span></Label>
+            <Label htmlFor="currency">Currency <span aria-hidden="true" className="text-red-600">*</span></Label>
+            <Select
+              value={form.currency ?? DEFAULT_CURRENCY}
+              onValueChange={(value) => update("currency", value as LeakCurrency)}
+            >
+              <SelectTrigger
+                id="currency"
+                aria-required="true"
+                aria-invalid={Boolean(errors.currency)}
+                className={controlClass("currency")}
+                onBlur={() => validateField("currency")}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CURRENCY_OPTIONS.map((currency) => (
+                  <SelectItem key={currency} value={currency}>{currency}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-slate-500">
+              Applies to the fee and staff cost. Values are not converted between currencies.
+            </p>
+            {errors.currency && <p className="text-sm text-red-600">{errors.currency}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="fee">Total fee on this engagement <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Input
               id="fee"
               type="number"
@@ -202,7 +233,7 @@ export default function FreeTierCalculatorPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="staffcost">Total staff cost on this account over the same period as the fee, in USD <span aria-hidden="true" className="text-red-600">*</span></Label>
+            <Label htmlFor="staffcost">Total staff cost on this account over the same period as the fee <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Input
               id="staffcost"
               type="number"

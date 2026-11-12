@@ -1,4 +1,5 @@
 import { computeLeak } from "./compute-leak";
+import { DEFAULT_CURRENCY } from "./constants";
 import { validateLeakInput } from "./validate-input";
 import type { LeakInput, LeakResult } from "./types";
 
@@ -10,6 +11,7 @@ export function readStoredLeakResult(raw: string | null): LeakResult | null {
     if (!stored || typeof stored.input !== "object" || !stored.input) return null;
     const source = stored.input;
     const input: LeakInput = {
+      currency: source.currency ?? DEFAULT_CURRENCY,
       fee: Number(source.fee),
       months: Number(source.months),
       fte: Number(source.fte),

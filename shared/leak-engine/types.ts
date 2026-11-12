@@ -1,6 +1,7 @@
-import type { HoursTracked, ScopeBilled, ScopeMove } from "./constants";
+import type { HoursTracked, LeakCurrency, ScopeBilled, ScopeMove } from "./constants";
 
 export interface LeakInput {
+  currency?: LeakCurrency;
   fee: number;
   months: number;
   fte: number;

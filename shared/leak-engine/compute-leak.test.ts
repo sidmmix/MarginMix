@@ -1,10 +1,21 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { computeLeak } from "./compute-leak";
-import { formatPercent, formatUsd, formatUsdBandHeadline } from "./format";
+import {
+  formatCurrency,
+  formatCurrencyBandHeadline,
+  formatPercent,
+  formatUsd,
+  formatUsdBandHeadline,
+} from "./format";
 import { validateLeakInput } from "./validate-input";
 import { readStoredLeakResult } from "./stored-result";
-import { TARGET_MARGIN_OPTIONS, DEFAULT_TARGET_MARGIN_PERCENT } from "./constants";
+import {
+  CURRENCY_OPTIONS,
+  DEFAULT_CURRENCY,
+  TARGET_MARGIN_OPTIONS,
+  DEFAULT_TARGET_MARGIN_PERCENT,
+} from "./constants";
 import type { LeakInput } from "./types";
 
 const EXAMPLE_A: LeakInput = {
@@ -182,6 +193,29 @@ test("display rounding does not change arithmetic or imply extra precision", () 
   assert.equal(formatPercent(0.185, 1), "18.5%");
 });
 
+test("selected currency changes denomination only, never the leak calculation", () => {
+  assert.deepEqual(CURRENCY_OPTIONS, ["USD", "SGD", "MYR"]);
+  assert.equal(DEFAULT_CURRENCY, "USD");
+  const usd = computeLeak({ ...EXAMPLE_A, currency: "USD" });
+  for (const currency of ["SGD", "MYR"] as const) {
+    const result = computeLeak({ ...EXAMPLE_A, currency });
+    assert.equal(result.input.currency, currency);
+    for (const key of [
+      "deliveryleak", "scopeleak", "leakpoint", "leaklow", "leakhigh",
+      "requiredfee", "feeshortfall",
+    ] as const) {
+      assert.equal(result[key], usd[key], `${key} changed for ${currency}`);
+    }
+  }
+});
+
+test("currency formatters identify the selected ISO currency code", () => {
+  assert.equal(formatCurrency(25_000, "USD"), "USD 25,000");
+  assert.equal(formatCurrency(25_000, "SGD"), "SGD 25,000");
+  assert.equal(formatCurrency(25_000, "MYR"), "MYR 25,000");
+  assert.equal(formatCurrencyBandHeadline(12_950, "MYR"), "MYR 13,000");
+});
+
 test("identical inputs produce identical outputs across repeated runs", () => {
   const expected = JSON.stringify(computeLeak(EXAMPLE_A));
   for (let i = 0; i < 10; i++) assert.equal(JSON.stringify(computeLeak(EXAMPLE_A)), expected);
@@ -196,10 +230,24 @@ test("high staff-cost share is described without claiming cost exceeds the fee",
 test("stored results are validated and recalculated rather than trusting obsolete totals", () => {
   const saved = JSON.stringify({ input: EXAMPLE_A, leakpoint: 55_500, deliveryleak: 45_000 });
   assert.equal(readStoredLeakResult(saved)?.leakpoint, 18_500);
+  assert.equal(readStoredLeakResult(saved)?.input.currency, DEFAULT_CURRENCY);
+  assert.equal(
+    readStoredLeakResult(JSON.stringify({ input: { ...EXAMPLE_A, currency: "SGD" } }))?.input.currency,
+    "SGD",
+  );
   assert.equal(readStoredLeakResult(null), null);
   assert.equal(readStoredLeakResult("{broken"), null);
   assert.equal(readStoredLeakResult("null"), null);
   assert.equal(readStoredLeakResult("{}"), null);
   assert.equal(readStoredLeakResult(JSON.stringify({ input: { ...EXAMPLE_A, fte: "bad" } })), null);
   assert.equal(readStoredLeakResult(JSON.stringify({ input: { ...EXAMPLE_A, scopemove: "unknown" } })), null);
+});
+
+test("currency validation accepts supported codes and rejects unknown codes", () => {
+  for (const currency of CURRENCY_OPTIONS) {
+    assert.equal(validateLeakInput({ ...EXAMPLE_A, currency }).valid, true);
+  }
+  const invalid = validateLeakInput({ ...EXAMPLE_A, currency: "EUR" as never });
+  assert.equal(invalid.valid, false);
+  assert.ok(invalid.errors.currency);
 });

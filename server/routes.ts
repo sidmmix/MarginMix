@@ -16,6 +16,7 @@ import {
 import { scrapeBrandDNA, type BrandBrief } from "./dna-scraper";
 import { assertSafePublicUrl, UnsafeUrlError } from "./url-safety";
 import { sendAssessmentEmail, sendFeedbackNotificationEmail, sendContactRequestEmail, sendLeakReviewInterestEmails, PDFAttachment } from "./resend";
+import { CURRENCY_OPTIONS } from "../shared/leak-engine";
 import { executeDecisionEngine, DecisionObject } from "./decision-engine";
 import { generateNarrative, generateFallbackNarrative } from "./narrative-generator";
 import { renderDecisionMemoPDF, renderAssessmentOutputPDF, generatePDFFilename } from "./pdf-renderer";
@@ -313,6 +314,7 @@ export function registerRoutes(app: Express): Server {
       companyName: z.string().trim().min(1, "Company name is required").max(200),
       turnstileToken: z.string().min(1).max(2048),
       engagement: z.object({
+        currency: z.enum(CURRENCY_OPTIONS).default("USD"),
         fee: z.number().finite().positive(),
         months: z.number().int().min(1).max(60),
         fte: z.number().finite().positive(),

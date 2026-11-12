@@ -1,12 +1,14 @@
 export * from "./constants";
 export type { LeakInput, LeakResult } from "./types";
-export type { HoursTracked, ScopeBilled, ScopeMove } from "./constants";
+export type { HoursTracked, LeakCurrency, ScopeBilled, ScopeMove } from "./constants";
 export { computeLeak } from "./compute-leak";
 export { validateLeakInput } from "./validate-input";
 export { readStoredLeakResult } from "./stored-result";
 export {
   formatUsd,
   formatUsdBandHeadline,
+  formatCurrency,
+  formatCurrencyBandHeadline,
   formatPercent,
   formatPercentRange,
 } from "./format";

@@ -52,4 +52,7 @@ export const INPUT_BOUNDS = {
   fte: { min: 0.1, max: 200 },
 } as const;
 
-export const CURRENCY = "USD";
+export const CURRENCY_OPTIONS = ["USD", "SGD", "MYR"] as const;
+export type LeakCurrency = (typeof CURRENCY_OPTIONS)[number];
+export const DEFAULT_CURRENCY: LeakCurrency = "USD";
+export const CURRENCY = DEFAULT_CURRENCY;

@@ -1,6 +1,7 @@
 import {
   BILLING_MULTIPLIER,
   BAND_WIDTH,
+  CURRENCY_OPTIONS,
   DEFAULT_TARGET_MARGIN_PERCENT,
   INPUT_BOUNDS,
   INPUT_WARNINGS,
@@ -15,6 +16,7 @@ export interface FieldErrors {
   fte?: string;
   staffcost?: string;
   targetMarginPercent?: string;
+  currency?: string;
   scopemove?: string;
   scopebilled?: string;
   hourstracked?: string;
@@ -34,6 +36,9 @@ export function validateLeakInput(raw: Partial<LeakInput>): ValidationResult {
   const months = Number(raw.months);
   const fte = Number(raw.fte);
   const staffcost = Number(raw.staffcost);
+  if (raw.currency !== undefined && !CURRENCY_OPTIONS.includes(raw.currency as (typeof CURRENCY_OPTIONS)[number])) {
+    errors.currency = "Select USD, SGD, or MYR.";
+  }
   const targetMarginPercent = raw.targetMarginPercent === undefined
     ? DEFAULT_TARGET_MARGIN_PERCENT
     : Number(raw.targetMarginPercent);

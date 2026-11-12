@@ -14,13 +14,14 @@ import {
 import { analytics } from "@/lib/analytics";
 import {
   formatPercent,
-  formatUsd,
-  formatUsdBandHeadline,
+  formatCurrency,
+  formatCurrencyBandHeadline,
   LEAK_RESULT_STORAGE_KEY,
   SCOPE_SHARE,
   SCOPE_BILLED_LABELS,
   SCOPE_MOVE_LABELS,
   DEFAULT_TARGET_MARGIN_PERCENT,
+  DEFAULT_CURRENCY,
   readStoredLeakResult,
   validateLeakInput,
   type LeakResult,
@@ -177,6 +178,7 @@ export default function FreeTierCalculatorOutputPage() {
   }
 
   const { input } = result;
+  const currency = input.currency ?? DEFAULT_CURRENCY;
   const targetMarginPercent = input.targetMarginPercent ?? DEFAULT_TARGET_MARGIN_PERCENT;
   const warnings = validateLeakInput(input).warnings;
   const fteDisplay = input.fte % 1 === 0 ? String(input.fte) : input.fte.toFixed(1);
@@ -205,6 +207,7 @@ export default function FreeTierCalculatorOutputPage() {
       companyName: String(formData.get("companyName") ?? "").trim(),
       turnstileToken,
       engagement: {
+        currency: input.currency ?? DEFAULT_CURRENCY,
         fee: input.fee,
         months: input.months,
         fte: input.fte,
@@ -253,7 +256,7 @@ export default function FreeTierCalculatorOutputPage() {
         <header className="mb-8 print:mb-4">
           <h1 className="text-xl font-semibold text-slate-900">Engagement leak analysis</h1>
           <p className="text-slate-600 mt-1">
-            Fee {formatUsd(input.fee)} over {input.months} month{input.months === 1 ? "" : "s"}. {fteDisplay} FTE.
+            Fee {formatCurrency(input.fee, currency)} over {input.months} month{input.months === 1 ? "" : "s"}. {fteDisplay} FTE.
           </p>
         </header>
 
@@ -262,17 +265,17 @@ export default function FreeTierCalculatorOutputPage() {
           {result.noLeak ? (
             <>
               <p className="text-3xl sm:text-4xl font-bold text-emerald-700">No material modelled exposure detected</p>
-              <p className="text-slate-700 mt-3">Combined exposure indicator: {formatUsd(result.leakpoint)}. Indicative exposure range: {formatUsd(result.leaklow)} to {formatUsd(result.leakhigh)}.</p>
+              <p className="text-slate-700 mt-3">Combined exposure indicator: {formatCurrency(result.leakpoint, currency)}. Indicative exposure range: {formatCurrency(result.leaklow, currency)} to {formatCurrency(result.leakhigh, currency)}.</p>
             </>
           ) : (
             <>
               <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">Indicative exposure range</p>
               <p className="text-[clamp(1.75rem,8vw,2.75rem)] font-bold text-slate-900 leading-tight break-words">
-                {formatUsdBandHeadline(result.leaklow)} to {formatUsdBandHeadline(result.leakhigh)}
+                {formatCurrencyBandHeadline(result.leaklow, currency)} to {formatCurrencyBandHeadline(result.leakhigh, currency)}
               </p>
               <p className="text-slate-700 mt-3 text-base sm:text-lg">
                 {formatPercent(result.leakpctlow, 0)} to {formatPercent(result.leakpcthigh, 0)} of fee. Combined exposure indicator:{" "}
-                {formatUsd(result.leakpoint)}, or {formatPercent(result.leakpctmid, 1)}.
+                {formatCurrency(result.leakpoint, currency)}, or {formatPercent(result.leakpctmid, 1)}.
               </p>
             </>
           )}
@@ -291,7 +294,7 @@ export default function FreeTierCalculatorOutputPage() {
               className={`rounded-xl border p-4 ${result.driver === "delivery" ? "border-emerald-500 bg-emerald-50/50" : "border-slate-200"}`}
             >
               <h2 className="font-semibold text-slate-900">Estimated delivery-cost exposure</h2>
-              <p className="text-2xl font-bold mt-1">{formatUsd(result.deliveryleak)}</p>
+              <p className="text-2xl font-bold mt-1">{formatCurrency(result.deliveryleak, currency)}</p>
               <p className="text-sm text-slate-600 mt-2">
                 Staff cost is {formatPercent(result.staffsharepct, 0)} of fee. Your selected target is {targetMarginPercent}% after staff costs, which sets a {100 - targetMarginPercent}% staff-cost ceiling.
               </p>
@@ -309,7 +312,7 @@ export default function FreeTierCalculatorOutputPage() {
                 className={`rounded-xl border p-4 ${result.driver === "scope" ? "border-emerald-500 bg-emerald-50/50" : "border-slate-200"}`}
               >
                 <h2 className="font-semibold text-slate-900">Estimated scope exposure</h2>
-                <p className="text-2xl font-bold mt-1">{formatUsd(result.scopeleak)}</p>
+                <p className="text-2xl font-bold mt-1">{formatCurrency(result.scopeleak, currency)}</p>
                 <p className="text-sm text-slate-600 mt-2 capitalize">{scopeSubtitle(result)}</p>
                 {!result.noLeak && result.driver === "scope" && (
                   <p className="text-sm font-medium text-emerald-800 mt-2">This is the driver.</p>
@@ -330,13 +333,13 @@ export default function FreeTierCalculatorOutputPage() {
         <section className="mb-6 text-slate-700">
           {result.feeshortfall > 0 ? (
             <p>
-              At the selected {targetMarginPercent}% target after staff costs, the model estimates a required fee of {formatUsd(result.requiredfee)}. It was sold at{" "}
-              {formatUsd(input.fee)}, an estimated fee uplift of {formatUsd(result.feeshortfall)}.
+              At the selected {targetMarginPercent}% target after staff costs, the model estimates a required fee of {formatCurrency(result.requiredfee, currency)}. It was sold at{" "}
+              {formatCurrency(input.fee, currency)}, an estimated fee uplift of {formatCurrency(result.feeshortfall, currency)}.
             </p>
           ) : (
             <p>
               At the selected {targetMarginPercent}% target after staff costs, the current fee meets the modelled target.
-              Estimated fee uplift: {formatUsd(0)}.
+              Estimated fee uplift: {formatCurrency(0, currency)}.
             </p>
           )}
         </section>

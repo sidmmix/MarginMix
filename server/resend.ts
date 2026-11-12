@@ -4,6 +4,7 @@ import { generateFeedbackToken } from './feedback-token';
 import { buildAuditQuestionnaireEmail } from "./audit-email";
 import { buildReportGroups } from "../shared/report-groups";
 import { buildVerdictReport } from "../shared/verdict-provenance";
+import { formatCurrency, type LeakCurrency } from "../shared/leak-engine";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -777,6 +778,7 @@ export async function sendLeakReviewInterestEmails(contact: {
   email: string;
   companyName: string;
   engagement: {
+    currency: LeakCurrency;
     fee: number;
     months: number;
     fte: number;
@@ -790,13 +792,15 @@ export async function sendLeakReviewInterestEmails(contact: {
   const email = escapeHtml(contact.email);
   const companyName = escapeHtml(contact.companyName);
   const { engagement } = contact;
+  const formatEngagementAmount = (amount: number) =>
+    escapeHtml(formatCurrency(amount, engagement.currency, { decimals: 2 }));
   const engagementRows = `
-    <p><strong>Fee for entered period:</strong> ${escapeHtml(engagement.fee)} USD</p>
+    <p><strong>Fee for entered period:</strong> ${formatEngagementAmount(engagement.fee)}</p>
     <p><strong>Period:</strong> ${escapeHtml(engagement.months)} months</p>
     <p><strong>Team size:</strong> ${escapeHtml(engagement.fte)} FTE</p>
-    <p><strong>Staff cost for entered period:</strong> ${escapeHtml(engagement.staffcost)} USD</p>
+    <p><strong>Staff cost for entered period:</strong> ${formatEngagementAmount(engagement.staffcost)}</p>
     <p><strong>Target margin:</strong> ${escapeHtml(engagement.targetMarginPercent)}%</p>
-    <p><strong>Indicative exposure range:</strong> ${escapeHtml(engagement.exposureLow)} to ${escapeHtml(engagement.exposureHigh)} USD</p>
+    <p><strong>Indicative exposure range:</strong> ${formatEngagementAmount(engagement.exposureLow)} to ${formatEngagementAmount(engagement.exposureHigh)}</p>
   `;
 
   const internalResult = await resend.emails.send({
