@@ -307,7 +307,7 @@ export default function FreeTierCalculatorPage() {
           </div>
 
           <div className="relative space-y-2">
-            <Label htmlFor="scope_billed">Scope billing status <span aria-hidden="true" className="text-red-600">*</span></Label>
+            <Label htmlFor="scope_billed">Unplanned Scope billing status <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Select
               value={form.scopebilled ?? ""}
               onValueChange={(v) => update("scopebilled", v as ScopeBilled)}
