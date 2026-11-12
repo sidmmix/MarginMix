@@ -12,6 +12,7 @@
     "test:analytics": "tsx --test client/src/lib/analytics.test.ts",
     "test:gtm-consent": "tsx scripts/test-gtm-consent.ts",
     "test:assessment-completion": "tsx scripts/test-assessment-completion.ts",
+    "test:questionnaire-navigation": "tsx scripts/test-questionnaire-navigation.ts",
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
