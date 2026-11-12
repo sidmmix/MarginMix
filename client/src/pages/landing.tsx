@@ -7,6 +7,20 @@ import { Footer } from "@/components/footer";
 import { BrandName } from "@/components/brand-name";
 import { AnimatedSection } from "@/components/animations";
 import { staggerContainer, staggerItem } from "@/components/motion-variants";
+import { computeLeak, formatPercent, formatUsd, formatUsdBandHeadline, type LeakInput } from "@shared/leak-engine";
+
+const homepageSampleInput: LeakInput = {
+  currency: "USD",
+  fee: 100_000,
+  months: 3,
+  fte: 3.33,
+  staffcost: 75_000,
+  targetMarginPercent: 40,
+  scopemove: "moderate",
+  scopebilled: "unbilled",
+  hourstracked: "no",
+};
+const homepageSampleResult = computeLeak(homepageSampleInput);
 
 const heroContainer = {
   hidden: {},
@@ -79,21 +93,41 @@ export default function Landing() {
               <div className="absolute inset-x-7 top-7 bottom-0 rotate-[-5deg] rounded-[2rem] border border-white/10 bg-[#0e302c]/50" />
               <div className="relative rounded-[2rem] border border-white/15 bg-[#f5f3eb] p-4 shadow-[0_28px_70px_rgba(0,0,0,.22)] sm:p-6">
                 <div className="flex items-center justify-between border-b border-[#e3e8df] pb-4">
-                  <div><p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#789087]">Decision snapshot</p><p className="mt-1 font-bold text-[#183b37]">Engagement economics</p></div>
-                  <span className="rounded-full bg-[#e7f0e8] px-3 py-1 text-xs font-bold text-[#146d58]">Review ready</span>
+                  <div><p className="text-[10px] font-bold uppercase tracking-[.16em] text-[#789087]">Calculator result</p><p className="mt-1 font-bold text-[#183b37]">Sample engagement · USD</p></div>
+                  <span className="rounded-full bg-[#e7f0e8] px-3 py-1 text-xs font-bold text-[#146d58]">Engine calculated</span>
                 </div>
-                <div className="mt-6 flex items-end justify-between">
-                  <div><p className="text-xs text-[#70857d]">Decision lens</p><p className="mt-1 text-3xl font-extrabold tracking-tight text-[#183b37]">Risk in view</p></div>
-                  <div className="grid h-[76px] w-[76px] place-items-center rounded-full border-[7px] border-[#e2e96b] border-b-[#dfe7dc] text-[10px] font-extrabold text-[#146d58]">STRUCTURE</div>
+                <div className="mt-5 rounded-2xl bg-[#e6f0e4] p-4 sm:p-5">
+                  <p className="text-[10px] font-extrabold uppercase tracking-[.15em] text-[#5f8074]">Indicative exposure range</p>
+                  <p className="mm-number mt-1 text-3xl font-extrabold leading-tight text-[#183b37] sm:text-4xl">
+                    {formatUsdBandHeadline(homepageSampleResult.leaklow)} to {formatUsdBandHeadline(homepageSampleResult.leakhigh)}
+                  </p>
+                  <p className="mt-2 text-sm text-[#45635a]">
+                    Combined exposure indicator: {formatUsd(homepageSampleResult.leakpoint)}, or {formatPercent(homepageSampleResult.leakpctmid, 1)} of fee.
+                  </p>
                 </div>
-                <div className="mt-7 space-y-4">
-                  {["Workforce intensity", "Commercial exposure", "Coordination load"].map((label, index) => (
-                    <div key={label} className="flex items-center justify-between border-b border-[#e8ece5] pb-3 text-xs last:border-0">
-                      <span className="font-semibold text-[#45635a]">{label}</span><span className={`rounded-full px-2.5 py-1 font-bold ${index === 0 ? "bg-[#f7edcf] text-[#8a6828]" : "bg-[#e7f0e8] text-[#397965]"}`}>{index === 0 ? "Review" : "Visible"}</span>
-                    </div>
-                  ))}
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  <div className="rounded-xl border border-[#dce5dc] bg-white p-3">
+                    <p className="text-xs font-semibold text-[#60776f]">Delivery cost exposure</p>
+                    <p className="mm-number mt-1 text-xl font-extrabold text-[#183b37]">{formatUsd(homepageSampleResult.deliveryleak)}</p>
+                  </div>
+                  <div className="rounded-xl border border-[#dce5dc] bg-white p-3">
+                    <p className="text-xs font-semibold text-[#60776f]">Scope exposure</p>
+                    <p className="mm-number mt-1 text-xl font-extrabold text-[#183b37]">{formatUsd(homepageSampleResult.scopeleak)}</p>
+                  </div>
                 </div>
-                <p className="mt-3 border-t border-[#e3e8df] pt-4 text-[10px] text-[#8a9a91]">Illustrative interface · outputs depend on stated assumptions</p>
+                <p className="mt-4 text-sm text-[#45635a]">
+                  At the 40% target, the model estimates a required fee of {formatUsd(homepageSampleResult.requiredfee)} and an uplift of {formatUsd(homepageSampleResult.feeshortfall)}.
+                </p>
+                <details className="mt-4 border-t border-[#e3e8df] pt-3 text-xs text-[#60776f]">
+                  <summary className="cursor-pointer font-semibold text-[#146d58]">See sample inputs</summary>
+                  <p className="mt-2 leading-relaxed">
+                    Fee {formatUsd(homepageSampleInput.fee)}, staff cost {formatUsd(homepageSampleInput.staffcost)}, {homepageSampleInput.months} months, {homepageSampleInput.fte} FTE, 40% target margin, moderate scope creep marked unbilled, and hours not tracked.
+                  </p>
+                </details>
+                <p className="mt-3 text-[10px] leading-relaxed text-[#789087]">Sample calculation using the same engine as the calculator results page. Not a live engagement.</p>
+                <Link href="/free-tier/input" className="mt-3 inline-flex text-sm font-bold text-[#146d58] hover:underline">
+                  Run your own numbers <span aria-hidden="true" className="ml-1">→</span>
+                </Link>
               </div>
             </motion.div>
           </motion.div>
