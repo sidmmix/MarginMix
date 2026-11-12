@@ -14,3 +14,9 @@ Preserve the automated post-assessment email with both the Decision Memo and Ass
 **Why:** The user explicitly reaffirmed this completion flow.
 
 **How to apply:** Fix browser-download handling without changing the email sequence or dropping either attachment. Browsers may still require permission for multiple automatic downloads.
+
+Completion-flow tests must replace assessment persistence and email delivery with synthetic storage and an email capture. Do not write test submissions to the real database or send real customer email.
+
+**Why:** The user requires end-to-end verification while explicitly prohibiting real email sends.
+
+**How to apply:** Inject test-only route dependencies, generate the real reports, and compare captured email attachments with the browser downloads.

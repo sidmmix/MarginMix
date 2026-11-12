@@ -11,6 +11,7 @@
     "test:leak": "tsx --test shared/leak-engine/compute-leak.test.ts",
     "test:analytics": "tsx --test client/src/lib/analytics.test.ts",
     "test:gtm-consent": "tsx scripts/test-gtm-consent.ts",
+    "test:assessment-completion": "tsx scripts/test-assessment-completion.ts",
     "db:push": "drizzle-kit push"
   },
   "dependencies": {

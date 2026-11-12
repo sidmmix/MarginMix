@@ -20,6 +20,7 @@ import { CURRENCY_OPTIONS } from "../shared/leak-engine";
 import { executeDecisionEngine, DecisionObject } from "./decision-engine";
 import { generateNarrative, generateFallbackNarrative } from "./narrative-generator";
 import { renderDecisionMemoPDF, renderAssessmentOutputPDF, generatePDFFilename } from "./pdf-renderer";
+import type { InsertMarginAssessment } from "@shared/schema";
 
 // Initialize OpenAI client
 const openai = new OpenAI({
@@ -59,7 +60,16 @@ const requireAuth = (req: any, res: any, next: any) => {
   return res.status(401).json({ message: "Authentication required" });
 };
 
-export function registerRoutes(app: Express): Server {
+export interface AssessmentRouteDependencies {
+  createAssessment?: (assessment: InsertMarginAssessment) => Promise<{ id: string }>;
+  generateNarrative?: typeof generateNarrative;
+  sendAssessmentEmail?: typeof sendAssessmentEmail;
+}
+
+export function registerRoutes(
+  app: Express,
+  assessmentDependencies: AssessmentRouteDependencies = {},
+): Server {
   registerAuditRoutes(app, saveAuditSubmission, deliverAuditSubmission);
   // Legacy campaign brief routes removed - old questionnaire flow deprecated
 
@@ -404,7 +414,9 @@ export function registerRoutes(app: Express): Server {
   app.post("/api/assessments", publicRateLimit(6, 15 * 60_000, 120), async (req, res) => {
     try {
       const validatedData = assessmentInputSchema.parse(req.body);
-      const assessment = await storage.createMarginAssessment({
+      const createAssessment = assessmentDependencies.createAssessment
+        ?? storage.createMarginAssessment.bind(storage);
+      const assessment = await createAssessment({
         ...validatedData,
         deliveryConfidence: validatedData.deliveryConfidence ?? "",
       });
@@ -456,7 +468,7 @@ export function registerRoutes(app: Express): Server {
       // Generate narrative using GPT-4.1 (narrative only, no score recalculation)
       let narrative;
       try {
-        narrative = await generateNarrative(decisionObject, openSignal);
+        narrative = await (assessmentDependencies.generateNarrative ?? generateNarrative)(decisionObject, openSignal);
         console.log(`Narrative generated for: ${validatedData.organisationName}`);
       } catch (narrativeError: any) {
         console.error("Failed to generate narrative:", narrativeError.message);
@@ -492,7 +504,7 @@ export function registerRoutes(app: Express): Server {
           { filename: decisionMemoFilename, content: decisionMemoPdf },
           { filename: assessmentOutputFilename, content: assessmentOutputPdf },
         ];
-        await sendAssessmentEmail(decisionObject as any, openSignal, pdfAttachments);
+        await (assessmentDependencies.sendAssessmentEmail ?? sendAssessmentEmail)(decisionObject as any, openSignal, pdfAttachments);
         console.log(`Assessment email sent for assessment ${assessment.id}`);
       } catch (emailError: any) {
         console.error("Failed to send assessment email:", emailError.message);
