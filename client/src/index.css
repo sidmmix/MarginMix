@@ -180,7 +180,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 .mm-why-cta h2 { letter-spacing: -.035em; }
 .mm-results .mm-result-hero { border-radius: 1.5rem; border: 1px solid #cddfcf; background: linear-gradient(130deg,#e6f0e4,#f5f5e9); padding: clamp(1.25rem,4vw,2.5rem); }
 .mm-results .mm-explain h2 { color: #183b37; }
-.mm-results footer, .mm-results + footer { border-color: #dce5dc !important; background: #f0f4e9 !important; }
 .mm-profiler .bg-gradient-to-br,
 .mm-assessment .bg-gradient-to-br {
   background-image: radial-gradient(ellipse at 80% 10%, rgba(213,233,108,.16), transparent 34%), linear-gradient(125deg,#123b36,#146d58 62%,#155246) !important;
