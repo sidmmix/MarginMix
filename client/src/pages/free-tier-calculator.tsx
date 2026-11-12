@@ -133,9 +133,9 @@ export default function FreeTierCalculatorPage() {
       <Header
         variant="solid"
         hideDemoButton
-        notice="Calculator inputs and results stay in your browser. Submitting a review request emails your contact details and engagement summary to you and MarginMix."
+        notice="Your calculator inputs and results remain in this browser session and are not saved to MarginMix’s database."
       />
-      <main className="max-w-lg mx-auto px-4 pt-24 pb-16">
+      <main className="max-w-lg mx-auto px-4 pt-32 pb-16">
         <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2">
           Engagement leak calculator
         </h1>
@@ -377,7 +377,7 @@ export default function FreeTierCalculatorPage() {
       </main>
       <footer className="border-t border-slate-200 bg-white px-4 py-5 text-center text-sm text-slate-700">
         <p className="font-bold">
-          Calculator inputs and results stay in your browser. Submitting a review request emails your contact details and engagement summary to you and MarginMix.
+          Your calculator inputs and results remain in this browser session and are not saved to MarginMix’s database.
         </p>
       </footer>
     </div>

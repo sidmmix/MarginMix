@@ -14,3 +14,9 @@ Fee and staff cost are totals for the same entered period. Do not multiply deliv
 **Why:** After reviewing the audit, the user explicitly approved the period-total package and its acceptance values.
 
 **How to apply:** Keep max-plus-half-min combination, category percentages, billing multipliers, and range widths unchanged. Duration is contextual, not another multiplier on already-period-total amounts.
+
+Review requests should continue emailing the submitted contact details and engagement summary to the requester and MarginMix. State clearly that calculator data is held temporarily in the browser session and is not saved to the MarginMix database.
+
+**Why:** The user chose to keep both contact details and the engagement summary in review-request emails while clarifying the calculator's data-handling notice.
+
+**How to apply:** Keep the review email content unless the user asks to change it, and distinguish temporary browser-session storage from database storage in calculator notices.
