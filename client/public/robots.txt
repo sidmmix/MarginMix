@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
 
+# Plain text guide for AI and other content consumers:
+# https://marginmix.ai/llms.txt
 Sitemap: https://marginmix.ai/sitemap.xml

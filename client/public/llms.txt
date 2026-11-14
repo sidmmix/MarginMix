@@ -1,0 +1,30 @@
+# MarginMix
+
+> MarginMix is a decision support system for agency and consulting leaders to pressure test engagement pricing, staffing, scope, billing, and delivery assumptions before work begins.
+
+MarginMix focuses on margin governance. It is not a delivery or productivity platform.
+
+## Product information
+
+- The free Engagement Leak Calculator estimates indicative exposure from user supplied engagement economics and delivery signals. Its output is a planning estimate based on preset rules, not an audited loss.
+- Calculator inputs and results remain in the browser and are not saved to MarginMix’s database.
+- The agency audit questionnaire collects structured answers and emails a PDF of the responses. It asks users to reference documents; document uploads are not currently available.
+- Full document review is planned and is not available through the free calculator today.
+- Margin Intelligence is a future direction, not a live capability.
+
+## Pages
+
+- [Homepage](https://marginmix.ai/): MarginMix overview and sample calculator snapshot.
+- [Platform](https://marginmix.ai/platform): Current, planned, and future product capabilities.
+- [Why choose MarginMix](https://marginmix.ai/why-choose): The decision support approach and its intended use.
+- [Founder](https://marginmix.ai/founder): The perspective behind MarginMix.
+- [Free Engagement Leak Calculator](https://marginmix.ai/free-tier/input): Interactive estimate for one engagement.
+- [Quick Risk Check](https://marginmix.ai/quick-profiler): Short interactive engagement risk check.
+- [Agency audit questionnaire](https://marginmix.ai/audit-questions): Structured questionnaire for agency engagement assumptions.
+
+Interactive calculators, questionnaires, and assessment results depend on user input and are not static reference pages.
+
+## Contact
+
+- Website: https://marginmix.ai/
+- Email: sid@marginmix.ai
