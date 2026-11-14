@@ -9,6 +9,7 @@
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
     "test:leak": "tsx --test shared/leak-engine/compute-leak.test.ts",
+    "test:metadata": "tsx --test client/src/lib/route-metadata.test.ts",
     "test:analytics": "tsx --test client/src/lib/analytics.test.ts",
     "test:gtm-consent": "tsx scripts/test-gtm-consent.ts",
     "test:assessment-completion": "tsx scripts/test-assessment-completion.ts",

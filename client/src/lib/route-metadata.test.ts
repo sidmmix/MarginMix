@@ -1,0 +1,102 @@
+import { readFileSync } from "node:fs";
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import {
+  publicPages,
+  resolvePageMetadata,
+  siteOrigin,
+} from "./route-metadata";
+
+const expectedPublicPaths = [
+  "/",
+  "/platform",
+  "/free-tier/calculator",
+  "/founder",
+  "/why-choose",
+];
+
+const sitemap = readFileSync("client/public/sitemap.xml", "utf8");
+const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
+  (match) => match[1],
+);
+const appSource = readFileSync("client/src/App.tsx", "utf8");
+const appRoutePaths = [...appSource.matchAll(/<Route\s+path="([^"]+)"/g)].map(
+  (match) => match[1].replace(/\/\*.*$/, ""),
+);
+
+test("indexable public pages have distinct search metadata and canonical social tags", () => {
+  const indexablePaths = Object.entries(publicPages)
+    .filter(([, metadata]) => metadata.indexable)
+    .map(([path]) => path)
+    .sort();
+
+  assert.deepEqual(indexablePaths, [...expectedPublicPaths].sort());
+
+  const titles = new Set<string>();
+  const descriptions = new Set<string>();
+  for (const path of indexablePaths) {
+    const metadata = resolvePageMetadata(path);
+    assert.ok(metadata.title.trim(), `${path} must have a title`);
+    assert.ok(metadata.description.trim(), `${path} must have a description`);
+    assert.ok(!titles.has(metadata.title), `${path} title must be unique`);
+    assert.ok(
+      !descriptions.has(metadata.description),
+      `${path} description must be unique`,
+    );
+    titles.add(metadata.title);
+    descriptions.add(metadata.description);
+
+    const expectedCanonical = `${siteOrigin}${path}`;
+    assert.equal(metadata.robots, "index, follow");
+    assert.equal(metadata.canonicalUrl, expectedCanonical);
+    assert.equal(metadata.openGraph.url, expectedCanonical);
+    assert.equal(metadata.openGraph.title, metadata.title);
+    assert.equal(metadata.openGraph.description, metadata.description);
+    assert.equal(metadata.twitter.title, metadata.title);
+    assert.equal(metadata.twitter.description, metadata.description);
+  }
+});
+
+test("sitemap contains every canonical public page and no private or form routes", () => {
+  const expectedUrls = expectedPublicPaths
+    .map((path) => `${siteOrigin}${path}`)
+    .sort();
+  assert.deepEqual([...sitemapUrls].sort(), expectedUrls);
+
+  const excludedPaths = [
+    "/free-tier/input",
+    "/free-tier/calculator/output",
+    "/quick-profiler",
+    "/audit-questions",
+    "/assessment",
+    "/demo",
+    "/auth",
+    "/sign-in",
+    "/sign-up",
+    "/dashboard",
+    "/home",
+  ];
+
+  for (const path of excludedPaths) {
+    const metadata = resolvePageMetadata(path);
+    assert.equal(metadata.robots, "noindex, nofollow", `${path} must be noindex`);
+    assert.equal(metadata.canonicalUrl, undefined, `${path} must not be canonical`);
+    assert.ok(!sitemapUrls.includes(`${siteOrigin}${path}`), `${path} must not be in sitemap`);
+  }
+});
+
+test("every declared app route has explicit metadata", () => {
+  assert.ok(appRoutePaths.length > 0, "App.tsx must declare routes");
+
+  for (const path of appRoutePaths) {
+    assert.ok(
+      Object.hasOwn(publicPages, path),
+      `${path} needs an explicit metadata entry`,
+    );
+    assert.equal(
+      resolvePageMetadata(path).robots,
+      expectedPublicPaths.includes(path) ? "index, follow" : "noindex, nofollow",
+      `${path} has the wrong indexing policy`,
+    );
+  }
+});
