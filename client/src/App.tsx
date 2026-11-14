@@ -21,6 +21,7 @@ import Landing from "@/pages/landing";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { pageVariants } from "@/components/motion-variants";
+import { RouteMetadata } from "@/components/route-metadata";
 
 const Home = lazy(() => import("@/pages/home"));
 const Dashboard = lazy(() => import("@/pages/dashboard"));
@@ -281,6 +282,7 @@ function ClerkProviderWithRoutes() {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <ScrollToTop />
+          <RouteMetadata />
           <Toaster />
           <Router />
           <CookieConsent />

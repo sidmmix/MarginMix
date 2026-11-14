@@ -133,18 +133,6 @@ export default function AuditQuestions() {
   const visibleSections = auditSections.filter((section) => visibleQuestions.some((question) => question.section === section.id));
 
   useEffect(() => {
-    const oldTitle = document.title;
-    const description = document.querySelector<HTMLMetaElement>('meta[name="description"]');
-    const oldDescription = description?.content;
-    document.title = "Engagement assumptions audit | MarginMix";
-    if (description) description.content = "A guided review of the assumptions behind your client engagement margins.";
-    return () => {
-      document.title = oldTitle;
-      if (description && oldDescription !== undefined) description.content = oldDescription;
-    };
-  }, []);
-
-  useEffect(() => {
     let loaded: AuditAnswers = {};
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
