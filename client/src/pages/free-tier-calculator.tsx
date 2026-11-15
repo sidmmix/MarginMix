@@ -143,6 +143,26 @@ export default function FreeTierCalculatorPage() {
         </p>
         </div>
 
+        <section
+          aria-labelledby="estimate-intro-title"
+          className="mb-6 rounded-xl border border-[#dce5dc] bg-[#eaf0e8] p-4 text-sm leading-6 text-[#45635a] sm:p-5"
+        >
+          <h2 id="estimate-intro-title" className="mb-1 font-semibold text-[#294c45]">
+            What this estimate includes
+          </h2>
+          <p>
+            It models delivery-cost exposure from staff costs against your selected target, capped at 30% of the fee,
+            and scope exposure using preset assumptions adjusted for billing status. The combined indicator is the
+            larger estimate plus half the smaller to account for possible overlap.
+          </p>
+          <p className="mt-2">
+            The range is a sensitivity band based on hours tracked, not a statistical confidence interval. This is a
+            planning estimate, not audited loss or recovered revenue; it excludes other non-labour direct costs and
+            has not been calibrated against actual engagement outcomes. Fee and staff cost should cover the same
+            period; months and FTE provide context only.
+          </p>
+        </section>
+
         <form onSubmit={handleSubmit} noValidate className="mm-form-card space-y-6 p-5 sm:p-8">
           <p className="text-sm text-[#60776f]">
             <span className="font-semibold text-red-600">*</span> All fields are required.
