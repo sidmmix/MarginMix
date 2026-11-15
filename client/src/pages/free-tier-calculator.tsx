@@ -15,6 +15,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { analytics } from "@/lib/analytics";
 import { engagementJourneyCopy } from "@shared/public-page-copy";
+import { leakEstimateMethodologyCopy } from "@shared/leak-engine/methodology-copy";
 import {
   computeLeak,
   LEAK_RESULT_STORAGE_KEY,
@@ -152,15 +153,11 @@ export default function FreeTierCalculatorPage() {
             What this estimate includes
           </h2>
           <p>
-            It models delivery-cost exposure from staff costs against your selected target, capped at 30% of the fee,
-            and scope exposure using preset assumptions adjusted for billing status. The combined indicator is the
-            larger estimate plus half the smaller to account for possible overlap.
+            {leakEstimateMethodologyCopy.model} {leakEstimateMethodologyCopy.combined}
           </p>
           <p className="mt-2">
-            The range is a sensitivity band based on hours tracked, not a statistical confidence interval. This is a
-            planning estimate, not audited loss or recovered revenue; it excludes other non-labour direct costs and
-            has not been calibrated against actual engagement outcomes. Fee and staff cost should cover the same
-            period; months and FTE provide context only.
+            {leakEstimateMethodologyCopy.range} {leakEstimateMethodologyCopy.limits}{" "}
+            {leakEstimateMethodologyCopy.period}
           </p>
         </section>
 

@@ -30,6 +30,7 @@ import {
   type LeakResult,
 } from "@shared/leak-engine";
 import { BILLING_MULTIPLIER } from "@shared/leak-engine";
+import { leakEstimateMethodologyCopy } from "@shared/leak-engine/methodology-copy";
 
 type TurnstileOptions = {
   sitekey: string;
@@ -129,12 +130,12 @@ function TurnstileCheck({
 
 function confidenceCopy(hours: LeakResult["input"]["hourstracked"]): string {
   if (hours === "no") {
-    return "The range uses a ±30% sensitivity band because hours are not tracked. It is not a statistical confidence interval.";
+    return `The range uses ±30% because hours are not tracked. ${leakEstimateMethodologyCopy.range}`;
   }
   if (hours === "partly") {
-    return "The range uses a ±20% sensitivity band because hours are partly tracked. It is not a statistical confidence interval.";
+    return `The range uses ±20% because hours are partly tracked. ${leakEstimateMethodologyCopy.range}`;
   }
-  return "The range uses a ±12% sensitivity band because hours are tracked. It is not a statistical confidence interval.";
+  return `The range uses ±12% because hours are tracked. ${leakEstimateMethodologyCopy.range}`;
 }
 
 function scopeSubtitle(result: LeakResult): string {
@@ -365,16 +366,14 @@ export default function FreeTierCalculatorOutputPage() {
             className={`free-tier-leak-methodology-content space-y-3 ${showMethodology ? "" : "hidden"}`}
           >
             <p>
-              The combined exposure indicator is the larger of the delivery and scope estimates plus half the smaller.
-              These components can overlap, so this is not their additive total, verified loss, or recovered revenue.
+              {leakEstimateMethodologyCopy.combined} These components can overlap, so this is not their additive total,
+              verified loss, or recovered revenue.
             </p>
           <p>{confidenceCopy(input.hourstracked)}</p>
           <p>{scopeAssumptionCopy(result)}</p>
           <p>
-            This is a rule-based planning estimate, not an audited result. It uses staff costs and does not include other
-            non-labour direct costs. Fee and staff cost cover the same entered period; months and FTE provide context
-            and do not multiply these amounts. Delivery exposure is capped at 30% of fee. These assumptions have not been
-            calibrated against actual engagement outcomes.
+            {leakEstimateMethodologyCopy.model} {leakEstimateMethodologyCopy.period}{" "}
+            {leakEstimateMethodologyCopy.limits}
           </p>
           </div>
         </section>

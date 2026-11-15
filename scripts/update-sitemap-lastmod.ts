@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { publicPages, siteOrigin } from "../client/src/lib/route-metadata";
+import { assertValidSitemapXml } from "./sitemap-xml";
 
 const root = process.cwd();
 const sitemapPath = "client/public/sitemap.xml";
@@ -137,6 +138,7 @@ function latestPageDate(files: Set<string>, dirtyPaths: Set<string>): string {
 }
 
 function updateSitemap(xml: string, dates: Map<string, string>): string {
+  assertValidSitemapXml(xml);
   const seen = new Set<string>();
   const updated = xml.replace(/<url>[\s\S]*?<\/url>/g, (block) => {
     const location = block.match(/<loc>([^<]+)<\/loc>/)?.[1];

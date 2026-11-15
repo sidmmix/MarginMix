@@ -10,6 +10,8 @@ import {
   siteOrigin,
 } from "./route-metadata";
 import { injectCrawlerPage } from "../../../server/crawler-pages";
+import { assertValidSitemapXml } from "../../../scripts/sitemap-xml";
+import { leakEstimateMethodologyCopy } from "../../../shared/leak-engine/methodology-copy";
 import {
   engagementJourneyCopy,
   founderPageCopy,
@@ -204,6 +206,25 @@ test("sitemap must be well-formed XML with the required URL-set structure", () =
   );
 });
 
+test("sitemap date updater rejects malformed XML before it can rewrite dates", () => {
+  const valid = readFileSync("client/public/sitemap.xml", "utf8");
+  assert.doesNotThrow(() => assertValidSitemapXml(valid));
+  assert.throws(
+    () => assertValidSitemapXml(valid.replace("</urlset>", "</urlset><broken>")),
+    /well-formed XML/,
+  );
+  assert.throws(() => assertValidSitemapXml("<sitemap />"), /one urlset root/);
+});
+
+test("calculator input and output share core estimate method explanations", () => {
+  const input = readFileSync("client/src/pages/free-tier-calculator.tsx", "utf8");
+  const output = readFileSync("client/src/pages/free-tier-calculator-output.tsx", "utf8");
+  for (const key of Object.keys(leakEstimateMethodologyCopy)) {
+    assert.ok(input.includes(`leakEstimateMethodologyCopy.${key}`), `input uses shared ${key} copy`);
+    assert.ok(output.includes(`leakEstimateMethodologyCopy.${key}`), `output uses shared ${key} copy`);
+  }
+});
+
 test("indexable public pages keep canonical social tags with sitewide metadata", () => {
   const indexablePaths = Object.entries(publicPages)
     .filter(([, metadata]) => metadata.indexable)
@@ -357,6 +378,23 @@ test("server-rendered public pages get matching canonical URLs and structured da
   assert.equal(graph[2]["@type"], "SoftwareApplication");
   assert.match(html, /<link rel="canonical" href="https:\/\/marginmix\.ai\/free-tier\/calculator" \/>/);
   assert.match(html, /<title>MarginMix - Margin Visibility<\/title>/);
+});
+
+test("crawler social image tags match the metadata shown to visitors", () => {
+  const template = readFileSync("client/index.html", "utf8");
+  for (const path of expectedPublicPaths) {
+    const metadata = resolvePageMetadata(path);
+    const html = injectCrawlerPage(template, path);
+    for (const [key, value] of [
+      ["property=\"og:image\"", metadata.openGraph.image],
+      ["name=\"twitter:image\"", metadata.twitter.image],
+    ] as const) {
+      assert.ok(
+        html.includes(`<meta ${key} content="${value}" />`),
+        `${path} crawler ${key} must match visitor metadata`,
+      );
+    }
+  }
 });
 
 test("server-rendered private pages have no page schema or canonical URL", () => {
