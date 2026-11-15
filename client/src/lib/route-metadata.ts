@@ -3,6 +3,44 @@ export type PageMetadata = {
   description: string;
   canonicalPath?: string;
   indexable?: boolean;
+  structuredData?: Record<string, unknown>;
+};
+
+export const siteOrigin = "https://marginmix.ai";
+export const socialImage = `${siteOrigin}/images/og-image.png`;
+
+const organizationId = "https://marginmix.ai/#organization";
+const websiteId = "https://marginmix.ai/#website";
+const organizationSchema = {
+  "@type": "Organization",
+  "@id": organizationId,
+  name: "Margin Mix",
+  alternateName: "MarginMix",
+  url: siteOrigin,
+  description:
+    "A Decision Support System for agency and consulting leaders to assess margin risk early by accounting for hidden senior effort, coordination overhead, and workforce intensity.",
+  founder: {
+    "@type": "Person",
+    name: "Siddhartha Dasgupta",
+    jobTitle: "Founder",
+  },
+  parentOrganization: {
+    "@type": "Organization",
+    name: "Digital Lexicon Corp",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Delaware",
+      addressRegion: "DE",
+      addressCountry: "US",
+    },
+  },
+};
+const websiteSchema = {
+  "@type": "WebSite",
+  "@id": websiteId,
+  name: "Margin Mix",
+  url: siteOrigin,
+  description: "Decision Support System for Margin Risk Clarity",
 };
 
 export const publicPages: Record<string, PageMetadata> = {
@@ -12,6 +50,13 @@ export const publicPages: Record<string, PageMetadata> = {
       "Pressure test pricing, staffing, and delivery assumptions before an engagement begins with MarginMix, decision support for services businesses.",
     canonicalPath: "/",
     indexable: true,
+    structuredData: {
+      "@type": "WebPage",
+      name: "MarginMix | Make Margin Risk Visible",
+      description:
+        "Pressure test pricing, staffing, and delivery assumptions before an engagement begins with MarginMix, decision support for services businesses.",
+      about: { "@id": organizationId },
+    },
   },
   "/platform": {
     title: "MarginMix Platform | Pressure-Test Engagement Economics",
@@ -19,6 +64,13 @@ export const publicPages: Record<string, PageMetadata> = {
       "See how MarginMix helps agency and consulting leaders pressure test fees, costs, scope, staffing, and billing assumptions before delivery.",
     canonicalPath: "/platform",
     indexable: true,
+    structuredData: {
+      "@type": "WebPage",
+      name: "MarginMix Platform",
+      description:
+        "Explore MarginMix's available calculator and product roadmap for pressure testing engagement economics.",
+      about: { "@id": organizationId },
+    },
   },
   "/free-tier/calculator": {
     title: "Free Margin Leak Calculator | MarginMix",
@@ -26,6 +78,20 @@ export const publicPages: Record<string, PageMetadata> = {
       "Estimate potential delivery and scope exposure by pressure testing an engagement’s fee, staffing, cost, and billing assumptions.",
     canonicalPath: "/free-tier/calculator",
     indexable: true,
+    structuredData: {
+      "@type": "SoftwareApplication",
+      name: "Free Margin Leak Calculator",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Web",
+      description:
+        "Pressure test an engagement’s fee, staffing, cost, scope, and billing assumptions to estimate potential delivery exposure. The result is indicative and based on preset rules, not an audited loss.",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+      publisher: { "@id": organizationId },
+    },
   },
   "/founder": {
     title: "Why MarginMix Exists | Founder Story",
@@ -33,6 +99,17 @@ export const publicPages: Record<string, PageMetadata> = {
       "Learn why MarginMix was created to make hidden senior effort, coordination, and delivery complexity visible before they erode engagement margins.",
     canonicalPath: "/founder",
     indexable: true,
+    structuredData: {
+      "@type": "AboutPage",
+      name: "Why MarginMix Exists",
+      description:
+        "Learn why MarginMix was created to make hidden senior effort, coordination, and delivery complexity visible before they erode engagement margins.",
+      about: { "@id": organizationId },
+      author: {
+        "@type": "Person",
+        name: "Siddhartha Dasgupta",
+      },
+    },
   },
   "/why-choose": {
     title: "Why Choose MarginMix for Margin Risk Decisions",
@@ -40,6 +117,13 @@ export const publicPages: Record<string, PageMetadata> = {
       "See how MarginMix helps leaders assess pricing and delivery risk earlier than historical dashboards, timesheets, and utilization reports.",
     canonicalPath: "/why-choose",
     indexable: true,
+    structuredData: {
+      "@type": "WebPage",
+      name: "Why Choose MarginMix",
+      description:
+        "See how MarginMix helps leaders assess pricing and delivery risk earlier than historical dashboards, timesheets, and utilization reports.",
+      about: { "@id": organizationId },
+    },
   },
   "/free-tier/input": {
     title: "Free Margin Leak Calculator | MarginMix",
@@ -97,14 +181,12 @@ export const publicPages: Record<string, PageMetadata> = {
   },
 };
 
-export const siteOrigin = "https://marginmix.ai";
-export const socialImage = `${siteOrigin}/images/og-image.png`;
-
 export type ResolvedPageMetadata = {
   title: string;
   description: string;
   robots: "index, follow" | "noindex, nofollow";
   canonicalUrl?: string;
+  structuredData?: Record<string, unknown>;
   openGraph: {
     type: "website";
     url: string;
@@ -134,12 +216,32 @@ export function resolvePageMetadata(path: string): ResolvedPageMetadata {
     ? `${siteOrigin}${metadata.canonicalPath}`
     : undefined;
   const socialUrl = canonicalUrl ?? `${siteOrigin}${normalizedPath}`;
+  const pageSchema =
+    metadata.indexable && metadata.structuredData && canonicalUrl
+      ? {
+          ...metadata.structuredData,
+          "@id": `${canonicalUrl}#${
+            metadata.structuredData["@type"] === "SoftwareApplication"
+              ? "application"
+              : "webpage"
+          }`,
+          url: canonicalUrl,
+          isPartOf: { "@id": websiteId },
+        }
+      : undefined;
+  const structuredData = pageSchema
+    ? {
+        "@context": "https://schema.org",
+        "@graph": [organizationSchema, websiteSchema, pageSchema],
+      }
+    : undefined;
 
   return {
     title: metadata.title,
     description: metadata.description,
     robots: metadata.indexable ? "index, follow" : "noindex, nofollow",
     canonicalUrl,
+    structuredData,
     openGraph: {
       type: "website",
       url: socialUrl,

@@ -1,3 +1,5 @@
+import { resolvePageMetadata } from "../client/src/lib/route-metadata";
+
 const crawlerPages: Record<string, string> = {
   "/": `
     <main aria-label="MarginMix overview">
@@ -74,6 +76,73 @@ export function injectCrawlerPage(template: string, pathname: string): string {
   const normalizedPath =
     pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
   const page = crawlerPages[normalizedPath];
+  const metadata = resolvePageMetadata(normalizedPath);
 
-  return template.replace("<!-- CRAWLER_PAGE_CONTENT -->", page ?? "");
+  let html = template.replace("<!-- CRAWLER_PAGE_CONTENT -->", page ?? "");
+  html = html.replace(/<title>[^<]*<\/title>/i, `<title>${escapeHtml(metadata.title)}</title>`);
+  html = replaceMeta(html, "name", "description", metadata.description);
+  html = replaceMeta(html, "name", "robots", metadata.robots);
+  html = replaceMeta(html, "property", "og:type", metadata.openGraph.type);
+  html = replaceMeta(html, "property", "og:url", metadata.openGraph.url);
+  html = replaceMeta(html, "property", "og:title", metadata.openGraph.title);
+  html = replaceMeta(html, "property", "og:description", metadata.openGraph.description);
+  html = replaceMeta(html, "property", "og:image", metadata.openGraph.image);
+  html = replaceMeta(html, "name", "twitter:card", metadata.twitter.card);
+  html = replaceMeta(html, "name", "twitter:title", metadata.twitter.title);
+  html = replaceMeta(html, "name", "twitter:description", metadata.twitter.description);
+  html = replaceMeta(html, "name", "twitter:image", metadata.twitter.image);
+
+  const canonicalTag = /<link\b(?=[^>]*\brel=["']canonical["'])[^>]*>/i;
+  if (metadata.canonicalUrl) {
+    const link = `<link rel="canonical" href="${escapeHtml(metadata.canonicalUrl)}" />`;
+    html = canonicalTag.test(html)
+      ? html.replace(canonicalTag, link)
+      : html.replace("</head>", `    ${link}\n  </head>`);
+  } else {
+    html = html.replace(canonicalTag, "");
+  }
+
+  html = html.replace(
+    /<script\b(?=[^>]*\bid=["']route-page-structured-data["'])[^>]*>[\s\S]*?<\/script>/i,
+    "",
+  );
+  if (metadata.structuredData) {
+    const jsonLd = JSON.stringify(metadata.structuredData).replace(/</g, "\\u003c");
+    html = html.replace(
+      "</head>",
+      `    <script id="route-page-structured-data" type="application/ld+json">${jsonLd}</script>\n  </head>`,
+    );
+  }
+  return html;
+}
+
+function replaceMeta(
+  html: string,
+  attribute: "name" | "property",
+  key: string,
+  content: string,
+): string {
+  const tagPattern = new RegExp(
+    `<meta\\b(?=[^>]*\\b${attribute}=["']${escapeRegExp(key)}["'])[^>]*>`,
+    "i",
+  );
+  const tag = `<meta ${attribute}="${escapeHtml(key)}" content="${escapeHtml(content)}" />`;
+  return html.replace(tagPattern, tag);
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character];
+  });
 }

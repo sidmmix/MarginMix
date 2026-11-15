@@ -6,6 +6,7 @@ import {
   resolvePageMetadata,
   siteOrigin,
 } from "./route-metadata";
+import { injectCrawlerPage } from "../../../server/crawler-pages";
 
 const expectedPublicPaths = [
   "/",
@@ -54,7 +55,20 @@ test("indexable public pages have distinct search metadata and canonical social 
     assert.equal(metadata.openGraph.description, metadata.description);
     assert.equal(metadata.twitter.title, metadata.title);
     assert.equal(metadata.twitter.description, metadata.description);
+    const pageSchema = (metadata.structuredData?.["@graph"] as Record<string, unknown>[] | undefined)
+      ?.find((schema) => schema.url === expectedCanonical);
+    assert.ok(pageSchema, `${path} needs page-specific structured data`);
   }
+
+  const schemaType = (path: string) =>
+    (resolvePageMetadata(path).structuredData?.["@graph"] as Record<string, unknown>[])[2]["@type"];
+  assert.equal(schemaType("/platform"), "WebPage");
+  assert.equal(
+    schemaType("/free-tier/calculator"),
+    "SoftwareApplication",
+  );
+  assert.equal(schemaType("/founder"), "AboutPage");
+  assert.equal(schemaType("/why-choose"), "WebPage");
 });
 
 test("sitemap contains every canonical public page and no private or form routes", () => {
@@ -81,8 +95,33 @@ test("sitemap contains every canonical public page and no private or form routes
     const metadata = resolvePageMetadata(path);
     assert.equal(metadata.robots, "noindex, nofollow", `${path} must be noindex`);
     assert.equal(metadata.canonicalUrl, undefined, `${path} must not be canonical`);
+    assert.equal(metadata.structuredData, undefined, `${path} must not have page structured data`);
     assert.ok(!sitemapUrls.includes(`${siteOrigin}${path}`), `${path} must not be in sitemap`);
   }
+});
+
+test("server-rendered public pages get matching canonical URLs and structured data", () => {
+  const template = readFileSync("client/index.html", "utf8");
+  const html = injectCrawlerPage(template, "/free-tier/calculator");
+  const schemaScript = html.match(
+    /<script id="route-page-structured-data" type="application\/ld\+json">([\s\S]*?)<\/script>/,
+  );
+
+  assert.ok(schemaScript, "public calculator HTML must include its page schema");
+  const graph = JSON.parse(schemaScript[1])["@graph"] as Record<string, unknown>[];
+  assert.equal(graph[2].url, `${siteOrigin}/free-tier/calculator`);
+  assert.equal(graph[2]["@type"], "SoftwareApplication");
+  assert.match(html, /<link rel="canonical" href="https:\/\/marginmix\.ai\/free-tier\/calculator" \/>/);
+  assert.match(html, /<title>Free Margin Leak Calculator \| MarginMix<\/title>/);
+});
+
+test("server-rendered private pages have no page schema or canonical URL", () => {
+  const template = readFileSync("client/index.html", "utf8");
+  const html = injectCrawlerPage(template, "/free-tier/calculator/output");
+
+  assert.doesNotMatch(html, /application\/ld\+json/);
+  assert.doesNotMatch(html, /<link rel="canonical"/);
+  assert.match(html, /<meta name="robots" content="noindex, nofollow" \/>/);
 });
 
 test("every declared app route has explicit metadata", () => {

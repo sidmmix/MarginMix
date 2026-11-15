@@ -26,6 +26,22 @@ function setCanonical(url?: string) {
   element.href = url;
 }
 
+function setStructuredData(data?: Record<string, unknown>) {
+  const existing = document.head.querySelector<HTMLScriptElement>(
+    "#route-page-structured-data",
+  );
+  if (!data) {
+    existing?.remove();
+    return;
+  }
+
+  const element = existing ?? document.createElement("script");
+  element.id = "route-page-structured-data";
+  element.type = "application/ld+json";
+  element.textContent = JSON.stringify(data).replace(/</g, "\\u003c");
+  if (!existing) document.head.appendChild(element);
+}
+
 export function RouteMetadata() {
   const [location] = useLocation();
   const normalizedPath =
@@ -37,6 +53,7 @@ export function RouteMetadata() {
     setMeta('meta[name="description"]', "name", "description", metadata.description);
     setMeta('meta[name="robots"]', "name", "robots", metadata.robots);
     setCanonical(metadata.canonicalUrl);
+    setStructuredData(metadata.structuredData);
     setMeta('meta[property="og:type"]', "property", "og:type", metadata.openGraph.type);
     setMeta('meta[property="og:url"]', "property", "og:url", metadata.openGraph.url);
     setMeta('meta[property="og:title"]', "property", "og:title", metadata.openGraph.title);
