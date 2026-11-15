@@ -11,3 +11,4 @@
 - [Analytics ownership](analytics-ownership.md) — preserve the user's existing Google Analytics and Google Tag Manager setup; do not change it unless asked.
 - [Site copy style](copy-style.md) — avoid unnecessary hyphens between words when editing MarginMix copy.
 - [Express fallback path preservation](express-fallback-path.md) — use the original URL when injecting route-specific content inside mounted catch-all middleware.
+- [XML parser declarations](xml-parser-declarations.md) — fast-xml-parser returns an XML declaration as a document key unless processing instructions are ignored.

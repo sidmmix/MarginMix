@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { XMLParser, XMLValidator } from "fast-xml-parser";
 import {
   publicPages,
   resolvePageMetadata,
@@ -33,14 +34,91 @@ const expectedPublicPaths = [
   "/why-choose",
 ];
 
-const sitemap = readFileSync("client/public/sitemap.xml", "utf8");
-const sitemapUrls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
-  (match) => match[1],
-);
+const sitemapNamespace = "http://www.sitemaps.org/schemas/sitemap/0.9";
+const sitemapParser = new XMLParser({
+  ignoreAttributes: false,
+  ignorePiTags: true,
+});
+
+type SitemapEntry = {
+  loc: string;
+  lastmod?: string;
+};
+
+function parseSitemap(xml: string): SitemapEntry[] {
+  const validation = XMLValidator.validate(xml);
+  assert.equal(
+    validation,
+    true,
+    `sitemap must be well-formed XML${validation === true ? "" : `: ${validation.err.msg}`}`,
+  );
+
+  const document = sitemapParser.parse(xml) as Record<string, unknown>;
+  assert.deepEqual(Object.keys(document), ["urlset"], "sitemap must have one urlset root");
+  const root = document.urlset;
+  assert.ok(typeof root === "object" && root !== null && !Array.isArray(root));
+
+  const urlset = root as Record<string, unknown>;
+  assert.equal(
+    urlset["@_xmlns"],
+    sitemapNamespace,
+    "urlset must use the sitemap protocol namespace",
+  );
+  assert.deepEqual(
+    Object.keys(urlset).filter((key) => !key.startsWith("@_")),
+    ["url"],
+    "urlset must contain URL entries",
+  );
+
+  const rawEntries = Array.isArray(urlset.url)
+    ? urlset.url
+    : urlset.url === undefined
+      ? []
+      : [urlset.url];
+  assert.ok(rawEntries.length > 0, "sitemap must contain at least one URL entry");
+
+  return rawEntries.map((rawEntry, index) => {
+    assert.ok(
+      typeof rawEntry === "object" && rawEntry !== null && !Array.isArray(rawEntry),
+      `sitemap URL entry ${index + 1} must be an object`,
+    );
+    const entry = rawEntry as Record<string, unknown>;
+    assert.ok(
+      typeof entry.loc === "string" && entry.loc.trim().length > 0,
+      `sitemap URL entry ${index + 1} must have a non-empty loc`,
+    );
+    assert.ok(
+      entry.lastmod === undefined || typeof entry.lastmod === "string",
+      `sitemap URL entry ${index + 1} lastmod must be text`,
+    );
+
+    return {
+      loc: entry.loc as string,
+      lastmod: entry.lastmod as string | undefined,
+    };
+  });
+}
+
+const sitemapEntries = parseSitemap(readFileSync("client/public/sitemap.xml", "utf8"));
+const sitemapUrls = sitemapEntries.map(({ loc }) => loc);
 const appSource = readFileSync("client/src/App.tsx", "utf8");
 const appRoutePaths = [...appSource.matchAll(/<Route\s+path="([^"]+)"/g)].map(
   (match) => match[1].replace(/\/\*.*$/, ""),
 );
+
+test("sitemap must be well-formed XML with the required URL-set structure", () => {
+  const namespace = `xmlns="${sitemapNamespace}"`;
+
+  assert.throws(
+    () => parseSitemap(`<urlset ${namespace}><url></urlset>`),
+    /well-formed XML/,
+  );
+  assert.throws(() => parseSitemap("<sitemap />"), /one urlset root/);
+  assert.throws(
+    () => parseSitemap(`<urlset ${namespace}><url><changefreq>weekly</changefreq></url></urlset>`),
+    /non-empty loc/,
+  );
+});
 
 test("indexable public pages have distinct search metadata and canonical social tags", () => {
   const indexablePaths = Object.entries(publicPages)
@@ -94,11 +172,10 @@ test("sitemap contains every canonical public page and no private or form routes
     .sort();
   assert.deepEqual([...sitemapUrls].sort(), expectedUrls);
 
-  const lastModifiedDates = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map(
-    (match) => match[1],
-  );
+  const lastModifiedDates = sitemapEntries.map(({ lastmod }) => lastmod);
   assert.equal(lastModifiedDates.length, sitemapUrls.length);
   for (const date of lastModifiedDates) {
+    assert.ok(date, "every sitemap URL must have a lastmod date");
     assert.match(date, /^\d{4}-\d{2}-\d{2}$/, "lastmod must be a calendar date");
     assert.ok(!Number.isNaN(Date.parse(date)), `${date} must be a valid date`);
   }
