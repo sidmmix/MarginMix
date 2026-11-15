@@ -1,4 +1,4 @@
-import express, { type Express } from "express";
+import { type Express } from "express";
 import fs from "fs";
 import path from "path";
 import { createServer as createViteServer, createLogger } from "vite";
@@ -7,6 +7,8 @@ import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
 import { injectCrawlerPage } from "./crawler-pages";
 import { pageResponseStatus } from "../client/src/lib/route-metadata";
+
+export { serveStatic } from "./static";
 
 const viteLogger = createLogger();
 
@@ -69,39 +71,5 @@ export async function setupVite(app: Express, server: Server) {
       next(e);
     }
   });
-}
-
-export function serveStatic(app: Express) {
-  const distPath = path.resolve(import.meta.dirname, "public");
-
-  if (!fs.existsSync(distPath)) {
-    throw new Error(
-      `Could not find the build directory: ${distPath}, make sure to build the client first`,
-    );
-  }
-
-  // Let the HTML fallback inject route-specific crawler content, including at /.
-  app.use(express.static(distPath, { index: false }));
-
-  // fall through to index.html if the file doesn't exist
-  app.use("*", async (req, res, next) => {
-    try {
-      const template = await fs.promises.readFile(
-        path.resolve(distPath, "index.html"),
-        "utf-8",
-      );
-      const pathname = new URL(req.originalUrl, "http://localhost").pathname;
-      res
-        .status(pageResponseStatus(pathname))
-        .type("html")
-        .send(
-          injectCrawlerPage(
-            template,
-            pathname,
-          ),
-        );
-    } catch (error) {
-      next(error);
-    }
-  });
+  return vite;
 }

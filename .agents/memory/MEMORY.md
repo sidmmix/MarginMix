@@ -12,3 +12,4 @@
 - [Site copy style](copy-style.md) — avoid unnecessary hyphens between words when editing MarginMix copy.
 - [Express fallback path preservation](express-fallback-path.md) — use the original URL when injecting route-specific content inside mounted catch-all middleware.
 - [XML parser declarations](xml-parser-declarations.md) — fast-xml-parser returns an XML declaration as a document key unless processing instructions are ignored.
+- [Public asset release checks](public-asset-release-checks.md) — exercise real serving handlers without requiring unrelated database or API credentials.
