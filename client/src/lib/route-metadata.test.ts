@@ -1,7 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
+import { createServer as createHttpServer } from "node:http";
 import { resolve, sep } from "node:path";
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import express from "express";
 import { XMLParser, XMLValidator } from "fast-xml-parser";
 import {
   publicPages,
@@ -355,6 +357,74 @@ test("sitemap contains every canonical public page and no private or form routes
     assert.equal(metadata.canonicalUrl, undefined, `${path} must not be canonical`);
     assert.equal(metadata.structuredData, undefined, `${path} must not have page structured data`);
     assert.ok(!sitemapUrls.includes(`${siteOrigin}${path}`), `${path} must not be in sitemap`);
+  }
+});
+
+test("sitemap URLs serve directly with matching canonical destinations", async () => {
+  const app = express();
+  const server = createHttpServer(app);
+  const template = readFileSync("client/index.html", "utf8");
+  app.use((request, response) => {
+    const pathname = new URL(request.originalUrl, "http://localhost").pathname;
+    if (!appRoutePaths.includes(pathname)) {
+      response.status(404).end();
+      return;
+    }
+    response
+      .status(200)
+      .type("html")
+      .send(injectCrawlerPage(template, pathname));
+  });
+
+  try {
+    await new Promise<void>((resolve, reject) => {
+      server.once("error", reject);
+      server.listen(0, "127.0.0.1", resolve);
+    });
+
+    const address = server.address();
+    assert.ok(address && typeof address !== "string", "local route server must bind to a port");
+
+    for (const sitemapUrl of sitemapUrls) {
+      const sitemapRoute = new URL(sitemapUrl);
+      assert.equal(sitemapRoute.origin, siteOrigin, `${sitemapUrl} must use the canonical host`);
+      assert.equal(sitemapRoute.search, "", `${sitemapUrl} must not include a query string`);
+      assert.equal(sitemapRoute.hash, "", `${sitemapUrl} must not include a fragment`);
+      assert.ok(
+        appRoutePaths.includes(sitemapRoute.pathname),
+        `${sitemapUrl} must match a declared app route directly`,
+      );
+      assert.equal(
+        resolvePageMetadata(sitemapRoute.pathname).canonicalUrl,
+        sitemapUrl,
+        `${sitemapUrl} route metadata must identify the same canonical URL`,
+      );
+
+      const response = await fetch(
+        `http://127.0.0.1:${address.port}${sitemapRoute.pathname}`,
+        { redirect: "manual", headers: { connection: "close" } },
+      );
+      assert.equal(response.status, 200, `${sitemapUrl} must resolve locally without redirecting`);
+      assert.equal(
+        response.headers.has("location"),
+        false,
+        `${sitemapUrl} must not return a redirect destination`,
+      );
+      const html = await response.text();
+      const expectedCanonicalTag = `<link rel="canonical" href="${sitemapUrl}" />`;
+      assert.ok(
+        injectCrawlerPage(template, sitemapRoute.pathname).includes(expectedCanonicalTag),
+        `${sitemapUrl} must render a matching canonical URL`,
+      );
+      assert.ok(
+        html.includes(expectedCanonicalTag),
+        `${sitemapUrl} local route response must include its matching canonical URL`,
+      );
+    }
+  } finally {
+    if (server.listening) {
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+    }
   }
 });
 
