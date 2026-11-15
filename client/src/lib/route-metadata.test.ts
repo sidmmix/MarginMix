@@ -1,10 +1,12 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve, sep } from "node:path";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { XMLParser, XMLValidator } from "fast-xml-parser";
 import {
   publicPages,
   resolvePageMetadata,
+  socialImage,
   siteOrigin,
 } from "./route-metadata";
 import { injectCrawlerPage } from "../../../server/crawler-pages";
@@ -173,6 +175,63 @@ test("indexable public pages keep canonical social tags with sitewide metadata",
   );
   assert.equal(schemaType("/founder"), "AboutPage");
   assert.equal(schemaType("/why-choose"), "WebPage");
+});
+
+test("indexable pages reference existing social preview images", async () => {
+  const publicAssetsRoot = resolve(process.cwd(), "client/public");
+  const imageUrls = new Set<string>();
+
+  for (const path of expectedPublicPaths) {
+    const metadata = resolvePageMetadata(path);
+
+    for (const [platform, image] of [
+      ["Open Graph", metadata.openGraph.image],
+      ["Twitter", metadata.twitter.image],
+    ] as const) {
+      assert.equal(
+        image,
+        socialImage,
+        `${path} ${platform} image must use the configured social image`,
+      );
+
+      const url = new URL(image);
+      assert.ok(
+        url.protocol === "https:" || url.protocol === "http:",
+        `${path} ${platform} image must use HTTP or HTTPS`,
+      );
+      imageUrls.add(url.href);
+    }
+  }
+
+  for (const image of imageUrls) {
+    const url = new URL(image);
+    if (url.origin === siteOrigin) {
+      const assetPath = resolve(publicAssetsRoot, `.${decodeURIComponent(url.pathname)}`);
+      assert.ok(
+        assetPath.startsWith(`${publicAssetsRoot}${sep}`),
+        `social image path must stay inside client/public: ${image}`,
+      );
+      assert.ok(
+        existsSync(assetPath),
+        `social image asset does not exist: ${assetPath}`,
+      );
+      continue;
+    }
+
+    const response = await fetch(url, {
+      method: "HEAD",
+      signal: AbortSignal.timeout(8_000),
+    });
+    assert.ok(
+      response.ok,
+      `external social image must respond successfully: ${image} (${response.status})`,
+    );
+    assert.match(
+      response.headers.get("content-type") ?? "",
+      /^image\//i,
+      `external social image must return an image content type: ${image}`,
+    );
+  }
 });
 
 test("sitemap contains every canonical public page and no private or form routes", () => {
