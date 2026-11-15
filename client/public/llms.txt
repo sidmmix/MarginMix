@@ -6,10 +6,10 @@ MarginMix focuses on margin governance. It is not a delivery or productivity pla
 
 ## Product information
 
-- The free Engagement Leak Calculator estimates indicative exposure from user supplied engagement economics and delivery signals. Its output is a planning estimate based on preset rules, not an audited loss.
+- Available now: the free Engagement Leak Calculator estimates indicative delivery and scope exposure from user supplied assumptions. Its output is a planning estimate based on preset rules, not an audited loss.
 - Calculator inputs and results remain in the browser and are not saved to MarginMix’s database.
 - The agency audit questionnaire collects structured answers and emails a PDF of the responses. It asks users to reference documents; document uploads are not currently available.
-- Full document review is planned and is not available through the free calculator today.
+- Planned: a deterministic risk assessment based on the statement of work (SOW), timesheet data and other proprietary engagement information. Document upload and analysis are not available yet; registering interest does not start an assessment.
 - Margin Intelligence is a future direction, not a live capability.
 
 ## Pages

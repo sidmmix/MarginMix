@@ -1,3 +1,5 @@
+import { engagementJourneyCopy } from "@shared/public-page-copy";
+
 export type PageMetadata = {
   title: string;
   description: string;
@@ -9,7 +11,7 @@ export type PageMetadata = {
 export const siteOrigin = "https://marginmix.ai";
 export const siteMetadata = {
   title: "MarginMix - Margin Visibility",
-  description: "Catch your Margin Leak before it hits your books.",
+  description: engagementJourneyCopy.summary,
 } as const;
 export const socialImage = `${siteOrigin}/images/og-image.png`;
 
@@ -57,8 +59,7 @@ export const publicPages: Record<string, PageMetadata> = {
     structuredData: {
       "@type": "WebPage",
       name: "MarginMix | Make Margin Risk Visible",
-      description:
-        "Estimate engagement margin exposure with MarginMix’s leak calculator. A deeper risk assessment using SOWs, timesheets and proprietary information is planned.",
+      description: engagementJourneyCopy.summary,
       about: { "@id": organizationId },
     },
   },
@@ -71,8 +72,7 @@ export const publicPages: Record<string, PageMetadata> = {
     structuredData: {
       "@type": "WebPage",
       name: "MarginMix Platform",
-      description:
-        "Explore the available engagement leak calculator and the planned document based risk assessment. Document upload and analysis are not available yet.",
+      description: engagementJourneyCopy.summary,
       about: { "@id": organizationId },
     },
   },

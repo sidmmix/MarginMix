@@ -1,16 +1,22 @@
+const calculatorJourney =
+  "Available now: use the engagement leak calculator to estimate potential delivery and scope exposure from the assumptions you enter.";
+const plannedAssessment =
+  "Planned: a deterministic risk assessment based on your statement of work (SOW), timesheet data and other proprietary engagement information.";
+const assessmentAvailability =
+  "Document upload and analysis are not available yet. Registering interest does not start a document assessment.";
+
 export const engagementJourneyCopy = {
   title: "Start with the leak. Then look deeper.",
-  calculator:
-    "Available now: use the engagement leak calculator to estimate potential delivery and scope exposure from the assumptions you enter.",
-  assessment:
-    "Planned: a deterministic risk assessment based on your statement of work (SOW), timesheet data and other proprietary engagement information.",
-  availability:
-    "Document upload and analysis are not available yet. Registering interest does not start a document assessment.",
+  calculator: calculatorJourney,
+  assessment: plannedAssessment,
+  availability: assessmentAvailability,
+  summary:
+    "Available now: the engagement leak calculator estimates potential exposure from your assumptions. Planned: a deterministic risk assessment using the statement of work, timesheet data and proprietary engagement information. Document upload and analysis are not available yet.",
 } as const;
 
 export const platformPageCopy = {
   headline: "See the risk before you sign.",
-  introduction: "Start with an engagement leak estimate today. A deeper assessment using engagement documents is planned.",
+  introduction: `${engagementJourneyCopy.calculator} ${engagementJourneyCopy.assessment} ${engagementJourneyCopy.availability}`,
   stages: [
     {
       status: "Available now",

@@ -8,6 +8,7 @@ import { XMLParser, XMLValidator } from "fast-xml-parser";
 import {
   publicPages,
   resolvePageMetadata,
+  siteMetadata,
   socialImage,
   siteOrigin,
 } from "./route-metadata";
@@ -24,10 +25,24 @@ import {
 test("public journey distinguishes the live calculator from planned document assessment", () => {
   const homepage = injectCrawlerPage(readFileSync("client/index.html", "utf8"), "/");
   const platform = injectCrawlerPage(readFileSync("client/index.html", "utf8"), "/platform");
-  for (const html of [homepage, platform]) {
+  const calculator = injectCrawlerPage(readFileSync("client/index.html", "utf8"), "/free-tier/calculator");
+  for (const html of [homepage, platform, calculator]) {
+    assert.ok(html.includes(engagementJourneyCopy.calculator));
     assert.ok(html.includes(engagementJourneyCopy.assessment));
-    assert.match(html, /Document upload and analysis are not available yet/);
+    assert.ok(html.includes(engagementJourneyCopy.availability));
   }
+  assert.equal(siteMetadata.description, engagementJourneyCopy.summary);
+  assert.ok(readFileSync("client/public/llms.txt", "utf8").includes("Planned: a deterministic risk assessment"));
+
+  const calculatorInput = readFileSync("client/src/pages/free-tier-calculator.tsx", "utf8");
+  const calculatorOutput = readFileSync("client/src/pages/free-tier-calculator-output.tsx", "utf8");
+  const pitch = readFileSync("client/src/pages/pitch.tsx", "utf8");
+  assert.ok(calculatorInput.includes("engagementJourneyCopy.calculator"));
+  assert.ok(calculatorInput.includes("engagementJourneyCopy.assessment"));
+  assert.ok(calculatorOutput.includes("engagementJourneyCopy.calculator"));
+  assert.ok(calculatorOutput.includes("engagementJourneyCopy.assessment"));
+  assert.match(pitch, /Available now: an engagement leak calculator using entered assumptions\./);
+  assert.match(pitch, /Planned next: a <strong>deterministic risk assessment<\/strong>/);
 });
 
 const expectedPublicPaths = [
@@ -181,7 +196,7 @@ test("every route and initial HTML use the exact sitewide search and social copy
   for (const path of [...appRoutePaths, "/missing-page"]) {
     const metadata = resolvePageMetadata(path);
     assert.equal(metadata.title, "MarginMix - Margin Visibility");
-    assert.equal(metadata.description, "Catch your Margin Leak before it hits your books.");
+    assert.equal(metadata.description, siteMetadata.description);
     assert.equal(metadata.openGraph.title, metadata.title);
     assert.equal(metadata.openGraph.description, metadata.description);
     assert.equal(metadata.twitter.title, metadata.title);
@@ -191,7 +206,7 @@ test("every route and initial HTML use the exact sitewide search and social copy
     assert.ok(html.includes(`<meta name="description" content="${metadata.description}"`));
   }
   assert.ok(template.includes("<title>MarginMix - Margin Visibility</title>"));
-  assert.ok(template.includes('content="Catch your Margin Leak before it hits your books."'));
+  assert.ok(template.includes(`content="${siteMetadata.description}"`));
 });
 
 test("sitemap must be well-formed XML with the required URL-set structure", () => {
@@ -240,7 +255,9 @@ test("indexable public pages keep canonical social tags with sitewide metadata",
     assert.ok(metadata.title.trim(), `${path} must have a title`);
     assert.ok(metadata.description.trim(), `${path} must have a description`);
     assert.equal(metadata.title, "MarginMix - Margin Visibility");
-    assert.equal(metadata.description, "Catch your Margin Leak before it hits your books.");
+    assert.equal(metadata.description, siteMetadata.description);
+    assert.ok(metadata.description.includes("Planned: a deterministic risk assessment"));
+    assert.ok(metadata.description.includes("Document upload and analysis are not available yet."));
 
     const expectedCanonical = `${siteOrigin}${path}`;
     assert.equal(metadata.robots, "index, follow");

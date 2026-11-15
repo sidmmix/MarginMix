@@ -29,6 +29,13 @@ const crawlerPages: Record<string, string> = {
       ${renderParagraph(engagementJourneyCopy.assessment)}
       ${renderParagraph(engagementJourneyCopy.availability)}
     </main>`,
+  "/free-tier/calculator": `
+    <main aria-label="Engagement leak calculator">
+      ${renderHeading(1, "Engagement leak calculator")}
+      ${renderParagraph(engagementJourneyCopy.calculator)}
+      ${renderParagraph(engagementJourneyCopy.assessment)}
+      ${renderParagraph(engagementJourneyCopy.availability)}
+    </main>`,
   "/platform": `
     <main aria-label="MarginMix platform">
       <p>MarginMix platform</p>

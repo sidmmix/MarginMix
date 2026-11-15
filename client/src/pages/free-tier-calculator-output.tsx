@@ -31,6 +31,7 @@ import {
 } from "@shared/leak-engine";
 import { BILLING_MULTIPLIER } from "@shared/leak-engine";
 import { leakEstimateMethodologyCopy } from "@shared/leak-engine/methodology-copy";
+import { engagementJourneyCopy } from "@shared/public-page-copy";
 
 type TurnstileOptions = {
   sitekey: string;
@@ -260,6 +261,9 @@ export default function FreeTierCalculatorOutputPage() {
           <p className="text-[#60776f] mt-2">
             Fee {formatCurrency(input.fee, currency)} over {input.months} month{input.months === 1 ? "" : "s"}. {fteDisplay} FTE.
           </p>
+          <p className="mt-2 max-w-2xl text-sm text-[#60776f]">
+            {engagementJourneyCopy.calculator}
+          </p>
         </header>
 
         {/* Block 2 */}
@@ -385,12 +389,10 @@ export default function FreeTierCalculatorOutputPage() {
             className="mm-action w-full sm:w-auto bg-[#146d58] hover:bg-[#0c5747]"
             onClick={handleCta}
           >
-            Review this engagement
+            Register interest in a detailed review
           </Button>
           <p className="text-sm text-[#60776f] max-w-xl">
-            Register interest in a planned deterministic risk assessment using your SOW, timesheet data and other
-            proprietary engagement information. Document upload and analysis are not available yet.
-            This request does not start an assessment. The calculator is not a substitute for checking underlying records.
+            {engagementJourneyCopy.assessment} {engagementJourneyCopy.availability} The calculator is not a substitute for checking underlying records.
           </p>
           <Link href="/free-tier/calculator" className="text-sm font-semibold text-[#146d58] hover:underline inline-block">
             Run another engagement
@@ -418,7 +420,7 @@ export default function FreeTierCalculatorOutputPage() {
                   Register Interest for a Detailed Review of Concerned Engagement/Account
                 </DialogTitle>
                 <DialogDescription>
-                  Register interest in the planned document based assessment; upload and analysis are not available yet.
+                  {engagementJourneyCopy.assessment} {engagementJourneyCopy.availability}{" "}
                   We’ll send your request and this engagement’s calculator summary to you and Sid.
                 </DialogDescription>
               </DialogHeader>

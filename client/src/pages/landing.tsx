@@ -85,7 +85,7 @@ export default function Landing() {
               className="flex flex-col items-start gap-3 sm:flex-row"
             >
               <Link href="/free-tier/input" className="mm-action inline-flex w-full items-center justify-center bg-[#d5e96c] px-6 py-3.5 text-sm font-bold text-[#183b37] hover:bg-[#e2f48a] sm:w-auto sm:px-8 sm:py-4 sm:text-base">
-                Try Free Scanner
+                Try the engagement leak calculator
               </Link>
             </motion.div>
 

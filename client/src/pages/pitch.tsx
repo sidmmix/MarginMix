@@ -143,7 +143,7 @@ function SlideCover() {
         </p>
         <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-slate-500 text-sm">
           <span className="flex items-center gap-2"><Shield className="h-4 w-4 text-emerald-600" /> Engagement Leak Calculator</span>
-          <span className="flex items-center gap-2"><Zap className="h-4 w-4 text-emerald-600" /> 60-Second Assessment</span>
+          <span className="flex items-center gap-2"><Zap className="h-4 w-4 text-emerald-600" /> Indicative Engagement Estimate</span>
           <span className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-emerald-600" /> 90% Gross Margin</span>
         </div>
       </div>
@@ -229,7 +229,7 @@ function SlideSolution() {
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-4">What <BrandName /> outputs</p>
+            <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-4">Planned assessment outputs</p>
             <div className="space-y-3">
               {outputs.map((o, i) => (
                 <div key={i} className="flex items-start gap-3">
@@ -383,13 +383,13 @@ function SlideRevenue() {
         <p className="text-slate-500 text-sm mb-8">Pricing reflects the value of the decision being protected, not the number of users. It is insurance for protecting margins.</p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-            <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Entry / Assessment</p>
+            <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mb-3">Calculator / Estimate</p>
             <p className="text-4xl font-bold text-slate-900 mb-1">Free</p>
             <p className="text-slate-500 text-sm mb-4">for every submission</p>
             <div className="space-y-2 text-sm text-slate-600">
-              <p>• Instant output</p>
+              <p>• Indicative estimate from entered assumptions</p>
               <p>• No commitment</p>
-              <p>• Decision memo + PDF</p>
+              <p>• No document upload or analysis yet</p>
               <p>• Low-friction entry</p>
             </div>
           </div>
@@ -464,7 +464,7 @@ function SlideUnitEconomics() {
   const metrics = [
     { label: "Gross Margin", value: "90%", sub: "Minimal COGS, with LLM narration and infrastructure only", color: "text-emerald-600" },
     { label: "CAC", value: "Low", sub: "Founder-led sales initially. No channel cost in early stage", color: "text-blue-600" },
-    { label: "Onboarding Cost", value: "$0", sub: "No integrations. No implementation. Instant assessment output", color: "text-purple-600" },
+    { label: "Onboarding Cost", value: "$0", sub: "The available calculator needs no integrations and returns an indicative estimate", color: "text-purple-600" },
     { label: "ACV", value: "$60K", sub: "Even one avoided bad engagement justifies multiple years of subscription", color: "text-amber-600" },
     { label: "Decision Frequency", value: "70–80/yr", sub: "Typical mid-tier firm pricing decisions are episodic and high-stakes", color: "text-red-600" },
     { label: "Payback", value: "< 1 deal", sub: "A single flagged engagement typically saves more than the annual fee", color: "text-emerald-600" },
@@ -495,7 +495,7 @@ function SlideScalability() {
     { title: "Judgment is systemized", body: "Expert knowledge encoded once. Delivered infinitely. No per-client consulting required." },
     { title: "From leak estimate to deeper assessment", body: "The calculator is available now. A deterministic risk assessment using SOWs, timesheet data and other proprietary engagement information is planned; document upload and analysis are not yet available." },
     { title: "Same engine, every industry", body: "Agencies, consulting, SIs, ITeS. The Workforce Intensity Matrix applies universally across professional services." },
-    { title: "No integration overhead", body: "No ERP or PSA connections are needed. The assessment uses structured inputs, with no IT project or implementation risk." },
+    { title: "No integration overhead", body: "The available calculator needs no ERP or PSA connection. Document upload and analysis for the planned assessment are not available yet." },
     { title: "Decision infrastructure, not software", body: "Customers don't churn from decision infrastructure. Once embedded in the pricing process, switching cost is high." },
   ];
   return (
