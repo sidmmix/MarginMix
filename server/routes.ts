@@ -332,6 +332,9 @@ export function registerRoutes(
         targetMarginPercent: z.number().int().min(10).max(50),
         exposureLow: z.number().finite().nonnegative(),
         exposureHigh: z.number().finite().nonnegative(),
+        scopemove: z.enum(["none", "slight", "moderate", "significant"]),
+        scopebilled: z.enum(["billed", "partly_billed", "unbilled"]),
+        hourstracked: z.enum(["yes", "partly", "no"]),
       }),
     });
 

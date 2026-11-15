@@ -7,6 +7,8 @@ import express from "express";
 import { XMLParser, XMLValidator } from "fast-xml-parser";
 import {
   publicPages,
+  isKnownPagePath,
+  pageResponseStatus,
   resolvePageMetadata,
   siteMetadata,
   socialImage,
@@ -31,7 +33,8 @@ test("public journey distinguishes the live calculator from planned document ass
     assert.ok(html.includes(engagementJourneyCopy.assessment));
     assert.ok(html.includes(engagementJourneyCopy.availability));
   }
-  assert.equal(siteMetadata.description, engagementJourneyCopy.summary);
+  assert.equal(siteMetadata.title, "MarginMix - Margin Visibility");
+  assert.equal(siteMetadata.description, "Catch your Margin Leak before it hits your books.");
   assert.ok(readFileSync("client/public/llms.txt", "utf8").includes("Planned: a deterministic risk assessment"));
 
   const calculatorInput = readFileSync("client/src/pages/free-tier-calculator.tsx", "utf8");
@@ -209,6 +212,17 @@ test("every route and initial HTML use the exact sitewide search and social copy
   assert.ok(template.includes(`content="${siteMetadata.description}"`));
 });
 
+test("unknown routes return 404 and remain excluded from search indexing", () => {
+  for (const path of appRoutePaths) {
+    assert.equal(isKnownPagePath(path), true, `${path} is a declared application route`);
+    assert.equal(pageResponseStatus(path), 200, `${path} should remain available`);
+  }
+  assert.equal(isKnownPagePath("/missing-page"), false);
+  assert.equal(pageResponseStatus("/missing-page"), 404);
+  assert.equal(resolvePageMetadata("/missing-page").robots, "noindex, nofollow");
+  assert.equal(resolvePageMetadata("/missing-page").canonicalUrl, undefined);
+});
+
 test("sitemap must be well-formed XML with the required URL-set structure", () => {
   const namespace = `xmlns="${sitemapNamespace}"`;
 
@@ -236,10 +250,15 @@ test("sitemap date updater rejects malformed XML before it can rewrite dates", (
 test("calculator input and output share core estimate method explanations", () => {
   const input = readFileSync("client/src/pages/free-tier-calculator.tsx", "utf8");
   const output = readFileSync("client/src/pages/free-tier-calculator-output.tsx", "utf8");
-  for (const key of Object.keys(leakEstimateMethodologyCopy)) {
+  const methodology = readFileSync("shared/leak-engine/methodology-copy.ts", "utf8");
+  for (const key of ["model", "scope", "combined", "period", "limits"]) {
     assert.ok(input.includes(`leakEstimateMethodologyCopy.${key}`), `input uses shared ${key} copy`);
     assert.ok(output.includes(`leakEstimateMethodologyCopy.${key}`), `output uses shared ${key} copy`);
   }
+  assert.ok(input.includes("leakEstimateMethodologyCopy.range"));
+  assert.ok(output.includes("leakEstimateSensitivityCopy(hours)"));
+  assert.ok(methodology.includes("leakEstimateMethodologyCopy.range"));
+  assert.ok(leakEstimateMethodologyCopy.range.length > 0);
 });
 
 test("indexable public pages keep canonical social tags with sitewide metadata", () => {
@@ -256,8 +275,6 @@ test("indexable public pages keep canonical social tags with sitewide metadata",
     assert.ok(metadata.description.trim(), `${path} must have a description`);
     assert.equal(metadata.title, "MarginMix - Margin Visibility");
     assert.equal(metadata.description, siteMetadata.description);
-    assert.ok(metadata.description.includes("Planned: a deterministic risk assessment"));
-    assert.ok(metadata.description.includes("Document upload and analysis are not available yet."));
 
     const expectedCanonical = `${siteOrigin}${path}`;
     assert.equal(metadata.robots, "index, follow");
@@ -383,12 +400,8 @@ test("sitemap URLs serve directly with matching canonical destinations", async (
   const template = readFileSync("client/index.html", "utf8");
   app.use((request, response) => {
     const pathname = new URL(request.originalUrl, "http://localhost").pathname;
-    if (!appRoutePaths.includes(pathname)) {
-      response.status(404).end();
-      return;
-    }
     response
-      .status(200)
+      .status(pageResponseStatus(pathname))
       .type("html")
       .send(injectCrawlerPage(template, pathname));
   });
@@ -438,6 +451,14 @@ test("sitemap URLs serve directly with matching canonical destinations", async (
         `${sitemapUrl} local route response must include its matching canonical URL`,
       );
     }
+    const missingPage = await fetch(`http://127.0.0.1:${address.port}/missing-page`, {
+      redirect: "manual",
+      headers: { connection: "close" },
+    });
+    assert.equal(missingPage.status, 404);
+    const missingHtml = await missingPage.text();
+    assert.match(missingHtml, /name="robots" content="noindex, nofollow"/);
+    assert.doesNotMatch(missingHtml, /rel="canonical"/);
   } finally {
     if (server.listening) {
       await new Promise<void>((resolve) => server.close(() => resolve()));

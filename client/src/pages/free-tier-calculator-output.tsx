@@ -218,6 +218,9 @@ export default function FreeTierCalculatorOutputPage() {
         targetMarginPercent,
         exposureLow: result.leaklow,
         exposureHigh: result.leakhigh,
+        scopemove: input.scopemove,
+        scopebilled: input.scopebilled,
+        hourstracked: input.hourstracked,
       },
     };
 

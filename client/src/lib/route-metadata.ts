@@ -11,7 +11,7 @@ export type PageMetadata = {
 export const siteOrigin = "https://marginmix.ai";
 export const siteMetadata = {
   title: "MarginMix - Margin Visibility",
-  description: engagementJourneyCopy.summary,
+  description: "Catch your Margin Leak before it hits your books.",
 } as const;
 export const socialImage = `${siteOrigin}/images/og-image.png`;
 
@@ -260,4 +260,17 @@ export function resolvePageMetadata(path: string): ResolvedPageMetadata {
       image: socialImage,
     },
   };
+}
+
+export function isKnownPagePath(path: string): boolean {
+  const normalizedPath = path.length > 1 ? path.replace(/\/+$/, "") : path;
+  return (
+    Object.hasOwn(publicPages, normalizedPath) ||
+    normalizedPath.startsWith("/sign-in/") ||
+    normalizedPath.startsWith("/sign-up/")
+  );
+}
+
+export function pageResponseStatus(path: string): 200 | 404 {
+  return isKnownPagePath(path) ? 200 : 404;
 }

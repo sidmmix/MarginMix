@@ -6,6 +6,7 @@ import { type Server } from "http";
 import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
 import { injectCrawlerPage } from "./crawler-pages";
+import { pageResponseStatus } from "../client/src/lib/route-metadata";
 
 const viteLogger = createLogger();
 
@@ -55,13 +56,14 @@ export async function setupVite(app: Express, server: Server) {
 
       // always reload the index.html file from disk incase it changes
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
-      template = injectCrawlerPage(template, new URL(url, "http://localhost").pathname);
+      const pathname = new URL(url, "http://localhost").pathname;
+      template = injectCrawlerPage(template, pathname);
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`,
       );
       const page = await vite.transformIndexHtml(url, template);
-      res.status(200).set({ "Content-Type": "text/html" }).end(page);
+      res.status(pageResponseStatus(pathname)).set({ "Content-Type": "text/html" }).end(page);
     } catch (e) {
       vite.ssrFixStacktrace(e as Error);
       next(e);
@@ -88,13 +90,14 @@ export function serveStatic(app: Express) {
         path.resolve(distPath, "index.html"),
         "utf-8",
       );
+      const pathname = new URL(req.originalUrl, "http://localhost").pathname;
       res
-        .status(200)
+        .status(pageResponseStatus(pathname))
         .type("html")
         .send(
           injectCrawlerPage(
             template,
-            new URL(req.originalUrl, "http://localhost").pathname,
+            pathname,
           ),
         );
     } catch (error) {
