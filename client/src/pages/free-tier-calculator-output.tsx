@@ -15,17 +15,20 @@ import {
 } from "@/components/ui/dialog";
 import { analytics } from "@/lib/analytics";
 import { ChevronDown } from "lucide-react";
+import LeakEstimateComparison from "@/components/leak-estimate-comparison";
+import {
+  getSessionLeakEstimates,
+  type LeakEstimate,
+} from "@/lib/leak-estimates";
 import {
   formatPercent,
   formatCurrency,
   formatCurrencyBandHeadline,
-  LEAK_RESULT_STORAGE_KEY,
   SCOPE_SHARE,
   SCOPE_BILLED_LABELS,
   SCOPE_MOVE_LABELS,
   DEFAULT_TARGET_MARGIN_PERCENT,
   DEFAULT_CURRENCY,
-  readStoredLeakResult,
   validateLeakInput,
   type LeakResult,
 } from "@shared/leak-engine";
@@ -153,6 +156,7 @@ function scopeAssumptionCopy(result: LeakResult): string {
 export default function FreeTierCalculatorOutputPage() {
   const [, setLocation] = useLocation();
   const [result, setResult] = useState<LeakResult | null>(null);
+  const [estimates, setEstimates] = useState<LeakEstimate[]>([]);
   const [showMethodology, setShowMethodology] = useState(false);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
@@ -168,12 +172,13 @@ export default function FreeTierCalculatorOutputPage() {
   const handleTurnstileError = useCallback((message: string) => setTurnstileError(message), []);
 
   useEffect(() => {
-    const savedResult = readStoredLeakResult(sessionStorage.getItem(LEAK_RESULT_STORAGE_KEY));
-    if (!savedResult) {
+    const savedEstimates = getSessionLeakEstimates();
+    if (savedEstimates.length === 0) {
       setLocation("/free-tier/calculator");
       return;
     }
-    setResult(savedResult);
+    setEstimates(savedEstimates);
+    setResult(savedEstimates[savedEstimates.length - 1].result);
   }, [setLocation]);
 
   if (!result) {
@@ -265,6 +270,13 @@ export default function FreeTierCalculatorOutputPage() {
             {engagementJourneyCopy.calculator}
           </p>
         </header>
+
+        <div className="mb-8 space-y-3">
+          <p className="rounded-xl border border-[#dce5dc] bg-[#eaf0e8] p-4 text-sm leading-6 text-[#45635a]">
+            Estimates are indicative planning scenarios, not audited losses. Each uses the currency entered; amounts are not converted. This comparison remains in your browser session and is not saved to MarginMix’s database.
+          </p>
+          <LeakEstimateComparison estimates={estimates} />
+        </div>
 
         {/* Block 2 */}
         <section className="mm-result-hero mb-8 print:mb-4">
@@ -396,8 +408,11 @@ export default function FreeTierCalculatorOutputPage() {
             {engagementJourneyCopy.assessment} {engagementJourneyCopy.availability} The calculator is not a substitute for checking underlying records.
           </p>
           <Link href="/free-tier/calculator" className="text-sm font-semibold text-[#146d58] hover:underline inline-block">
-            Run another engagement
+            Add another estimate to compare
           </Link>
+          <p className="text-xs text-[#60776f]">
+            A detailed review request includes this latest engagement only, not the full comparison.
+          </p>
         </section>
       </main>
       <Footer notice="Your calculator inputs and results remain in this browser session and are not saved to MarginMix’s database." />

@@ -14,6 +14,10 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { analytics } from "@/lib/analytics";
+import {
+  getSessionLeakEstimates,
+  LEAK_ESTIMATES_STORAGE_KEY,
+} from "@/lib/leak-estimates";
 import { engagementJourneyCopy } from "@shared/public-page-copy";
 import { leakEstimateMethodologyCopy } from "@shared/leak-engine/methodology-copy";
 import {
@@ -52,6 +56,7 @@ export default function FreeTierCalculatorPage() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [warnings, setWarnings] = useState<string[]>([]);
+  const [engagementName, setEngagementName] = useState("");
   const startTracked = useRef(false);
 
   useEffect(() => {
@@ -121,6 +126,12 @@ export default function FreeTierCalculatorPage() {
     }
     setErrors({});
     const leak = computeLeak(parsed as LeakInput);
+    const existingEstimates = getSessionLeakEstimates();
+    const label = engagementName.trim().slice(0, 80) || `Engagement ${existingEstimates.length + 1}`;
+    sessionStorage.setItem(
+      LEAK_ESTIMATES_STORAGE_KEY,
+      JSON.stringify([...existingEstimates, { label, result: leak }]),
+    );
     sessionStorage.setItem(LEAK_RESULT_STORAGE_KEY, JSON.stringify(leak));
     analytics.leakFormSubmitted();
     setLocation("/free-tier/calculator/output");
@@ -141,7 +152,7 @@ export default function FreeTierCalculatorPage() {
           Engagement leak calculator
         </h1>
         <p className="max-w-xl text-[#60776f] mb-8 text-sm sm:text-base leading-6">
-          Pressure test one engagement. Your inputs and results stay in this browser session.
+          Add engagement estimates to compare them side by side. Inputs and results stay in this browser session.
         </p>
         </div>
 
@@ -169,6 +180,20 @@ export default function FreeTierCalculatorPage() {
           <p className="text-sm text-[#60776f]">
             <span className="font-semibold text-red-600">*</span> All fields are required.
           </p>
+          <div className="space-y-2">
+            <Label htmlFor="engagement-name">Engagement name (optional)</Label>
+            <Input
+              id="engagement-name"
+              type="text"
+              maxLength={80}
+              value={engagementName}
+              onChange={(event) => setEngagementName(event.target.value)}
+              placeholder="For example, Client website"
+            />
+            <p className="text-xs text-slate-500">
+              Used only to tell estimates apart in this browser session.
+            </p>
+          </div>
           <div className="relative space-y-2">
             <Label htmlFor="currency">Currency <span aria-hidden="true" className="text-red-600">*</span></Label>
             <Select
@@ -377,7 +402,7 @@ export default function FreeTierCalculatorPage() {
           </div>
 
           <Button type="submit" className="mm-action w-full bg-[#146d58] hover:bg-[#0c5747] text-white py-6 text-base">
-            Calculate engagement leak
+            Calculate and compare estimates
           </Button>
 
           {Object.keys(errors).length > 0 && (
