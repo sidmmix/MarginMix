@@ -1,4 +1,13 @@
 import { resolvePageMetadata } from "../client/src/lib/route-metadata";
+import {
+  founderPageCopy,
+  platformPageCopy,
+  whyChoosePageCopy,
+} from "../shared/public-page-copy";
+
+const renderParagraph = (text: string) => `<p>${escapeHtml(text)}</p>`;
+const renderHeading = (level: number, text: string) =>
+  `<h${level}>${escapeHtml(text)}</h${level}>`;
 
 const crawlerPages: Record<string, string> = {
   "/": `
@@ -18,57 +27,45 @@ const crawlerPages: Record<string, string> = {
   "/platform": `
     <main aria-label="MarginMix platform">
       <p>MarginMix platform</p>
-      <h1>See the risk before you sign.</h1>
-      <p>Pressure test engagement economics before delivery begins.</p>
-      <h2>Available now: Free Leak Calculator</h2>
-      <p>Pressure test fees, costs, scope, staffing, billing, and hours-tracking assumptions. The calculator returns an indicative exposure estimate based on preset rules, not an audited loss.</p>
-      <h2>Planned: Full document review</h2>
-      <p>A planned review may include a statement of work, timesheet export, and rate card. Document review is not available through the free calculator today.</p>
-      <h2>Future direction: Margin Intelligence</h2>
-      <p>Margin Intelligence is a future direction, not a live capability. Its scope and availability have not been announced.</p>
-      <h2>Talk through a current use case</h2>
-      <p>A conversation does not activate planned features.</p>
+      ${renderHeading(1, platformPageCopy.headline)}
+      ${renderParagraph(platformPageCopy.introduction)}
+      ${platformPageCopy.stages.map((stage) => `
+      ${renderHeading(2, `${stage.status}: ${stage.title}`)}
+      ${renderParagraph(stage.summary)}
+      ${renderParagraph(stage.detail)}`).join("")}
+      ${renderHeading(2, platformPageCopy.conversationTitle)}
+      ${renderParagraph(platformPageCopy.conversationDetail)}
     </main>`,
   "/why-choose": `
     <main aria-label="Why choose MarginMix">
-      <p>Decision support, not another dashboard</p>
-      <h1>Why Choose MarginMix</h1>
-      <h2>Enterprise systems explain what happened</h2>
-      <p>ERPs and dashboards report on the past. MarginMix acts earlier, when work is priced, staffed, and committed.</p>
-      <h2>Pricing decisions create variance</h2>
-      <p>Margin risk is locked in before delivery begins. MarginMix helps challenge pricing assumptions while there is still time to make a different decision.</p>
-      <h2>Why historical data is not enough</h2>
-      <p>Timesheets are negotiated and senior effort is underreported. MarginMix helps surface the blind spots that traditional systems may not address early enough.</p>
-      <h2>Standardized pricing risk evaluation</h2>
-      <p>A shared lens helps teams pressure test pricing, staffing, and coordination risk, creating discipline without bureaucracy.</p>
-      <h2>Stays lightweight</h2>
-      <p>No ERP integrations, timesheets, or cost tables are required. MarginMix is designed to be used when pricing is discussed.</p>
-      <h2>Pricing clarity does not require perfect data</h2>
-      <p>Use early warning and structured judgment to support defensible decisions. MarginMix is decision support, not a guarantee of engagement profitability.</p>
-      <h2>Assess margin risk</h2>
-      <p>Use the free scanner or book a conversation to discuss a current use case.</p>
+      ${renderParagraph(whyChoosePageCopy.eyebrow)}
+      ${renderHeading(1, whyChoosePageCopy.headline)}
+      ${whyChoosePageCopy.cards.map((card) => `
+      ${renderHeading(2, card.title)}
+      ${renderParagraph(card.body)}`).join("")}
     </main>`,
   "/founder": `
     <main aria-label="Why MarginMix exists">
-      <p>Why MarginMix exists</p>
-      <h1>Margin rarely breaks all at once.</h1>
-      <p>Delivery complexity quietly reshapes the economics after the work is sold.</p>
-      <h2>Work looks sound. The load grows.</h2>
-      <p>The team is busy and the client is satisfied, yet senior attention, coordination, and rework begin to outpace the plan. Those signals are easy to miss until the economics stop adding up.</p>
-      <h2>What sits outside the quote</h2>
+      ${renderParagraph(founderPageCopy.eyebrow)}
+      ${renderHeading(1, founderPageCopy.headline)}
+      ${renderParagraph(founderPageCopy.introduction)}
+      ${renderHeading(2, founderPageCopy.patternTitle)}
+      ${renderParagraph(founderPageCopy.pattern)}
+      ${renderParagraph(founderPageCopy.patternConclusion)}
+      ${renderHeading(2, founderPageCopy.outsideQuoteTitle)}
       <ul>
-        <li>Senior attention: how much leadership time the work consumes.</li>
-        <li>Coordination: how many people and decisions must align.</li>
-        <li>Iteration: how often work is revisited or refined.</li>
+        ${founderPageCopy.outsideQuote.map(({ title, description }) => `<li>${escapeHtml(title)}: ${escapeHtml(description)}.</li>`).join("")}
       </ul>
-      <p>Make the pattern visible while decisions can still change.</p>
-      <h2>A decision lens for the economics of work</h2>
-      <p>MarginMix is not a productivity, time tracking, or utilization tool. It supports better economic decisions, not optimization of people.</p>
-      <p>Pricing, utilization, and delivery efficiency matter, but they do not always reveal how an engagement is staffed and governed. Senior attention over time, coordination across stakeholders, repeated refinement, and cognitive load can sit outside formal reporting. MarginMix helps leaders assess structural viability from likely staffing, coordination, and governance before delivery begins.</p>
-      <h2>Built from operating experience</h2>
-      <p>MarginMix draws on experience across agency and consulting work, including commercial and operational decisions, growth, and profitability. Its perspective is informed by enterprise transformation and operating model experience.</p>
-      <h2>Make the assumptions visible</h2>
-      <p>Consider an engagement's structure before committing to the work. Try the free scanner or book a conversation.</p>
+      ${renderParagraph(founderPageCopy.patternCallout)}
+      ${renderHeading(2, founderPageCopy.decisionTitle)}
+      ${renderParagraph(founderPageCopy.decisionSummary)}
+      ${founderPageCopy.fullerStory.map(renderParagraph).join("")}
+      ${renderHeading(2, founderPageCopy.experienceTitle)}
+      ${renderParagraph(founderPageCopy.experienceSummary)}
+      ${renderParagraph(founderPageCopy.founderExperience)}
+      ${renderParagraph(founderPageCopy.advisorSummary)}
+      ${renderParagraph(founderPageCopy.advisorExperience)}
+      ${renderHeading(2, founderPageCopy.callToActionTitle)}
     </main>`,
 };
 

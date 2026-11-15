@@ -7,6 +7,11 @@ import {
   siteOrigin,
 } from "./route-metadata";
 import { injectCrawlerPage } from "../../../server/crawler-pages";
+import {
+  founderPageCopy,
+  platformPageCopy,
+  whyChoosePageCopy,
+} from "../../../shared/public-page-copy";
 
 const expectedPublicPaths = [
   "/",
@@ -131,6 +136,72 @@ test("server-rendered private pages have no page schema or canonical URL", () =>
   assert.doesNotMatch(html, /application\/ld\+json/);
   assert.doesNotMatch(html, /<link rel="canonical"/);
   assert.match(html, /<meta name="robots" content="noindex, nofollow" \/>/);
+});
+
+test("crawler summaries reuse the current public page copy", () => {
+  const template = readFileSync("client/index.html", "utf8");
+  const renderedCrawlerText = (path: string) =>
+    injectCrawlerPage(template, path)
+      .replace(/<[^>]*>/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&#39;/g, "'")
+      .replace(/&quot;/g, '"')
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/\s+/g, " ");
+  const assertCopyPresent = (path: string, copy: string) => {
+    assert.ok(
+      renderedCrawlerText(path).includes(copy),
+      `${path} crawler content must include visible copy: ${copy}`,
+    );
+  };
+
+  for (const copy of [
+    platformPageCopy.headline,
+    platformPageCopy.introduction,
+    platformPageCopy.conversationTitle,
+    platformPageCopy.conversationDetail,
+    ...platformPageCopy.stages.flatMap((stage) => [
+      `${stage.status}: ${stage.title}`,
+      stage.summary,
+      stage.detail,
+    ]),
+  ]) {
+    assertCopyPresent("/platform", copy);
+  }
+
+  for (const copy of [
+    founderPageCopy.eyebrow,
+    founderPageCopy.headline,
+    founderPageCopy.introduction,
+    founderPageCopy.patternTitle,
+    founderPageCopy.pattern,
+    founderPageCopy.patternConclusion,
+    founderPageCopy.outsideQuoteTitle,
+    ...founderPageCopy.outsideQuote.map(
+      ({ title, description }) => `${title}: ${description}.`,
+    ),
+    founderPageCopy.patternCallout,
+    founderPageCopy.decisionTitle,
+    founderPageCopy.decisionSummary,
+    ...founderPageCopy.fullerStory,
+    founderPageCopy.experienceTitle,
+    founderPageCopy.experienceSummary,
+    founderPageCopy.founderExperience,
+    founderPageCopy.advisorSummary,
+    founderPageCopy.advisorExperience,
+    founderPageCopy.callToActionTitle,
+  ]) {
+    assertCopyPresent("/founder", copy);
+  }
+
+  for (const copy of [
+    whyChoosePageCopy.eyebrow,
+    whyChoosePageCopy.headline,
+    ...whyChoosePageCopy.cards.flatMap((card) => [card.title, card.body]),
+  ]) {
+    assertCopyPresent("/why-choose", copy);
+  }
 });
 
 test("every declared app route has explicit metadata", () => {

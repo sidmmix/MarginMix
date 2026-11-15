@@ -3,28 +3,7 @@ import { Footer } from "@/components/footer";
 import { BrandName } from "@/components/brand-name";
 import { Link } from "wouter";
 import { ArrowUpRight, BarChart3, CircleDashed, LockKeyhole } from "lucide-react";
-
-const stages = [
-  {
-    status: "Available now",
-    title: "Free Leak Calculator",
-    summary: "Pressure test fees, costs, scope and billing assumptions.",
-    detail: "The calculator also considers hours tracking and returns an indicative exposure estimate based on preset rules, not an audited loss.",
-    action: true,
-  },
-  {
-    status: "Planned",
-    title: "Full document review",
-    summary: "A planned paid review of engagement documents.",
-    detail: "The planned review may include a statement of work, timesheet export and rate card. Document review is not available through the free calculator today.",
-  },
-  {
-    status: "Future direction",
-    title: "Margin Intelligence",
-    summary: "A future direction, not a live capability.",
-    detail: "Its scope and availability have not been announced.",
-  },
-];
+import { platformPageCopy } from "@shared/public-page-copy";
 
 export default function Platform() {
   return (
@@ -36,9 +15,9 @@ export default function Platform() {
           <div className="relative grid items-center gap-10 lg:grid-cols-[1.05fr_.95fr]">
             <div className="max-w-2xl">
               <p className="mb-5 text-xs font-bold uppercase tracking-[.18em] text-[#d5e96c]"><BrandName className="mm-brand-pad" /> platform</p>
-              <h1 className="mm-display text-4xl font-extrabold sm:text-5xl lg:text-[4.25rem]">See the risk before you sign.</h1>
+              <h1 className="mm-display text-4xl font-extrabold sm:text-5xl lg:text-[4.25rem]">{platformPageCopy.headline}</h1>
               <p className="mt-6 max-w-xl text-base leading-7 text-[#c1d5cc] sm:text-lg">
-                Pressure test engagement economics before delivery begins.
+                {platformPageCopy.introduction}
               </p>
               <Link href="/free-tier/input" className="mm-action mt-8 inline-flex items-center gap-2 bg-[#d5e96c] px-6 py-3.5 text-sm font-bold text-[#183b37] hover:bg-[#e2f48a]">
                 Try the free calculator <ArrowUpRight size={17} />
@@ -71,7 +50,7 @@ export default function Platform() {
             <p className="max-w-sm text-sm leading-6 text-[#60776f]">Availability is labeled at each stage.</p>
           </div>
           <div className="relative space-y-4 before:absolute before:bottom-10 before:left-[19px] before:top-10 before:w-px before:bg-[#c9d8ce] sm:before:left-[27px]">
-            {stages.map((stage, index) => (
+            {platformPageCopy.stages.map((stage, index) => (
               <article key={stage.title} className={`relative ml-0 grid gap-4 rounded-[1.4rem] border p-5 pl-14 transition-all duration-200 hover:-translate-y-0.5 sm:grid-cols-[170px_1fr_auto] sm:items-center sm:gap-8 sm:p-7 sm:pl-[76px] ${index === 0 ? "border-[#b9d5c1] bg-[#eaf2e8]" : "border-[#e0e4d9] bg-[#fffefa]"}`}>
                 <span className={`absolute left-3 top-6 grid h-9 w-9 place-items-center rounded-full border-4 border-[#f5f3eb] sm:left-4 sm:top-8 sm:h-12 sm:w-12 ${index === 0 ? "bg-[#146d58] text-white" : "bg-[#e3e9df] text-[#617a70]"}`}>
                   {index === 0 ? <BarChart3 size={17} /> : <CircleDashed size={17} />}
@@ -87,14 +66,14 @@ export default function Platform() {
                     <p className="mt-2 max-w-2xl leading-6">{stage.detail}</p>
                   </details>
                 </div>
-                {stage.action && <Link href="/free-tier/input" className="inline-flex items-center gap-2 text-sm font-bold text-[#146d58] hover:text-[#0c5747]">Explore <ArrowUpRight size={16} /></Link>}
+                {index === 0 && <Link href="/free-tier/input" className="inline-flex items-center gap-2 text-sm font-bold text-[#146d58] hover:text-[#0c5747]">Explore <ArrowUpRight size={16} /></Link>}
               </article>
             ))}
           </div>
         </section>
 
         <section className="mt-16 flex flex-col items-start justify-between gap-6 rounded-[1.6rem] bg-[#dce9d7] p-6 sm:mt-20 sm:flex-row sm:items-center sm:p-9">
-          <div><p className="mm-eyebrow">A specific engagement in mind?</p><h2 className="mt-2 text-2xl font-bold tracking-tight">Talk through the current use case.</h2><p className="mt-2 max-w-xl text-sm leading-6 text-[#526d64]">A conversation does not activate planned features.</p></div>
+          <div><p className="mm-eyebrow">A specific engagement in mind?</p><h2 className="mt-2 text-2xl font-bold tracking-tight">{platformPageCopy.conversationTitle}</h2><p className="mt-2 max-w-xl text-sm leading-6 text-[#526d64]">{platformPageCopy.conversationDetail}</p></div>
           <a href="https://calendly.com/sid-marginmix/30min" target="_blank" rel="noopener noreferrer" className="mm-action inline-flex shrink-0 items-center gap-2 bg-[#146d58] px-6 py-3.5 text-sm font-bold text-white hover:bg-[#0c5747]">Book a Demo <ArrowUpRight size={16} /></a>
         </section>
       </main>

@@ -7,6 +7,7 @@ import { BrandName } from "@/components/brand-name";
 import { AnimatedSection } from "@/components/animations";
 import { staggerContainer, staggerItem } from "@/components/motion-variants";
 import { motion, useReducedMotion } from "framer-motion";
+import { whyChoosePageCopy } from "@shared/public-page-copy";
 
 const cards = [
   {
@@ -14,48 +15,48 @@ const cards = [
     iconBg: "bg-emerald-100 dark:bg-emerald-900/30",
     Icon: Gauge,
     iconColor: "text-emerald-600 dark:text-emerald-400",
-    title: "Enterprise systems explain what happened",
-    body: "ERPs and dashboards report on the past. MarginMix acts earlier, when work is priced, staffed, and committed.",
+    title: whyChoosePageCopy.cards[0].title,
+    body: whyChoosePageCopy.cards[0].body,
   },
   {
     color: "border-amber-500",
     iconBg: "bg-amber-100 dark:bg-amber-900/30",
     Icon: Target,
     iconColor: "text-amber-600 dark:text-amber-400",
-    title: "Pricing decisions create variance",
-    body: "Margin risk is locked in before delivery begins. MarginMix operates at this moment, when pricing assumptions can still be challenged.",
+    title: whyChoosePageCopy.cards[1].title,
+    body: whyChoosePageCopy.cards[1].body,
   },
   {
     color: "border-rose-500",
     iconBg: "bg-rose-100 dark:bg-rose-900/30",
     Icon: Lightbulb,
     iconColor: "text-rose-600 dark:text-rose-400",
-    title: "Why historical data isn't enough",
-    body: "Timesheets are negotiated. Senior effort is underreported. MarginMix fills the blind spot traditional systems can't address early enough.",
+    title: whyChoosePageCopy.cards[2].title,
+    body: whyChoosePageCopy.cards[2].body,
   },
   {
     color: "border-blue-500",
     iconBg: "bg-blue-100 dark:bg-blue-900/30",
     Icon: Scale,
     iconColor: "text-blue-600 dark:text-blue-400",
-    title: "Standardized pricing risk evaluation",
-    body: "A shared lens to pressure test pricing, staffing, and coordination risk, creating discipline without bureaucracy.",
+    title: whyChoosePageCopy.cards[3].title,
+    body: whyChoosePageCopy.cards[3].body,
   },
   {
     color: "border-violet-500",
     iconBg: "bg-violet-100 dark:bg-violet-900/30",
     Icon: Zap,
     iconColor: "text-violet-600 dark:text-violet-400",
-    title: "Stays lightweight",
-    body: "No ERP integrations, timesheets, or cost tables required. Designed to be used every time pricing is discussed.",
+    title: whyChoosePageCopy.cards[4].title,
+    body: whyChoosePageCopy.cards[4].body,
   },
   {
     color: "border-emerald-500",
     iconBg: "bg-emerald-100 dark:bg-emerald-900/30",
     Icon: Shield,
     iconColor: "text-emerald-600 dark:text-emerald-400",
-    title: "Pricing clarity doesn't require perfect data",
-    body: "Early warning and defensible decisions. Repricing even one engagement can protect hundreds of thousands in margin.",
+    title: whyChoosePageCopy.cards[5].title,
+    body: whyChoosePageCopy.cards[5].body,
   },
 ];
 
@@ -76,9 +77,9 @@ export default function WhyChoose() {
       <section className="relative py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <AnimatedSection className="text-center mb-16">
-            <p className="mm-eyebrow mb-3">Decision support, not another dashboard</p>
+            <p className="mm-eyebrow mb-3">{whyChoosePageCopy.eyebrow}</p>
             <h1 className="mm-display text-4xl sm:text-5xl md:text-6xl font-extrabold text-[#183b37] mb-6">
-              Why Choose <BrandName />
+              {whyChoosePageCopy.headline.replace("MarginMix", "")}<BrandName />
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             </p>
@@ -118,7 +119,7 @@ export default function WhyChoose() {
         <AnimatedSection className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-6">
-              Assess Margin Risk & Be Profitable!
+              {whyChoosePageCopy.callToActionTitle}
             </h2>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link href="/free-tier/input" className="inline-flex w-full items-center justify-center rounded-lg bg-white px-8 py-3 font-semibold text-emerald-700 hover:bg-emerald-50 sm:w-auto">
