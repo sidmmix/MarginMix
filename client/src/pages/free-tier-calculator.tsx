@@ -153,7 +153,8 @@ export default function FreeTierCalculatorPage() {
             What this estimate includes
           </h2>
           <p>
-            {leakEstimateMethodologyCopy.model} {leakEstimateMethodologyCopy.combined}
+            {leakEstimateMethodologyCopy.model} {leakEstimateMethodologyCopy.scope}{" "}
+            {leakEstimateMethodologyCopy.combined}
           </p>
           <p className="mt-2">
             {leakEstimateMethodologyCopy.range} {leakEstimateMethodologyCopy.limits}{" "}

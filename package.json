@@ -8,7 +8,7 @@
     "build": "npm run sitemap:update && npm run test:metadata && npm run test:sitemap-dates && vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
-    "test:leak": "tsx --test shared/leak-engine/compute-leak.test.ts",
+    "test:leak": "tsx --test shared/leak-engine/compute-leak.test.ts shared/leak-engine/methodology-copy.test.ts",
     "test:metadata": "tsx --test client/src/lib/route-metadata.test.ts",
     "test:sitemap-dates": "tsx scripts/update-sitemap-lastmod.ts --check",
     "sitemap:update": "tsx scripts/update-sitemap-lastmod.ts",

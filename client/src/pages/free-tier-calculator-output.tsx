@@ -30,7 +30,10 @@ import {
   type LeakResult,
 } from "@shared/leak-engine";
 import { BILLING_MULTIPLIER } from "@shared/leak-engine";
-import { leakEstimateMethodologyCopy } from "@shared/leak-engine/methodology-copy";
+import {
+  leakEstimateMethodologyCopy,
+  leakEstimateSensitivityCopy,
+} from "@shared/leak-engine/methodology-copy";
 import { engagementJourneyCopy } from "@shared/public-page-copy";
 
 type TurnstileOptions = {
@@ -130,13 +133,7 @@ function TurnstileCheck({
 }
 
 function confidenceCopy(hours: LeakResult["input"]["hourstracked"]): string {
-  if (hours === "no") {
-    return `The range uses ±30% because hours are not tracked. ${leakEstimateMethodologyCopy.range}`;
-  }
-  if (hours === "partly") {
-    return `The range uses ±20% because hours are partly tracked. ${leakEstimateMethodologyCopy.range}`;
-  }
-  return `The range uses ±12% because hours are tracked. ${leakEstimateMethodologyCopy.range}`;
+  return leakEstimateSensitivityCopy(hours);
 }
 
 function scopeSubtitle(result: LeakResult): string {
@@ -370,13 +367,14 @@ export default function FreeTierCalculatorOutputPage() {
             className={`free-tier-leak-methodology-content space-y-3 ${showMethodology ? "" : "hidden"}`}
           >
             <p>
+              {leakEstimateMethodologyCopy.model} {leakEstimateMethodologyCopy.scope}{" "}
               {leakEstimateMethodologyCopy.combined} These components can overlap, so this is not their additive total,
               verified loss, or recovered revenue.
             </p>
           <p>{confidenceCopy(input.hourstracked)}</p>
           <p>{scopeAssumptionCopy(result)}</p>
           <p>
-            {leakEstimateMethodologyCopy.model} {leakEstimateMethodologyCopy.period}{" "}
+            {leakEstimateMethodologyCopy.period}{" "}
             {leakEstimateMethodologyCopy.limits}
           </p>
           </div>
