@@ -1,5 +1,6 @@
 import { resolvePageMetadata } from "../client/src/lib/route-metadata";
 import {
+  engagementJourneyCopy,
   founderPageCopy,
   platformPageCopy,
   whyChoosePageCopy,
@@ -23,6 +24,10 @@ const crawlerPages: Record<string, string> = {
       <p>MarginMix is designed for time and materials, fixed price, outcome-based, and hybrid engagements. It supports a clearer pricing conversation; it does not replace financial review or professional judgment.</p>
       <h2>Try the free leak calculator</h2>
       <p>The calculator lets you pressure test engagement assumptions and returns an indicative exposure estimate based on preset rules. It is not an audited loss or a live engagement result.</p>
+      ${renderHeading(2, engagementJourneyCopy.title)}
+      ${renderParagraph(engagementJourneyCopy.calculator)}
+      ${renderParagraph(engagementJourneyCopy.assessment)}
+      ${renderParagraph(engagementJourneyCopy.availability)}
     </main>`,
   "/platform": `
     <main aria-label="MarginMix platform">

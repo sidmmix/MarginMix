@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { analytics } from "@/lib/analytics";
+import { engagementJourneyCopy } from "@shared/public-page-copy";
 import {
   computeLeak,
   LEAK_RESULT_STORAGE_KEY,
@@ -163,6 +164,9 @@ export default function FreeTierCalculatorPage() {
           </p>
         </section>
 
+        <p className="mb-6 text-sm leading-6 text-[#60776f]">
+          {engagementJourneyCopy.assessment} {engagementJourneyCopy.availability}
+        </p>
         <form onSubmit={handleSubmit} noValidate className="mm-form-card space-y-6 p-5 sm:p-8">
           <p className="text-sm text-[#60776f]">
             <span className="font-semibold text-red-600">*</span> All fields are required.

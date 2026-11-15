@@ -1,6 +1,16 @@
+export const engagementJourneyCopy = {
+  title: "Start with the leak. Then look deeper.",
+  calculator:
+    "Available now: use the engagement leak calculator to estimate potential delivery and scope exposure from the assumptions you enter.",
+  assessment:
+    "Planned: a deterministic risk assessment based on your statement of work (SOW), timesheet data and other proprietary engagement information.",
+  availability:
+    "Document upload and analysis are not available yet. Registering interest does not start a document assessment.",
+} as const;
+
 export const platformPageCopy = {
   headline: "See the risk before you sign.",
-  introduction: "Pressure test engagement economics before delivery begins.",
+  introduction: "Start with an engagement leak estimate today. A deeper assessment using engagement documents is planned.",
   stages: [
     {
       status: "Available now",
@@ -11,10 +21,10 @@ export const platformPageCopy = {
     },
     {
       status: "Planned",
-      title: "Full document review",
-      summary: "A planned paid review of engagement documents.",
+      title: "Document based risk assessment",
+      summary: engagementJourneyCopy.assessment,
       detail:
-        "The planned review may include a statement of work, timesheet export and rate card. Document review is not available through the free calculator today.",
+        "The planned assessment will use the SOW, timesheet data and other proprietary engagement information to examine risk beyond the initial estimate. Document upload and analysis are not available yet.",
     },
     {
       status: "Future direction",

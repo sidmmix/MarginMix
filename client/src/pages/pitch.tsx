@@ -142,7 +142,7 @@ function SlideCover() {
           where the cost of being wrong is highest.
         </p>
         <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-slate-500 text-sm">
-          <span className="flex items-center gap-2"><Shield className="h-4 w-4 text-emerald-600" /> Deterministic Engine</span>
+          <span className="flex items-center gap-2"><Shield className="h-4 w-4 text-emerald-600" /> Engagement Leak Calculator</span>
           <span className="flex items-center gap-2"><Zap className="h-4 w-4 text-emerald-600" /> 60-Second Assessment</span>
           <span className="flex items-center gap-2"><TrendingUp className="h-4 w-4 text-emerald-600" /> 90% Gross Margin</span>
         </div>
@@ -213,7 +213,7 @@ function SlideSolution() {
     "Estimated margin erosion on current margin",
   ];
   const notThis = [
-    "Does not ingest timesheets or ERP data",
+    "Document upload and analysis are not available yet",
     "Does not model delivery performance",
     "Does not replace finance systems",
   ];
@@ -256,8 +256,9 @@ function SlideSolution() {
             <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6">
               <p className="text-emerald-600 text-xs font-bold tracking-widest uppercase mb-3">The Engine</p>
               <p className="text-slate-800 text-sm leading-relaxed">
-                Deterministic. Rule-based. No ML. No AI in verdict logic.
-                Encodes expert judgment into a <strong>repeatable, auditable decision system</strong> that gives the same answer to identical inputs, every time.
+                Available now: an engagement leak calculator using entered assumptions.
+                Planned next: a <strong>deterministic risk assessment</strong> using the SOW, timesheet data and other proprietary engagement information.
+                Document upload and analysis are not available yet.
               </p>
             </div>
           </div>
@@ -492,7 +493,7 @@ function SlideUnitEconomics() {
 function SlideScalability() {
   const reasons = [
     { title: "Judgment is systemized", body: "Expert knowledge encoded once. Delivered infinitely. No per-client consulting required." },
-    { title: "AI amplifies speed, not logic", body: "GPT generates narratives only. The verdict logic is deterministic, auditable, repeatable, and trustworthy." },
+    { title: "From leak estimate to deeper assessment", body: "The calculator is available now. A deterministic risk assessment using SOWs, timesheet data and other proprietary engagement information is planned; document upload and analysis are not yet available." },
     { title: "Same engine, every industry", body: "Agencies, consulting, SIs, ITeS. The Workforce Intensity Matrix applies universally across professional services." },
     { title: "No integration overhead", body: "No ERP or PSA connections are needed. The assessment uses structured inputs, with no IT project or implementation risk." },
     { title: "Decision infrastructure, not software", body: "Customers don't churn from decision infrastructure. Once embedded in the pricing process, switching cost is high." },
@@ -600,7 +601,7 @@ function SlideAsk() {
             <div>
               <p className="text-emerald-700 text-xs font-bold tracking-widest uppercase mb-3">Why <BrandName /> wins</p>
               <p className="text-slate-600 text-sm leading-relaxed">
-                First mover. Proprietary framework. Deterministic engine. No integration cost. High gross margin. Founder with operating insight the market hasn't yet systemised.
+                First mover. Proprietary framework. An engagement leak calculator available today, with a planned document based risk assessment. No integration cost. High gross margin. Founder with operating insight the market hasn't yet systemised.
               </p>
             </div>
             <div className="mt-4 flex items-center gap-2 text-emerald-700 text-sm font-medium">

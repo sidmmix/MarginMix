@@ -47,28 +47,28 @@ export const publicPages: Record<string, PageMetadata> = {
   "/": {
     title: "MarginMix | Make Margin Risk Visible",
     description:
-      "Pressure test pricing, staffing, and delivery assumptions before an engagement begins with MarginMix, decision support for services businesses.",
+      "Estimate engagement margin exposure with MarginMix’s leak calculator. A deeper risk assessment using SOWs, timesheets and proprietary information is planned.",
     canonicalPath: "/",
     indexable: true,
     structuredData: {
       "@type": "WebPage",
       name: "MarginMix | Make Margin Risk Visible",
       description:
-        "Pressure test pricing, staffing, and delivery assumptions before an engagement begins with MarginMix, decision support for services businesses.",
+        "Estimate engagement margin exposure with MarginMix’s leak calculator. A deeper risk assessment using SOWs, timesheets and proprietary information is planned.",
       about: { "@id": organizationId },
     },
   },
   "/platform": {
     title: "MarginMix Platform | Pressure Test Engagement Economics",
     description:
-      "See how MarginMix helps agency and consulting leaders pressure test fees, costs, scope, staffing, and billing assumptions before delivery.",
+      "Explore the available engagement leak calculator and the planned deterministic risk assessment using SOWs, timesheet data and proprietary engagement information.",
     canonicalPath: "/platform",
     indexable: true,
     structuredData: {
       "@type": "WebPage",
       name: "MarginMix Platform",
       description:
-        "Explore MarginMix's available calculator and product roadmap for pressure testing engagement economics.",
+        "Explore the available engagement leak calculator and the planned document based risk assessment. Document upload and analysis are not available yet.",
       about: { "@id": organizationId },
     },
   },

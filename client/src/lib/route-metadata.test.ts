@@ -8,10 +8,22 @@ import {
 } from "./route-metadata";
 import { injectCrawlerPage } from "../../../server/crawler-pages";
 import {
+  engagementJourneyCopy,
   founderPageCopy,
   platformPageCopy,
   whyChoosePageCopy,
 } from "../../../shared/public-page-copy";
+
+test("public journey distinguishes the live calculator from planned document assessment", () => {
+  const homepage = injectCrawlerPage(readFileSync("client/index.html", "utf8"), "/");
+  const platform = injectCrawlerPage(readFileSync("client/index.html", "utf8"), "/platform");
+  for (const html of [homepage, platform]) {
+    assert.ok(html.includes(engagementJourneyCopy.assessment));
+    assert.match(html, /Document upload and analysis are not available yet/);
+  }
+  assert.match(resolvePageMetadata("/").description, /is planned/);
+  assert.match(resolvePageMetadata("/platform").description, /planned deterministic risk assessment/);
+});
 
 const expectedPublicPaths = [
   "/",

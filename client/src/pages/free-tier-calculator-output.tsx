@@ -389,8 +389,9 @@ export default function FreeTierCalculatorOutputPage() {
             Review this engagement
           </Button>
           <p className="text-sm text-[#60776f] max-w-xl">
-            Bring your SOW, timesheet export and rate card to a fuller review of these assumptions.
-            This indicative calculator is not a substitute for checking the underlying records.
+            Register interest in a planned deterministic risk assessment using your SOW, timesheet data and other
+            proprietary engagement information. Document upload and analysis are not available yet.
+            This request does not start an assessment. The calculator is not a substitute for checking underlying records.
           </p>
           <Link href="/free-tier/calculator" className="text-sm font-semibold text-[#146d58] hover:underline inline-block">
             Run another engagement
@@ -418,7 +419,8 @@ export default function FreeTierCalculatorOutputPage() {
                   Register Interest for a Detailed Review of Concerned Engagement/Account
                 </DialogTitle>
                 <DialogDescription>
-                  Enter your contact details. We’ll send your request and this engagement’s calculator summary to you and Sid.
+                  Register interest in the planned document based assessment; upload and analysis are not available yet.
+                  We’ll send your request and this engagement’s calculator summary to you and Sid.
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleReviewSubmit} className="space-y-4">

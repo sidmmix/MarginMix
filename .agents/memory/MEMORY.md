@@ -1,4 +1,5 @@
 - [Development dependency audit boundary](dependency-audit-boundary.md) — distinguish production advisories from dev-tool advisories; never force unsupported esbuild overrides just to clear npm audit.
+- [Public product journey](product-journey.md) — calculator first, followed by a planned document based deterministic assessment.
 - [Audit assurance boundaries](audit-assurance-boundaries.md) — intake completeness is not financial risk; avoid presenting uncalibrated heuristics as measured margin forecasts.
 - [Audit navigation preferences](audit-navigation-preferences.md) — manual progression with Enter/click controls and automatic focus on the active answer field.
 - [Full assessment separation](assessment-flow-separation.md) — keep the full assessment and its reports independent from the homepage quick profiler.
