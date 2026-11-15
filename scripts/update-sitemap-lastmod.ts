@@ -138,7 +138,6 @@ function latestPageDate(files: Set<string>, dirtyPaths: Set<string>): string {
 }
 
 function updateSitemap(xml: string, dates: Map<string, string>): string {
-  assertValidSitemapXml(xml);
   const seen = new Set<string>();
   const updated = xml.replace(/<url>[\s\S]*?<\/url>/g, (block) => {
     const location = block.match(/<loc>([^<]+)<\/loc>/)?.[1];
@@ -162,6 +161,9 @@ function updateSitemap(xml: string, dates: Map<string, string>): string {
 }
 
 function main(): void {
+  const original = readFileSync(path.resolve(root, sitemapPath), "utf8");
+  // Reject broken documents before computing dates or attempting any replacement.
+  assertValidSitemapXml(original);
   ensureGitRepository();
   const indexableRoutes = Object.entries(publicPages)
     .filter(([, metadata]) => metadata.indexable)
@@ -181,7 +183,6 @@ function main(): void {
       latestPageDate(collectPageSources(entry), dirtyPaths),
     ]),
   );
-  const original = readFileSync(path.resolve(root, sitemapPath), "utf8");
   const updated = updateSitemap(original, dates);
 
   if (process.argv.includes("--check")) {

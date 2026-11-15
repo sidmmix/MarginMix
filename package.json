@@ -11,7 +11,7 @@
     "test:leak": "tsx --test shared/leak-engine/compute-leak.test.ts shared/leak-engine/methodology-copy.test.ts server/leak-review-email-content.test.ts client/src/lib/leak-estimates.test.ts client/src/components/leak-estimate-comparison.test.tsx",
     "test:metadata": "tsx --test client/src/lib/route-metadata.test.ts",
     "test:built-canonicals": "tsx scripts/test-built-canonicals.ts",
-    "test:sitemap-dates": "tsx scripts/update-sitemap-lastmod.ts --check",
+    "test:sitemap-dates": "tsx --test scripts/update-sitemap-lastmod.test.ts && tsx scripts/update-sitemap-lastmod.ts --check",
     "test:sitemap-response": "tsx scripts/test-sitemap-response.ts",
     "sitemap:update": "tsx scripts/update-sitemap-lastmod.ts",
     "test:analytics": "tsx --test client/src/lib/analytics.test.ts",
