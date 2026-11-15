@@ -22,8 +22,6 @@ test("public journey distinguishes the live calculator from planned document ass
     assert.ok(html.includes(engagementJourneyCopy.assessment));
     assert.match(html, /Document upload and analysis are not available yet/);
   }
-  assert.match(resolvePageMetadata("/").description, /is planned/);
-  assert.match(resolvePageMetadata("/platform").description, /planned deterministic risk assessment/);
 });
 
 const expectedPublicPaths = [
@@ -106,6 +104,24 @@ const appRoutePaths = [...appSource.matchAll(/<Route\s+path="([^"]+)"/g)].map(
   (match) => match[1].replace(/\/\*.*$/, ""),
 );
 
+test("every route and initial HTML use the exact sitewide search and social copy", () => {
+  const template = readFileSync("client/index.html", "utf8");
+  for (const path of [...appRoutePaths, "/missing-page"]) {
+    const metadata = resolvePageMetadata(path);
+    assert.equal(metadata.title, "MarginMix - Margin Visibility");
+    assert.equal(metadata.description, "Catch your Margin Leak before it hits your books.");
+    assert.equal(metadata.openGraph.title, metadata.title);
+    assert.equal(metadata.openGraph.description, metadata.description);
+    assert.equal(metadata.twitter.title, metadata.title);
+    assert.equal(metadata.twitter.description, metadata.description);
+    const html = injectCrawlerPage(template, path);
+    assert.ok(html.includes(`<title>${metadata.title}</title>`));
+    assert.ok(html.includes(`<meta name="description" content="${metadata.description}"`));
+  }
+  assert.ok(template.includes("<title>MarginMix - Margin Visibility</title>"));
+  assert.ok(template.includes('content="Catch your Margin Leak before it hits your books."'));
+});
+
 test("sitemap must be well-formed XML with the required URL-set structure", () => {
   const namespace = `xmlns="${sitemapNamespace}"`;
 
@@ -120,7 +136,7 @@ test("sitemap must be well-formed XML with the required URL-set structure", () =
   );
 });
 
-test("indexable public pages have distinct search metadata and canonical social tags", () => {
+test("indexable public pages keep canonical social tags with sitewide metadata", () => {
   const indexablePaths = Object.entries(publicPages)
     .filter(([, metadata]) => metadata.indexable)
     .map(([path]) => path)
@@ -128,19 +144,12 @@ test("indexable public pages have distinct search metadata and canonical social 
 
   assert.deepEqual(indexablePaths, [...expectedPublicPaths].sort());
 
-  const titles = new Set<string>();
-  const descriptions = new Set<string>();
   for (const path of indexablePaths) {
     const metadata = resolvePageMetadata(path);
     assert.ok(metadata.title.trim(), `${path} must have a title`);
     assert.ok(metadata.description.trim(), `${path} must have a description`);
-    assert.ok(!titles.has(metadata.title), `${path} title must be unique`);
-    assert.ok(
-      !descriptions.has(metadata.description),
-      `${path} description must be unique`,
-    );
-    titles.add(metadata.title);
-    descriptions.add(metadata.description);
+    assert.equal(metadata.title, "MarginMix - Margin Visibility");
+    assert.equal(metadata.description, "Catch your Margin Leak before it hits your books.");
 
     const expectedCanonical = `${siteOrigin}${path}`;
     assert.equal(metadata.robots, "index, follow");
@@ -215,7 +224,7 @@ test("server-rendered public pages get matching canonical URLs and structured da
   assert.equal(graph[2].url, `${siteOrigin}/free-tier/calculator`);
   assert.equal(graph[2]["@type"], "SoftwareApplication");
   assert.match(html, /<link rel="canonical" href="https:\/\/marginmix\.ai\/free-tier\/calculator" \/>/);
-  assert.match(html, /<title>Free Margin Leak Calculator \| MarginMix<\/title>/);
+  assert.match(html, /<title>MarginMix - Margin Visibility<\/title>/);
 });
 
 test("server-rendered private pages have no page schema or canonical URL", () => {

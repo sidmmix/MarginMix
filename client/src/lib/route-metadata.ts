@@ -7,6 +7,10 @@ export type PageMetadata = {
 };
 
 export const siteOrigin = "https://marginmix.ai";
+export const siteMetadata = {
+  title: "MarginMix - Margin Visibility",
+  description: "Catch your Margin Leak before it hits your books.",
+} as const;
 export const socialImage = `${siteOrigin}/images/og-image.png`;
 
 const organizationId = "https://marginmix.ai/#organization";
@@ -237,22 +241,22 @@ export function resolvePageMetadata(path: string): ResolvedPageMetadata {
     : undefined;
 
   return {
-    title: metadata.title,
-    description: metadata.description,
+    title: siteMetadata.title,
+    description: siteMetadata.description,
     robots: metadata.indexable ? "index, follow" : "noindex, nofollow",
     canonicalUrl,
     structuredData,
     openGraph: {
       type: "website",
       url: socialUrl,
-      title: metadata.title,
-      description: metadata.description,
+      title: siteMetadata.title,
+      description: siteMetadata.description,
       image: socialImage,
     },
     twitter: {
       card: "summary_large_image",
-      title: metadata.title,
-      description: metadata.description,
+      title: siteMetadata.title,
+      description: siteMetadata.description,
       image: socialImage,
     },
   };

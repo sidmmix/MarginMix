@@ -20,3 +20,9 @@ The header and footer must be consistent across the site, on all pages.
 **Why:** The user explicitly requested this consistency.
 
 **How to apply:** Preserve the shared page framing when adding or changing pages.
+
+Use the same meta title and description sitewide: “MarginMix - Margin Visibility” and “Catch your Margin Leak before it hits your books.”
+
+**Why:** The user explicitly replaced the earlier request for separate page metadata with these exact sitewide values.
+
+**How to apply:** Preserve the exact wording and capitalization for search metadata and social previews; do not restore unique page titles without a new request.
