@@ -148,7 +148,7 @@ function scopeAssumptionCopy(result: LeakResult): string {
   const billingFactor = BILLING_MULTIPLIER[result.input.scopebilled];
   const adjustedLow = band.low * billingFactor;
   const adjustedHigh = band.high * billingFactor;
-  return `${SCOPE_MOVE_LABELS[result.input.scopemove]} uses a preset ${(band.low * 100).toFixed(0)}–${(band.high * 100).toFixed(0)}% period-fee band and a ${Math.round(billingFactor * 100)}% billing factor. The estimate uses the midpoint; its underlying assumption spans ${(adjustedLow * 100).toFixed(1)}–${(adjustedHigh * 100).toFixed(1)}% of fee before any overlap with delivery exposure. These are assumptions, not measured unbilled work.`;
+  return `${SCOPE_MOVE_LABELS[result.input.scopemove]} uses a preset range of ${(band.low * 100).toFixed(0)}–${(band.high * 100).toFixed(0)}% of the period fee and a ${Math.round(billingFactor * 100)}% billing factor. The estimate uses the midpoint; its underlying assumption spans ${(adjustedLow * 100).toFixed(1)}–${(adjustedHigh * 100).toFixed(1)}% of fee before any overlap with delivery exposure. These are assumptions, not measured unbilled work.`;
 }
 
 export default function FreeTierCalculatorOutputPage() {

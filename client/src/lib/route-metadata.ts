@@ -59,7 +59,7 @@ export const publicPages: Record<string, PageMetadata> = {
     },
   },
   "/platform": {
-    title: "MarginMix Platform | Pressure-Test Engagement Economics",
+    title: "MarginMix Platform | Pressure Test Engagement Economics",
     description:
       "See how MarginMix helps agency and consulting leaders pressure test fees, costs, scope, staffing, and billing assumptions before delivery.",
     canonicalPath: "/platform",
