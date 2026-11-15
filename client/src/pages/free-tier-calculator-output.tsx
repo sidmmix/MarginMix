@@ -17,6 +17,7 @@ import { analytics } from "@/lib/analytics";
 import { ChevronDown } from "lucide-react";
 import LeakEstimateComparison from "@/components/leak-estimate-comparison";
 import {
+  clearSessionLeakEstimates,
   getSessionLeakEstimates,
   type LeakEstimate,
 } from "@/lib/leak-estimates";
@@ -158,6 +159,8 @@ export default function FreeTierCalculatorOutputPage() {
   const [result, setResult] = useState<LeakResult | null>(null);
   const [estimates, setEstimates] = useState<LeakEstimate[]>([]);
   const [showMethodology, setShowMethodology] = useState(false);
+  const [clearOpen, setClearOpen] = useState(false);
+  const [clearError, setClearError] = useState("");
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
@@ -190,6 +193,18 @@ export default function FreeTierCalculatorOutputPage() {
   const targetMarginPercent = input.targetMarginPercent ?? DEFAULT_TARGET_MARGIN_PERCENT;
   const warnings = validateLeakInput(input).warnings;
   const fteDisplay = input.fte % 1 === 0 ? String(input.fte) : input.fte.toFixed(1);
+
+  const handleClearEstimates = () => {
+    try {
+      clearSessionLeakEstimates();
+      setEstimates([]);
+      setResult(null);
+      setClearOpen(false);
+      setLocation("/free-tier/calculator");
+    } catch {
+      setClearError("Could not clear the browser session. Please try again.");
+    }
+  };
 
   const handleCta = () => {
     analytics.leakCtaClick();
@@ -276,7 +291,32 @@ export default function FreeTierCalculatorOutputPage() {
             Estimates are indicative planning scenarios, not audited losses. Each uses the currency entered; amounts are not converted. This comparison remains in your browser session and is not saved to MarginMix’s database.
           </p>
           <LeakEstimateComparison estimates={estimates} />
+          <Button
+            type="button"
+            variant="outline"
+            className="free-tier-leak-no-print"
+            onClick={() => { setClearError(""); setClearOpen(true); }}
+          >
+            Clear all estimates
+          </Button>
         </div>
+
+        <Dialog open={clearOpen} onOpenChange={setClearOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Clear all estimates?</DialogTitle>
+              <DialogDescription>
+                This removes every calculator estimate and result from this browser tab’s session.
+                This cannot be undone. Other browser data and any emails already sent are not affected.
+              </DialogDescription>
+            </DialogHeader>
+            {clearError && <p role="alert" className="text-sm text-red-600">{clearError}</p>}
+            <div className="flex flex-wrap justify-end gap-3">
+              <Button type="button" variant="outline" onClick={() => setClearOpen(false)}>Cancel</Button>
+              <Button type="button" variant="destructive" onClick={handleClearEstimates}>Clear all estimates</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
 
         {/* Block 2 */}
         <section className="mm-result-hero mb-8 print:mb-4">

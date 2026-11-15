@@ -6,6 +6,13 @@ import {
 
 export const LEAK_ESTIMATES_STORAGE_KEY = "marginmix_free_tier_leak_estimates";
 
+export function clearSessionLeakEstimates(
+  storage: Pick<Storage, "removeItem"> = sessionStorage,
+): void {
+  storage.removeItem(LEAK_ESTIMATES_STORAGE_KEY);
+  storage.removeItem(LEAK_RESULT_STORAGE_KEY);
+}
+
 export type LeakEstimate = {
   label: string;
   result: LeakResult;

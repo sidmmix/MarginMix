@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { computeLeak, type LeakInput } from "@shared/leak-engine";
-import { readStoredLeakEstimates } from "./leak-estimates";
+import { computeLeak, LEAK_RESULT_STORAGE_KEY, type LeakInput } from "@shared/leak-engine";
+import { clearSessionLeakEstimates, LEAK_ESTIMATES_STORAGE_KEY, readStoredLeakEstimates } from "./leak-estimates";
 
 const input: LeakInput = {
   currency: "USD",
@@ -43,4 +43,24 @@ test("returns an empty list for malformed or non-list storage", () => {
   assert.deepEqual(readStoredLeakEstimates(null), []);
   assert.deepEqual(readStoredLeakEstimates("{broken"), []);
   assert.deepEqual(readStoredLeakEstimates(JSON.stringify({})), []);
+});
+
+test("clearing estimates removes both calculator stores and leaves unrelated data", () => {
+  const entries = new Map([
+    [LEAK_ESTIMATES_STORAGE_KEY, JSON.stringify([{ label: "Sample", result: computeLeak(input) }])],
+    [LEAK_RESULT_STORAGE_KEY, JSON.stringify(computeLeak(input))],
+    ["cookie-consent", "accepted"],
+  ]);
+  clearSessionLeakEstimates({ removeItem: (key) => { entries.delete(key); } });
+  assert.equal(entries.has(LEAK_ESTIMATES_STORAGE_KEY), false);
+  assert.equal(entries.has(LEAK_RESULT_STORAGE_KEY), false);
+  assert.equal(entries.get("cookie-consent"), "accepted");
+  clearSessionLeakEstimates({ removeItem: (key) => { entries.delete(key); } });
+  assert.equal(entries.size, 1);
+});
+
+test("clearing estimates reports storage failures instead of claiming success", () => {
+  assert.throws(() => clearSessionLeakEstimates({
+    removeItem: () => { throw new Error("Storage unavailable"); },
+  }), /Storage unavailable/);
 });
