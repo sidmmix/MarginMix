@@ -101,10 +101,76 @@ function parseSitemap(xml: string): SitemapEntry[] {
 
 const sitemapEntries = parseSitemap(readFileSync("client/public/sitemap.xml", "utf8"));
 const sitemapUrls = sitemapEntries.map(({ loc }) => loc);
+const robotsTxt = readFileSync("client/public/robots.txt", "utf8");
 const appSource = readFileSync("client/src/App.tsx", "utf8");
 const appRoutePaths = [...appSource.matchAll(/<Route\s+path="([^"]+)"/g)].map(
   (match) => match[1].replace(/\/\*.*$/, ""),
 );
+
+type RobotsRule = {
+  directive: "allow" | "disallow";
+  path: string;
+};
+
+function parseWildcardRobotsRules(robots: string): RobotsRule[] {
+  const groups: { agents: string[]; rules: RobotsRule[] }[] = [];
+  let agents: string[] = [];
+  let rules: RobotsRule[] = [];
+  let groupHasRules = false;
+
+  const finishGroup = () => {
+    if (agents.length > 0) groups.push({ agents, rules });
+    agents = [];
+    rules = [];
+    groupHasRules = false;
+  };
+
+  for (const line of robots.split(/\r?\n/)) {
+    const content = line.split("#", 1)[0].trim();
+    if (!content) continue;
+
+    const separator = content.indexOf(":");
+    if (separator < 0) continue;
+    const directive = content.slice(0, separator).trim().toLowerCase();
+    const value = content.slice(separator + 1).trim();
+
+    if (directive === "user-agent") {
+      if (groupHasRules) finishGroup();
+      agents.push(value.toLowerCase());
+    } else if (directive === "allow" || directive === "disallow") {
+      groupHasRules = true;
+      rules.push({ directive, path: value });
+    }
+  }
+  finishGroup();
+
+  const wildcardGroups = groups.filter(({ agents }) => agents.includes("*"));
+  assert.ok(wildcardGroups.length > 0, "robots.txt must define rules for all crawlers");
+  return wildcardGroups.flatMap(({ rules }) => rules);
+}
+
+function robotsRuleMatches(path: string, pattern: string): boolean {
+  if (!pattern) return false;
+  const endAnchored = pattern.endsWith("$");
+  const body = endAnchored ? pattern.slice(0, -1) : pattern;
+  const escaped = body.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*");
+  return new RegExp(`^${escaped}${endAnchored ? "$" : ""}`).test(path);
+}
+
+function isAllowedByRobots(url: string, rules: RobotsRule[]): boolean {
+  const target = new URL(url);
+  const path = `${target.pathname}${target.search}`;
+  const matchingRules = rules
+    .filter(({ path: pattern }) => robotsRuleMatches(path, pattern))
+    .sort((left, right) => {
+      const specificity = (rule: RobotsRule) => rule.path.replace(/[*$]/g, "").length;
+      return (
+        specificity(right) - specificity(left) ||
+        (left.directive === "allow" ? -1 : 1)
+      );
+    });
+  return matchingRules[0]?.directive !== "disallow";
+}
 
 test("every route and initial HTML use the exact sitewide search and social copy", () => {
   const template = readFileSync("client/index.html", "utf8");
@@ -268,6 +334,13 @@ test("sitemap contains every canonical public page and no private or form routes
     assert.equal(metadata.canonicalUrl, undefined, `${path} must not be canonical`);
     assert.equal(metadata.structuredData, undefined, `${path} must not have page structured data`);
     assert.ok(!sitemapUrls.includes(`${siteOrigin}${path}`), `${path} must not be in sitemap`);
+  }
+});
+
+test("robots.txt allows every URL listed in the sitemap", () => {
+  const rules = parseWildcardRobotsRules(robotsTxt);
+  for (const url of sitemapUrls) {
+    assert.ok(isAllowedByRobots(url, rules), `${url} must be crawlable under robots.txt`);
   }
 });
 
