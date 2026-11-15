@@ -77,6 +77,15 @@ test("sitemap contains every canonical public page and no private or form routes
     .sort();
   assert.deepEqual([...sitemapUrls].sort(), expectedUrls);
 
+  const lastModifiedDates = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/g)].map(
+    (match) => match[1],
+  );
+  assert.equal(lastModifiedDates.length, sitemapUrls.length);
+  for (const date of lastModifiedDates) {
+    assert.match(date, /^\d{4}-\d{2}-\d{2}$/, "lastmod must be a calendar date");
+    assert.ok(!Number.isNaN(Date.parse(date)), `${date} must be a valid date`);
+  }
+
   const excludedPaths = [
     "/free-tier/input",
     "/free-tier/calculator/output",
