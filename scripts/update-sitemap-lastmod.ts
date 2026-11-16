@@ -2,7 +2,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { publicPages, siteOrigin } from "../client/src/lib/route-metadata";
-import { assertValidSitemapXml } from "./sitemap-xml";
+import { assertValidSitemapXml, updateSitemapDates } from "./sitemap-xml";
 
 const root = process.cwd();
 const sitemapPath = "client/public/sitemap.xml";
@@ -137,29 +137,6 @@ function latestPageDate(files: Set<string>, dirtyPaths: Set<string>): string {
   return newestCommitDate([...files]);
 }
 
-function updateSitemap(xml: string, dates: Map<string, string>): string {
-  const seen = new Set<string>();
-  const updated = xml.replace(/<url>[\s\S]*?<\/url>/g, (block) => {
-    const location = block.match(/<loc>([^<]+)<\/loc>/)?.[1];
-    if (!location?.startsWith(siteOrigin)) {
-      throw new Error(`Sitemap URL is missing or outside ${siteOrigin}`);
-    }
-    const route = location.slice(siteOrigin.length) || "/";
-    const date = dates.get(route);
-    if (!date) throw new Error(`No sitemap date source is configured for ${route}`);
-    seen.add(route);
-    if (!/<lastmod>[^<]+<\/lastmod>/.test(block)) {
-      throw new Error(`Sitemap entry is missing lastmod: ${route}`);
-    }
-    return block.replace(/<lastmod>[^<]+<\/lastmod>/, `<lastmod>${date}</lastmod>`);
-  });
-
-  for (const route of dates.keys()) {
-    if (!seen.has(route)) throw new Error(`Sitemap is missing the public route ${route}`);
-  }
-  return updated;
-}
-
 function main(): void {
   const original = readFileSync(path.resolve(root, sitemapPath), "utf8");
   // Reject broken documents before computing dates or attempting any replacement.
@@ -183,7 +160,7 @@ function main(): void {
       latestPageDate(collectPageSources(entry), dirtyPaths),
     ]),
   );
-  const updated = updateSitemap(original, dates);
+  const updated = updateSitemapDates(original, dates, siteOrigin);
 
   if (process.argv.includes("--check")) {
     if (updated !== original) {

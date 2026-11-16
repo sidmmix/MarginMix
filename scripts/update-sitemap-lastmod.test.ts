@@ -5,11 +5,26 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
+import { siteOrigin } from "../client/src/lib/route-metadata";
+import { updateSitemapDates } from "./sitemap-xml";
 
 const script = fileURLToPath(new URL("./update-sitemap-lastmod.ts", import.meta.url));
 const tsx = fileURLToPath(import.meta.resolve("tsx"));
 const validXml = readFileSync(new URL("../client/public/sitemap.xml", import.meta.url), "utf8")
   .replace(/<lastmod>[^<]+<\/lastmod>/g, "<lastmod>2001-01-01</lastmod>");
+const sourceFixturePaths = [
+  "client/src/App.tsx",
+  "client/src/index.css",
+  "client/index.html",
+  "client/src/lib/route-metadata.ts",
+  "client/src/components/route-metadata.tsx",
+  "client/src/components/header.tsx",
+  "client/src/components/footer.tsx",
+  "client/src/components/brand-name.tsx",
+  "client/src/components/page-shared.tsx",
+  ...["landing", "platform", "free-tier-calculator", "founder", "why-choose"]
+    .map((page) => `client/src/pages/${page}.tsx`),
+];
 
 function withSitemap(xml: string, run: (root: string, file: string) => void): void {
   const root = mkdtempSync(path.join(tmpdir(), "sitemap-updater-"));
@@ -64,19 +79,7 @@ for (const [name, xml, expectedError] of invalidDocuments) {
 
 test("valid XML preserves formatting, updates dates, and supports read-only checks", () => {
   withSitemap(validXml, (root, file) => {
-    const sources = [
-      "client/src/App.tsx",
-      "client/src/index.css",
-      "client/index.html",
-      "client/src/lib/route-metadata.ts",
-      "client/src/components/route-metadata.tsx",
-      "client/src/components/header.tsx",
-      "client/src/components/footer.tsx",
-      "client/src/components/brand-name.tsx",
-      ...["landing", "platform", "free-tier-calculator", "founder", "why-choose"]
-        .map((page) => `client/src/pages/${page}.tsx`),
-    ];
-    for (const source of sources) {
+    for (const source of sourceFixturePaths) {
       const target = path.join(root, source);
       mkdirSync(path.dirname(target), { recursive: true });
       writeFileSync(target, "");
@@ -116,4 +119,135 @@ test("valid XML preserves formatting, updates dates, and supports read-only chec
       assert.equal(statSync(file, { bigint: true }).mtimeNs, beforeStat.mtimeNs);
     }
   });
+});
+
+test("updates only the changed page and its imported shared component dependents", () => {
+  withSitemap(validXml, (root, file) => {
+    for (const source of sourceFixturePaths) {
+      const target = path.join(root, source);
+      mkdirSync(path.dirname(target), { recursive: true });
+      const contents =
+        source === "client/src/pages/landing.tsx" ||
+        source === "client/src/pages/platform.tsx"
+          ? 'import { shared } from "../components/page-shared";\nexport const page = shared;\n'
+          : "";
+      writeFileSync(target, contents);
+    }
+
+    const git = (...args: string[]) => execFileSync("git", args, {
+      cwd: root,
+      encoding: "utf8",
+      env: { ...process.env, ...gitIdentity },
+    });
+    const commit = (date: string, message: string, paths?: string[]) => {
+      git("add", ...(paths?.length ? paths : ["."]));
+      execFileSync(
+        "git",
+        ["-c", "user.name=Sitemap test", "-c", "user.email=sitemap@example.invalid",
+          "-c", "commit.gpgsign=false", "commit", "--quiet", "-m", message],
+        {
+          cwd: root,
+          encoding: "utf8",
+          env: {
+            ...process.env,
+            ...gitIdentity,
+            GIT_AUTHOR_DATE: date,
+            GIT_COMMITTER_DATE: date,
+          },
+        },
+      );
+    };
+    const gitIdentity = {
+      GIT_AUTHOR_NAME: "Sitemap test",
+      GIT_AUTHOR_EMAIL: "sitemap@example.invalid",
+      GIT_COMMITTER_NAME: "Sitemap test",
+      GIT_COMMITTER_EMAIL: "sitemap@example.invalid",
+    };
+
+    execFileSync("git", ["init", "--quiet"], { cwd: root });
+    commit("2020-01-02T12:00:00Z", "Base pages");
+
+    writeFileSync(
+      path.join(root, "client/src/pages/landing.tsx"),
+      'import { shared } from "../components/page-shared";\nexport const page = `${shared} home update`;\n',
+    );
+    commit("2020-02-01T12:00:00Z", "Update homepage", ["client/src/pages/landing.tsx"]);
+    const homeUpdate = update(root, false);
+    assert.ifError(homeUpdate.error);
+    assert.equal(homeUpdate.status, 0, homeUpdate.stderr);
+
+    const dateMap = () => {
+      const xml = readFileSync(file, "utf8");
+      return Object.fromEntries(
+        [...xml.matchAll(/<url\b[^>]*>[\s\S]*?<loc>([^<]+)<\/loc>[\s\S]*?<lastmod>([^<]+)<\/lastmod>[\s\S]*?<\/url>/g)]
+          .map((match) => [new URL(match[1]).pathname || "/", match[2]]),
+      );
+    };
+    assert.deepEqual(dateMap(), {
+      "/": "2020-02-01",
+      "/platform": "2020-01-02",
+      "/founder": "2020-01-02",
+      "/why-choose": "2020-01-02",
+      "/free-tier/calculator": "2020-01-02",
+    });
+
+    writeFileSync(
+      path.join(root, "client/src/components/page-shared.tsx"),
+      "export const shared = 'shared update';\n",
+    );
+    commit("2020-03-01T12:00:00Z", "Update shared component",
+      ["client/src/components/page-shared.tsx"]);
+    const sharedUpdate = update(root, false);
+    assert.ifError(sharedUpdate.error);
+    assert.equal(sharedUpdate.status, 0, sharedUpdate.stderr);
+    assert.deepEqual(dateMap(), {
+      "/": "2020-03-01",
+      "/platform": "2020-03-01",
+      "/founder": "2020-01-02",
+      "/why-choose": "2020-01-02",
+      "/free-tier/calculator": "2020-01-02",
+    });
+
+    const founderPath = path.join(root, "client/src/pages/founder.tsx");
+    writeFileSync(founderPath, "export const founder = 'uncommitted';\n");
+    const uncommittedUpdate = update(root, false);
+    assert.ifError(uncommittedUpdate.error);
+    assert.equal(uncommittedUpdate.status, 0, uncommittedUpdate.stderr);
+    const todayUtc = new Date().toISOString().slice(0, 10);
+    assert.deepEqual(dateMap(), {
+      "/": "2020-03-01",
+      "/platform": "2020-03-01",
+      "/founder": todayUtc,
+      "/why-choose": "2020-01-02",
+      "/free-tier/calculator": "2020-01-02",
+    });
+
+    writeFileSync(path.join(root, "README.md"), "Unrelated file change.");
+    const before = readFileSync(file);
+    const beforeStat = statSync(file, { bigint: true });
+    const unrelatedUpdate = update(root, false);
+    assert.ifError(unrelatedUpdate.error);
+    assert.equal(unrelatedUpdate.status, 0, unrelatedUpdate.stderr);
+    assert.deepEqual(readFileSync(file), before);
+    assert.equal(statSync(file, { bigint: true }).mtimeNs, beforeStat.mtimeNs);
+  });
+});
+
+test("updates XML elements despite attributes and preserves comments and whitespace", () => {
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="${"http://www.sitemaps.org/schemas/sitemap/0.9"}" data-version="1">
+  <!-- <url><loc>https://marginmix.ai/fake</loc><lastmod>1999-01-01</lastmod></url> -->
+  <url data-id="home">
+    <loc>https://marginmix.ai/</loc>
+    <lastmod source="fixture"> 2001-01-01 </lastmod>
+    <changefreq>weekly</changefreq>
+  </url>
+</urlset>`;
+
+  const updated = updateSitemapDates(xml, new Map([["/", "2025-04-03"]]), siteOrigin);
+  assert.equal(
+    updated,
+    xml.replace("2001-01-01", "2025-04-03"),
+    "only the parsed lastmod text should change",
+  );
 });
