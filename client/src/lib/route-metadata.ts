@@ -206,8 +206,13 @@ export type ResolvedPageMetadata = {
   };
 };
 
+function normalizeRoutePath(path: string): string {
+  const pathname = path.split(/[?#]/, 1)[0] || "/";
+  return pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+}
+
 export function resolvePageMetadata(path: string): ResolvedPageMetadata {
-  const normalizedPath = path.length > 1 ? path.replace(/\/+$/, "") : path;
+  const normalizedPath = normalizeRoutePath(path);
   const metadata = publicPages[normalizedPath] ?? {
     title: normalizedPath.startsWith("/sign-in/")
       ? "Sign In | MarginMix"
@@ -263,11 +268,13 @@ export function resolvePageMetadata(path: string): ResolvedPageMetadata {
 }
 
 export function isKnownPagePath(path: string): boolean {
-  const normalizedPath = path.length > 1 ? path.replace(/\/+$/, "") : path;
+  const normalizedPath = normalizeRoutePath(path);
   return (
     Object.hasOwn(publicPages, normalizedPath) ||
-    normalizedPath.startsWith("/sign-in/") ||
-    normalizedPath.startsWith("/sign-up/")
+    ["/sign-in", "/sign-up"].some(
+      (accountRoot) =>
+        normalizedPath === accountRoot || normalizedPath.startsWith(`${accountRoot}/`),
+    )
   );
 }
 

@@ -223,6 +223,26 @@ test("unknown routes return 404 and remain excluded from search indexing", () =>
   assert.equal(resolvePageMetadata("/missing-page").canonicalUrl, undefined);
 });
 
+test("nested account flow links remain available but private", () => {
+  const accountFlowPaths = [
+    "/sign-in/verify-email-address",
+    "/sign-in/factor-one/verify",
+    "/sign-up/continue",
+    "/sign-up/verify-email-address/?next=%2Fdashboard",
+  ];
+
+  for (const path of accountFlowPaths) {
+    assert.equal(isKnownPagePath(path), true, `${path} is part of an account flow`);
+    assert.equal(pageResponseStatus(path), 200, `${path} must not receive a false 404`);
+    const metadata = resolvePageMetadata(path);
+    assert.equal(metadata.robots, "noindex, nofollow");
+    assert.equal(metadata.canonicalUrl, undefined);
+  }
+
+  assert.equal(isKnownPagePath("/sign-inventory"), false);
+  assert.equal(isKnownPagePath("/sign-updates"), false);
+});
+
 test("sitemap must be well-formed XML with the required URL-set structure", () => {
   const namespace = `xmlns="${sitemapNamespace}"`;
 

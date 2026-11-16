@@ -9,6 +9,7 @@ import {
   clerkProxyMiddleware,
   getClerkProxyHost,
 } from "./middlewares/clerkProxyMiddleware";
+import { apiNotFoundMiddleware } from "./middlewares/api-not-found";
 
 // Validate required environment variables at startup
 const REQUIRED_ENV_VARS = ["NEON_DATABASE_URL"] as const;
@@ -96,6 +97,8 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+
+  app.use("/api", apiNotFoundMiddleware);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
