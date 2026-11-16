@@ -58,7 +58,37 @@ try {
     "Sitemap must contain absolute URL entries");
     assert.equal(xml, expected, `${mode}: server must deliver the published sitemap, not HTML`);
   }
-  console.log(`Verified ${mode} sitemap HTTP status, XML content type and body for Googlebot and Bingbot.`);
+
+  const sitemapDocument = parser.parse(expected) as {
+    urlset: { url: { loc: string }[] | { loc: string } };
+  };
+  const sitemapEntries = Array.isArray(sitemapDocument.urlset.url)
+    ? sitemapDocument.urlset.url
+    : [sitemapDocument.urlset.url];
+  for (const { loc } of sitemapEntries) {
+    const pageUrl = new URL(loc);
+    const response = await fetch(`${origin}${pageUrl.pathname}`, {
+      redirect: "manual",
+      signal: AbortSignal.timeout(10_000),
+    });
+    assert.equal(response.status, 200, `${mode}: public page ${pageUrl.pathname} must return 200`);
+    const html = await response.text();
+    assert.ok(
+      html.includes(`<link rel="canonical" href="${loc}" />`),
+      `${mode}: public page ${pageUrl.pathname} must include its canonical URL`,
+    );
+  }
+
+  const missingPage = await fetch(`${origin}/missing-page`, {
+    redirect: "manual",
+    signal: AbortSignal.timeout(10_000),
+  });
+  assert.equal(missingPage.status, 404, `${mode}: unknown routes must return 404`);
+  const missingHtml = await missingPage.text();
+  assert.match(missingHtml, /name="robots" content="noindex, nofollow"/);
+  assert.doesNotMatch(missingHtml, /rel="canonical"/);
+
+  console.log(`Verified ${mode} sitemap delivery, public page canonicals and unknown-route 404s.`);
 } finally {
   await vite?.close();
   if (server.listening) {

@@ -1,6 +1,7 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createServer as createHttpServer } from "node:http";
-import { resolve, sep } from "node:path";
+import { tmpdir } from "node:os";
+import { join, resolve, sep } from "node:path";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import express from "express";
@@ -15,6 +16,7 @@ import {
   siteOrigin,
 } from "./route-metadata";
 import { injectCrawlerPage } from "../../../server/crawler-pages";
+import { serveStatic } from "../../../server/static";
 import { assertValidSitemapXml } from "../../../scripts/sitemap-xml";
 import { leakEstimateMethodologyCopy } from "../../../shared/leak-engine/methodology-copy";
 import {
@@ -418,13 +420,9 @@ test("sitemap URLs serve directly with matching canonical destinations", async (
   const app = express();
   const server = createHttpServer(app);
   const template = readFileSync("client/index.html", "utf8");
-  app.use((request, response) => {
-    const pathname = new URL(request.originalUrl, "http://localhost").pathname;
-    response
-      .status(pageResponseStatus(pathname))
-      .type("html")
-      .send(injectCrawlerPage(template, pathname));
-  });
+  const distPath = mkdtempSync(join(tmpdir(), "marginmix-route-metadata-"));
+  writeFileSync(join(distPath, "index.html"), template);
+  serveStatic(app, distPath);
 
   try {
     await new Promise<void>((resolve, reject) => {
@@ -483,6 +481,7 @@ test("sitemap URLs serve directly with matching canonical destinations", async (
     if (server.listening) {
       await new Promise<void>((resolve) => server.close(() => resolve()));
     }
+    rmSync(distPath, { recursive: true, force: true });
   }
 });
 
