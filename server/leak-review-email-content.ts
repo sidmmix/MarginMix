@@ -65,6 +65,7 @@ export function buildLeakReviewEngagementRows(
     <p>${escapeHtml(leakEstimateMethodologyCopy.scope)}</p>
     <p>${escapeHtml(leakEstimateMethodologyCopy.combined)}</p>
     <p>${escapeHtml(leakEstimateSensitivityCopy(engagement.hourstracked))}</p>
+    <p>${escapeHtml(leakEstimateMethodologyCopy.period)}</p>
     <p>${escapeHtml(leakEstimateMethodologyCopy.limits)}</p>
   `;
 }
