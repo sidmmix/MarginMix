@@ -161,6 +161,8 @@ export default function FreeTierCalculatorOutputPage() {
   const [showMethodology, setShowMethodology] = useState(false);
   const [clearOpen, setClearOpen] = useState(false);
   const [clearError, setClearError] = useState("");
+  const clearButtonRef = useRef<HTMLButtonElement>(null);
+  const cancelClearRef = useRef<HTMLButtonElement>(null);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
@@ -177,7 +179,7 @@ export default function FreeTierCalculatorOutputPage() {
   useEffect(() => {
     const savedEstimates = getSessionLeakEstimates();
     if (savedEstimates.length === 0) {
-      setLocation("/free-tier/calculator");
+      setLocation("/free-tier/calculator", { replace: true });
       return;
     }
     setEstimates(savedEstimates);
@@ -200,7 +202,7 @@ export default function FreeTierCalculatorOutputPage() {
       setEstimates([]);
       setResult(null);
       setClearOpen(false);
-      setLocation("/free-tier/calculator");
+      setLocation("/free-tier/calculator", { replace: true });
     } catch {
       setClearError("Could not clear the browser session. Please try again.");
     }
@@ -292,6 +294,7 @@ export default function FreeTierCalculatorOutputPage() {
           </p>
           <LeakEstimateComparison estimates={estimates} />
           <Button
+            ref={clearButtonRef}
             type="button"
             variant="outline"
             className="free-tier-leak-no-print"
@@ -302,7 +305,16 @@ export default function FreeTierCalculatorOutputPage() {
         </div>
 
         <Dialog open={clearOpen} onOpenChange={setClearOpen}>
-          <DialogContent>
+          <DialogContent
+            onOpenAutoFocus={(event) => {
+              event.preventDefault();
+              cancelClearRef.current?.focus();
+            }}
+            onCloseAutoFocus={(event) => {
+              event.preventDefault();
+              clearButtonRef.current?.focus();
+            }}
+          >
             <DialogHeader>
               <DialogTitle>Clear all estimates?</DialogTitle>
               <DialogDescription>
@@ -312,7 +324,7 @@ export default function FreeTierCalculatorOutputPage() {
             </DialogHeader>
             {clearError && <p role="alert" className="text-sm text-red-600">{clearError}</p>}
             <div className="flex flex-wrap justify-end gap-3">
-              <Button type="button" variant="outline" onClick={() => setClearOpen(false)}>Cancel</Button>
+              <Button ref={cancelClearRef} type="button" variant="outline" onClick={() => setClearOpen(false)}>Cancel</Button>
               <Button type="button" variant="destructive" onClick={handleClearEstimates}>Clear all estimates</Button>
             </div>
           </DialogContent>

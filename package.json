@@ -9,6 +9,7 @@
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
     "test:leak": "tsx --test shared/leak-engine/compute-leak.test.ts shared/leak-engine/methodology-copy.test.ts server/leak-review-email-content.test.ts client/src/lib/leak-estimates.test.ts client/src/components/leak-estimate-comparison.test.tsx",
+    "test:clear-estimates": "tsx scripts/test-clear-estimates.ts",
     "test:metadata": "tsx --test client/src/lib/route-metadata.test.ts",
     "test:api-errors": "tsx --test server/middlewares/api-not-found.test.ts",
     "test:built-canonicals": "tsx scripts/test-built-canonicals.ts",
