@@ -371,3 +371,101 @@ test("updates XML elements despite attributes and preserves comments and whitesp
     "only the parsed lastmod text should change",
   );
 });
+
+const formattingFixtures = [
+  ["whitespace in opening and closing tags", (xml: string) => xml
+    .replaceAll("<url>", "<url \n\t>")
+    .replaceAll("</url>", "</url \t>")
+    .replaceAll("<lastmod>", "<lastmod \n > \t")
+    .replaceAll("</lastmod>", " \r\n</lastmod \t>")],
+  ["attributes containing greater-than signs", (xml: string) => xml
+    .replaceAll("<url>", '<url data-note="a > b" data-other=\'c > d\'>')
+    .replaceAll("<lastmod>", '<lastmod source="fixture" data-note="x > y">')],
+  ["tag-shaped comments before and inside entries", (xml: string) => xml
+    .replaceAll("</lastmod>", '<!-- </url> fake closing tag --></lastmod>')
+    .replaceAll("<lastmod>", '<!-- <lastmod>1999-01-01</lastmod> -->\n<lastmod>')
+    .replaceAll("<url>", '<!-- <url><loc>fake</loc></url> -->\n<url>')
+    .replace("<urlset ", '<!-- <url><lastmod>1999-01-01</lastmod></url> -->\n<urlset ')],
+  ["CDATA, processing instructions, extensions and CRLF", (xml: string) => xml
+    .replaceAll("<url>", '<url><?note sample="<lastmod>fake</lastmod>"?>')
+    .replaceAll("<lastmod>2001-01-01</lastmod>",
+      '<lastmod><![CDATA[ 2001-01-01 ]]></lastmod><extra><![CDATA[<url><lastmod>fake</lastmod></url>]]></extra>')
+    .replaceAll("\n", "\r\n")],
+] as const;
+
+for (const [name, format] of formattingFixtures) {
+  test(`updates parsed dates with ${name} without rewriting unrelated bytes`, () => {
+    const xml = format(validXml);
+    // Use different dates to catch accidental misalignment between parsed URLs.
+    const dates = new Map([
+      ["/", "2025-01-01"],
+      ["/platform", "2025-02-02"],
+      ["/founder", "2025-03-03"],
+      ["/why-choose", "2025-04-04"],
+      ["/free-tier/calculator", "2025-05-05"],
+    ]);
+    const expected = format(validXml.replace(
+      /<loc>([^<]+)<\/loc>(\s*)<lastmod>2001-01-01<\/lastmod>/g,
+      (_, loc, whitespace) =>
+        `<loc>${loc}</loc>${whitespace}<lastmod>${dates.get(new URL(loc).pathname)}</lastmod>`,
+    ));
+    // Apply CDATA wrapping to all date values in the expected document too.
+    const expectedFormatted = name.startsWith("CDATA")
+      ? expected.replace(/<lastmod>(2025-[\d-]+)<\/lastmod>/g,
+        '<lastmod><![CDATA[ $1 ]]></lastmod><extra><![CDATA[<url><lastmod>fake</lastmod></url>]]></extra>')
+      : expected;
+    assert.equal(updateSitemapDates(xml, dates, siteOrigin), expectedFormatted);
+    assert.equal(updateSitemapDates(expectedFormatted, dates, siteOrigin), expectedFormatted,
+      "repeated updates should preserve every byte");
+  });
+}
+
+test("preserves comments and processing instructions within the lastmod text", () => {
+  const xml = `<urlset><url><loc>${siteOrigin}/</loc>
+<lastmod> <!-- before -->2001-<?keep unchanged?>01<!-- middle -->-01<!-- after --> </lastmod>
+</url></urlset>`;
+  const expected = xml.replace("2001-", "2025-06-07").replace("01<!-- middle -->-01", "<!-- middle -->");
+  assert.equal(updateSitemapDates(xml, new Map([["/", "2025-06-07"]]), siteOrigin), expected);
+});
+
+test("formatted XML works through stale checks, updates, and no-op checks", () => {
+  withDependencyFixture((root, file) => {
+    const xml = validXml
+      .replaceAll("<url>", '<!-- <url>fake</url> -->\r\n<url \n data-note="a > b">')
+      .replaceAll("<lastmod>2001-01-01</lastmod>",
+        '<lastmod \n source="fixture"> <!-- <lastmod>2001-01-01</lastmod> -->\r\n<![CDATA[ 2001-01-01 ]]></lastmod \t>');
+    writeFileSync(file, xml);
+    const before = statSync(file, { bigint: true }).mtimeNs;
+    const stale = update(root, true);
+    assert.equal(stale.status, 1, stale.stderr);
+    assert.match(stale.stderr, /Sitemap dates are stale/);
+    assert.equal(readFileSync(file, "utf8"), xml);
+    assert.equal(statSync(file, { bigint: true }).mtimeNs, before);
+
+    const updated = update(root, false);
+    assert.equal(updated.status, 0, updated.stderr);
+    // This fixture's fake comments use the same date deliberately.
+    const expected = xml.replace(/(?<=CDATA\[ )2001-01-01(?= \]\]>)/g, "2020-01-02");
+    assert.equal(readFileSync(file, "utf8"), expected);
+    const after = statSync(file, { bigint: true }).mtimeNs;
+    for (const check of [true, false]) {
+      const result = update(root, check);
+      assert.equal(result.status, 0, result.stderr);
+      assert.equal(readFileSync(file, "utf8"), expected);
+      assert.equal(statSync(file, { bigint: true }).mtimeNs, after);
+    }
+  });
+});
+
+for (const lastmod of [
+  "",
+  "<lastmod/>",
+  "<lastmod> </lastmod>",
+  "<lastmod>2001-01-01</lastmod><lastmod>2002-01-01</lastmod>",
+  "<lastmod>2001-01-01<extra>do not erase</extra></lastmod>",
+]) {
+  test(`rejects missing, empty, duplicate or nested lastmod: ${lastmod}`, () => {
+    const xml = `<urlset><url><loc>${siteOrigin}/</loc>${lastmod}</url></urlset>`;
+    assert.throws(() => updateSitemapDates(xml, new Map([["/", "2025-06-07"]]), siteOrigin), /lastmod/);
+  });
+}

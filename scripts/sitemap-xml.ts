@@ -82,88 +82,64 @@ function findTagEnd(xml: string, start: number): number {
   throw new Error("Sitemap contains an unfinished XML tag.");
 }
 
-type UrlFrame = { lastmodRanges: TextRange[] };
-type TagFrame = {
-  name: string;
-  contentStart: number;
-  url?: UrlFrame;
-  parentUrl?: UrlFrame;
+type OrderedNode = {
+  [name: string]: OrderedNode[];
+  [metadata: symbol]: { startIndex?: number; endIndex?: number };
 };
 
-function findUrlLastmodRanges(xml: string): TextRange[][] {
-  const stack: TagFrame[] = [];
-  const urls: UrlFrame[] = [];
+const positionParser = new XMLParser({
+  ignorePiTags: true,
+  preserveOrder: true,
+  captureMetaData: true,
+  parseTagValue: false,
+});
 
-  for (let index = 0; index < xml.length;) {
-    const start = xml.indexOf("<", index);
-    if (start < 0) break;
-
-    if (xml.startsWith("<!--", start)) {
-      const end = xml.indexOf("-->", start + 4);
-      if (end < 0) throw new Error("Sitemap contains an unfinished XML comment.");
-      index = end + 3;
-      continue;
-    }
-    if (xml.startsWith("<![CDATA[", start)) {
-      const end = xml.indexOf("]]>", start + 9);
-      if (end < 0) throw new Error("Sitemap contains an unfinished CDATA section.");
-      index = end + 3;
-      continue;
-    }
-    if (xml.startsWith("<?", start)) {
-      const end = xml.indexOf("?>", start + 2);
-      if (end < 0) throw new Error("Sitemap contains an unfinished processing instruction.");
-      index = end + 2;
-      continue;
-    }
-    if (xml.startsWith("<!", start)) {
-      index = findTagEnd(xml, start);
-      continue;
-    }
-
-    const end = findTagEnd(xml, start);
-    const token = xml.slice(start, end);
-    const match = token.match(/^<\s*(\/?)\s*([A-Za-z_:][\w:.-]*)/);
-    if (!match) throw new Error("Sitemap contains an invalid XML element.");
-    const closing = match[1] === "/";
-    const name = match[2];
-    const selfClosing = !closing && /\/\s*>$/.test(token);
-
-    if (closing) {
-      const frame = stack.pop();
-      if (!frame || frame.name !== name) {
-        throw new Error(`Sitemap has an unexpected closing element: ${name}.`);
-      }
-      if (frame.parentUrl) {
-        const text = xml.slice(frame.contentStart, start);
-        const leading = text.match(/^\s*/)?.[0].length ?? 0;
-        const trailing = text.match(/\s*$/)?.[0].length ?? 0;
-        frame.parentUrl.lastmodRanges.push({
-          start: frame.contentStart + leading,
-          end: start - trailing,
-        });
-      }
-      if (frame.url) urls.push(frame.url);
-    } else {
-      const parent = stack.at(-1);
-      const url = name === "url" && parent?.name === "urlset"
-        ? { lastmodRanges: [] }
-        : undefined;
-      const parentUrl = name === "lastmod" && parent?.name === "url"
-        ? parent.url
-        : undefined;
-      const frame: TagFrame = { name, contentStart: end, url, parentUrl };
-      if (selfClosing) {
-        if (url) urls.push(url);
-        if (parentUrl) parentUrl.lastmodRanges.push({ start: end, end });
-      } else {
-        stack.push(frame);
-      }
-    }
-    index = end;
+function lastmodTextRanges(xml: string, node: OrderedNode): TextRange[] {
+  const { startIndex, endIndex } = node[XMLParser.getMetaDataSymbol() as symbol] ?? {};
+  if (startIndex === undefined || endIndex === undefined) {
+    throw new Error("Sitemap lastmod is missing XML source positions.");
+  }
+  if (node.lastmod.some((child) => Object.keys(child).some((key) => key !== "#text"))) {
+    throw new Error("Sitemap lastmod must contain text, not child elements.");
   }
 
-  return urls.map((url) => url.lastmodRanges);
+  const ranges: TextRange[] = [];
+  const contentEnd = xml.lastIndexOf("</", endIndex);
+  // Only scan content inside the element selected by the parser. Comments,
+  // processing instructions, and CDATA delimiters are never replacement targets.
+  for (let index = findTagEnd(xml, startIndex); index < contentEnd;) {
+    if (xml.startsWith("<!--", index)) {
+      index = xml.indexOf("-->", index + 4) + 3;
+      continue;
+    }
+    if (xml.startsWith("<?", index)) {
+      index = xml.indexOf("?>", index + 2) + 2;
+      continue;
+    }
+    const cdata = xml.startsWith("<![CDATA[", index);
+    const start = cdata ? index + 9 : index;
+    const next = xml.indexOf(cdata ? "]]>" : "<", start);
+    const end = next < 0 ? contentEnd : Math.min(next, contentEnd);
+    const text = xml.slice(start, end);
+    const trimmed = text.trim();
+    if (trimmed) {
+      const leading = text.length - text.trimStart().length;
+      ranges.push({ start: start + leading, end: start + leading + trimmed.length });
+    }
+    index = cdata ? end + 3 : end;
+  }
+  if (!ranges.length) throw new Error("Sitemap lastmod must contain date text.");
+  return ranges;
+}
+
+function findUrlLastmodRanges(xml: string): TextRange[][][] {
+  const document = positionParser.parse(xml) as OrderedNode[];
+  const root = document.find((node) => Object.hasOwn(node, "urlset"))!;
+  return root.urlset
+    .filter((node) => Object.hasOwn(node, "url"))
+    .map((node) => node.url
+      .filter((child) => Object.hasOwn(child, "lastmod"))
+      .map((child) => lastmodTextRanges(xml, child)));
 }
 
 export function updateSitemapDates(
@@ -191,7 +167,9 @@ export function updateSitemapDates(
     if (entryRanges.length !== 1 || !entry.lastmod) {
       throw new Error(`Sitemap entry must contain exactly one lastmod: ${route}`);
     }
-    replacements.push({ ...entryRanges[0], value: date });
+    entryRanges[0].forEach((range, index) => {
+      replacements.push({ ...range, value: index === 0 ? date : "" });
+    });
   });
 
   for (const route of dates.keys()) {
