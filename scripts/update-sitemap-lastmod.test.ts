@@ -50,6 +50,126 @@ function update(root: string, check: boolean) {
   });
 }
 
+function fixtureGit(root: string, ...args: string[]): string {
+  return execFileSync("git", args, {
+    cwd: root,
+    encoding: "utf8",
+    env: {
+      ...process.env,
+      GIT_AUTHOR_NAME: "Sitemap test",
+      GIT_AUTHOR_EMAIL: "sitemap@example.invalid",
+      GIT_COMMITTER_NAME: "Sitemap test",
+      GIT_COMMITTER_EMAIL: "sitemap@example.invalid",
+      GIT_AUTHOR_DATE: "2020-01-02T12:00:00Z",
+      GIT_COMMITTER_DATE: "2020-01-02T12:00:00Z",
+    },
+  });
+}
+
+function withDependencyFixture(run: (root: string, file: string) => void): void {
+  withSitemap(validXml, (root, file) => {
+    for (const source of sourceFixturePaths) {
+      const target = path.join(root, source);
+      mkdirSync(path.dirname(target), { recursive: true });
+      const contents = source.endsWith("/landing.tsx")
+        ? 'import { shared } from "@/components/page-shared";\nexport const page = shared;\n'
+        : source.endsWith("/platform.tsx")
+          ? 'export { shared as page } from "../components/page-shared";\n'
+          : source.endsWith("/page-shared.tsx")
+            ? 'export { value as shared } from "./page-value";\n'
+            : "";
+      writeFileSync(target, contents);
+    }
+    fixtureGit(root, "init", "--quiet");
+    fixtureGit(root, "add", ".");
+    fixtureGit(root, "-c", "commit.gpgsign=false", "commit", "--quiet", "-m", "Base pages");
+    run(root, file);
+  });
+}
+
+function assertUpdatedDates(root: string, file: string, overrides: Record<string, string> = {}): void {
+  const expectedDates = new Map([
+    ["/", "2020-01-02"],
+    ["/platform", "2020-01-02"],
+    ["/founder", "2020-01-02"],
+    ["/why-choose", "2020-01-02"],
+    ["/free-tier/calculator", "2020-01-02"],
+    ...Object.entries(overrides),
+  ]);
+  const result = update(root, false);
+  assert.ifError(result.error);
+  assert.equal(result.status, 0, result.stderr);
+  assert.equal(readFileSync(file, "utf8"), updateSitemapDates(validXml, expectedDates, siteOrigin));
+  const checked = update(root, true);
+  assert.ifError(checked.error);
+  assert.equal(checked.status, 0, checked.stderr);
+}
+
+for (const state of ["unstaged", "staged", "untracked"] as const) {
+  test(`${state} shared dependency changes use today's UTC date only for importing pages`, () => {
+    withDependencyFixture((root, file) => {
+      // Both pages reach this dependency indirectly, through an alias or a relative re-export.
+      const dependency = "client/src/components/page-value.ts";
+      if (state !== "untracked") {
+        writeFileSync(path.join(root, dependency), "export const value = 'original';\n");
+        fixtureGit(root, "add", dependency);
+        fixtureGit(root, "-c", "commit.gpgsign=false", "commit", "--quiet", "-m", "Base dependency");
+      }
+      writeFileSync(path.join(root, dependency), "export const value = 'changed';\n");
+      if (state === "staged") fixtureGit(root, "add", dependency);
+
+      const before = new Date().toISOString().slice(0, 10);
+      const result = update(root, false);
+      const after = new Date().toISOString().slice(0, 10);
+      assert.ifError(result.error);
+      assert.equal(result.status, 0, result.stderr);
+      const actual = readFileSync(file, "utf8");
+      // Allow a run crossing UTC midnight, without accepting any other date.
+      assert.ok([before, after].some((date) => actual === updateSitemapDates(validXml, new Map([
+        ["/", date],
+        ["/platform", date],
+        ["/founder", "2020-01-02"],
+        ["/why-choose", "2020-01-02"],
+        ["/free-tier/calculator", "2020-01-02"],
+      ]), siteOrigin)), "only importing pages should receive the current UTC date");
+    });
+  });
+}
+
+test("unrelated committed, unstaged, staged, and untracked files leave every page date unchanged", () => {
+  withDependencyFixture((root, file) => {
+    const unrelated = "client/src/components/unused.tsx";
+    writeFileSync(path.join(root, unrelated), "export const unused = 'original';\n");
+    fixtureGit(root, "add", unrelated);
+    // A newer commit must not supersede the older, relevant page history.
+    execFileSync("git", [
+      "-c", "user.name=Sitemap test", "-c", "user.email=sitemap@example.invalid",
+      "-c", "commit.gpgsign=false", "commit", "--quiet", "-m", "Unrelated component",
+    ], {
+      cwd: root,
+      env: {
+        ...process.env,
+        GIT_AUTHOR_DATE: "2020-05-06T12:00:00Z",
+        GIT_COMMITTER_DATE: "2020-05-06T12:00:00Z",
+      },
+    });
+    assert.equal(fixtureGit(root, "log", "-1", "--format=%cs").trim(), "2020-05-06");
+    assertUpdatedDates(root, file);
+    const before = readFileSync(file);
+    const beforeStat = statSync(file, { bigint: true });
+
+    writeFileSync(path.join(root, unrelated), "export const unused = 'modified';\n");
+    assertUpdatedDates(root, file);
+    fixtureGit(root, "add", unrelated);
+    assertUpdatedDates(root, file);
+    writeFileSync(path.join(root, "README.md"), "Untracked unrelated content.\n");
+    assertUpdatedDates(root, file);
+    assert.deepEqual(readFileSync(file), before);
+    assert.equal(statSync(file, { bigint: true }).mtimeNs, beforeStat.mtimeNs,
+      "unrelated changes must not cause a sitemap rewrite");
+  });
+});
+
 const invalidDocuments = [
   ["mismatched closing tag", validXml.replace("</urlset>", "</sitemap>"), /well-formed XML/],
   ["unclosed trailing element", `${validXml}<broken>`, /well-formed XML/],
