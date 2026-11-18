@@ -242,7 +242,9 @@ test("nested account flow links remain available but private", () => {
   }
 
   assert.equal(isKnownPagePath("/sign-inventory"), false);
+  assert.equal(isKnownPagePath("/sign-inventory/verify"), false);
   assert.equal(isKnownPagePath("/sign-updates"), false);
+  assert.equal(isKnownPagePath("/sign-updates/continue"), false);
 });
 
 test("sitemap must be well-formed XML with the required URL-set structure", () => {

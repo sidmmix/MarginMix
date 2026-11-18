@@ -79,6 +79,48 @@ try {
     );
   }
 
+  const accountFlowPaths = [
+    "/sign-in/verify-email-address",
+    "/sign-in/factor-one/verify",
+    "/sign-up/continue",
+    "/sign-up/verify-email-address?next=%2Fdashboard",
+  ];
+  for (const accountPath of accountFlowPaths) {
+    const response = await fetch(`${origin}${accountPath}`, {
+      redirect: "manual",
+      signal: AbortSignal.timeout(10_000),
+    });
+    assert.equal(response.status, 200, `${mode}: account flow ${accountPath} must return 200`);
+    assert.equal(response.headers.has("location"), false, `${mode}: account flow must not redirect`);
+    const html = await response.text();
+    assert.match(
+      html,
+      /<meta name="robots" content="noindex, nofollow" \/>/,
+      `${mode}: account flow ${accountPath} must remain noindex`,
+    );
+    assert.doesNotMatch(
+      html,
+      /<link\b(?=[^>]*\brel=["']canonical["'])[^>]*>/i,
+      `${mode}: account flow ${accountPath} must not gain a canonical URL`,
+    );
+  }
+
+  for (const unknownPath of [
+    "/sign-inventory",
+    "/sign-inventory/verify",
+    "/sign-updates",
+    "/sign-updates/continue",
+  ]) {
+    const response = await fetch(`${origin}${unknownPath}`, {
+      redirect: "manual",
+      signal: AbortSignal.timeout(10_000),
+    });
+    assert.equal(response.status, 404, `${mode}: unknown route ${unknownPath} must return 404`);
+    const html = await response.text();
+    assert.match(html, /<meta name="robots" content="noindex, nofollow" \/>/);
+    assert.doesNotMatch(html, /<link\b(?=[^>]*\brel=["']canonical["'])[^>]*>/i);
+  }
+
   const missingPage = await fetch(`${origin}/missing-page`, {
     redirect: "manual",
     signal: AbortSignal.timeout(10_000),
@@ -88,8 +130,11 @@ try {
   assert.match(missingHtml, /name="robots" content="noindex, nofollow"/);
   assert.doesNotMatch(missingHtml, /rel="canonical"/);
 
-  console.log(`Verified ${mode} sitemap delivery, public page canonicals and unknown-route 404s.`);
+  console.log(
+    `Verified ${mode} sitemap delivery, public page canonicals, nested account flows and unknown-route 404s.`,
+  );
 } finally {
+  await vite?.environments.client.depsOptimizer?.scanProcessing;
   await vite?.close();
   if (server.listening) {
     server.closeAllConnections();
